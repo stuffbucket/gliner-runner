@@ -12,6 +12,10 @@ request fields, and binds to `127.0.0.1:8090` by default.
 | --- | --- | --- |
 | `GET` | `/healthz` | Process admission health |
 | `GET` | `/v1/capabilities` | Implemented backend capability matrix |
+| `GET` | `/v1/models` | Curated remote/local/loaded model inventory |
+| `POST` | `/v1/models/refresh` | Explicitly refresh remote revision metadata |
+| `POST` | `/v1/models/{model_id}/downloads` | Start an approved download job |
+| `GET` | `/v1/model-downloads/{job_id}` | Poll a download job |
 | `POST` | `/v1/infer` | Submit one inference request |
 | `POST` | `/v1/batch` | Submit 1-256 requests |
 | `GET` | `/metrics` | Prometheus text metrics (not in OpenAPI) |
@@ -96,7 +100,8 @@ Runtime failures use FastAPI's `detail` envelope:
 }
 ```
 
-- `409`: the explicit backend/device/precision/operation is unsupported;
+- `409`: the explicit configuration is unsupported, the memory ceiling is
+  exceeded, or a known model requires an approved download;
 - `422`: validation failure, unknown manifest, missing artifact, or checksum
   failure;
 - `429`: bounded queue is full, with `Retry-After: 1`;
@@ -105,6 +110,12 @@ Runtime failures use FastAPI's `detail` envelope:
 Ordinary Pydantic request validation uses FastAPI's standard 422 detail list.
 Messages are diagnostic; clients should branch on stable custom `code` fields
 where present.
+
+`model_download_required` includes an `event` object with `model`, exact
+`revision`, `destination`, and `download_endpoint`. It is a notification, not
+approval: inference never starts the download. `model_memory_limit` includes
+the configured limit, estimated minimum, optional observed usage, profile, and
+whether a just-loaded model was unloaded.
 
 ## Compatibility
 

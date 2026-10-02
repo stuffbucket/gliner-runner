@@ -198,6 +198,82 @@ export const BackendCapabilitiesSchema = z
   .strict();
 export type BackendCapabilities = z.infer<typeof BackendCapabilitiesSchema>;
 
+export const ProfileGuidanceSchema = z
+  .object({
+    estimated_minimum_memory_bytes: z.number().int().nonnegative(),
+    memory_basis: z.string(),
+    baseline_profile: z.string(),
+    observed_max_abs_score_drift: z.number().nonnegative().nullable(),
+    drift_order_of_magnitude: z.string().nullable(),
+    characterization_scope: z.string(),
+  })
+  .strict();
+
+export const ModelInventoryItemSchema = z
+  .object({
+    model_id: z.string(),
+    repository: z.string(),
+    family: z.literal("GLiNER2.5-Decide"),
+    description: z.string(),
+    pinned_revision: z.string(),
+    discovered_revision: z.string(),
+    parameter_count: z.number().int().positive(),
+    local_revisions: z.array(z.string()),
+    available_locally: z.boolean(),
+    loaded: z.boolean(),
+    loaded_profile: PrecisionProfileSchema.nullable(),
+    supported_profiles: z.array(PrecisionProfileSchema),
+    default_profile: PrecisionProfileSchema,
+    profile_guidance: z.record(z.string(), ProfileGuidanceSchema),
+    download_destination: z.string(),
+    download_required: z.boolean(),
+  })
+  .strict();
+export type ModelInventoryItem = z.infer<typeof ModelInventoryItemSchema>;
+
+export const ModelInventoryResponseSchema = z
+  .object({
+    default_model: z.string(),
+    device: z.string(),
+    idle_ttl_seconds: z.number().nonnegative(),
+    memory_limit_bytes: z.number().int().positive(),
+    discovered_models: z.array(z.string()),
+    models: z.array(ModelInventoryItemSchema),
+  })
+  .strict();
+export type ModelInventoryResponse = z.infer<typeof ModelInventoryResponseSchema>;
+
+export const ModelRefreshResultSchema = z
+  .object({
+    refreshed_at: z.number(),
+    models_checked: z.number().int().nonnegative(),
+    changed_models: z.array(z.string()),
+    discovered_models: z.array(z.string()),
+  })
+  .strict();
+export type ModelRefreshResult = z.infer<typeof ModelRefreshResultSchema>;
+
+export const DownloadRequestSchema = z
+  .object({
+    approved: z.literal(true),
+    destination: z.string().min(1),
+    revision: z.string().regex(/^[a-f0-9]{40}$/).nullable().optional(),
+  })
+  .strict();
+export type DownloadRequest = z.infer<typeof DownloadRequestSchema>;
+
+export const DownloadJobSchema = z
+  .object({
+    job_id: z.string().uuid(),
+    model_id: z.string(),
+    revision: z.string(),
+    destination: z.string(),
+    state: z.enum(["queued", "running", "succeeded", "failed"]),
+    error: z.string().nullable(),
+  })
+  .strict();
+export type DownloadJob = z.infer<typeof DownloadJobSchema>;
+
 const BatchResponseSchema = z
   .object({ responses: z.array(InferenceResponseSchema) })
   .strict();
@@ -220,13 +296,21 @@ export class GlinerApiError extends Error {
   readonly status: number;
   readonly code: string;
   readonly retryable: boolean;
+  readonly detail: Record<string, unknown>;
 
-  constructor(status: number, code: string, message: string, retryable = false) {
+  constructor(
+    status: number,
+    code: string,
+    message: string,
+    retryable = false,
+    detail: Record<string, unknown> = {},
+  ) {
     super(message);
     this.name = "GlinerApiError";
     this.status = status;
     this.code = code;
     this.retryable = retryable;
+    this.detail = detail;
   }
 }
 
@@ -250,6 +334,50 @@ export class GlinerClient {
       ...(options.signal === undefined ? {} : { signal: options.signal }),
     });
     return z.array(BackendCapabilitiesSchema).parse(body);
+  }
+
+  async models(options: { signal?: AbortSignal } = {}): Promise<ModelInventoryResponse> {
+    const body = await this.request("/v1/models", {
+      method: "GET",
+      ...(options.signal === undefined ? {} : { signal: options.signal }),
+    });
+    return ModelInventoryResponseSchema.parse(body);
+  }
+
+  async refreshModels(options: { signal?: AbortSignal } = {}): Promise<ModelRefreshResult> {
+    const body = await this.request("/v1/models/refresh", {
+      method: "POST",
+      ...(options.signal === undefined ? {} : { signal: options.signal }),
+    });
+    return ModelRefreshResultSchema.parse(body);
+  }
+
+  async startModelDownload(
+    modelId: string,
+    request: DownloadRequest,
+    options: { signal?: AbortSignal } = {},
+  ): Promise<DownloadJob> {
+    const validated = DownloadRequestSchema.parse(request);
+    const body = await this.request(
+      `/v1/models/${encodeURIComponent(modelId)}/downloads`,
+      {
+        method: "POST",
+        body: JSON.stringify(validated),
+        ...(options.signal === undefined ? {} : { signal: options.signal }),
+      },
+    );
+    return DownloadJobSchema.parse(body);
+  }
+
+  async modelDownload(
+    jobId: string,
+    options: { signal?: AbortSignal } = {},
+  ): Promise<DownloadJob> {
+    const body = await this.request(`/v1/model-downloads/${encodeURIComponent(jobId)}`, {
+      method: "GET",
+      ...(options.signal === undefined ? {} : { signal: options.signal }),
+    });
+    return DownloadJobSchema.parse(body);
   }
 
   async infer(
@@ -312,6 +440,7 @@ function errorFromResponse(status: number, body: unknown): GlinerApiError {
         parsed.data.code,
         parsed.data.message,
         parsed.data.retryable,
+        parsed.data,
       );
     }
   }

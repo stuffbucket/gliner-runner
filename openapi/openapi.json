@@ -231,6 +231,93 @@
         "title": "ClassificationTask",
         "type": "object"
       },
+      "DownloadJob": {
+        "additionalProperties": false,
+        "properties": {
+          "destination": {
+            "title": "Destination",
+            "type": "string"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "job_id": {
+            "format": "uuid",
+            "title": "Job Id",
+            "type": "string"
+          },
+          "model_id": {
+            "title": "Model Id",
+            "type": "string"
+          },
+          "revision": {
+            "title": "Revision",
+            "type": "string"
+          },
+          "state": {
+            "$ref": "#/components/schemas/DownloadState"
+          }
+        },
+        "required": [
+          "job_id",
+          "model_id",
+          "revision",
+          "destination",
+          "state"
+        ],
+        "title": "DownloadJob",
+        "type": "object"
+      },
+      "DownloadRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "approved": {
+            "title": "Approved",
+            "type": "boolean"
+          },
+          "destination": {
+            "minLength": 1,
+            "title": "Destination",
+            "type": "string"
+          },
+          "revision": {
+            "anyOf": [
+              {
+                "pattern": "^[a-f0-9]{40}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revision"
+          }
+        },
+        "required": [
+          "approved",
+          "destination"
+        ],
+        "title": "DownloadRequest",
+        "type": "object"
+      },
+      "DownloadState": {
+        "enum": [
+          "queued",
+          "running",
+          "succeeded",
+          "failed"
+        ],
+        "title": "DownloadState",
+        "type": "string"
+      },
       "EntitySchema": {
         "additionalProperties": false,
         "properties": {
@@ -469,6 +556,154 @@
         "type": "object"
       },
       "JsonValue": {},
+      "ModelInventoryItem": {
+        "additionalProperties": false,
+        "properties": {
+          "available_locally": {
+            "title": "Available Locally",
+            "type": "boolean"
+          },
+          "default_profile": {
+            "$ref": "#/components/schemas/PrecisionProfile"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "discovered_revision": {
+            "title": "Discovered Revision",
+            "type": "string"
+          },
+          "download_destination": {
+            "title": "Download Destination",
+            "type": "string"
+          },
+          "download_required": {
+            "title": "Download Required",
+            "type": "boolean"
+          },
+          "family": {
+            "default": "GLiNER2.5-Decide",
+            "title": "Family",
+            "type": "string"
+          },
+          "loaded": {
+            "title": "Loaded",
+            "type": "boolean"
+          },
+          "loaded_profile": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PrecisionProfile"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "local_revisions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Local Revisions",
+            "type": "array"
+          },
+          "model_id": {
+            "title": "Model Id",
+            "type": "string"
+          },
+          "parameter_count": {
+            "title": "Parameter Count",
+            "type": "integer"
+          },
+          "pinned_revision": {
+            "title": "Pinned Revision",
+            "type": "string"
+          },
+          "profile_guidance": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ProfileGuidance"
+            },
+            "title": "Profile Guidance",
+            "type": "object"
+          },
+          "repository": {
+            "title": "Repository",
+            "type": "string"
+          },
+          "supported_profiles": {
+            "items": {
+              "$ref": "#/components/schemas/PrecisionProfile"
+            },
+            "title": "Supported Profiles",
+            "type": "array"
+          }
+        },
+        "required": [
+          "model_id",
+          "repository",
+          "description",
+          "pinned_revision",
+          "discovered_revision",
+          "parameter_count",
+          "local_revisions",
+          "available_locally",
+          "loaded",
+          "loaded_profile",
+          "supported_profiles",
+          "default_profile",
+          "profile_guidance",
+          "download_destination",
+          "download_required"
+        ],
+        "title": "ModelInventoryItem",
+        "type": "object"
+      },
+      "ModelInventoryResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "default_model": {
+            "title": "Default Model",
+            "type": "string"
+          },
+          "device": {
+            "title": "Device",
+            "type": "string"
+          },
+          "discovered_models": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Discovered Models",
+            "type": "array"
+          },
+          "idle_ttl_seconds": {
+            "title": "Idle Ttl Seconds",
+            "type": "number"
+          },
+          "memory_limit_bytes": {
+            "title": "Memory Limit Bytes",
+            "type": "integer"
+          },
+          "models": {
+            "items": {
+              "$ref": "#/components/schemas/ModelInventoryItem"
+            },
+            "title": "Models",
+            "type": "array"
+          }
+        },
+        "required": [
+          "default_model",
+          "device",
+          "idle_ttl_seconds",
+          "memory_limit_bytes",
+          "discovered_models",
+          "models"
+        ],
+        "title": "ModelInventoryResponse",
+        "type": "object"
+      },
       "OutputFormat": {
         "enum": [
           "native"
@@ -503,6 +738,94 @@
           "precision"
         ],
         "title": "PrecisionProfile",
+        "type": "object"
+      },
+      "ProfileGuidance": {
+        "additionalProperties": false,
+        "properties": {
+          "baseline_profile": {
+            "title": "Baseline Profile",
+            "type": "string"
+          },
+          "characterization_scope": {
+            "title": "Characterization Scope",
+            "type": "string"
+          },
+          "drift_order_of_magnitude": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Drift Order Of Magnitude"
+          },
+          "estimated_minimum_memory_bytes": {
+            "title": "Estimated Minimum Memory Bytes",
+            "type": "integer"
+          },
+          "memory_basis": {
+            "title": "Memory Basis",
+            "type": "string"
+          },
+          "observed_max_abs_score_drift": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Observed Max Abs Score Drift"
+          }
+        },
+        "required": [
+          "estimated_minimum_memory_bytes",
+          "memory_basis",
+          "baseline_profile",
+          "observed_max_abs_score_drift",
+          "drift_order_of_magnitude",
+          "characterization_scope"
+        ],
+        "title": "ProfileGuidance",
+        "type": "object"
+      },
+      "RefreshResult": {
+        "additionalProperties": false,
+        "properties": {
+          "changed_models": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Changed Models",
+            "type": "array"
+          },
+          "discovered_models": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Discovered Models",
+            "type": "array"
+          },
+          "models_checked": {
+            "title": "Models Checked",
+            "type": "integer"
+          },
+          "refreshed_at": {
+            "title": "Refreshed At",
+            "type": "number"
+          }
+        },
+        "required": [
+          "refreshed_at",
+          "models_checked",
+          "changed_models",
+          "discovered_models"
+        ],
+        "title": "RefreshResult",
         "type": "object"
       },
       "RelationSchema": {
@@ -760,6 +1083,143 @@
         "summary": "Infer",
         "tags": [
           "inference"
+        ]
+      }
+    },
+    "/v1/model-downloads/{job_id}": {
+      "get": {
+        "operationId": "download_status_v1_model_downloads__job_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DownloadJob"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Download Status",
+        "tags": [
+          "models"
+        ]
+      }
+    },
+    "/v1/models": {
+      "get": {
+        "operationId": "models_v1_models_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelInventoryResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Models",
+        "tags": [
+          "models"
+        ]
+      }
+    },
+    "/v1/models/refresh": {
+      "post": {
+        "operationId": "refresh_models_v1_models_refresh_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefreshResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Refresh Models",
+        "tags": [
+          "models"
+        ]
+      }
+    },
+    "/v1/models/{model_id}/downloads": {
+      "post": {
+        "operationId": "create_download_v1_models__model_id__downloads_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "model_id",
+            "required": true,
+            "schema": {
+              "title": "Model Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DownloadRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DownloadJob"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Download",
+        "tags": [
+          "models"
         ]
       }
     }

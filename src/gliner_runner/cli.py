@@ -25,6 +25,7 @@ app.add_typer(models_app, name="models")
 
 DEFAULT_MANIFEST_DIRECTORY = user_config_path("gliner-runner") / "models"
 DEFAULT_MODEL_STORE = user_cache_path("gliner-runner") / "models"
+DEFAULT_PROVIDER_DIRECTORY = DEFAULT_MODEL_STORE / "providers" / "huggingface"
 
 
 @app.command()
@@ -41,6 +42,16 @@ def serve(
     model_store: Annotated[
         Path, typer.Option(help="Content-addressed model cache.")
     ] = DEFAULT_MODEL_STORE,
+    model_provider_directory: Annotated[
+        Path, typer.Option(help="Approved Hugging Face snapshot location.")
+    ] = DEFAULT_PROVIDER_DIRECTORY,
+    model_idle_ttl_seconds: Annotated[
+        float, typer.Option(min=0, help="Idle eviction delay; zero keeps the model warm.")
+    ] = 0,
+    memory_limit_bytes: Annotated[
+        int | None,
+        typer.Option(min=512 * 1024**2, help="Hard model-process memory ceiling."),
+    ] = None,
 ) -> None:
     """Start the local JSON/OpenAPI server."""
     settings = Settings(
@@ -52,6 +63,13 @@ def serve(
         batch_window_ms=batch_window_ms,
         manifest_directory=manifest_directory,
         model_store=model_store,
+        model_provider_directory=model_provider_directory,
+        model_idle_ttl_seconds=model_idle_ttl_seconds,
+        memory_limit_bytes=(
+            memory_limit_bytes
+            if memory_limit_bytes is not None
+            else Settings.memory_limit_bytes
+        ),
     )
     uvicorn.run(create_app(settings=settings), host=host, port=port)
 
@@ -75,6 +93,9 @@ def infer(
     model_store: Annotated[
         Path, typer.Option(help="Content-addressed model cache.")
     ] = DEFAULT_MODEL_STORE,
+    model_provider_directory: Annotated[
+        Path, typer.Option(help="Approved Hugging Face snapshot location.")
+    ] = DEFAULT_PROVIDER_DIRECTORY,
 ) -> None:
     """Run one JSON request and print one JSON response."""
     raw = request_file.read_text() if request_file else sys.stdin.read()
@@ -84,6 +105,7 @@ def infer(
             device=device,
             manifest_directory=manifest_directory,
             model_store=model_store,
+            model_provider_directory=model_provider_directory,
         )
     )
 

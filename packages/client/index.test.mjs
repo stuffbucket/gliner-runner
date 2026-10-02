@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
+  DownloadRequestSchema,
   GlinerClient,
   InferenceRequestSchema,
 } from "./dist/index.js";
@@ -70,4 +71,33 @@ test("exports schemas for Electron boundaries", () => {
       }),
     /requires a entities schema/,
   );
+  assert.equal(
+    DownloadRequestSchema.parse({
+      approved: true,
+      destination: "/models",
+    }).approved,
+    true,
+  );
+});
+
+test("starts an explicitly approved model download", async () => {
+  const client = new GlinerClient({
+    fetch: async (_url, init) => {
+      assert.equal(init.method, "POST");
+      return Response.json({
+        job_id: "955b971b-4295-4e39-9e45-9b404e32bb6e",
+        model_id: "decide-340m",
+        revision: "5a7adf72a23b4d311abae6ce050d7f0012bb3416",
+        destination: "/models",
+        state: "queued",
+        error: null,
+      });
+    },
+  });
+
+  const job = await client.startModelDownload("decide-340m", {
+    approved: true,
+    destination: "/models",
+  });
+  assert.equal(job.state, "queued");
 });

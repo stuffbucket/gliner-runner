@@ -8,8 +8,8 @@ The system has four deliberate boundaries:
    returns the OpenAPI-defined envelope.
 2. **Router** resolves an explicit model/backend/device/precision combination.
    It does not silently substitute another combination.
-3. **Worker supervisor** maintains queues and one inference worker for each
-   loaded `(accelerator, model, backend, precision)` ownership key.
+3. **Worker supervisor** maintains queues and exactly one resident inference
+   worker/profile. It drains and closes that owner before switching identities.
 4. **Backend adapter** owns preprocessing, tensor execution, decoding, and
    backend capability reporting. The initial adapters run in Python because
    PyTorch and future native MLX execution are Python-native.
@@ -57,8 +57,8 @@ generator from defining a second public contract.
 
 ## Worker and batching model
 
-Each model/device tuple has exactly one owning worker. This avoids duplicate
-weights and concurrent mutation of accelerator state. Requests enter a bounded
+Each process has exactly one owning model worker. This avoids duplicate weights
+and concurrent mutation of accelerator state. Requests enter a bounded
 queue and are grouped only when their ownership key and operation are
 compatible. A batch closes at the earliest of a configurable item limit or a short latency
 deadline. Compatibility includes operation, schema, and options.
@@ -71,7 +71,7 @@ processes would each own a separate model copy.
 
 ## Model lifecycle
 
-The operator installs a manifest entry before serving:
+The operator may install a manifest entry before serving:
 
 `logical ID -> source revision -> files with size and SHA-256 -> license`.
 
@@ -80,6 +80,13 @@ atomically publishes an immutable directory keyed by a manifest digest.
 `models install` performs acquisition. Workers receive resolved local paths,
 verify file size and SHA-256 at load, and never resolve mutable branch names or
 fetch from the network.
+
+The public management API additionally exposes a curated official Fastino
+catalog. Refresh only caches remote metadata. A missing-model event directs the
+client to a separate asynchronous download endpoint that requires explicit
+approval and the configured destination. Completed provider snapshots record
+every file size and SHA-256 digest and are re-verified on first use. Neither
+refresh nor inference changes the pinned active revision.
 
 ## Failure semantics and observability
 

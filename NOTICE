@@ -10,3 +10,6 @@ downloaded separately and retain the license recorded in their manifest.
 Third-party software and model artifacts are not covered by this notice.
 Their licenses and attribution requirements remain applicable and must be
 recorded alongside each distributed dependency or model.
+
+The model-management runtime uses huggingface_hub and psutil, each distributed
+under the BSD 3-Clause License by its respective contributors.

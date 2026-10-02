@@ -32,6 +32,9 @@ not supplied:
 | `GLINER_RUNNER_BATCH_WINDOW_MS` | `4.0` |
 | `GLINER_RUNNER_MANIFEST_DIRECTORY` | platform user config/models |
 | `GLINER_RUNNER_MODEL_STORE` | platform user cache/models |
+| `GLINER_RUNNER_MODEL_PROVIDER_DIRECTORY` | model store/providers/huggingface |
+| `GLINER_RUNNER_MODEL_IDLE_TTL_SECONDS` | `0` (disabled; keep warm) |
+| `GLINER_RUNNER_MEMORY_LIMIT_BYTES` | 75% of physical memory |
 
 CLI options are the deployment interface for `serve`; environment loading is
 used by the importable ASGI app. Unsupported values fail at startup or
@@ -52,13 +55,43 @@ first request after all files are re-verified. On shutdown, admission stops,
 queued work drains, and model ownership is released. Orchestrators should use
 their own termination grace period.
 
-There is no idle eviction or model TTL: after the first successful request, a
-worker and its model remain warm until the server process shuts down. Keep the
-HTTP service alive and send a representative inference during deployment
-warm-up when cold-load latency is unacceptable. The one-shot `infer` CLI closes
-its runtime after every invocation and is not appropriate for repeated
-latency-sensitive calls. A future idle TTL would be an eviction policy, not a
-warmth guarantee, and must preserve one-owner and in-flight request semantics.
+Exactly one model/backend/precision/device identity may be resident in a
+process. Loading a different identity stops admission to the resident worker,
+drains in-flight work, closes it, and only then loads the replacement. The
+default idle TTL is zero, so the resident model stays warm until replacement or
+shutdown. A positive TTL evicts only after the worker has no active requests.
+The one-shot `infer` CLI still closes its runtime after every invocation and is
+not appropriate for repeated latency-sensitive calls.
+
+The default memory ceiling is 75% of physical memory. The runtime rejects a
+known model/profile before load when its parameter-based minimum exceeds the
+ceiling. It also measures after load and unloads before returning
+`model_memory_limit` if the ceiling is exceeded. CPU uses process RSS. Apple
+unified-memory enforcement uses the larger of process RSS and MPS driver
+allocation, never their sum; CUDA uses the larger of RSS and reserved device
+memory. Inventory figures are planning floors, not peak guarantees.
+
+## Curated inventory and downloads
+
+`GET /v1/models` includes all three official Fastino Decide models even when
+not installed. It distinguishes the repository's pinned revision, the latest
+revision observed by an explicit refresh, locally complete revisions, and the
+one currently loaded profile. Precision changes do not duplicate checkpoint
+files: FP16/FP32 are explicit load profiles over the same immutable snapshot.
+
+`POST /v1/models/refresh` performs the only remote catalog lookup. It updates a
+small local metadata cache but neither downloads nor replaces weights.
+Official Fastino repositories matching the Decide family but not yet in the
+curated runnable set are returned as `discovered_models`; they are not
+automatically trusted, downloaded, or made runnable.
+Inference against a missing curated model returns a
+`model_download_required` event. An application must obtain user/operator
+approval and submit `approved: true` plus the exact destination reported by
+inventory to `POST /v1/models/{model_id}/downloads`. Poll
+`GET /v1/model-downloads/{job_id}` until completion. A different destination or
+unapproved request is rejected. The download is revision-pinned and a complete
+SHA-256 file inventory is written before the snapshot is considered available.
+Job state is retained for the lifetime of the server process.
 
 A model update creates a new manifest digest alongside the old one. Install the
 new generation before changing the logical manifest entry and restarting the

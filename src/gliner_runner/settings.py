@@ -6,6 +6,8 @@ from pathlib import Path
 
 from platformdirs import user_cache_path, user_config_path
 
+from gliner_runner.resources import physical_memory_bytes
+
 
 @dataclass(frozen=True)
 class Settings:
@@ -17,6 +19,11 @@ class Settings:
     batch_window_ms: float = 4.0
     manifest_directory: Path = user_config_path("gliner-runner") / "models"
     model_store: Path = user_cache_path("gliner-runner") / "models"
+    model_provider_directory: Path = (
+        user_cache_path("gliner-runner") / "models" / "providers" / "huggingface"
+    )
+    model_idle_ttl_seconds: float = 0
+    memory_limit_bytes: int = int(physical_memory_bytes() * 0.75)
 
     @classmethod
     def from_env(cls) -> Settings:
@@ -36,6 +43,22 @@ class Settings:
                 )
             ),
             model_store=Path(os.getenv("GLINER_RUNNER_MODEL_STORE", str(cls.model_store))),
+            model_provider_directory=Path(
+                os.getenv(
+                    "GLINER_RUNNER_MODEL_PROVIDER_DIRECTORY",
+                    str(cls.model_provider_directory),
+                )
+            ),
+            model_idle_ttl_seconds=_floating(
+                "GLINER_RUNNER_MODEL_IDLE_TTL_SECONDS",
+                cls.model_idle_ttl_seconds,
+                minimum=0,
+            ),
+            memory_limit_bytes=_integer(
+                "GLINER_RUNNER_MEMORY_LIMIT_BYTES",
+                int(physical_memory_bytes() * 0.75),
+                minimum=512 * 1024**2,
+            ),
         )
 
 

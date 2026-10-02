@@ -9,7 +9,8 @@ repositories when supplied through operator-owned, revision-pinned manifests.
 ## Guarantees
 
 - no silent backend, precision, device, or model fallback;
-- one loaded model owner per `(backend, model digest, precision, device)`;
+- exactly one loaded model/profile owner per process, with safe draining before
+  replacement and optional idle eviction;
 - bounded queues, cancellation-aware admission, compatible-schema dynamic
   micro-batching, and explicit HTTP 429 backpressure;
 - strict Pydantic request/result/schema contracts and reproducible OpenAPI;
@@ -43,9 +44,32 @@ python -m pip install 'gliner-runner[pytorch]'
 The PyTorch extra pins `gliner2[local]==2.0.0`; model artifacts are never part
 of this package.
 
-## Install a model
+## Models and explicit downloads
 
-Create a TOML manifest in the configured manifest directory (by default
+`GET /v1/models` reports the curated official Fastino GLiNER2.5 Decide family,
+host-supported CPU/GPU precision profiles, pinned and newly discovered
+revisions, local availability, the currently loaded profile, estimated memory
+floors, and measured score-drift guidance. `POST /v1/models/refresh` refreshes
+only the cached provider metadata; it never installs or replaces a model.
+
+Inference never downloads. A missing curated model returns
+`model_download_required` with its exact revision, configured destination, and
+download endpoint. Start a download only after user/operator approval:
+
+```sh
+curl http://127.0.0.1:8090/v1/models/decide-340m/downloads \
+  -H 'content-type: application/json' \
+  -d '{"approved":true,"destination":"<value from GET /v1/models>"}'
+```
+
+The `202` response contains a job ID. Poll
+`GET /v1/model-downloads/{job_id}`. Downloads use an exact 40-character
+revision, remain outside Git, and produce a local file/size/SHA-256 inventory
+before becoming available. Provider credentials use Hugging Face's standard
+environment/cache configuration and are never returned by the API.
+
+Operator-owned mirrors remain supported through TOML manifests. Create a
+manifest in the configured manifest directory (by default
 `~/.config/gliner-runner/models`). Every URL must address the pinned revision,
 not a moving branch:
 
@@ -86,6 +110,14 @@ change; this repository does not publish guessed checksums.
 ```sh
 gliner-runner serve --device cpu
 ```
+
+The default memory ceiling is 75% of physical RAM. Set
+`GLINER_RUNNER_MEMORY_LIMIT_BYTES` or `--memory-limit-bytes`; known profiles
+whose estimated residency exceeds the limit are rejected before loading, and
+loads exceeding it are unloaded with a structured error. Models stay warm by
+default. Set `GLINER_RUNNER_MODEL_IDLE_TTL_SECONDS` or
+`--model-idle-ttl-seconds` to evict the single resident model after an idle
+period.
 
 The validated Apple Silicon profiles are explicit MPS/FP16 and MPS/FP32:
 
