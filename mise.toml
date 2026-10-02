@@ -75,7 +75,13 @@ test -n "${GLINER_RUNNER_BENCHMARK_MODEL:-}" || {
   echo 'Set GLINER_RUNNER_BENCHMARK_MODEL to a local pinned snapshot.' >&2
   exit 1
 }
-python benchmarks/benchmark_real.py \
+set -- \
   --model-path "$GLINER_RUNNER_BENCHMARK_MODEL" \
-  --output-dir "${GLINER_RUNNER_BENCHMARK_OUTPUT:-benchmark-results/local}"
+  --output-dir "${GLINER_RUNNER_BENCHMARK_OUTPUT:-benchmark-results/local}" \
+  --device "${GLINER_RUNNER_BENCHMARK_DEVICE:-cpu}" \
+  --precision "${GLINER_RUNNER_BENCHMARK_PRECISION:-fp32}"
+if [ -n "${GLINER_RUNNER_BENCHMARK_BASELINE:-}" ]; then
+  set -- "$@" --baseline-result "$GLINER_RUNNER_BENCHMARK_BASELINE"
+fi
+python benchmarks/benchmark_real.py "$@"
 """

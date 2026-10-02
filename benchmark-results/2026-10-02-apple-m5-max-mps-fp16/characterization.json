@@ -1,0 +1,722 @@
+{
+  "cold_oracle": {
+    "batch_inference_ms": 178.26149999746121,
+    "event": "finished",
+    "load_ms": 4191.954416994122,
+    "loaded_rss_bytes": 2442510336,
+    "outputs": [
+      {
+        "_meta": {
+          "decoder": "independent",
+          "exact": true,
+          "feasible": true,
+          "objective": 1.4252324104309082,
+          "violations": []
+        },
+        "intent": {
+          "confidence": 0.9285327616421897,
+          "probabilities": {
+            "account_access": 0.02783106102039776,
+            "billing": 0.9285327616421897,
+            "shipping": 0.0212799818747853,
+            "technical_support": 0.022356195462627387
+          },
+          "value": "billing"
+        }
+      },
+      {
+        "_meta": {
+          "decoder": "independent",
+          "exact": true,
+          "feasible": true,
+          "objective": 0.46122437715530396,
+          "violations": []
+        },
+        "intent": {
+          "confidence": 0.7223000374043448,
+          "probabilities": {
+            "account_access": 0.10488841408415486,
+            "billing": 0.0860949464521878,
+            "shipping": 0.08671660205931261,
+            "technical_support": 0.7223000374043448
+          },
+          "value": "technical_support"
+        }
+      },
+      {
+        "_meta": {
+          "decoder": "independent",
+          "exact": true,
+          "feasible": true,
+          "objective": 0.9731733798980713,
+          "violations": []
+        },
+        "intent": {
+          "confidence": 0.8552196221250156,
+          "probabilities": {
+            "account_access": 0.8552196221250156,
+            "billing": 0.030071039900678127,
+            "shipping": 0.026291724737318414,
+            "technical_support": 0.0884176132369879
+          },
+          "value": "account_access"
+        }
+      },
+      {
+        "_meta": {
+          "decoder": "independent",
+          "exact": true,
+          "feasible": true,
+          "objective": 1.254016399383545,
+          "violations": []
+        },
+        "intent": {
+          "confidence": 0.9247744740234914,
+          "probabilities": {
+            "account_access": 0.02557407549168055,
+            "billing": 0.023422902580951577,
+            "shipping": 0.9247744740234914,
+            "technical_support": 0.026228547903876385
+          },
+          "value": "shipping"
+        }
+      }
+    ],
+    "peak_rss_bytes": 4153131008,
+    "process_start_ms": 257.7526249951916,
+    "starting_rss_bytes": 41058304,
+    "steady_rss_bytes": 2503180288,
+    "torch_threads": 6,
+    "versions": {
+      "gliner2": "2.0.0",
+      "python": "3.12.12",
+      "torch": "2.14.0",
+      "transformers": "4.57.6"
+    }
+  },
+  "comparison": {
+    "baseline_profile": {
+      "device": "cpu",
+      "precision": "fp32"
+    },
+    "candidate_profile": {
+      "device": "mps",
+      "precision": "fp16"
+    },
+    "cold": {
+      "backend_load_ratio": 0.9807213941207402,
+      "baseline_backend_load_ms": 6659.605708002346,
+      "baseline_first_http_ms": 6797.814500008826,
+      "candidate_backend_load_ms": 6790.517417000956,
+      "candidate_first_http_ms": 6937.840082988259,
+      "first_http_ratio": 0.9798171215674487
+    },
+    "matrix": [
+      {
+        "baseline_throughput_requests_per_s": 7.496206619603033,
+        "baseline_wall_p50_ms": 130.79029199434444,
+        "batch_size": 1,
+        "candidate_throughput_requests_per_s": 25.496427772449348,
+        "candidate_wall_p50_ms": 35.98187500028871,
+        "target_tokens": 16,
+        "throughput_ratio": 3.401243997967539,
+        "wall_p50_speedup": 3.6348937345064707
+      },
+      {
+        "baseline_throughput_requests_per_s": 12.563666826544344,
+        "baseline_wall_p50_ms": 158.69287500390783,
+        "batch_size": 2,
+        "candidate_throughput_requests_per_s": 62.32085416742517,
+        "candidate_wall_p50_ms": 35.67054199811537,
+        "target_tokens": 16,
+        "throughput_ratio": 4.9604032825635365,
+        "wall_p50_speedup": 4.448849558055279
+      },
+      {
+        "baseline_throughput_requests_per_s": 19.633118371464892,
+        "baseline_wall_p50_ms": 202.76412498787977,
+        "batch_size": 4,
+        "candidate_throughput_requests_per_s": 140.14448453231006,
+        "candidate_wall_p50_ms": 28.48341700155288,
+        "target_tokens": 16,
+        "throughput_ratio": 7.138167349716509,
+        "wall_p50_speedup": 7.118672769381051
+      },
+      {
+        "baseline_throughput_requests_per_s": 27.936048393315176,
+        "baseline_wall_p50_ms": 286.9208749907557,
+        "batch_size": 8,
+        "candidate_throughput_requests_per_s": 212.25664310766007,
+        "candidate_wall_p50_ms": 38.67200000968296,
+        "target_tokens": 16,
+        "throughput_ratio": 7.597948003213332,
+        "wall_p50_speedup": 7.41934409699303
+      },
+      {
+        "baseline_throughput_requests_per_s": 6.202808580106872,
+        "baseline_wall_p50_ms": 161.28508299880195,
+        "batch_size": 1,
+        "candidate_throughput_requests_per_s": 27.221675988954818,
+        "candidate_wall_p50_ms": 35.99658400344197,
+        "target_tokens": 64,
+        "throughput_ratio": 4.388604877515952,
+        "wall_p50_speedup": 4.480566349945317
+      },
+      {
+        "baseline_throughput_requests_per_s": 9.842881656374914,
+        "baseline_wall_p50_ms": 203.4887079935288,
+        "batch_size": 2,
+        "candidate_throughput_requests_per_s": 68.70402814289321,
+        "candidate_wall_p50_ms": 27.389790993765928,
+        "target_tokens": 64,
+        "throughput_ratio": 6.980072558161445,
+        "wall_p50_speedup": 7.429363299626638
+      },
+      {
+        "baseline_throughput_requests_per_s": 13.038549844807507,
+        "baseline_wall_p50_ms": 299.91079100000206,
+        "batch_size": 4,
+        "candidate_throughput_requests_per_s": 114.77702223927297,
+        "candidate_wall_p50_ms": 35.46916700724978,
+        "target_tokens": 64,
+        "throughput_ratio": 8.802897837981725,
+        "wall_p50_speedup": 8.455535224120185
+      },
+      {
+        "baseline_throughput_requests_per_s": 15.614568685439641,
+        "baseline_wall_p50_ms": 517.4772079917602,
+        "batch_size": 8,
+        "candidate_throughput_requests_per_s": 180.21913565701092,
+        "candidate_wall_p50_ms": 42.52358300436754,
+        "target_tokens": 64,
+        "throughput_ratio": 11.541729988677988,
+        "wall_p50_speedup": 12.169181697097605
+      },
+      {
+        "baseline_throughput_requests_per_s": 3.399559748822124,
+        "baseline_wall_p50_ms": 287.1770000056131,
+        "batch_size": 1,
+        "candidate_throughput_requests_per_s": 23.98608001784483,
+        "candidate_wall_p50_ms": 38.399332988774404,
+        "target_tokens": 256,
+        "throughput_ratio": 7.055643021469326,
+        "wall_p50_speedup": 7.478697614085274
+      },
+      {
+        "baseline_throughput_requests_per_s": 4.380280364983695,
+        "baseline_wall_p50_ms": 452.8957500006072,
+        "batch_size": 2,
+        "candidate_throughput_requests_per_s": 31.53434966476214,
+        "candidate_wall_p50_ms": 60.77066699799616,
+        "target_tokens": 256,
+        "throughput_ratio": 7.1991623908027,
+        "wall_p50_speedup": 7.452538739052197
+      },
+      {
+        "baseline_throughput_requests_per_s": 4.837253463207272,
+        "baseline_wall_p50_ms": 826.8545000028098,
+        "batch_size": 4,
+        "candidate_throughput_requests_per_s": 35.92389522820225,
+        "candidate_wall_p50_ms": 111.05799999495503,
+        "target_tokens": 256,
+        "throughput_ratio": 7.426506694644738,
+        "wall_p50_speedup": 7.445249329542859
+      },
+      {
+        "baseline_throughput_requests_per_s": 5.071264562262417,
+        "baseline_wall_p50_ms": 1557.8242909978144,
+        "batch_size": 8,
+        "candidate_throughput_requests_per_s": 39.73152527643049,
+        "candidate_wall_p50_ms": 191.69462499849033,
+        "target_tokens": 256,
+        "throughput_ratio": 7.8346386367003635,
+        "wall_p50_speedup": 8.126593486959182
+      }
+    ],
+    "memory": {
+      "baseline_peak_rss_bytes": 6319243264,
+      "baseline_steady_rss_bytes": 2508668928,
+      "candidate_accelerator_peak_bytes": 2248933376,
+      "candidate_peak_rss_bytes": 3748560896,
+      "candidate_steady_rss_bytes": 1331101696
+    }
+  },
+  "format_version": 1,
+  "http_runner": {
+    "accelerator_peak_bytes": 2248933376,
+    "backend_load_events": [
+      {
+        "accelerator_memory": {
+          "current_allocated_bytes": 974967296,
+          "driver_allocated_bytes": 1082605568,
+          "recommended_max_bytes": 115448725504
+        },
+        "duration_ms": 6790.517417000956,
+        "event": "load",
+        "logical_model": "fastino/GLiNER2.5-Decide@5a7adf72a23b4d311abae6ce050d7f0012bb3416"
+      },
+      {
+        "accelerator_memory": {
+          "current_allocated_bytes": 1969398784,
+          "driver_allocated_bytes": 2248933376,
+          "recommended_max_bytes": 115448725504
+        },
+        "duration_ms": 4332.702332991175,
+        "event": "load",
+        "logical_model": "fastino/GLiNER2.5-Decide@5a7adf72a23b4d311abae6ce050d7f0012bb3416#alias"
+      }
+    ],
+    "cold_first_http_ms": 6937.840082988259,
+    "expected_label_accuracy": {
+      "cases": 4,
+      "correct": 4
+    },
+    "fill_window": [
+      {
+        "arrival_offsets_ms": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "http_statuses": [
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200
+        ],
+        "observed_batch_sizes": [
+          8
+        ],
+        "scenario": "simultaneous"
+      },
+      {
+        "arrival_offsets_ms": [
+          0.0,
+          0.4,
+          0.8,
+          1.2000000000000002,
+          1.6,
+          2.0,
+          2.4000000000000004,
+          2.8
+        ],
+        "http_statuses": [
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200
+        ],
+        "observed_batch_sizes": [
+          8
+        ],
+        "scenario": "inside_window"
+      },
+      {
+        "arrival_offsets_ms": [
+          0.0,
+          12.0,
+          24.0,
+          36.00000000000001
+        ],
+        "http_statuses": [
+          200,
+          200,
+          200,
+          200
+        ],
+        "observed_batch_sizes": [
+          1,
+          1,
+          2
+        ],
+        "scenario": "outside_window"
+      }
+    ],
+    "metrics_excerpt": [
+      "gliner_runner_internal{metric=\"last_batch_size\"} 1.0"
+    ],
+    "model_grouping": {
+      "batches": [
+        {
+          "accelerator_memory": {
+            "current_allocated_bytes": 974967296,
+            "driver_allocated_bytes": 2248933376,
+            "recommended_max_bytes": 115448725504
+          },
+          "duration_ms": 24.66320901294239,
+          "event": "batch",
+          "logical_model": "fastino/GLiNER2.5-Decide@5a7adf72a23b4d311abae6ce050d7f0012bb3416",
+          "size": 1,
+          "task_names": [
+            "intent"
+          ]
+        },
+        {
+          "accelerator_memory": {
+            "current_allocated_bytes": 1969398784,
+            "driver_allocated_bytes": 2248933376,
+            "recommended_max_bytes": 115448725504
+          },
+          "duration_ms": 19.519292007316835,
+          "event": "batch",
+          "logical_model": "fastino/GLiNER2.5-Decide@5a7adf72a23b4d311abae6ce050d7f0012bb3416#alias",
+          "size": 1,
+          "task_names": [
+            "intent"
+          ]
+        }
+      ],
+      "http_statuses": [
+        200,
+        200
+      ],
+      "logical_models_observed": [
+        "fastino/GLiNER2.5-Decide@5a7adf72a23b4d311abae6ce050d7f0012bb3416",
+        "fastino/GLiNER2.5-Decide@5a7adf72a23b4d311abae6ce050d7f0012bb3416#alias"
+      ]
+    },
+    "parity": {
+      "cases": 4,
+      "exact_output_matches": 0,
+      "exact_output_rate": 0.0,
+      "max_abs_numeric_difference": 0.0018429756164550781,
+      "selected_label_matches": 4,
+      "selected_label_rate": 1.0
+    },
+    "post_two_model_grouping_rss_bytes": 1465499648,
+    "schema_grouping": {
+      "batches": [
+        {
+          "accelerator_memory": {
+            "current_allocated_bytes": 974967296,
+            "driver_allocated_bytes": 2248933376,
+            "recommended_max_bytes": 115448725504
+          },
+          "duration_ms": 27.190374996280298,
+          "event": "batch",
+          "logical_model": "fastino/GLiNER2.5-Decide@5a7adf72a23b4d311abae6ce050d7f0012bb3416",
+          "size": 4,
+          "task_names": [
+            "group_a"
+          ]
+        },
+        {
+          "accelerator_memory": {
+            "current_allocated_bytes": 974967296,
+            "driver_allocated_bytes": 2248933376,
+            "recommended_max_bytes": 115448725504
+          },
+          "duration_ms": 16.739750004489906,
+          "event": "batch",
+          "logical_model": "fastino/GLiNER2.5-Decide@5a7adf72a23b4d311abae6ce050d7f0012bb3416",
+          "size": 4,
+          "task_names": [
+            "group_b"
+          ]
+        }
+      ],
+      "http_statuses": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "mixed_schema_batch_observed": false
+    },
+    "server_ready_ms": 589.3431669974234,
+    "starting_rss_bytes": 72581120,
+    "steady_single_model_rss_bytes": 1331101696
+  },
+  "latency_rows": [
+    {
+      "actual_tokens": 17,
+      "batch_samples": 3,
+      "batch_size": 1,
+      "inference_p50_ms": 17.422499993699603,
+      "queue_p50_ms": 4.564041999401525,
+      "target_tokens": 16,
+      "throughput_requests_per_s": 25.496427772449348,
+      "total_requests": 3,
+      "wall_p50_ms": 35.98187500028871,
+      "wall_p95_ms": 47.94013719802024
+    },
+    {
+      "actual_tokens": 17,
+      "batch_samples": 3,
+      "batch_size": 2,
+      "inference_p50_ms": 18.252084002597257,
+      "queue_p50_ms": 4.564896000374574,
+      "target_tokens": 16,
+      "throughput_requests_per_s": 62.32085416742517,
+      "total_requests": 6,
+      "wall_p50_ms": 35.67054199811537,
+      "wall_p95_ms": 38.0622541953926
+    },
+    {
+      "actual_tokens": 17,
+      "batch_samples": 3,
+      "batch_size": 4,
+      "inference_p50_ms": 19.58004200423602,
+      "queue_p50_ms": 4.575999497319572,
+      "target_tokens": 16,
+      "throughput_requests_per_s": 140.14448453231006,
+      "total_requests": 12,
+      "wall_p50_ms": 28.48341700155288,
+      "wall_p95_ms": 31.707703902793583
+    },
+    {
+      "actual_tokens": 17,
+      "batch_samples": 3,
+      "batch_size": 8,
+      "inference_p50_ms": 22.450290998676792,
+      "queue_p50_ms": 4.622374995960854,
+      "target_tokens": 16,
+      "throughput_requests_per_s": 212.25664310766007,
+      "total_requests": 24,
+      "wall_p50_ms": 38.67200000968296,
+      "wall_p95_ms": 38.95062469964614
+    },
+    {
+      "actual_tokens": 64,
+      "batch_samples": 3,
+      "batch_size": 1,
+      "inference_p50_ms": 17.066415995941497,
+      "queue_p50_ms": 4.583792004268616,
+      "target_tokens": 64,
+      "throughput_requests_per_s": 27.221675988954818,
+      "total_requests": 3,
+      "wall_p50_ms": 35.99658400344197,
+      "wall_p95_ms": 38.812983699608594
+    },
+    {
+      "actual_tokens": 64,
+      "batch_samples": 3,
+      "batch_size": 2,
+      "inference_p50_ms": 21.84812500490807,
+      "queue_p50_ms": 4.610416501236614,
+      "target_tokens": 64,
+      "throughput_requests_per_s": 68.70402814289321,
+      "total_requests": 6,
+      "wall_p50_ms": 27.389790993765928,
+      "wall_p95_ms": 35.90682939538965
+    },
+    {
+      "actual_tokens": 64,
+      "batch_samples": 3,
+      "batch_size": 4,
+      "inference_p50_ms": 24.516499994206242,
+      "queue_p50_ms": 4.587375500705093,
+      "target_tokens": 64,
+      "throughput_requests_per_s": 114.77702223927297,
+      "total_requests": 12,
+      "wall_p50_ms": 35.46916700724978,
+      "wall_p95_ms": 36.52839230198879
+    },
+    {
+      "actual_tokens": 64,
+      "batch_samples": 3,
+      "batch_size": 8,
+      "inference_p50_ms": 36.917165998602286,
+      "queue_p50_ms": 4.62972950481344,
+      "target_tokens": 64,
+      "throughput_requests_per_s": 180.21913565701092,
+      "total_requests": 24,
+      "wall_p50_ms": 42.52358300436754,
+      "wall_p95_ms": 47.728021096554585
+    },
+    {
+      "actual_tokens": 256,
+      "batch_samples": 3,
+      "batch_size": 1,
+      "inference_p50_ms": 28.995250002481043,
+      "queue_p50_ms": 4.545541989500634,
+      "target_tokens": 256,
+      "throughput_requests_per_s": 23.98608001784483,
+      "total_requests": 3,
+      "wall_p50_ms": 38.399332988774404,
+      "wall_p95_ms": 49.77027139393613
+    },
+    {
+      "actual_tokens": 256,
+      "batch_samples": 3,
+      "batch_size": 2,
+      "inference_p50_ms": 55.342457999358885,
+      "queue_p50_ms": 4.562812500807922,
+      "target_tokens": 256,
+      "throughput_requests_per_s": 31.53434966476214,
+      "total_requests": 6,
+      "wall_p50_ms": 60.77066699799616,
+      "wall_p95_ms": 71.41181699553272
+    },
+    {
+      "actual_tokens": 256,
+      "batch_samples": 3,
+      "batch_size": 4,
+      "inference_p50_ms": 97.90591699129436,
+      "queue_p50_ms": 4.587521005305462,
+      "target_tokens": 256,
+      "throughput_requests_per_s": 35.92389522820225,
+      "total_requests": 12,
+      "wall_p50_ms": 111.05799999495503,
+      "wall_p95_ms": 111.99805000214837
+    },
+    {
+      "actual_tokens": 256,
+      "batch_samples": 3,
+      "batch_size": 8,
+      "inference_p50_ms": 186.01125001441687,
+      "queue_p50_ms": 4.611958502209745,
+      "target_tokens": 256,
+      "throughput_requests_per_s": 39.73152527643049,
+      "total_requests": 24,
+      "wall_p50_ms": 191.69462499849033,
+      "wall_p95_ms": 219.23725030064816
+    }
+  ],
+  "memory": {
+    "accelerator_peak_bytes": 2248933376,
+    "http_peak_rss_bytes": 3748560896,
+    "oracle_peak_rss_bytes": 4153131008,
+    "overload_peak_rss_bytes": 3845668864,
+    "peak_rss_bytes": 4153131008
+  },
+  "metadata": {
+    "batch_sizes": [
+      1,
+      2,
+      4,
+      8
+    ],
+    "batch_window_ms": 4.0,
+    "device": "mps",
+    "generated_at_utc": "2026-10-02T19:45:42Z",
+    "host": {
+      "architecture": "arm64",
+      "cpu": "Apple M5 Max",
+      "logical_cores": 18,
+      "memory_bytes": 137438953472,
+      "os": "Darwin",
+      "os_release": "25.6.0",
+      "os_version": "26.7",
+      "physical_cores": 18
+    },
+    "model_bytes": 1954842586,
+    "model_content_sha256": "1395c304fb65d969409399e9937dfe31cb3b3e93e92eae29d40f6e084d414246",
+    "model_files": 10,
+    "model_id": "fastino/GLiNER2.5-Decide",
+    "model_revision": "5a7adf72a23b4d311abae6ce050d7f0012bb3416",
+    "oracle_device": "cpu",
+    "oracle_precision": "fp32",
+    "overload_tokens": 256,
+    "precision": "fp16",
+    "repetitions": 3,
+    "rss_sampling_interval_ms": 20,
+    "token_targets": [
+      16,
+      64,
+      256
+    ],
+    "torch_threads": 6,
+    "versions": {
+      "gliner2": "2.0.0",
+      "python": "3.12.12",
+      "torch": "2.14.0",
+      "transformers": "4.57.6"
+    }
+  },
+  "overload": {
+    "accepted": 1,
+    "burst_statuses": [
+      200,
+      429,
+      429,
+      429,
+      429,
+      429,
+      429,
+      429,
+      429,
+      429
+    ],
+    "client_task_cancelled": true,
+    "first_status": 200,
+    "observed_batches": [
+      {
+        "accelerator_memory": {
+          "current_allocated_bytes": 974967296,
+          "driver_allocated_bytes": 1091272704,
+          "recommended_max_bytes": 115448725504
+        },
+        "duration_ms": 122.43400000443216,
+        "event": "batch",
+        "logical_model": "fastino/GLiNER2.5-Decide@5a7adf72a23b4d311abae6ce050d7f0012bb3416",
+        "size": 1,
+        "task_names": [
+          "warmup"
+        ]
+      },
+      {
+        "accelerator_memory": {
+          "current_allocated_bytes": 974967296,
+          "driver_allocated_bytes": 1108049920,
+          "recommended_max_bytes": 115448725504
+        },
+        "duration_ms": 50.36370799643919,
+        "event": "batch",
+        "logical_model": "fastino/GLiNER2.5-Decide@5a7adf72a23b4d311abae6ce050d7f0012bb3416",
+        "size": 1,
+        "task_names": [
+          "overload"
+        ]
+      },
+      {
+        "accelerator_memory": {
+          "current_allocated_bytes": 974967296,
+          "driver_allocated_bytes": 1108049920,
+          "recommended_max_bytes": 115448725504
+        },
+        "duration_ms": 38.89904200332239,
+        "event": "batch",
+        "logical_model": "fastino/GLiNER2.5-Decide@5a7adf72a23b4d311abae6ce050d7f0012bb3416",
+        "size": 1,
+        "task_names": [
+          "cancelled"
+        ]
+      },
+      {
+        "accelerator_memory": {
+          "current_allocated_bytes": 974967296,
+          "driver_allocated_bytes": 1108049920,
+          "recommended_max_bytes": 115448725504
+        },
+        "duration_ms": 29.820708004990593,
+        "event": "batch",
+        "logical_model": "fastino/GLiNER2.5-Decide@5a7adf72a23b4d311abae6ce050d7f0012bb3416",
+        "size": 1,
+        "task_names": [
+          "overload"
+        ]
+      }
+    ],
+    "rejected_429": 9,
+    "server_cancelled_metric": 0.0,
+    "server_rejected_metric": 9.0
+  }
+}

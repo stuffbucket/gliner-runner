@@ -35,7 +35,7 @@ class PyTorchBackend:
             backend=BackendName.PYTORCH,
             operations=frozenset({InferenceOperation.CLASSIFY}),
             precisions=frozenset(precisions),
-            devices=frozenset({"cpu", "cuda"}),
+            devices=frozenset({"cpu", "cuda", "mps"}),
             dynamic_batching=True,
             precision_profiles=frozenset(
                 {
@@ -43,6 +43,7 @@ class PyTorchBackend:
                     PrecisionProfile(device="cuda", precision=Precision.FP32),
                     PrecisionProfile(device="cuda", precision=Precision.FP16),
                     PrecisionProfile(device="cuda", precision=Precision.BF16),
+                    PrecisionProfile(device="mps", precision=Precision.FP16),
                 }
             ),
         )
@@ -73,7 +74,7 @@ class PyTorchBackend:
             self._model_id,
             device=self._device,
             dtype=dtype,
-        ).eval()
+        ).to(device=self._device, dtype=dtype).eval()
 
     async def infer_batch(self, requests: Sequence[InferenceRequest]) -> list[JsonValue]:
         if not requests:

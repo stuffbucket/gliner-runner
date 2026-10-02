@@ -16,8 +16,18 @@ release are respectively `5a7adf72a23b4d311abae6ce050d7f0012bb3416`,
 
 The package pins `gliner2[local]==2.0.0`. Manifests must enumerate the complete
 local snapshot because upstream revision forwarding could not be verified for
-every weight load path. CPU FP32 and CUDA FP32/FP16/BF16 are advertised. MPS is
-not advertised until upstream support and project parity are validated.
+every weight load path. CPU FP32, CUDA FP32/FP16/BF16, and MPS FP16 are
+advertised.
+
+MPS FP16 is validated for the pinned English 340M revision on Apple M5 Max with
+PyTorch 2.14.0 and GLiNER2 2.0.0. Fastino's constructor configures its scorer
+for the requested device but does not transfer the underlying model, so the
+adapter also calls the public `Classifier.to(device=..., dtype=...)` method.
+Without that explicit transfer, upstream inference fails with
+`RuntimeError: Passed CPU tensor to MPS op`; the runner never catches that
+failure to retry on CPU. MPS FP32 also executed in the diagnostic probe, but is
+not advertised because FP16 is the characterized profile. See the
+[MPS characterization](../benchmark-results/2026-10-02-apple-m5-max-mps-fp16/REPORT.md).
 
 An implementation is releasable only after fixtures cover each advertised
 operation, malformed inputs, empty results, batching, determinism expectations,
@@ -65,4 +75,7 @@ Parity is operation-specific, model-specific, language-specific, and
 precision-specific. Aggregate accuracy alone cannot authorize a capability.
 Each report records reference/runtime versions, model digest, evaluation data
 provenance, preprocessing settings, thresholds, and discrepancies. A failed or
-missing gate means “unsupported,” not fallback.
+missing gate means “unsupported,” not fallback. MPS FP16 currently has
+selected-label parity on the four transparent characterization examples with
+a maximum observed numeric difference of 0.00184 versus CPU FP32; this is a
+bounded characterization, not a claim of universal numerical equivalence.

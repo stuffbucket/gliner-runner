@@ -23,6 +23,13 @@ from typing import Any
 MODEL_ID = "fastino/GLiNER2.5-Decide"
 MODEL_REVISION = "5a7adf72a23b4d311abae6ce050d7f0012bb3416"
 LOGICAL_MODEL = f"{MODEL_ID}@{MODEL_REVISION}"
+SUPPORTED_PROFILES = {
+    ("cpu", "fp32"),
+    ("cuda", "fp32"),
+    ("cuda", "fp16"),
+    ("cuda", "bf16"),
+    ("mps", "fp16"),
+}
 SCHEMA_LABELS = ("billing", "technical_support", "account_access", "shipping")
 PARITY_CASES = (
     ("My credit card was charged twice for the same invoice.", "billing"),
@@ -80,11 +87,17 @@ def schema(task_name: str = "intent") -> dict[str, Any]:
     }
 
 
-def request(text: str, *, model: str = LOGICAL_MODEL, task_name: str = "intent") -> dict[str, Any]:
+def request(
+    text: str,
+    *,
+    precision: str,
+    model: str = LOGICAL_MODEL,
+    task_name: str = "intent",
+) -> dict[str, Any]:
     return {
         "model": model,
         "backend": "pytorch",
-        "precision": "fp32",
+        "precision": precision,
         "operation": "classify",
         "text": text,
         "schema": schema(task_name),
@@ -156,16 +169,30 @@ def worker_oracle(model_path: Path, event_path: Path) -> None:
     append_event(event_path, payload)
 
 
+def accelerator_memory(device: str) -> dict[str, int] | None:
+    if device != "mps":
+        return None
+    import torch
+
+    return {
+        "current_allocated_bytes": torch.mps.current_allocated_memory(),
+        "driver_allocated_bytes": torch.mps.driver_allocated_memory(),
+        "recommended_max_bytes": torch.mps.recommended_max_memory(),
+    }
+
+
 class RecordedBackend:
     def __init__(
         self,
         backend: Any,
         logical_model: str,
+        device: str,
         event_path: Path,
         event_lock: threading.Lock,
     ) -> None:
         self._backend = backend
         self._logical_model = logical_model
+        self._device = device
         self._event_path = event_path
         self._event_lock = event_lock
 
@@ -181,6 +208,7 @@ class RecordedBackend:
                 "event": "load",
                 "logical_model": self._logical_model,
                 "duration_ms": (time.perf_counter() - started) * 1000,
+                "accelerator_memory": accelerator_memory(self._device),
             }
         )
 
@@ -192,15 +220,19 @@ class RecordedBackend:
                 for task_name in getattr(item.schema_, "tasks", {})
             }
         )
+        started = time.perf_counter()
+        outputs = await self._backend.infer_batch(requests)
         self._record(
             {
                 "event": "batch",
                 "logical_model": self._logical_model,
                 "size": len(requests),
                 "task_names": task_names,
+                "duration_ms": (time.perf_counter() - started) * 1000,
+                "accelerator_memory": accelerator_memory(self._device),
             }
         )
-        return await self._backend.infer_batch(requests)
+        return outputs
 
     async def close(self) -> None:
         await self._backend.close()
@@ -217,6 +249,7 @@ def worker_server(
     queue_capacity: int,
     max_batch_size: int,
     batch_window_ms: float,
+    device: str,
 ) -> None:
     import psutil
     import uvicorn
@@ -234,13 +267,14 @@ def worker_server(
         lambda requested_model, precision, device: RecordedBackend(
             PyTorchBackend(str(model_path), precision, device),
             requested_model,
+            device,
             event_path,
             lock,
         ),
     )
     runtime = Runtime(
         RuntimeConfig(
-            device="cpu",
+            device=device,
             queue_capacity=queue_capacity,
             max_batch_size=max_batch_size,
             batch_window_ms=batch_window_ms,
@@ -309,11 +343,27 @@ class ProcessRssSampler:
 
 
 def launch_worker(arguments: list[str]) -> subprocess.Popen[bytes]:
-    return subprocess.Popen(
-        [sys.executable, str(Path(__file__).resolve()), *arguments],
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-    )
+    event_index = arguments.index("--events") + 1
+    error_path = Path(arguments[event_index]).with_suffix(".stderr.log")
+    with error_path.open("wb") as error_stream:
+        return subprocess.Popen(
+            [sys.executable, str(Path(__file__).resolve()), *arguments],
+            stdout=subprocess.DEVNULL,
+            stderr=error_stream,
+        )
+
+
+def worker_error(
+    process: subprocess.Popen[bytes],
+    event_path: Path,
+    label: str,
+) -> RuntimeError:
+    error_path = event_path.with_suffix(".stderr.log")
+    details = error_path.read_text(encoding="utf-8", errors="replace")[-4000:]
+    message = f"{label} exited with status {process.returncode}"
+    if details.strip():
+        message = f"{message}:\n{details}"
+    return RuntimeError(message)
 
 
 def wait_for_event(
@@ -328,7 +378,7 @@ def wait_for_event(
             if event.get("event") == event_name:
                 return event
         if process.poll() is not None:
-            raise RuntimeError(f"worker exited with status {process.returncode}")
+            raise worker_error(process, path, "worker")
         time.sleep(0.02)
     raise TimeoutError(f"timed out waiting for {event_name}")
 
@@ -350,13 +400,18 @@ def free_port() -> int:
         return int(sock.getsockname()[1])
 
 
-def wait_for_server(base_url: str, process: subprocess.Popen[bytes], timeout: float) -> None:
+def wait_for_server(
+    base_url: str,
+    process: subprocess.Popen[bytes],
+    event_path: Path,
+    timeout: float,
+) -> None:
     import httpx
 
     deadline = time.monotonic() + timeout
     while time.monotonic() < deadline:
         if process.poll() is not None:
-            raise RuntimeError(f"server exited with status {process.returncode}")
+            raise worker_error(process, event_path, "server")
         try:
             response = httpx.get(f"{base_url}/healthz", timeout=0.5)
             if response.status_code == 200:
@@ -426,7 +481,7 @@ def direct_oracle_measurement(
         process_start_ms = (time.monotonic() - spawn_started) * 1000
         process.wait(timeout=300)
         if process.returncode != 0:
-            raise RuntimeError(f"oracle worker exited with status {process.returncode}")
+            raise worker_error(process, event_path, "oracle worker")
     finally:
         sampler.stop()
         terminate(process)
@@ -543,6 +598,8 @@ def run_normal_server(
     oracle: dict[str, Any],
     repetitions: int,
     token_targets: list[int],
+    device: str,
+    precision: str,
 ) -> tuple[dict[str, Any], list[dict[str, Any]], int]:
     import httpx
     import psutil
@@ -567,24 +624,34 @@ def run_normal_server(
             "16",
             "--batch-window-ms",
             "4",
+            "--device",
+            device,
         ]
     )
     sampler = ProcessRssSampler(process)
     sampler.start()
     try:
-        wait_for_server(base_url, process, timeout=30)
+        wait_for_server(base_url, process, event_path, timeout=30)
         server_ready_ms = (time.monotonic() - spawn_started) * 1000
         starting_rss = psutil.Process(process.pid).memory_info().rss
         with httpx.Client(timeout=300) as client:
             cold_started = time.perf_counter()
             first_output = response_output(
-                client.post(f"{base_url}/v1/infer", json=request(PARITY_CASES[0][0]))
+                client.post(
+                    f"{base_url}/v1/infer",
+                    json=request(PARITY_CASES[0][0], precision=precision),
+                )
             )
             cold_http_ms = (time.perf_counter() - cold_started) * 1000
             parity_outputs = [first_output]
             for text, _ in PARITY_CASES[1:]:
                 parity_outputs.append(
-                    response_output(client.post(f"{base_url}/v1/infer", json=request(text)))
+                    response_output(
+                        client.post(
+                            f"{base_url}/v1/infer",
+                            json=request(text, precision=precision),
+                        )
+                    )
                 )
             steady_rss = psutil.Process(process.pid).memory_info().rss
 
@@ -606,7 +673,7 @@ def run_normal_server(
                     for _ in range(repetitions):
                         payload = {
                             "requests": [
-                                request(text, task_name="latency")
+                                request(text, precision=precision, task_name="latency")
                                 for _index in range(batch_size)
                             ]
                         }
@@ -650,7 +717,11 @@ def run_normal_server(
                     concurrent_infer(
                         base_url,
                         [
-                            request(fill_text, task_name=f"fill_{name}")
+                            request(
+                                fill_text,
+                                precision=precision,
+                                task_name=f"fill_{name}",
+                            )
                             for _ in delays
                         ],
                         delays,
@@ -671,7 +742,11 @@ def run_normal_server(
                 concurrent_infer(
                     base_url,
                     [
-                        request(fill_text, task_name="group_a" if index % 2 == 0 else "group_b")
+                        request(
+                            fill_text,
+                            precision=precision,
+                            task_name="group_a" if index % 2 == 0 else "group_b",
+                        )
                         for index in range(8)
                     ],
                 )
@@ -683,8 +758,12 @@ def run_normal_server(
                 concurrent_infer(
                     base_url,
                     [
-                        request(fill_text, model=LOGICAL_MODEL),
-                        request(fill_text, model=f"{LOGICAL_MODEL}#alias"),
+                        request(fill_text, precision=precision, model=LOGICAL_MODEL),
+                        request(
+                            fill_text,
+                            precision=precision,
+                            model=f"{LOGICAL_MODEL}#alias",
+                        ),
                     ],
                 )
             )
@@ -695,6 +774,11 @@ def run_normal_server(
         load_events = [
             event for event in read_events(event_path) if event.get("event") == "load"
         ]
+        accelerator_values = [
+            event["accelerator_memory"]["driver_allocated_bytes"]
+            for event in read_events(event_path)
+            if event.get("accelerator_memory") is not None
+        ]
         result = {
             "server_ready_ms": server_ready_ms,
             "starting_rss_bytes": starting_rss,
@@ -702,6 +786,7 @@ def run_normal_server(
             "post_two_model_grouping_rss_bytes": post_grouping_rss,
             "cold_first_http_ms": cold_http_ms,
             "backend_load_events": load_events,
+            "accelerator_peak_bytes": max(accelerator_values, default=None),
             "parity": parity_summary(oracle["outputs"], parity_outputs),
             "expected_label_accuracy": {
                 "cases": len(PARITY_CASES),
@@ -741,7 +826,11 @@ def run_normal_server(
         terminate(process)
 
 
-async def overload_requests(base_url: str, long_text: str) -> dict[str, Any]:
+async def overload_requests(
+    base_url: str,
+    long_text: str,
+    precision: str,
+) -> dict[str, Any]:
     import httpx
 
     timeout = httpx.Timeout(300)
@@ -749,14 +838,14 @@ async def overload_requests(base_url: str, long_text: str) -> dict[str, Any]:
         first = asyncio.create_task(
             client.post(
                 f"{base_url}/v1/infer",
-                json=request(long_text, task_name="overload"),
+                json=request(long_text, precision=precision, task_name="overload"),
             )
         )
         await asyncio.sleep(0.01)
         cancellable = asyncio.create_task(
             client.post(
                 f"{base_url}/v1/infer",
-                json=request(long_text, task_name="cancelled"),
+                json=request(long_text, precision=precision, task_name="cancelled"),
             )
         )
         await asyncio.sleep(0.001)
@@ -767,7 +856,7 @@ async def overload_requests(base_url: str, long_text: str) -> dict[str, Any]:
             *(
                 client.post(
                     f"{base_url}/v1/infer",
-                    json=request(long_text, task_name="overload"),
+                    json=request(long_text, precision=precision, task_name="overload"),
                 )
                 for _ in range(10)
             )
@@ -797,6 +886,8 @@ def run_overload_server(
     model_path: Path,
     temporary: Path,
     long_text: str,
+    device: str,
+    precision: str,
 ) -> tuple[dict[str, Any], int]:
     import httpx
 
@@ -818,20 +909,26 @@ def run_overload_server(
             "1",
             "--batch-window-ms",
             "50",
+            "--device",
+            device,
         ]
     )
     sampler = ProcessRssSampler(process)
     sampler.start()
     try:
-        wait_for_server(base_url, process, timeout=30)
+        wait_for_server(base_url, process, event_path, timeout=30)
         with httpx.Client(timeout=300) as client:
             response_output(
                 client.post(
                     f"{base_url}/v1/infer",
-                    json=request(PARITY_CASES[0][0], task_name="warmup"),
+                    json=request(
+                        PARITY_CASES[0][0],
+                        precision=precision,
+                        task_name="warmup",
+                    ),
                 )
             )
-        result = asyncio.run(overload_requests(base_url, long_text))
+        result = asyncio.run(overload_requests(base_url, long_text, precision))
         result["server_cancelled_metric"] = metric_value(
             result.pop("metrics"),
             "requests_cancelled_total",
@@ -857,6 +954,105 @@ def write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
 
 def gibibytes(value: int) -> str:
     return f"{value / (1024**3):.2f} GiB"
+
+
+def profile_name(device: str, precision: str) -> str:
+    return f"{device.upper()} / {precision.upper()}"
+
+
+def comparison_summary(
+    baseline: dict[str, Any],
+    candidate: dict[str, Any],
+) -> dict[str, Any]:
+    baseline_metadata = baseline["metadata"]
+    candidate_metadata = candidate["metadata"]
+    if baseline_metadata["model_content_sha256"] != candidate_metadata["model_content_sha256"]:
+        raise ValueError("baseline model content digest does not match the candidate")
+    if baseline_metadata["host"]["cpu"] != candidate_metadata["host"]["cpu"]:
+        raise ValueError("baseline CPU does not match the candidate host")
+
+    baseline_rows = {
+        (row["target_tokens"], row["batch_size"]): row
+        for row in baseline["latency_rows"]
+    }
+    matrix: list[dict[str, Any]] = []
+    for candidate_row in candidate["latency_rows"]:
+        key = (candidate_row["target_tokens"], candidate_row["batch_size"])
+        baseline_row = baseline_rows.get(key)
+        if baseline_row is None:
+            raise ValueError(f"baseline is missing latency cell {key}")
+        matrix.append(
+            {
+                "target_tokens": key[0],
+                "batch_size": key[1],
+                "baseline_wall_p50_ms": baseline_row["wall_p50_ms"],
+                "candidate_wall_p50_ms": candidate_row["wall_p50_ms"],
+                "wall_p50_speedup": (
+                    baseline_row["wall_p50_ms"] / candidate_row["wall_p50_ms"]
+                ),
+                "baseline_throughput_requests_per_s": baseline_row[
+                    "throughput_requests_per_s"
+                ],
+                "candidate_throughput_requests_per_s": candidate_row[
+                    "throughput_requests_per_s"
+                ],
+                "throughput_ratio": (
+                    candidate_row["throughput_requests_per_s"]
+                    / baseline_row["throughput_requests_per_s"]
+                ),
+            }
+        )
+    baseline_load = baseline["http_runner"]["backend_load_events"][0]["duration_ms"]
+    candidate_load = candidate["http_runner"]["backend_load_events"][0]["duration_ms"]
+    return {
+        "baseline_profile": {
+            "device": baseline_metadata["device"],
+            "precision": baseline_metadata["precision"],
+        },
+        "candidate_profile": {
+            "device": candidate_metadata["device"],
+            "precision": candidate_metadata["precision"],
+        },
+        "cold": {
+            "baseline_backend_load_ms": baseline_load,
+            "candidate_backend_load_ms": candidate_load,
+            "backend_load_ratio": baseline_load / candidate_load,
+            "baseline_first_http_ms": baseline["http_runner"]["cold_first_http_ms"],
+            "candidate_first_http_ms": candidate["http_runner"]["cold_first_http_ms"],
+            "first_http_ratio": (
+                baseline["http_runner"]["cold_first_http_ms"]
+                / candidate["http_runner"]["cold_first_http_ms"]
+            ),
+        },
+        "memory": {
+            "baseline_steady_rss_bytes": baseline["http_runner"][
+                "steady_single_model_rss_bytes"
+            ],
+            "candidate_steady_rss_bytes": candidate["http_runner"][
+                "steady_single_model_rss_bytes"
+            ],
+            "baseline_peak_rss_bytes": baseline["memory"]["http_peak_rss_bytes"],
+            "candidate_peak_rss_bytes": candidate["memory"]["http_peak_rss_bytes"],
+            "candidate_accelerator_peak_bytes": candidate["memory"].get(
+                "accelerator_peak_bytes"
+            ),
+        },
+        "matrix": matrix,
+    }
+
+
+def accelerator_peak(
+    server: dict[str, Any],
+    overload: dict[str, Any],
+) -> int | None:
+    events = overload["observed_batches"]
+    values = [server["accelerator_peak_bytes"]]
+    values.extend(
+        event["accelerator_memory"]["driver_allocated_bytes"]
+        for event in events
+        if event.get("accelerator_memory") is not None
+    )
+    return max((value for value in values if value is not None), default=None)
 
 
 def generate_report(result: dict[str, Any], rows: list[dict[str, Any]]) -> str:
@@ -885,7 +1081,52 @@ def generate_report(result: dict[str, Any], rows: list[dict[str, Any]]) -> str:
         and overload["server_cancelled_metric"] == 0
         else "Client and server cancellation counters are recorded in the JSON artifact."
     )
-    return f"""# Real-model characterization: GLiNER2.5-Decide 340M
+    accelerator_memory_row = ""
+    if result["memory"].get("accelerator_peak_bytes") is not None:
+        accelerator_memory_row = (
+            "| Peak MPS driver-allocated memory | "
+            f"{gibibytes(result['memory']['accelerator_peak_bytes'])} |\n"
+        )
+    comparison_section = ""
+    comparison = result.get("comparison")
+    if comparison is not None:
+        comparison_rows = "\n".join(
+            "| "
+            f"{row['target_tokens']} | {row['batch_size']} | "
+            f"{row['baseline_wall_p50_ms']:.1f} | "
+            f"{row['candidate_wall_p50_ms']:.1f} | "
+            f"{row['wall_p50_speedup']:.2f}x | "
+            f"{row['throughput_ratio']:.2f}x |"
+            for row in comparison["matrix"]
+        )
+        baseline_profile = comparison["baseline_profile"]
+        candidate_profile = comparison["candidate_profile"]
+        cold_comparison = comparison["cold"]
+        memory_comparison = comparison["memory"]
+        comparison_section = f"""
+## CPU versus MPS
+
+Baseline: {profile_name(baseline_profile["device"], baseline_profile["precision"])}.
+Candidate: {profile_name(candidate_profile["device"], candidate_profile["precision"])}.
+Both measurements use the same model content digest and machine.
+
+- Backend load: {cold_comparison["baseline_backend_load_ms"]:.1f} ms CPU versus
+  {cold_comparison["candidate_backend_load_ms"]:.1f} ms MPS
+  ({cold_comparison["backend_load_ratio"]:.2f}x CPU/MPS ratio).
+- Cold first HTTP request: {cold_comparison["baseline_first_http_ms"]:.1f} ms CPU
+  versus {cold_comparison["candidate_first_http_ms"]:.1f} ms MPS
+  ({cold_comparison["first_http_ratio"]:.2f}x CPU/MPS ratio).
+- Steady RSS: {gibibytes(memory_comparison["baseline_steady_rss_bytes"])} CPU
+  versus {gibibytes(memory_comparison["candidate_steady_rss_bytes"])} MPS.
+- Peak process RSS: {gibibytes(memory_comparison["baseline_peak_rss_bytes"])} CPU
+  versus {gibibytes(memory_comparison["candidate_peak_rss_bytes"])} MPS.
+
+| Tokens | Batch | CPU p50 ms | MPS p50 ms | Latency speedup | Throughput ratio |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+{comparison_rows}
+"""
+    title_profile = f"{metadata['device'].upper()} {metadata['precision'].upper()}"
+    return f"""# Real-model characterization: GLiNER2.5-Decide 340M ({title_profile})
 
 Generated from `characterization.json` by `benchmarks/benchmark_real.py`.
 
@@ -904,7 +1145,8 @@ distribution.
 - OS: {metadata["host"]["os"]} {metadata["host"]["os_version"]} ({metadata["host"]["architecture"]})
 - Python {metadata["versions"]["python"]}; PyTorch {metadata["versions"]["torch"]};
   GLiNER2 {metadata["versions"]["gliner2"]}; Transformers {metadata["versions"]["transformers"]}
-- Device/precision: CPU / FP32
+- Candidate device/precision: {profile_name(metadata["device"], metadata["precision"])}
+- Correctness oracle: CPU / FP32
 - Model: `{metadata["model_id"]}` at `{metadata["model_revision"]}`
 - Snapshot content SHA-256: `{metadata["model_content_sha256"]}`
 - Snapshot: {metadata["model_files"]} files, {gibibytes(metadata["model_bytes"])}
@@ -920,10 +1162,12 @@ distribution.
 | Oracle steady RSS | {gibibytes(cold["steady_rss_bytes"])} |
 | Oracle peak RSS | {gibibytes(cold["peak_rss_bytes"])} |
 | HTTP server ready before model load | {server["server_ready_ms"]:.1f} ms |
+| Candidate backend load | {server["backend_load_events"][0]["duration_ms"]:.1f} ms |
 | Cold first HTTP request including lazy load | {server["cold_first_http_ms"]:.1f} ms |
 | HTTP process starting RSS | {gibibytes(server["starting_rss_bytes"])} |
 | HTTP steady RSS, one loaded model | {gibibytes(server["steady_single_model_rss_bytes"])} |
-| HTTP peak RSS, including two-model probe | {gibibytes(result["memory"]["peak_rss_bytes"])} |
+| HTTP peak RSS, including two-model probe | {gibibytes(result["memory"]["http_peak_rss_bytes"])} |
+{accelerator_memory_row}
 
 ## Warm latency matrix
 
@@ -959,6 +1203,7 @@ encoded input targets {", ".join(map(str, metadata["token_targets"]))}.
 | Scenario | Arrival offsets (ms) | Observed batch sizes |
 | --- | --- | --- |
 {fill_rows}
+{comparison_section}
 
 ## Methodology
 
@@ -966,9 +1211,10 @@ The direct official `Classifier.batch_classify` oracle ran in a fresh process.
 The runner ran through a real loopback Uvicorn/FastAPI server and the public
 JSON endpoints. RSS was sampled every 20 ms from each worker process. Latency
 uses wall-clock `perf_counter`; throughput is total successful requests divided
-by summed batch wall time. The model snapshot stayed outside Git. Inputs are
-deterministic synthetic length probes plus the four examples visible in the
-benchmark source.
+by summed batch wall time. On Apple unified memory, process RSS and MPS
+driver-allocated memory are separate accounting views and must not be added
+together. The model snapshot stayed outside Git. Inputs are deterministic
+synthetic length probes plus the four examples visible in the benchmark source.
 """
 
 
@@ -989,6 +1235,8 @@ def orchestrate(arguments: argparse.Namespace) -> None:
             oracle,
             arguments.repetitions,
             arguments.token_targets,
+            arguments.device,
+            arguments.precision,
         )
 
         from transformers import AutoTokenizer
@@ -999,6 +1247,8 @@ def orchestrate(arguments: argparse.Namespace) -> None:
             model_path,
             temporary,
             overload_text,
+            arguments.device,
+            arguments.precision,
         )
         del tokenizer
         gc.collect()
@@ -1008,8 +1258,10 @@ def orchestrate(arguments: argparse.Namespace) -> None:
         "host": host_metadata(),
         "versions": oracle["versions"],
         "torch_threads": oracle["torch_threads"],
-        "device": "cpu",
-        "precision": "fp32",
+        "device": arguments.device,
+        "precision": arguments.precision,
+        "oracle_device": "cpu",
+        "oracle_precision": "fp32",
         "model_id": MODEL_ID,
         "model_revision": MODEL_REVISION,
         "model_content_sha256": digest,
@@ -1022,7 +1274,7 @@ def orchestrate(arguments: argparse.Namespace) -> None:
         "batch_window_ms": 4.0,
         "rss_sampling_interval_ms": 20,
     }
-    result = {
+    result: dict[str, Any] = {
         "format_version": 1,
         "metadata": metadata,
         "cold_oracle": oracle,
@@ -1033,9 +1285,13 @@ def orchestrate(arguments: argparse.Namespace) -> None:
             "http_peak_rss_bytes": server_peak,
             "overload_peak_rss_bytes": overload_peak,
             "peak_rss_bytes": max(oracle_peak, server_peak, overload_peak),
+            "accelerator_peak_bytes": accelerator_peak(server, overload),
         },
         "latency_rows": rows,
     }
+    if arguments.baseline_result is not None:
+        baseline = json.loads(arguments.baseline_result.read_text(encoding="utf-8"))
+        result["comparison"] = comparison_summary(baseline, result)
     (output_dir / "characterization.json").write_text(
         json.dumps(result, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
@@ -1062,11 +1318,15 @@ def parser() -> argparse.ArgumentParser:
     server.add_argument("--queue-capacity", type=int, required=True)
     server.add_argument("--max-batch-size", type=int, required=True)
     server.add_argument("--batch-window-ms", type=float, required=True)
+    server.add_argument("--device", required=True)
 
     root.add_argument("--model-path", type=Path)
     root.add_argument("--output-dir", type=Path, default=Path("benchmark-results/local"))
     root.add_argument("--repetitions", type=int, default=3)
     root.add_argument("--token-targets", type=int, nargs="+", default=[16, 64, 256])
+    root.add_argument("--device", choices=("cpu", "cuda", "mps"), default="cpu")
+    root.add_argument("--precision", choices=("fp32", "fp16", "bf16"), default="fp32")
+    root.add_argument("--baseline-result", type=Path)
     return root
 
 
@@ -1082,12 +1342,23 @@ def main() -> None:
             arguments.queue_capacity,
             arguments.max_batch_size,
             arguments.batch_window_ms,
+            arguments.device,
         )
     else:
         if arguments.model_path is None:
             raise SystemExit("--model-path is required")
         if arguments.repetitions < 2:
             raise SystemExit("--repetitions must be at least 2")
+        profile = (arguments.device, arguments.precision)
+        if profile not in SUPPORTED_PROFILES:
+            raise SystemExit(
+                f"unsupported benchmark profile {profile}; no fallback was attempted"
+            )
+        if arguments.device == "mps":
+            import torch
+
+            if not torch.backends.mps.is_available():
+                raise SystemExit("MPS is not available; no fallback was attempted")
         orchestrate(arguments)
 
 

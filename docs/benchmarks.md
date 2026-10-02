@@ -19,9 +19,22 @@ The snapshot must remain outside the repository. The command writes local
 results to `benchmark-results/local/` by default. Set
 `GLINER_RUNNER_BENCHMARK_OUTPUT` to choose another directory.
 
+The default profile is CPU/FP32. To characterize the validated Apple Silicon
+profile and compare it with a prior CPU result:
+
+```sh
+export GLINER_RUNNER_BENCHMARK_DEVICE=mps
+export GLINER_RUNNER_BENCHMARK_PRECISION=fp16
+export GLINER_RUNNER_BENCHMARK_BASELINE=benchmark-results/cpu/characterization.json
+mise run benchmark:real
+```
+
+Unsupported pairs are rejected before model loading and never rewritten.
+
 The benchmark records:
 
 - fresh-process startup, model-load, first-inference, and RSS measurements;
+- MPS driver-allocated memory when the selected device exposes it;
 - warm HTTP wall-clock latency and throughput for batch sizes 1, 2, 4, and 8
   at encoded token targets 16, 64, and 256;
 - dynamic batch-window, schema grouping, and logical-model grouping behavior;
@@ -50,3 +63,5 @@ queue and be grouped when the worker becomes available.
 
 The published Apple M5 Max CPU/FP32 characterization is in
 [`benchmark-results/2026-10-02-apple-m5-max-cpu-fp32/`](../benchmark-results/2026-10-02-apple-m5-max-cpu-fp32/).
+The corresponding MPS/FP16 characterization and CPU comparison are in
+[`benchmark-results/2026-10-02-apple-m5-max-mps-fp16/`](../benchmark-results/2026-10-02-apple-m5-max-mps-fp16/).

@@ -35,11 +35,18 @@ class FakeClassifier:
 
     def __init__(self) -> None:
         self.call: tuple[list[str], object, object] | None = None
+        self.load_kwargs: dict[str, object] = {}
+        self.to_kwargs: dict[str, object] = {}
 
     @classmethod
-    def from_pretrained(cls, _path: str, **_kwargs: object) -> FakeClassifier:
+    def from_pretrained(cls, _path: str, **kwargs: object) -> FakeClassifier:
         cls.instance = cls()
+        cls.instance.load_kwargs = kwargs
         return cls.instance
+
+    def to(self, **kwargs: object) -> FakeClassifier:
+        self.to_kwargs = kwargs
+        return self
 
     def eval(self) -> FakeClassifier:
         return self
@@ -74,8 +81,17 @@ async def test_adapter_uses_fastino_public_batch_classify(
     assert FakeClassifier.instance is not None
     assert FakeClassifier.instance.call is not None
     assert FakeClassifier.instance.call[0] == ["one", "two"]
+    assert FakeClassifier.instance.load_kwargs == {"device": "cpu", "dtype": "float32"}
+    assert FakeClassifier.instance.to_kwargs == {"device": "cpu", "dtype": "float32"}
     assert FakeOracleSchema.received is not None
     assert FakeOracleSchema.received["tasks"]["label"]["labels"] == ["useful", "spam"]
     config = FakeClassifier.instance.call[2]
     assert isinstance(config, FakeConfig)
     assert config.kwargs["batch_size"] == 2
+
+
+def test_capabilities_advertise_only_validated_mps_fp16(request_factory: Any) -> None:
+    capabilities = PyTorchBackend("/models/pinned", Precision.FP16, "mps").capabilities
+
+    assert capabilities.supports(request_factory(precision=Precision.FP16), "mps")
+    assert not capabilities.supports(request_factory(precision=Precision.FP32), "mps")

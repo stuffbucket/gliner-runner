@@ -37,6 +37,11 @@ CLI options are the deployment interface for `serve`; environment loading is
 used by the importable ASGI app. Unsupported values fail at startup or
 capability negotiation.
 
+Supported PyTorch profiles are CPU/FP32, CUDA/FP32, CUDA/FP16, CUDA/BF16, and
+the parity-gated Apple Silicon MPS/FP16 profile. Device selection is
+process-wide and explicit. An unsupported precision for the selected device is
+rejected; the runtime never falls back to CPU or changes precision.
+
 ## Health and lifecycle
 
 `GET /healthz` reports process admission health. Models load lazily on their
