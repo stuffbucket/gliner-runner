@@ -41,6 +41,17 @@ export const ClassificationTaskSchema = z
       .refine((labels) => new Set(labels).size === labels.length, {
         message: "classification labels must be unique",
       }),
+    label_descriptions: z
+      .record(
+        z.string(),
+        z
+          .string()
+          .refine((description) => description.trim().length > 0, {
+            message: "label descriptions must be non-blank",
+          })
+          .nullable(),
+      )
+      .optional(),
     min_labels: z.number().int().nonnegative().optional(),
     max_labels: z.number().int().nonnegative().nullable().optional(),
     ordered: z.boolean().optional(),
@@ -50,7 +61,18 @@ export const ClassificationTaskSchema = z
     default: z.string().nullable().optional(),
     instruction: z.string().nullable().optional(),
   })
-  .strict();
+  .strict()
+  .superRefine((task, context) => {
+    for (const label of Object.keys(task.label_descriptions ?? {})) {
+      if (!task.labels.includes(label)) {
+        context.addIssue({
+          code: "custom",
+          path: ["label_descriptions", label],
+          message: "label description key must be a declared label",
+        });
+      }
+    }
+  });
 export type ClassificationTask = z.infer<typeof ClassificationTaskSchema>;
 
 export const ClassificationSchema = z

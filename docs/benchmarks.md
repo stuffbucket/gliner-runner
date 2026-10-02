@@ -43,6 +43,8 @@ The benchmark records:
 - dynamic batch-window, schema grouping, and logical-model grouping behavior;
 - direct official-oracle output parity and expected labels for four transparent
   examples;
+- a shared described-label schema on both the direct oracle and runner paths,
+  recorded in metadata so incompatible workloads cannot be compared;
 - client cancellation and bounded-queue backpressure under concurrent load;
 - exact hardware, OS, runtime versions, model revision, content digest,
   precision, sample counts, and timing methodology.
@@ -52,9 +54,10 @@ summary. Output excludes model paths, input text, hostnames, usernames, and
 credentials.
 
 New runs use benchmark format version 2. Version 2 adds `parity_usage`,
-`runner_input_tokens`, and `output_tokens`. Previously published format-version
-1 artifacts remain immutable historical measurements and do not contain usage;
-rerun the harness when token-accounting data is required.
+`runner_input_tokens`, `output_tokens`, and `schema_label_descriptions`.
+Previously published format-version 1 artifacts remain immutable historical
+measurements and do not contain usage or described-label metadata; rerun the
+harness when either is required.
 
 ## Interpreting results
 

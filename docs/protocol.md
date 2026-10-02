@@ -34,7 +34,12 @@ request fields, and binds to `127.0.0.1:8090` by default.
     "kind": "classification",
     "tasks": {
       "priority": {
-        "labels": ["urgent", "routine"],
+        "labels": ["urgent", "routine", "unknown"],
+        "label_descriptions": {
+          "urgent": "Requires immediate handling",
+          "routine": "Can follow the normal review queue",
+          "unknown": null
+        },
         "min_labels": 1,
         "max_labels": 1,
         "threshold": 0.5,
@@ -59,6 +64,12 @@ operator setting, not a per-request routing input.
 Classification tasks mirror the non-constraint portion of Fastino's public
 classification schema. `constraints` accepts the upstream serialized
 constraint objects and is validated again by Fastino before execution.
+`label_descriptions` is optional, so existing labels-only requests are
+unchanged. When present, every key must be one of the task's declared labels;
+values are non-blank strings or `null`, and the mapping may describe only a
+subset. The runner expands the mapping in declared label order and passes it to
+Fastino as native described labels before schema compilation. Descriptions
+therefore affect model semantics and `usage.inputTokens`.
 
 ## Success
 
@@ -136,7 +147,10 @@ membership does not imply that a backend is installed.
 runner can satisfy integrations that require exact token accounting. Clients
 that strictly reject unknown response fields must update their schema; the
 current TypeScript client requires and validates the exact
-`{inputTokens, outputTokens}` object. Request JSON is unchanged.
+`{inputTokens, outputTokens}` object. Existing request fields are unchanged.
+
+`label_descriptions` is an additive optional request field. Labels-only clients
+retain their existing behavior and wire shape.
 
 The public contract deliberately avoids Python-specific serialization. A
 future Rust or Go daemon must serve the same document and error semantics.

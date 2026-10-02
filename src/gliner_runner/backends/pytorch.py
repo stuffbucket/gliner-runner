@@ -10,6 +10,7 @@ from gliner_runner.contracts import (
     BackendName,
     BackendResult,
     ClassificationSchema,
+    ClassificationTask,
     InferenceOperation,
     InferenceRequest,
     InferenceUsage,
@@ -93,7 +94,7 @@ class PyTorchBackend:
             {
                 "version": 3,
                 "tasks": {
-                    name: task.model_dump(mode="json", exclude_none=True)
+                    name: _oracle_task(task)
                     for name, task in schema.tasks.items()
                 },
                 "constraints": list(schema.constraints),
@@ -142,6 +143,17 @@ def _compatible(left: InferenceRequest, right: InferenceRequest) -> bool:
         and left.schema_ == right.schema_
         and left.options == right.options
     )
+
+
+def _oracle_task(task: ClassificationTask) -> dict[str, Any]:
+    payload = task.model_dump(mode="json", exclude_none=True)
+    descriptions = payload.pop("label_descriptions", None)
+    if descriptions is not None:
+        payload["labels"] = {
+            label: descriptions.get(label)
+            for label in task.labels
+        }
+    return payload
 
 
 def _batch_classify_with_usage(

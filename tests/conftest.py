@@ -24,6 +24,7 @@ def request_factory() -> Any:
         text: str = "A useful message",
         *,
         labels: tuple[str, ...] = ("useful", "spam"),
+        label_descriptions: dict[str, str | None] | None = None,
         model: str = "fastino/decide",
         precision: Precision = Precision.FP32,
     ) -> InferenceRequest:
@@ -33,7 +34,14 @@ def request_factory() -> Any:
             precision=precision,
             operation=InferenceOperation.CLASSIFY,
             text=text,
-            schema=ClassificationSchema(tasks={"label": ClassificationTask(labels=labels)}),
+            schema=ClassificationSchema(
+                tasks={
+                    "label": ClassificationTask(
+                        labels=labels,
+                        label_descriptions=label_descriptions,
+                    )
+                }
+            ),
         )
 
     return factory

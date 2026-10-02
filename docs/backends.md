@@ -19,6 +19,10 @@ Fastino's actual `collate_fn_inference` call while `batch_classify` processes
 the compiled schema. The adapter fails if preprocessing does not expose one
 count per request; it never estimates from text or substitutes zero.
 Classification output usage is zero because no tokens are generated.
+Optional runner `label_descriptions` are converted to Fastino's native
+ordered label-to-description mapping before `ClassificationSchema.from_dict`.
+This ensures descriptions participate in the compiled model prompt instead of
+being discarded or treated as output-only metadata.
 
 The package pins `gliner2[local]==2.0.0`. Manifests must enumerate the complete
 local snapshot because upstream revision forwarding could not be verified for

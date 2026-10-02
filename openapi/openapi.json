@@ -179,6 +179,27 @@
             ],
             "title": "Instruction"
           },
+          "label_descriptions": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label Descriptions"
+          },
           "labels": {
             "items": {
               "type": "string"

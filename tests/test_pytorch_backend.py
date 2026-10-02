@@ -112,7 +112,13 @@ async def test_adapter_uses_fastino_public_batch_classify(
     monkeypatch.setitem(sys.modules, "gliner2.classification", module)
     backend = PyTorchBackend("/models/pinned", Precision.FP32, "cpu")
     await backend.load()
-    requests = [request_factory(text="one"), request_factory(text="longer")]
+    descriptions = {
+        "useful": "Actionable content that should be retained",
+    }
+    requests = [
+        request_factory(text="one", label_descriptions=descriptions),
+        request_factory(text="longer", label_descriptions=descriptions),
+    ]
 
     outputs = await backend.infer_batch(requests)
 
@@ -129,7 +135,10 @@ async def test_adapter_uses_fastino_public_batch_classify(
     assert FakeClassifier.instance.load_kwargs == {"device": "cpu", "dtype": "float32"}
     assert FakeClassifier.instance.to_kwargs == {"device": "cpu", "dtype": "float32"}
     assert FakeOracleSchema.received is not None
-    assert FakeOracleSchema.received["tasks"]["label"]["labels"] == ["useful", "spam"]
+    assert FakeOracleSchema.received["tasks"]["label"]["labels"] == {
+        "useful": descriptions["useful"],
+        "spam": None,
+    }
     config = FakeClassifier.instance.call[2]
     assert isinstance(config, FakeConfig)
     assert config.kwargs["batch_size"] == 2

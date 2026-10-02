@@ -173,7 +173,15 @@ const result = await client.infer({
   text: "The invoice needs urgent review.",
   schema: {
     kind: "classification",
-    tasks: { priority: { labels: ["urgent", "routine"] } },
+    tasks: {
+      priority: {
+        labels: ["urgent", "routine"],
+        label_descriptions: {
+          urgent: "Requires immediate handling",
+          routine: "Can follow the normal review queue",
+        },
+      },
+    },
   },
 });
 ```

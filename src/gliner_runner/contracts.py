@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from enum import StrEnum
-from typing import Annotated, Any, Literal, TypeAlias
+from typing import Annotated, Any, Literal, Self, TypeAlias
 from uuid import UUID, uuid4
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 from pydantic.types import JsonValue as PydanticJsonValue
 
 JsonValue: TypeAlias = PydanticJsonValue
@@ -41,6 +41,7 @@ class StrictModel(BaseModel):
 
 class ClassificationTask(StrictModel):
     labels: tuple[str, ...] = Field(min_length=1)
+    label_descriptions: dict[str, str | None] | None = None
     min_labels: int = Field(default=1, ge=0)
     max_labels: int | None = Field(default=1, ge=0)
     ordered: bool = False
@@ -56,6 +57,28 @@ class ClassificationTask(StrictModel):
         if len(set(labels)) != len(labels):
             raise ValueError("classification labels must be unique")
         return labels
+
+    @model_validator(mode="after")
+    def descriptions_match_labels(self) -> Self:
+        if self.label_descriptions is None:
+            return self
+        unknown = set(self.label_descriptions) - set(self.labels)
+        if unknown:
+            raise ValueError(
+                "label description keys must be declared labels: "
+                + ", ".join(sorted(unknown))
+            )
+        blank = sorted(
+            label
+            for label, description in self.label_descriptions.items()
+            if description is not None and not description.strip()
+        )
+        if blank:
+            raise ValueError(
+                "label descriptions must be non-blank strings or null: "
+                + ", ".join(blank)
+            )
+        return self
 
 
 class ClassificationSchema(StrictModel):

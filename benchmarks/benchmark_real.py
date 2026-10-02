@@ -32,6 +32,12 @@ SUPPORTED_PROFILES = {
     ("mps", "fp32"),
 }
 SCHEMA_LABELS = ("billing", "technical_support", "account_access", "shipping")
+SCHEMA_LABEL_DESCRIPTIONS = {
+    "billing": "Invoices, charges, refunds, and payment problems",
+    "technical_support": "Application failures, defects, and technical troubleshooting",
+    "account_access": "Authentication, passwords, and account sign-in problems",
+    "shipping": "Package delivery, tracking, and shipment status",
+}
 PARITY_CASES = (
     ("My credit card was charged twice for the same invoice.", "billing"),
     ("The desktop application crashes whenever I export a report.", "technical_support"),
@@ -81,6 +87,7 @@ def schema(task_name: str = "intent") -> dict[str, Any]:
         "tasks": {
             task_name: {
                 "labels": list(SCHEMA_LABELS),
+                "label_descriptions": SCHEMA_LABEL_DESCRIPTIONS,
                 "min_labels": 1,
                 "max_labels": 1,
             }
@@ -143,7 +150,10 @@ def worker_oracle(model_path: Path, event_path: Path) -> None:
     ).eval()
     load_ms = (time.perf_counter() - load_started) * 1000
     loaded_rss = process.memory_info().rss
-    official_schema = ClassificationSchema().single("intent", list(SCHEMA_LABELS))
+    official_schema = ClassificationSchema().single(
+        "intent",
+        SCHEMA_LABEL_DESCRIPTIONS,
+    )
     config = ClassificationConfig(batch_size=len(PARITY_CASES), include_confidence=True)
     inference_started = time.perf_counter()
     results = classifier.batch_classify(
@@ -1002,6 +1012,10 @@ def comparison_summary(
         raise ValueError("baseline model content digest does not match the candidate")
     if baseline_metadata["host"]["cpu"] != candidate_metadata["host"]["cpu"]:
         raise ValueError("baseline CPU does not match the candidate host")
+    if baseline_metadata.get("schema_label_descriptions") != candidate_metadata.get(
+        "schema_label_descriptions"
+    ):
+        raise ValueError("baseline classification label descriptions do not match")
 
     baseline_rows = {
         (row["target_tokens"], row["batch_size"]): row
@@ -1257,9 +1271,10 @@ by summed batch wall time. On Apple unified memory, process RSS and MPS
 driver-allocated memory are separate accounting views and must not be added
 together. Runner input usage is counted from the attention mask produced by
 Fastino's compiled-schema processor for the actual encoder batch;
-classification output usage is zero. The model snapshot stayed outside Git.
-Inputs are deterministic synthetic length probes plus the four examples visible
-in the benchmark source.
+classification output usage is zero. Direct-oracle and runner requests use the
+same described-label schema recorded in result metadata. The model snapshot
+stayed outside Git. Inputs are deterministic synthetic length probes plus the
+four examples visible in the benchmark source.
 """
 
 
@@ -1314,6 +1329,7 @@ def orchestrate(arguments: argparse.Namespace) -> None:
         "model_files": model_files,
         "batch_sizes": [1, 2, 4, 8],
         "token_targets": arguments.token_targets,
+        "schema_label_descriptions": SCHEMA_LABEL_DESCRIPTIONS,
         "repetitions": arguments.repetitions,
         "overload_tokens": overload_tokens,
         "batch_window_ms": 4.0,

@@ -4,6 +4,7 @@ import test from "node:test";
 import {
   DownloadRequestSchema,
   GlinerClient,
+  ClassificationTaskSchema,
   InferenceRequestSchema,
 } from "./dist/index.js";
 
@@ -96,6 +97,30 @@ test("exports schemas for Electron boundaries", () => {
       destination: "/models",
     }).approved,
     true,
+  );
+});
+
+test("validates optional classification label descriptions", () => {
+  assert.deepEqual(
+    ClassificationTaskSchema.parse({
+      labels: ["urgent", "routine", "unknown"],
+      label_descriptions: {
+        urgent: "Requires immediate handling",
+        unknown: null,
+      },
+    }).label_descriptions,
+    {
+      urgent: "Requires immediate handling",
+      unknown: null,
+    },
+  );
+  assert.throws(
+    () =>
+      ClassificationTaskSchema.parse({
+        labels: ["urgent", "routine"],
+        label_descriptions: { missing: "Not declared" },
+      }),
+    /must be a declared label/,
   );
 });
 
