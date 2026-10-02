@@ -1,0 +1,12 @@
+GLiNER Runner
+Copyright 2026 GLiNER Runner contributors
+
+This product includes software developed by the GLiNER Runner contributors.
+
+The optional PyTorch backend integrates Fastino GLiNER2, copyright its
+respective contributors, under the Apache License 2.0. Model artifacts are
+downloaded separately and retain the license recorded in their manifest.
+
+Third-party software and model artifacts are not covered by this notice.
+Their licenses and attribution requirements remain applicable and must be
+recorded alongside each distributed dependency or model.

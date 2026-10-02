@@ -1,0 +1,15 @@
+{
+  "name": "gliner-runner",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local HTTP runner for GLiNER-family models",
+  "license": "Apache-2.0",
+  "packageManager": "pnpm@9.15.1",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "pnpm --filter @gliner-runner/client build",
+    "check": "pnpm --filter @gliner-runner/client check"
+  }
+}

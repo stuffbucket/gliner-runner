@@ -1,0 +1,57 @@
+[tools]
+node = "22.12.0"
+pnpm = "9.15.1"
+python = "3.12.12"
+
+[env]
+PYTHONDONTWRITEBYTECODE = "1"
+PYTHONUNBUFFERED = "1"
+
+[tasks.setup]
+description = "Install workspace development dependencies"
+run = """
+if [ -f pyproject.toml ]; then
+  python -m pip install -e '.[dev]'
+else
+  echo 'Python package surface not present; skipping Python setup.'
+fi
+pnpm install --frozen-lockfile
+"""
+
+[tasks.check]
+description = "Run the default offline validation suite"
+depends = ["check:python", "check:client", "check:docs"]
+
+[tasks."check:python"]
+description = "Lint, type-check, and unit-test the Python implementation when present"
+run = """
+if [ -f pyproject.toml ]; then
+  python -m ruff check .
+  python -m mypy
+  python -m pytest -m 'not integration and not benchmark'
+else
+  echo 'Python package surface not present; skipping Python checks.'
+fi
+"""
+
+[tasks."check:client"]
+description = "Type-check the TypeScript client"
+run = "pnpm run check"
+
+[tasks."check:docs"]
+description = "Check tracked text files for whitespace errors"
+run = "git diff --check"
+
+[tasks.integration]
+description = "Run opt-in model integration tests"
+run = """
+test -f pyproject.toml || { echo 'Python package surface not present.' >&2; exit 1; }
+python -m pytest -m integration
+"""
+
+[tasks.benchmark]
+description = "Run opt-in benchmarks"
+run = """
+test -f pyproject.toml || { echo 'Python package surface not present.' >&2; exit 1; }
+python benchmarks/benchmark_scheduler.py
+"""

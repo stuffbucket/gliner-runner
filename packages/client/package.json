@@ -1,0 +1,28 @@
+{
+  "name": "@gliner-runner/client",
+  "version": "0.1.0",
+  "description": "Dependency-free TypeScript client for the GLiNER Runner HTTP API",
+  "license": "Apache-2.0",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "check": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "5.7.2"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

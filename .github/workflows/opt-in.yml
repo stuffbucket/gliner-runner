@@ -1,0 +1,41 @@
+name: Opt-in model validation
+
+on:
+  workflow_dispatch:
+    inputs:
+      task:
+        description: Validation task to run
+        required: true
+        type: choice
+        options:
+          - integration
+          - benchmark
+
+permissions:
+  contents: read
+
+concurrency:
+  group: opt-in-${{ github.ref }}-${{ inputs.task }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    name: ${{ inputs.task }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Install pinned tools
+        uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2
+        with:
+          install: true
+          cache: true
+      - name: Enable Corepack
+        run: corepack enable
+      - name: Install dependencies
+        run: mise run setup
+      - name: Run selected opt-in task
+        env:
+          TASK: ${{ inputs.task }}
+        run: mise run "$TASK"

@@ -1,0 +1,26 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .: {}
+
+  packages/client:
+    devDependencies:
+      typescript:
+        specifier: 5.7.2
+        version: 5.7.2
+
+packages:
+
+  typescript@5.7.2:
+    resolution: {integrity: sha1-MWnPjEyKgozeU7qeyz0rHV3We+Y=, tarball: https://ms-feed-25.pkgs.visualstudio.com/1es-public/_packaging/npm-public/npm/registry/typescript/-/typescript-5.7.2.tgz}
+    engines: {node: '>=14.17'}
+    hasBin: true
+
+snapshots:
+
+  typescript@5.7.2: {}

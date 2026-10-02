@@ -1,0 +1,28 @@
+{
+  "request": {
+    "model": "fixture/oracle",
+    "backend": "pytorch",
+    "precision": "fp32",
+    "operation": "classify",
+    "text": "The launch was delayed by weather.",
+    "schema": {
+      "kind": "classification",
+      "tasks": {
+        "status": {
+          "labels": ["delayed", "launched"],
+          "min_labels": 1,
+          "max_labels": 1
+        }
+      }
+    },
+    "options": {
+      "threshold": 0.5,
+      "output_format": "native",
+      "include_confidence": true
+    }
+  },
+  "oracle_output": {
+    "label": "delayed",
+    "score": 0.97
+  }
+}

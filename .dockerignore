@@ -1,0 +1,15 @@
+.git
+.github
+.mise.toml
+.pytest_cache
+.ruff_cache
+.venv
+**/__pycache__
+**/*.py[cod]
+**/.DS_Store
+**/dist
+**/node_modules
+benchmarks
+docs
+models
+tests

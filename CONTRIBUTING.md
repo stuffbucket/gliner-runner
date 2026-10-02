@@ -1,0 +1,50 @@
+# Contributing
+
+Thank you for improving GLiNER Runner.
+
+## Development contract
+
+1. Install the versions in `mise.toml` with `mise install`.
+2. Enable Corepack and run `mise run setup`.
+3. Make a focused change.
+4. Run `mise run check`.
+5. Opt into `mise run integration` only when the required external artifacts
+   and hardware are available. Run `mise run benchmark` separately.
+
+Python changes must pass Ruff, strict mypy, and pytest through
+`mise run check:python`. TypeScript changes use the `check:client` workspace
+script. Keep these shared task names stable because CI and contributors use
+them as the cross-surface contract.
+
+## Backend changes
+
+Python remains the inference authority. A new backend or precision must:
+
+- state its supported operations, languages, devices, and numeric formats;
+- reject unsupported combinations rather than changing backend implicitly;
+- pass deterministic shape, decoding, error, and representative parity tests
+  against the official Fastino PyTorch reference;
+- document tolerances and the dataset used to set them without committing
+  restricted data;
+- preserve request/response compatibility or introduce a versioned protocol;
+- keep model acquisition pinned, checksum-verified, and outside the repository.
+
+MLX starts with English span extraction in BF16 and INT8. INT4 is explicit
+opt-in and needs its own quality gate. ONNX remains classification-only until
+exports produced and controlled by this project are validated. Do not present
+roadmap backends as available.
+
+## Tests and benchmarks
+
+Unit tests must be offline and deterministic. Integration tests must be
+selected explicitly, identify required model digests, and skip with a useful
+reason when prerequisites are absent. Benchmarks are opt-in, record hardware,
+software versions, model digest, precision, workload, warm-up, and batch
+settings, and must not be used as correctness evidence.
+
+Never add model weights, credentials, private datasets, or generated benchmark
+results to commits. Keep pull requests small, explain user-visible behavior,
+and update the relevant documentation and OpenAPI contract.
+
+Contributions are accepted under the Apache License 2.0 as described in
+`LICENSE`.
