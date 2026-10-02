@@ -8,9 +8,11 @@ from typing import Any
 from gliner_runner.contracts import (
     BackendCapabilities,
     BackendName,
+    BackendResult,
     ClassificationSchema,
     InferenceOperation,
     InferenceRequest,
+    InferenceUsage,
     JsonValue,
     Precision,
     PrecisionProfile,
@@ -67,14 +69,14 @@ class PyTorchBackend:
             dtype=dtype,
         ).to(device=self._device, dtype=dtype).eval()
 
-    async def infer_batch(self, requests: Sequence[InferenceRequest]) -> list[JsonValue]:
+    async def infer_batch(self, requests: Sequence[InferenceRequest]) -> list[BackendResult]:
         if not requests:
             return []
         if self._model is None:
             raise RuntimeError("backend must be loaded before inference")
         return await asyncio.to_thread(self._infer_sync, requests)
 
-    def _infer_sync(self, requests: Sequence[InferenceRequest]) -> list[JsonValue]:
+    def _infer_sync(self, requests: Sequence[InferenceRequest]) -> list[BackendResult]:
         first = requests[0]
         if any(not _compatible(first, request) for request in requests[1:]):
             raise ValueError("infer_batch received incompatible requests")
@@ -102,14 +104,30 @@ class PyTorchBackend:
             batch_size=len(texts),
             include_confidence=first.options.include_confidence,
         )
-        results = model.batch_classify(texts, oracle_schema, config=config)
+        compiled_schema = model.compile_schema(oracle_schema)
+        results, input_token_counts = _batch_classify_with_usage(
+            model,
+            texts,
+            compiled_schema,
+            config,
+        )
         raw = [
             result.to_dict(include_confidence=first.options.include_confidence)
             for result in results
         ]
-        if not isinstance(raw, list) or len(raw) != len(requests):
+        if (
+            not isinstance(raw, list)
+            or len(raw) != len(requests)
+            or len(input_token_counts) != len(requests)
+        ):
             raise RuntimeError("GLiNER2 backend returned an invalid batch result")
-        return [_json_value(item) for item in raw]
+        return [
+            BackendResult(
+                output=_json_value(item),
+                usage=InferenceUsage(input_tokens=input_tokens, output_tokens=0),
+            )
+            for item, input_tokens in zip(raw, input_token_counts, strict=True)
+        ]
 
     async def close(self) -> None:
         self._model = None
@@ -124,6 +142,34 @@ def _compatible(left: InferenceRequest, right: InferenceRequest) -> bool:
         and left.schema_ == right.schema_
         and left.options == right.options
     )
+
+
+def _batch_classify_with_usage(
+    model: Any,
+    texts: list[str],
+    compiled_schema: Any,
+    config: Any,
+) -> tuple[list[Any], list[int]]:
+    processor = model.scorer.processor
+    original_collate = processor.collate_fn_inference
+    input_token_counts: list[int] = []
+
+    def collate_with_usage(rows: Any, *args: Any, **kwargs: Any) -> Any:
+        batch = original_collate(rows, *args, **kwargs)
+        counts = batch.attention_mask.sum(dim=1).tolist()
+        input_token_counts.extend(int(count) for count in counts)
+        return batch
+
+    processor.collate_fn_inference = collate_with_usage
+    try:
+        results = model.batch_classify(texts, compiled_schema, config=config)
+    finally:
+        processor.collate_fn_inference = original_collate
+    if len(input_token_counts) != len(texts):
+        raise RuntimeError(
+            "GLiNER2 preprocessing did not expose one encoded token count per request"
+        )
+    return list(results), input_token_counts
 
 
 def _available_precision_profiles() -> frozenset[PrecisionProfile]:

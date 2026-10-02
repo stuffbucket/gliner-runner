@@ -8,11 +8,12 @@ import pytest
 from gliner_runner.contracts import (
     BackendCapabilities,
     BackendName,
+    BackendResult,
     ClassificationSchema,
     ClassificationTask,
     InferenceOperation,
     InferenceRequest,
-    JsonValue,
+    InferenceUsage,
     Precision,
 )
 
@@ -57,13 +58,21 @@ class RecordingBackend:
     async def load(self) -> None:
         self.loaded = True
 
-    async def infer_batch(self, requests: Sequence[InferenceRequest]) -> list[JsonValue]:
+    async def infer_batch(self, requests: Sequence[InferenceRequest]) -> list[BackendResult]:
         self.batches.append(list(requests))
-        outputs: list[JsonValue] = []
+        outputs: list[BackendResult] = []
         for request in requests:
             assert isinstance(request.schema_, ClassificationSchema)
             task = next(iter(request.schema_.tasks.values()))
-            outputs.append({"label": task.labels[0]})
+            outputs.append(
+                BackendResult(
+                    output={"label": task.labels[0]},
+                    usage=InferenceUsage(
+                        input_tokens=len(request.text.split()),
+                        output_tokens=0,
+                    ),
+                )
+            )
         return outputs
 
     async def close(self) -> None:

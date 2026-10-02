@@ -14,6 +14,8 @@ repositories when supplied through operator-owned, revision-pinned manifests.
 - bounded queues, cancellation-aware admission, compatible-schema dynamic
   micro-batching, and explicit HTTP 429 backpressure;
 - strict Pydantic request/result/schema contracts and reproducible OpenAPI;
+- exact per-request `{inputTokens, outputTokens}` usage from the encoder batch,
+  with classification output tokens fixed at zero;
 - external models with exact revisions, sizes, SHA-256 checksums, licenses,
   and content-addressed storage;
 - offline unit/parity-fixture tests; real-model integration is opt-in.

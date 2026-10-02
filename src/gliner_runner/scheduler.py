@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from typing import Final, TypeAlias
 
 from gliner_runner.backends.base import InferenceBackend
-from gliner_runner.contracts import InferenceRequest, InferenceResponse, JsonValue, Timing
+from gliner_runner.contracts import BackendResult, InferenceRequest, InferenceResponse, Timing
 from gliner_runner.errors import QueueFullError, RunnerClosedError
 from gliner_runner.metrics import Metrics
 
@@ -113,9 +113,9 @@ class ModelWorker:
                         work.future.set_exception(error)
             else:
                 finished = self._clock()
-                for work, output in zip(active, outputs, strict=True):
+                for work, result in zip(active, outputs, strict=True):
                     if not work.future.done():
-                        work.future.set_result(self._response(work, output, started, finished))
+                        work.future.set_result(self._response(work, result, started, finished))
                 self._metrics.increment("requests_completed_total", len(active))
             finally:
                 self._update_depth()
@@ -162,7 +162,7 @@ class ModelWorker:
     def _response(
         self,
         work: _Work,
-        output: JsonValue,
+        result: BackendResult,
         started: float,
         finished: float,
     ) -> InferenceResponse:
@@ -172,11 +172,12 @@ class ModelWorker:
             model=request.model,
             backend=request.backend,
             precision=request.precision,
-            output=output,
+            output=result.output,
             timing=Timing(
                 queue_ms=max(0.0, (started - work.enqueued_at) * 1000),
                 inference_ms=max(0.0, (finished - started) * 1000),
             ),
+            usage=result.usage,
         )
 
     def _fail_pending(self, error: Exception) -> None:

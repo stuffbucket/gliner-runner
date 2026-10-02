@@ -37,6 +37,9 @@ The benchmark records:
 - MPS driver-allocated memory when the selected device exposes it;
 - warm HTTP wall-clock latency and throughput for batch sizes 1, 2, 4, and 8
   at encoded token targets 16, 64, and 256;
+- per-request runner `inputTokens` from Fastino's compiled-schema encoder
+  attention mask, separately from the raw-text tokenizer target, and
+  classification `outputTokens=0`;
 - dynamic batch-window, schema grouping, and logical-model grouping behavior;
 - direct official-oracle output parity and expected labels for four transparent
   examples;
@@ -47,6 +50,11 @@ The benchmark records:
 Results are emitted as full JSON, a latency CSV, and a generated Markdown
 summary. Output excludes model paths, input text, hostnames, usernames, and
 credentials.
+
+New runs use benchmark format version 2. Version 2 adds `parity_usage`,
+`runner_input_tokens`, and `output_tokens`. Previously published format-version
+1 artifacts remain immutable historical measurements and do not contain usage;
+rerun the harness when token-accounting data is required.
 
 ## Interpreting results
 

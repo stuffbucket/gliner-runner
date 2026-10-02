@@ -505,11 +505,21 @@ def make_text(tokenizer: Any, target_tokens: int) -> tuple[str, int]:
             return text, count
 
 
-def response_output(response: Any) -> dict[str, Any]:
+def response_payload(response: Any) -> dict[str, Any]:
     response.raise_for_status()
     body = response.json()
     if body.get("error") is not None:
         raise RuntimeError(f"inference failed: {body['error']['code']}")
+    usage = body.get("usage")
+    if not isinstance(usage, dict) or set(usage) != {"inputTokens", "outputTokens"}:
+        raise RuntimeError("inference response is missing the exact usage contract")
+    if usage["outputTokens"] != 0:
+        raise RuntimeError("classification unexpectedly reported output tokens")
+    return body
+
+
+def response_output(response: Any) -> dict[str, Any]:
+    body = response_payload(response)
     return body["output"]
 
 
@@ -637,23 +647,24 @@ def run_normal_server(
         starting_rss = psutil.Process(process.pid).memory_info().rss
         with httpx.Client(timeout=300) as client:
             cold_started = time.perf_counter()
-            first_output = response_output(
+            first_response = response_payload(
                 client.post(
                     f"{base_url}/v1/infer",
                     json=request(PARITY_CASES[0][0], precision=precision),
                 )
             )
             cold_http_ms = (time.perf_counter() - cold_started) * 1000
-            parity_outputs = [first_output]
+            parity_outputs = [first_response["output"]]
+            parity_usage = [first_response["usage"]]
             for text, _ in PARITY_CASES[1:]:
-                parity_outputs.append(
-                    response_output(
-                        client.post(
-                            f"{base_url}/v1/infer",
-                            json=request(text, precision=precision),
-                        )
+                parity_response = response_payload(
+                    client.post(
+                        f"{base_url}/v1/infer",
+                        json=request(text, precision=precision),
                     )
                 )
+                parity_outputs.append(parity_response["output"])
+                parity_usage.append(parity_response["usage"])
             steady_rss = psutil.Process(process.pid).memory_info().rss
 
             tokenizer = AutoTokenizer.from_pretrained(
@@ -671,6 +682,7 @@ def run_normal_server(
                     latencies: list[float] = []
                     queue_values: list[float] = []
                     inference_values: list[float] = []
+                    usage_input_values: list[int] = []
                     for _ in range(repetitions):
                         payload = {
                             "requests": [
@@ -683,6 +695,17 @@ def run_normal_server(
                         elapsed = time.perf_counter() - started
                         response.raise_for_status()
                         responses = response.json()["responses"]
+                        for item in responses:
+                            usage = item.get("usage")
+                            if (
+                                not isinstance(usage, dict)
+                                or set(usage) != {"inputTokens", "outputTokens"}
+                                or usage["outputTokens"] != 0
+                            ):
+                                raise RuntimeError(
+                                    "batch response violated the classification usage contract"
+                                )
+                            usage_input_values.append(int(usage["inputTokens"]))
                         latencies.append(elapsed * 1000)
                         queue_values.extend(item["timing"]["queue_ms"] for item in responses)
                         inference_values.extend(
@@ -690,10 +713,17 @@ def run_normal_server(
                         )
                     total_requests = batch_size * repetitions
                     total_seconds = sum(latencies) / 1000
+                    unique_usage_counts = set(usage_input_values)
+                    if len(unique_usage_counts) != 1:
+                        raise RuntimeError(
+                            "identical benchmark requests reported different token usage"
+                        )
                     rows.append(
                         {
                             "target_tokens": target,
                             "actual_tokens": actual_tokens,
+                            "runner_input_tokens": unique_usage_counts.pop(),
+                            "output_tokens": 0,
                             "batch_size": batch_size,
                             "batch_samples": repetitions,
                             "total_requests": total_requests,
@@ -789,6 +819,7 @@ def run_normal_server(
             "backend_load_events": load_events,
             "accelerator_peak_bytes": max(accelerator_values, default=None),
             "parity": parity_summary(oracle["outputs"], parity_outputs),
+            "parity_usage": parity_usage,
             "expected_label_accuracy": {
                 "cases": len(PARITY_CASES),
                 "correct": sum(
@@ -1184,9 +1215,11 @@ The full matrix is in `latency.csv`. Batch sizes 1, 2, 4, and 8 were tested at
 encoded input targets {", ".join(map(str, metadata["token_targets"]))}.
 
 - Highest observed throughput: {fastest["throughput_requests_per_s"]:.2f} requests/s
-  at batch {fastest["batch_size"]}, {fastest["actual_tokens"]} encoded tokens.
+  at batch {fastest["batch_size"]}, {fastest["runner_input_tokens"]} runner input tokens
+  ({fastest["actual_tokens"]} raw-text tokenizer tokens).
 - Largest observed p95 batch wall time: {slowest_tail["wall_p95_ms"]:.1f} ms
-  at batch {slowest_tail["batch_size"]}, {slowest_tail["actual_tokens"]} encoded tokens.
+  at batch {slowest_tail["batch_size"]},
+  {slowest_tail["runner_input_tokens"]} runner input tokens.
 
 ## Correctness and scheduling
 
@@ -1222,8 +1255,11 @@ JSON endpoints. RSS was sampled every 20 ms from each worker process. Latency
 uses wall-clock `perf_counter`; throughput is total successful requests divided
 by summed batch wall time. On Apple unified memory, process RSS and MPS
 driver-allocated memory are separate accounting views and must not be added
-together. The model snapshot stayed outside Git. Inputs are deterministic
-synthetic length probes plus the four examples visible in the benchmark source.
+together. Runner input usage is counted from the attention mask produced by
+Fastino's compiled-schema processor for the actual encoder batch;
+classification output usage is zero. The model snapshot stayed outside Git.
+Inputs are deterministic synthetic length probes plus the four examples visible
+in the benchmark source.
 """
 
 
@@ -1284,7 +1320,7 @@ def orchestrate(arguments: argparse.Namespace) -> None:
         "rss_sampling_interval_ms": 20,
     }
     result: dict[str, Any] = {
-        "format_version": 1,
+        "format_version": 2,
         "metadata": metadata,
         "cold_oracle": oracle,
         "http_runner": server,

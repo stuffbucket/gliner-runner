@@ -6,7 +6,7 @@ from collections.abc import Sequence
 import pytest
 
 from conftest import RecordingBackend
-from gliner_runner.contracts import InferenceRequest, JsonValue
+from gliner_runner.contracts import BackendResult, InferenceRequest
 from gliner_runner.errors import QueueFullError
 from gliner_runner.metrics import Metrics
 from gliner_runner.scheduler import ModelWorker
@@ -25,6 +25,10 @@ async def test_compatible_requests_are_micro_batched(request_factory: object) ->
     assert [response.request_id for response in responses] == [
         request.request_id for request in requests
     ]
+    assert [response.usage.input_tokens for response in responses] == [2, 2, 2]
+    assert [response.usage.output_tokens for response in responses] == [0, 0, 0]
+    encoded = responses[0].model_dump(mode="json", by_alias=True)
+    assert encoded["usage"] == {"inputTokens": 2, "outputTokens": 0}
     assert backend.loaded and backend.closed
 
 
@@ -102,7 +106,7 @@ class BlockingBackend(RecordingBackend):
         self.started = asyncio.Event()
         self.release = asyncio.Event()
 
-    async def infer_batch(self, requests: Sequence[InferenceRequest]) -> list[JsonValue]:
+    async def infer_batch(self, requests: Sequence[InferenceRequest]) -> list[BackendResult]:
         self.started.set()
         await self.release.wait()
         return await super().infer_batch(requests)

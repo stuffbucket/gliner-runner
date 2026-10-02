@@ -543,6 +543,9 @@
           },
           "timing": {
             "$ref": "#/components/schemas/Timing"
+          },
+          "usage": {
+            "$ref": "#/components/schemas/InferenceUsage"
           }
         },
         "required": [
@@ -550,9 +553,31 @@
           "model",
           "backend",
           "precision",
-          "timing"
+          "timing",
+          "usage"
         ],
         "title": "InferenceResponse",
+        "type": "object"
+      },
+      "InferenceUsage": {
+        "additionalProperties": false,
+        "properties": {
+          "inputTokens": {
+            "minimum": 0.0,
+            "title": "Inputtokens",
+            "type": "integer"
+          },
+          "outputTokens": {
+            "const": 0,
+            "title": "Outputtokens",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "inputTokens",
+          "outputTokens"
+        ],
+        "title": "InferenceUsage",
         "type": "object"
       },
       "JsonValue": {},

@@ -76,12 +76,21 @@ constraint objects and is validated again by Fastino before execution.
     }
   },
   "error": null,
-  "timing": {"queue_ms": 1.2, "inference_ms": 18.4}
+  "timing": {"queue_ms": 1.2, "inference_ms": 18.4},
+  "usage": {"inputTokens": 31, "outputTokens": 0}
 }
 ```
 
 Output is Fastino's public `ClassificationResult.to_dict()` JSON. Input order
 and request IDs are preserved across dynamic batches.
+
+`usage.inputTokens` is the number of non-padding tokens in the actual encoder
+input produced by Fastino's compiled classification schema and tokenizer path.
+It therefore includes schema/prompt tokens as well as text tokens and reflects
+any configured truncation. It is not a whitespace count or a separate raw-text
+tokenizer estimate. Classification does not generate tokens, so
+`usage.outputTokens` is exactly `0`. Every response in a dynamic batch carries
+its own usage.
 
 `POST /v1/batch` accepts `{"requests": [<request>, ...]}` and returns
 `{"responses": [<response>, ...]}` in the same order.
@@ -122,6 +131,12 @@ whether a just-loaded model was unloaded.
 Additive optional fields are allowed within `/v1`. Removing or reinterpreting
 fields requires a new version. Clients should use `/v1/capabilities`; enum
 membership does not imply that a backend is installed.
+
+`usage` became a required response field in the initial `0.x` contract so the
+runner can satisfy integrations that require exact token accounting. Clients
+that strictly reject unknown response fields must update their schema; the
+current TypeScript client requires and validates the exact
+`{inputTokens, outputTokens}` object. Request JSON is unchanged.
 
 The public contract deliberately avoids Python-specific serialization. A
 future Rust or Go daemon must serve the same document and error semantics.

@@ -8,11 +8,12 @@ from collections.abc import Sequence
 from gliner_runner.contracts import (
     BackendCapabilities,
     BackendName,
+    BackendResult,
     ClassificationSchema,
     ClassificationTask,
     InferenceOperation,
     InferenceRequest,
-    JsonValue,
+    InferenceUsage,
     Precision,
 )
 from gliner_runner.scheduler import ModelWorker
@@ -35,9 +36,18 @@ class BenchmarkBackend:
     async def load(self) -> None:
         return None
 
-    async def infer_batch(self, requests: Sequence[InferenceRequest]) -> list[JsonValue]:
+    async def infer_batch(self, requests: Sequence[InferenceRequest]) -> list[BackendResult]:
         self.batches += 1
-        return [{"label": "benchmark"} for _ in requests]
+        return [
+            BackendResult(
+                output={"label": "benchmark"},
+                usage=InferenceUsage(
+                    input_tokens=len(request.text.split()),
+                    output_tokens=0,
+                ),
+            )
+            for request in requests
+        ]
 
     async def close(self) -> None:
         return None

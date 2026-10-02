@@ -183,6 +183,23 @@ class Timing(StrictModel):
     inference_ms: float = Field(ge=0)
 
 
+class InferenceUsage(StrictModel):
+    input_tokens: int = Field(alias="inputTokens", ge=0)
+    output_tokens: Literal[0] = Field(alias="outputTokens")
+
+    model_config = ConfigDict(
+        extra="forbid",
+        frozen=True,
+        populate_by_name=True,
+        serialize_by_alias=True,
+    )
+
+
+class BackendResult(StrictModel):
+    output: JsonValue
+    usage: InferenceUsage
+
+
 class InferenceResponse(StrictModel):
     request_id: UUID
     model: str
@@ -191,6 +208,7 @@ class InferenceResponse(StrictModel):
     output: JsonValue | None = None
     error: InferenceError | None = None
     timing: Timing
+    usage: InferenceUsage
 
     @field_validator("error")
     @classmethod

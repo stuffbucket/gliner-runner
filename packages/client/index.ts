@@ -153,6 +153,14 @@ export const TimingSchema = z
   .strict();
 export type Timing = z.infer<typeof TimingSchema>;
 
+export const InferenceUsageSchema = z
+  .object({
+    inputTokens: z.number().int().nonnegative(),
+    outputTokens: z.literal(0),
+  })
+  .strict();
+export type InferenceUsage = z.infer<typeof InferenceUsageSchema>;
+
 export const InferenceErrorSchema = z
   .object({
     code: z.string(),
@@ -170,6 +178,7 @@ export const InferenceResponseSchema = z
     output: JsonValueSchema.nullable(),
     error: InferenceErrorSchema.nullable(),
     timing: TimingSchema,
+    usage: InferenceUsageSchema,
   })
   .strict()
   .refine((value) => (value.output === null) !== (value.error === null), {

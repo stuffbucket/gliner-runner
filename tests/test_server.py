@@ -27,6 +27,7 @@ def test_http_contract_and_openapi(request_factory: object) -> None:
 
     assert response.status_code == 200
     assert response.json()["output"] == {"label": "useful"}
+    assert response.json()["usage"] == {"inputTokens": 3, "outputTokens": 0}
     assert "/v1/infer" in openapi.json()["paths"]
     assert "requests_completed_total" in metrics.text
 

@@ -14,6 +14,12 @@ release are respectively `5a7adf72a23b4d311abae6ce050d7f0012bb3416`,
 `a35a0cd3b7a0f00f2effc576f454cd48fa98aa5f`, and
 `688cd7ba8917a0855ad3ce929cba5a9998932e79`.
 
+Per-request input usage is captured from the attention mask returned by
+Fastino's actual `collate_fn_inference` call while `batch_classify` processes
+the compiled schema. The adapter fails if preprocessing does not expose one
+count per request; it never estimates from text or substitutes zero.
+Classification output usage is zero because no tokens are generated.
+
 The package pins `gliner2[local]==2.0.0`. Manifests must enumerate the complete
 local snapshot because upstream revision forwarding could not be verified for
 every weight load path. CPU FP32 and available MPS FP16/FP32 profiles are

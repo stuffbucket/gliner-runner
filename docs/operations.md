@@ -124,10 +124,12 @@ batch policy recorded.
 
 Default CI and `mise run check` are offline. `mise run integration` and
 `mise run benchmark:real` are explicit opt-ins. Integration requires a
-separately installed model and `GLINER_RUNNER_INTEGRATION_REQUEST`. The offline
+separately installed model and `GLINER_RUNNER_INTEGRATION_REQUEST`;
+`GLINER_RUNNER_INTEGRATION_DEVICE` selects `cpu`, `mps`, or `cuda` and defaults
+to CPU. The smoke test micro-batches two different-length requests and verifies
+distinct encoded input usage plus classification `outputTokens=0`. The offline
 `mise run benchmark` command uses a fake backend and downloads nothing. The
 real-model command requires `GLINER_RUNNER_BENCHMARK_MODEL` to identify a local
 pinned snapshot; see [real-model characterization](benchmarks.md). CI jobs
-running integration must be manually or schedule-triggered, use
-least-privilege credentials, verify artifacts, and publish no sensitive input
-or model file.
+running integration must be manually or schedule-triggered, use least-privilege
+credentials, verify artifacts, and publish no sensitive input or model file.

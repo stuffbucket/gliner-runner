@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import sys
-from types import ModuleType
+from types import ModuleType, SimpleNamespace
 from typing import Any
 
 from gliner_runner.backends.pytorch import PyTorchBackend, _available_precision_profiles
@@ -37,6 +37,7 @@ class FakeClassifier:
         self.call: tuple[list[str], object, object] | None = None
         self.load_kwargs: dict[str, object] = {}
         self.to_kwargs: dict[str, object] = {}
+        self.scorer = SimpleNamespace(processor=FakeProcessor())
 
     @classmethod
     def from_pretrained(cls, _path: str, **kwargs: object) -> FakeClassifier:
@@ -55,12 +56,50 @@ class FakeClassifier:
         self, texts: list[str], schema: object, *, config: object
     ) -> list[FakeResult]:
         self.call = (texts, schema, config)
+        self.scorer.processor.collate_fn_inference(
+            [(text, schema.build()) for text in texts]
+        )
         return [FakeResult(text) for text in texts]
+
+    def compile_schema(self, _schema: object) -> FakeCompiledSchema:
+        return FakeCompiledSchema()
 
 
 class FakeConfig:
     def __init__(self, **kwargs: object) -> None:
         self.kwargs = kwargs
+
+
+class FakeCompiledSchema:
+    def build(self) -> dict[str, object]:
+        return {"compiled": True}
+
+
+class FakeVector:
+    def __init__(self, values: list[int]) -> None:
+        self._values = values
+
+    def tolist(self) -> list[int]:
+        return self._values
+
+
+class FakeAttentionMask:
+    def __init__(self, counts: list[int]) -> None:
+        self._counts = counts
+
+    def sum(self, *, dim: int) -> FakeVector:
+        assert dim == 1
+        return FakeVector(self._counts)
+
+
+class FakeProcessor:
+    def collate_fn_inference(
+        self, rows: list[tuple[str, dict[str, object]]], **_kwargs: object
+    ) -> SimpleNamespace:
+        assert all(schema == {"compiled": True} for _text, schema in rows)
+        return SimpleNamespace(
+            attention_mask=FakeAttentionMask([len(text) + 4 for text, _schema in rows])
+        )
 
 
 async def test_adapter_uses_fastino_public_batch_classify(
@@ -73,14 +112,20 @@ async def test_adapter_uses_fastino_public_batch_classify(
     monkeypatch.setitem(sys.modules, "gliner2.classification", module)
     backend = PyTorchBackend("/models/pinned", Precision.FP32, "cpu")
     await backend.load()
-    requests = [request_factory(text="one"), request_factory(text="two")]
+    requests = [request_factory(text="one"), request_factory(text="longer")]
 
     outputs = await backend.infer_batch(requests)
 
     assert len(outputs) == 2
+    assert [output.usage.input_tokens for output in outputs] == [7, 10]
+    assert [output.usage.output_tokens for output in outputs] == [0, 0]
+    assert [output.output["label"]["value"] for output in outputs] == [  # type: ignore[index]
+        "useful",
+        "useful",
+    ]
     assert FakeClassifier.instance is not None
     assert FakeClassifier.instance.call is not None
-    assert FakeClassifier.instance.call[0] == ["one", "two"]
+    assert FakeClassifier.instance.call[0] == ["one", "longer"]
     assert FakeClassifier.instance.load_kwargs == {"device": "cpu", "dtype": "float32"}
     assert FakeClassifier.instance.to_kwargs == {"device": "cpu", "dtype": "float32"}
     assert FakeOracleSchema.received is not None
