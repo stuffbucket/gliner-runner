@@ -29,6 +29,8 @@ jobs:
       - name: Install pinned tools
         uses: jdx/mise-action@c37c93293d6b742fc901e1406b8f764f6fb19dac # v2
         with:
+          version: 2026.9.5
+          sha256: 2d3c99a10e9729556ebf8ccdcd0298ce9566eebf3f197b598f0f9a2f88cdbe4b
           install: true
           cache: true
       - name: Enable Corepack
