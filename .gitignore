@@ -1,4 +1,8 @@
 .DS_Store
+.npmrc
+.netrc
+.cargo/credentials
+.cargo/credentials.toml
 .mypy_cache/
 .pytest_cache/
 .ruff_cache/
@@ -10,3 +14,5 @@ dist/
 node_modules/
 packages/client/dist/
 models/
+pip.conf
+pip.ini

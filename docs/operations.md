@@ -13,6 +13,10 @@ Never mount a shared cache writable by an untrusted tenant. Never place tokens
 in manifest URLs. Mirror artifacts when upstream availability is operationally
 important, subject to their licenses.
 
+Package registry configuration and container secret mounts are defined in the
+[registry policy](registries.md). Registry credentials are build-time inputs,
+not application configuration, image metadata, or runtime environment.
+
 ## Configuration
 
 The server reads these environment variables when corresponding CLI options are

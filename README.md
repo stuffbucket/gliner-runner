@@ -142,7 +142,7 @@ mise run benchmark    # scheduler benchmark; no model download
 ```
 
 See [architecture](docs/architecture.md), [protocol](docs/protocol.md),
-[operations](docs/operations.md), [contributing](CONTRIBUTING.md), and
-[security](SECURITY.md).
+[operations](docs/operations.md), [package registry policy](docs/registries.md),
+[contributing](CONTRIBUTING.md), and [security](SECURITY.md).
 
 Apache-2.0. External models retain their own licenses.

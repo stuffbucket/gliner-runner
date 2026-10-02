@@ -11,6 +11,11 @@ Thank you for improving GLiNER Runner.
 5. Opt into `mise run integration` only when the required external artifacts
    and hardware are available. Run `mise run benchmark` separately.
 
+pnpm uses the contributor's canonical `~/.npmrc` directly. Do not add a
+repository `.npmrc`, token-bearing URL, or generated ecosystem credentials.
+Follow the [package registry policy](docs/registries.md) for Python and future
+native toolchains.
+
 Python changes must pass Ruff, strict mypy, and pytest through
 `mise run check:python`. TypeScript changes use the `check:client` workspace
 script. Keep these shared task names stable because CI and contributors use

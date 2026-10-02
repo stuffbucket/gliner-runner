@@ -21,12 +21,12 @@ importers:
 packages:
 
   typescript@5.7.2:
-    resolution: {integrity: sha1-MWnPjEyKgozeU7qeyz0rHV3We+Y=, tarball: https://ms-feed-25.pkgs.visualstudio.com/1es-public/_packaging/npm-public/npm/registry/typescript/-/typescript-5.7.2.tgz}
+    resolution: {integrity: sha1-MWnPjEyKgozeU7qeyz0rHV3We+Y=}
     engines: {node: '>=14.17'}
     hasBin: true
 
   zod@4.1.11:
-    resolution: {integrity: sha1-Sqti92z9RebGFmUZujGy6gGfdfU=, tarball: https://ms-feed-25.pkgs.visualstudio.com/1es-public/_packaging/npm-public/npm/registry/zod/-/zod-4.1.11.tgz}
+    resolution: {integrity: sha1-Sqti92z9RebGFmUZujGy6gGfdfU=}
 
 snapshots:
 

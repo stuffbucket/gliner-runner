@@ -28,3 +28,9 @@ pickle-based artifacts. Inference must not trigger implicit downloads.
 
 Never include access tokens in model URLs, logs, exceptions, traces, or issue
 reports. Keep caches non-world-writable and run containers as a non-root user.
+
+Package registry credentials remain outside the repository. pnpm reads the
+user's `~/.npmrc`; Docker receives it only as a BuildKit secret. Python and
+future native toolchains use their own credential providers or owner-only
+configuration mounted as secrets. See the
+[registry policy](docs/registries.md).

@@ -1,5 +1,9 @@
 .git
 .github
+.npmrc
+.netrc
+.cargo/credentials
+.cargo/credentials.toml
 .mise.toml
 .pytest_cache
 .ruff_cache
@@ -14,3 +18,5 @@ docs
 models
 tests
 openapi
+pip.conf
+pip.ini
