@@ -16,6 +16,7 @@
     "target": "ES2022"
   },
   "include": [
-    "index.ts"
+    "index.ts",
+    "sidecar.ts"
   ]
 }

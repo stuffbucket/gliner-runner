@@ -142,6 +142,26 @@ async def test_adapter_uses_fastino_public_batch_classify(
     config = FakeClassifier.instance.call[2]
     assert isinstance(config, FakeConfig)
     assert config.kwargs["batch_size"] == 2
+    processor = FakeClassifier.instance.scorer.processor
+    assert callable(processor.collate_fn_inference)
+    restored_batch = processor.collate_fn_inference(
+        [("restored", {"compiled": True})]
+    )
+    assert restored_batch.attention_mask.sum(dim=1).tolist() == [12]
+
+    labels_only = await backend.infer_batch([request_factory(text="compatible")])
+
+    assert labels_only[0].usage.input_tokens == 14
+    assert FakeOracleSchema.received is not None
+    assert FakeOracleSchema.received["tasks"]["label"] == {
+        "labels": ["useful", "spam"],
+        "min_labels": 1,
+        "max_labels": 1,
+        "ordered": False,
+        "threshold": 0.5,
+        "activation": "auto",
+        "temperature": 1.0,
+    }
 
 
 def test_capabilities_adapt_to_available_mps_profiles(

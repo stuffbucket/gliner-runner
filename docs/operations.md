@@ -93,6 +93,22 @@ unapproved request is rejected. The download is revision-pinned and a complete
 SHA-256 file inventory is written before the snapshot is considered available.
 Job state is retained for the lifetime of the server process.
 
+## Electron sidecar lifecycle
+
+`@gliner-runner/client/sidecar` exposes a Node-only `GlinerSidecar` supervisor
+for Electron's main process. It uses `spawn` with `shell: false`, waits for the
+loopback `/healthz` endpoint, retains only a bounded tail of child diagnostics,
+reports early exit and startup timeout explicitly, and terminates the child
+with a configurable grace period. The inference transport remains the typed
+HTTP/OpenAPI protocol; Electron IPC should proxy application requests from a
+sandboxed renderer to the main process rather than exposing the local server or
+child-process APIs directly.
+
+The one-shot `gliner-runner infer` command accepts one JSON request from
+`--request` or stdin, emits exactly one JSON response on stdout, and exits.
+Operational logs and validation failures use stderr so they cannot corrupt a
+successful machine-readable response.
+
 A model update creates a new manifest digest alongside the old one. Install the
 new generation before changing the logical manifest entry and restarting the
 service. Do not mutate files beneath a loaded worker.

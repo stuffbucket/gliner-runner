@@ -186,11 +186,29 @@ const result = await client.infer({
 });
 ```
 
+Electron main processes can own the runner as a supervised HTTP sidecar without
+shell invocation:
+
+```ts
+import { GlinerSidecar } from "@gliner-runner/client/sidecar";
+
+const sidecar = new GlinerSidecar({ port: 8090, device: "mps" });
+await sidecar.start();
+const models = await sidecar.client.models();
+// On application shutdown:
+await sidecar.stop();
+```
+
+The supervisor waits for `/healthz`, rejects early child exit and startup
+timeouts with bounded diagnostics, and escalates shutdown only after a grace
+period. Use it from Electron's main process, not a sandboxed renderer.
+
 ## Validation
 
 ```sh
 mise run check        # lint, strict types, offline tests, client, docs
 mise run integration  # requires GLINER_RUNNER_INTEGRATION_REQUEST
+mise run test:mutation # slower mutation suite for critical Python paths
 mise run benchmark    # scheduler benchmark; no model download
 mise run benchmark:real  # requires GLINER_RUNNER_BENCHMARK_MODEL
 ```

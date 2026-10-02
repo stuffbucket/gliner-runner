@@ -4,6 +4,8 @@
 .cargo/credentials
 .cargo/credentials.toml
 .mypy_cache/
+.mutmut-cache/
+mutants/
 .pytest_cache/
 .ruff_cache/
 .venv/

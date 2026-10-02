@@ -61,6 +61,10 @@ test -f pyproject.toml || { echo 'Python package surface not present.' >&2; exit
 python -m pytest -m integration
 """
 
+[tasks."test:mutation"]
+description = "Mutation-test critical inference contracts and lifecycle code"
+run = "python -m mutmut run"
+
 [tasks.benchmark]
 description = "Run the offline scheduler benchmark"
 run = """
