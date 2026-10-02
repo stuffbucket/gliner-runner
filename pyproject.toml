@@ -35,6 +35,9 @@ dependencies = [
 pytorch = [
   "gliner2[local]==2.0.0",
 ]
+benchmark = [
+  "psutil>=6.1.0,<8",
+]
 dev = [
   "mypy>=1.14.0,<2",
   "pytest>=8.3.0,<9",

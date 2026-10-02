@@ -42,6 +42,43 @@ async def test_incompatible_schemas_are_never_batched(request_factory: object) -
     assert [len(batch) for batch in backend.batches] == [1, 1]
 
 
+async def test_interleaved_compatible_backlog_is_rebatched(request_factory: object) -> None:
+    backend = RecordingBackend()
+    worker = ModelWorker(backend, max_batch_size=8, batch_window_ms=10)
+    await worker.start()
+
+    await asyncio.gather(
+        worker.submit(request_factory(text="a1", labels=("a", "other"))),  # type: ignore[operator]
+        worker.submit(request_factory(text="b1", labels=("b", "other"))),  # type: ignore[operator]
+        worker.submit(request_factory(text="a2", labels=("a", "other"))),  # type: ignore[operator]
+        worker.submit(request_factory(text="b2", labels=("b", "other"))),  # type: ignore[operator]
+    )
+    await worker.close()
+
+    assert [len(batch) for batch in backend.batches] == [2, 2]
+
+
+async def test_close_drains_incompatible_accepted_work(request_factory: object) -> None:
+    backend = RecordingBackend()
+    worker = ModelWorker(backend, batch_window_ms=10)
+    await worker.start()
+    tasks = [
+        asyncio.create_task(
+            worker.submit(request_factory(text="a", labels=("a", "other")))  # type: ignore[operator]
+        ),
+        asyncio.create_task(
+            worker.submit(request_factory(text="b", labels=("b", "other")))  # type: ignore[operator]
+        ),
+    ]
+    await asyncio.sleep(0)
+
+    await worker.close()
+    responses = await asyncio.gather(*tasks)
+
+    assert len(responses) == 2
+    assert [len(batch) for batch in backend.batches] == [1, 1]
+
+
 async def test_cancellation_is_removed_before_inference(request_factory: object) -> None:
     backend = RecordingBackend()
     metrics = Metrics()

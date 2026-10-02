@@ -10,6 +10,7 @@
 __pycache__/
 *.egg-info/
 build/
+benchmark-results/local/
 dist/
 node_modules/
 packages/client/dist/

@@ -138,10 +138,12 @@ const result = await client.infer({
 mise run check        # lint, strict types, offline tests, client, docs
 mise run integration  # requires GLINER_RUNNER_INTEGRATION_REQUEST
 mise run benchmark    # scheduler benchmark; no model download
+mise run benchmark:real  # requires GLINER_RUNNER_BENCHMARK_MODEL
 ```
 
 See [architecture](docs/architecture.md), [protocol](docs/protocol.md),
 [operations](docs/operations.md), [package registry policy](docs/registries.md),
-[contributing](CONTRIBUTING.md), and [security](SECURITY.md).
+[real-model benchmarks](docs/benchmarks.md), [contributing](CONTRIBUTING.md),
+and [security](SECURITY.md).
 
 Apache-2.0. External models retain their own licenses.

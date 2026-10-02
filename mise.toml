@@ -58,8 +58,20 @@ python -m pytest -m integration
 """
 
 [tasks.benchmark]
-description = "Run opt-in benchmarks"
+description = "Run the offline scheduler benchmark"
 run = """
 test -f pyproject.toml || { echo 'Python package surface not present.' >&2; exit 1; }
 python benchmarks/benchmark_scheduler.py
+"""
+
+[tasks."benchmark:real"]
+description = "Run the opt-in pinned real-model characterization"
+run = """
+test -n "${GLINER_RUNNER_BENCHMARK_MODEL:-}" || {
+  echo 'Set GLINER_RUNNER_BENCHMARK_MODEL to a local pinned snapshot.' >&2
+  exit 1
+}
+python benchmarks/benchmark_real.py \
+  --model-path "$GLINER_RUNNER_BENCHMARK_MODEL" \
+  --output-dir "${GLINER_RUNNER_BENCHMARK_OUTPUT:-benchmark-results/local}"
 """

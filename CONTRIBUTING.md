@@ -53,9 +53,12 @@ reason when prerequisites are absent. Benchmarks are opt-in, record hardware,
 software versions, model digest, precision, workload, warm-up, and batch
 settings, and must not be used as correctness evidence.
 
-Never add model weights, credentials, private datasets, or generated benchmark
-results to commits. Keep pull requests small, explain user-visible behavior,
-and update the relevant documentation and OpenAPI contract.
+Never add model weights, credentials, private datasets, or local benchmark
+results to commits. A reproducible public characterization may be committed
+only when it contains no private paths, hostnames, usernames, inputs, or
+credentials and documents its model digest and methodology. Keep pull requests
+small, explain user-visible behavior, and update the relevant documentation
+and OpenAPI contract.
 
 Contributions are accepted under the Apache License 2.0 as described in
 `LICENSE`.

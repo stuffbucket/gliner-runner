@@ -133,13 +133,24 @@ class ModelWorker:
         key = _batch_key(first.request)
         if self._batch_window:
             await asyncio.sleep(self._batch_window)
+        backlog_size = len(self._backlog)
+        for _ in range(backlog_size):
+            item = self._backlog.popleft()
+            if item is _STOP:
+                self._backlog.append(item)
+                continue
+            assert isinstance(item, _Work)
+            if len(batch) < self._max_batch_size and _batch_key(item.request) == key:
+                batch.append(item)
+            else:
+                self._backlog.append(item)
         while len(batch) < self._max_batch_size:
             try:
                 item = self._queue.get_nowait()
             except asyncio.QueueEmpty:
                 break
             if item is _STOP:
-                self._backlog.appendleft(_STOP)
+                self._backlog.append(_STOP)
                 break
             assert isinstance(item, _Work)
             if _batch_key(item.request) == key:
