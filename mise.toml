@@ -1,5 +1,5 @@
 [tools]
-node = "22.12.0"
+node = "24.21.0"
 "npm:pnpm" = "9.15.1"
 python = "3.12.12"
 
@@ -20,7 +20,7 @@ pnpm install --frozen-lockfile
 
 [tasks.check]
 description = "Run the default offline validation suite"
-depends = ["check:python", "check:client", "check:openapi", "check:registry", "check:docs"]
+depends = ["check:python", "check:client", "check:openapi", "check:registry", "check:tools", "check:docs"]
 
 [tasks."check:python"]
 description = "Lint, type-check, and unit-test the Python implementation when present"
@@ -45,6 +45,10 @@ run = "python scripts/export_openapi.py --check"
 [tasks."check:registry"]
 description = "Reject credential leaks and unsafe registry configuration"
 run = "python scripts/check_registry_policy.py"
+
+[tasks."check:tools"]
+description = "Verify pinned Node and pnpm versions remain aligned"
+run = "python scripts/check_tool_versions.py"
 
 [tasks."check:docs"]
 description = "Check tracked text files for whitespace errors"

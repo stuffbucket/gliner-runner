@@ -24,7 +24,9 @@ See [backend policy](docs/backends.md).
 ## Install and develop
 
 The supported development entry point uses
-[mise](https://mise.jdx.dev/) and [pnpm](https://pnpm.io/):
+[mise](https://mise.jdx.dev/) and [pnpm](https://pnpm.io/). Node 24 is the
+supported JavaScript runtime; `.nvmrc` selects the major release while
+`mise.toml` pins the exact toolchain:
 
 ```sh
 mise install

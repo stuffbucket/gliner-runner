@@ -5,16 +5,18 @@ Thank you for improving GLiNER Runner.
 ## Development contract
 
 1. Install the versions in `mise.toml` with `mise install`.
-2. Enable Corepack and run `mise run setup`.
+2. Run `mise run setup`.
 3. Make a focused change.
 4. Run `mise run check`.
 5. Opt into `mise run integration` only when the required external artifacts
    and hardware are available. Run `mise run benchmark` separately.
 
-pnpm uses the contributor's canonical `~/.npmrc` directly. Do not add a
-repository `.npmrc`, token-bearing URL, or generated ecosystem credentials.
-Follow the [package registry policy](docs/registries.md) for Python and future
-native toolchains.
+mise installs the exact pnpm version declared by both `mise.toml` and the root
+`packageManager` field. pnpm uses the contributor's canonical `~/.npmrc`
+directly. Do not enable a second package-manager shim, add a repository
+`.npmrc`, use a token-bearing URL, or generate ecosystem credentials. Follow
+the [package registry policy](docs/registries.md) for Python and future native
+toolchains.
 
 Python changes must pass Ruff, strict mypy, and pytest through
 `mise run check:python`. TypeScript changes use the `check:client` workspace
