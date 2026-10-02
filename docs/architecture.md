@@ -21,7 +21,7 @@ it does not duplicate tokenization, decoding, or model logic.
 
 ## Control-plane language decision
 
-Rust, Go, and Zod are valid implementation choices. The initial release keeps
+Rust, Go, Zig, and Zod are valid implementation choices. The initial release keeps
 HTTP, scheduling, and model ownership in one Python process because that is the
 lowest-complexity and highest-reliability design for the current workload:
 
@@ -41,6 +41,15 @@ versioned IPC protocol. Rust is preferred for a single-binary, low-overhead
 daemon; Go is preferred when simpler operations and cross-compilation outweigh
 resident-memory and FFI concerns. Neither language should own model
 preprocessing or decoding unless parity with the Python oracle is demonstrated.
+
+The same threshold applies to Zig. A Zig HTTP/control plane could reduce
+startup size or queue-management overhead, but it would still call the
+PyTorch/Metal/CUDA runtime that owns model deserialization, device transfer,
+and tensor kernels. The measured workload is dominated by those operations, so
+rewriting the current control plane in Zig is not expected to materially
+improve model load or steady-state throughput. Zig would need a maintained
+LibTorch/C++ bridge or a separately validated native backend; either adds
+cross-platform ABI and parity risk without removing the model runtime.
 
 The checked-in [`openapi.json`](../openapi/openapi.json) is generated from the
 Python server and verified in CI. This prevents a future daemon or client

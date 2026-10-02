@@ -13,6 +13,7 @@ from gliner_runner.contracts import (
     InferenceRequest,
     JsonValue,
     Precision,
+    PrecisionProfile,
 )
 from gliner_runner.errors import BackendUnavailableError, UnsupportedCapabilityError
 
@@ -28,24 +29,14 @@ class PyTorchBackend:
 
     @property
     def capabilities(self) -> BackendCapabilities:
-        from gliner_runner.contracts import PrecisionProfile
-
-        precisions = {Precision.FP32, Precision.FP16, Precision.BF16}
+        profiles = _available_precision_profiles()
         return BackendCapabilities(
             backend=BackendName.PYTORCH,
             operations=frozenset({InferenceOperation.CLASSIFY}),
-            precisions=frozenset(precisions),
-            devices=frozenset({"cpu", "cuda", "mps"}),
+            precisions=frozenset(profile.precision for profile in profiles),
+            devices=frozenset(profile.device for profile in profiles),
             dynamic_batching=True,
-            precision_profiles=frozenset(
-                {
-                    PrecisionProfile(device="cpu", precision=Precision.FP32),
-                    PrecisionProfile(device="cuda", precision=Precision.FP32),
-                    PrecisionProfile(device="cuda", precision=Precision.FP16),
-                    PrecisionProfile(device="cuda", precision=Precision.BF16),
-                    PrecisionProfile(device="mps", precision=Precision.FP16),
-                }
-            ),
+            precision_profiles=profiles,
         )
 
     async def load(self) -> None:
@@ -133,6 +124,29 @@ def _compatible(left: InferenceRequest, right: InferenceRequest) -> bool:
         and left.schema_ == right.schema_
         and left.options == right.options
     )
+
+
+def _available_precision_profiles() -> frozenset[PrecisionProfile]:
+    profiles = {PrecisionProfile(device="cpu", precision=Precision.FP32)}
+    try:
+        torch = importlib.import_module("torch")
+    except ImportError:
+        return frozenset(profiles)
+
+    cuda = getattr(torch, "cuda", None)
+    if cuda is not None and cuda.is_available():
+        profiles.add(PrecisionProfile(device="cuda", precision=Precision.FP32))
+        if cuda.get_device_capability() >= (5, 3):
+            profiles.add(PrecisionProfile(device="cuda", precision=Precision.FP16))
+        if cuda.is_bf16_supported():
+            profiles.add(PrecisionProfile(device="cuda", precision=Precision.BF16))
+
+    backends = getattr(torch, "backends", None)
+    mps = getattr(backends, "mps", None)
+    if mps is not None and mps.is_available():
+        profiles.add(PrecisionProfile(device="mps", precision=Precision.FP32))
+        profiles.add(PrecisionProfile(device="mps", precision=Precision.FP16))
+    return frozenset(profiles)
 
 
 def _json_value(value: object) -> JsonValue:

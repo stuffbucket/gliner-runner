@@ -87,15 +87,15 @@ change; this repository does not publish guessed checksums.
 gliner-runner serve --device cpu
 ```
 
-The validated Apple Silicon profile is explicit MPS/FP16:
+The validated Apple Silicon profiles are explicit MPS/FP16 and MPS/FP32:
 
 ```sh
 gliner-runner serve --device mps
 ```
 
-Requests sent to that process must specify `"precision": "fp16"`. MPS/FP32 is
-not advertised, and unsupported device/precision pairs fail without falling
-back to CPU.
+Requests sent to that process must specify `"precision": "fp16"` or
+`"precision": "fp32"`. Capabilities are host-aware: unavailable accelerators
+and unsupported architecture/precision pairs fail without falling back to CPU.
 
 The default origin is `http://127.0.0.1:8090`; OpenAPI is at `/openapi.json`.
 

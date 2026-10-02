@@ -7,7 +7,7 @@ import pytest
 from conftest import RecordingBackend
 from gliner_runner.backends.pytorch import PyTorchBackend
 from gliner_runner.backends.registry import BackendRegistry
-from gliner_runner.contracts import BackendName, Precision
+from gliner_runner.contracts import BackendName, Precision, PrecisionProfile
 from gliner_runner.errors import BackendUnavailableError, UnsupportedCapabilityError
 
 
@@ -40,21 +40,29 @@ def test_registry_rejects_unadvertised_precision(request_factory: object) -> Non
         registry.create(request, "cpu")
 
 
-def test_registry_negotiates_only_validated_mps_profile(request_factory: Any) -> None:
+def test_registry_negotiates_available_mps_profiles(
+    monkeypatch: Any,
+    request_factory: Any,
+) -> None:
+    monkeypatch.setattr(
+        "gliner_runner.backends.pytorch._available_precision_profiles",
+        lambda: frozenset(
+            {
+                PrecisionProfile(device="cpu", precision=Precision.FP32),
+                PrecisionProfile(device="mps", precision=Precision.FP16),
+                PrecisionProfile(device="mps", precision=Precision.FP32),
+            }
+        ),
+    )
     registry = BackendRegistry()
     registry.register(
         BackendName.PYTORCH,
         lambda model, precision, device: PyTorchBackend(model, precision, device),
     )
 
-    backend = registry.create(
-        request_factory(precision=Precision.FP16),
-        "mps",
-    )
+    backend = registry.create(request_factory(precision=Precision.FP16), "mps")
 
-    assert backend.capabilities.supports(
-        request_factory(precision=Precision.FP16),
-        "mps",
-    )
+    assert backend.capabilities.supports(request_factory(precision=Precision.FP16), "mps")
+    assert backend.capabilities.supports(request_factory(precision=Precision.FP32), "mps")
     with pytest.raises(UnsupportedCapabilityError, match="no fallback was attempted"):
-        registry.create(request_factory(precision=Precision.FP32), "mps")
+        registry.create(request_factory(precision=Precision.BF16), "mps")

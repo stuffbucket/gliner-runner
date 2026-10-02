@@ -4,8 +4,8 @@ import sys
 from types import ModuleType
 from typing import Any
 
-from gliner_runner.backends.pytorch import PyTorchBackend
-from gliner_runner.contracts import Precision
+from gliner_runner.backends.pytorch import PyTorchBackend, _available_precision_profiles
+from gliner_runner.contracts import Precision, PrecisionProfile
 
 
 class FakeOracleSchema:
@@ -90,8 +90,62 @@ async def test_adapter_uses_fastino_public_batch_classify(
     assert config.kwargs["batch_size"] == 2
 
 
-def test_capabilities_advertise_only_validated_mps_fp16(request_factory: Any) -> None:
+def test_capabilities_adapt_to_available_mps_profiles(
+    monkeypatch: Any,
+    request_factory: Any,
+) -> None:
+    monkeypatch.setattr(
+        "gliner_runner.backends.pytorch._available_precision_profiles",
+        lambda: frozenset(
+            {
+                PrecisionProfile(device="cpu", precision=Precision.FP32),
+                PrecisionProfile(device="mps", precision=Precision.FP16),
+                PrecisionProfile(device="mps", precision=Precision.FP32),
+            }
+        ),
+    )
     capabilities = PyTorchBackend("/models/pinned", Precision.FP16, "mps").capabilities
 
     assert capabilities.supports(request_factory(precision=Precision.FP16), "mps")
-    assert not capabilities.supports(request_factory(precision=Precision.FP32), "mps")
+    assert capabilities.supports(request_factory(precision=Precision.FP32), "mps")
+    assert not capabilities.supports(request_factory(precision=Precision.BF16), "mps")
+
+
+def test_available_profiles_follow_cuda_architecture(monkeypatch: Any) -> None:
+    torch = ModuleType("torch")
+
+    class FakeCuda:
+        @staticmethod
+        def is_available() -> bool:
+            return True
+
+        @staticmethod
+        def get_device_capability() -> tuple[int, int]:
+            return (8, 0)
+
+        @staticmethod
+        def is_bf16_supported() -> bool:
+            return True
+
+    class FakeMps:
+        @staticmethod
+        def is_available() -> bool:
+            return False
+
+    torch.cuda = FakeCuda()  # type: ignore[attr-defined]
+    torch.backends = type("FakeBackends", (), {"mps": FakeMps()})()  # type: ignore[attr-defined]
+    monkeypatch.setitem(sys.modules, "torch", torch)
+
+    profiles = _available_precision_profiles()
+
+    assert PrecisionProfile(device="cuda", precision=Precision.FP32) in profiles
+    assert PrecisionProfile(device="cuda", precision=Precision.FP16) in profiles
+    assert PrecisionProfile(device="cuda", precision=Precision.BF16) in profiles
+
+    torch.cuda.get_device_capability = lambda: (5, 2)  # type: ignore[attr-defined,method-assign]
+    torch.cuda.is_bf16_supported = lambda: False  # type: ignore[attr-defined,method-assign]
+    limited_profiles = _available_precision_profiles()
+
+    assert PrecisionProfile(device="cuda", precision=Precision.FP32) in limited_profiles
+    assert PrecisionProfile(device="cuda", precision=Precision.FP16) not in limited_profiles
+    assert PrecisionProfile(device="cuda", precision=Precision.BF16) not in limited_profiles

@@ -85,3 +85,18 @@ if [ -n "${GLINER_RUNNER_BENCHMARK_BASELINE:-}" ]; then
 fi
 python benchmarks/benchmark_real.py "$@"
 """
+
+[tasks."benchmark:card"]
+description = "Run every example in the pinned upstream model card"
+run = """
+test -n "${GLINER_RUNNER_BENCHMARK_MODEL:-}" || {
+  echo 'Set GLINER_RUNNER_BENCHMARK_MODEL to a local pinned snapshot.' >&2
+  exit 1
+}
+python benchmarks/characterize_model_card.py \
+  --model-path "$GLINER_RUNNER_BENCHMARK_MODEL" \
+  --output-dir "${GLINER_RUNNER_BENCHMARK_OUTPUT:-benchmark-results/local-card}" \
+  --profile cpu/fp32 \
+  --profile mps/fp16 \
+  --profile mps/fp32
+"""

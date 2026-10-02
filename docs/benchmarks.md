@@ -65,3 +65,17 @@ The published Apple M5 Max CPU/FP32 characterization is in
 [`benchmark-results/2026-10-02-apple-m5-max-cpu-fp32/`](../benchmark-results/2026-10-02-apple-m5-max-cpu-fp32/).
 The corresponding MPS/FP16 characterization and CPU comparison are in
 [`benchmark-results/2026-10-02-apple-m5-max-mps-fp16/`](../benchmark-results/2026-10-02-apple-m5-max-mps-fp16/).
+The MPS/FP32 characterization is in
+[`benchmark-results/2026-10-02-apple-m5-max-mps-fp32/`](../benchmark-results/2026-10-02-apple-m5-max-mps-fp32/).
+All 21 executable examples from the pinned upstream model card are compared
+across CPU/FP32, MPS/FP16, and MPS/FP32 in
+[`benchmark-results/2026-10-02-apple-m5-max-model-card/`](../benchmark-results/2026-10-02-apple-m5-max-model-card/).
+
+On this one Apple M5 Max, MPS/FP16 reached the highest observed throughput
+(212.26 requests/s) and used 2.09 GiB peak MPS driver allocation. MPS/FP32
+reached 85.18 requests/s, used 4.07 GiB peak MPS driver allocation, and reduced
+the maximum four-case score difference versus CPU/FP32 from 0.00184 to
+0.00000298. Cold first-request time was not improved by either MPS profile.
+These measurements support FP16 as the default performance profile and FP32
+when closer score parity matters; they are not recommendations for other
+machines or workloads.

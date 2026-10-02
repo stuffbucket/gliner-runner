@@ -29,6 +29,7 @@ SUPPORTED_PROFILES = {
     ("cuda", "fp16"),
     ("cuda", "bf16"),
     ("mps", "fp16"),
+    ("mps", "fp32"),
 }
 SCHEMA_LABELS = ("billing", "technical_support", "account_access", "shipping")
 PARITY_CASES = (
@@ -1101,27 +1102,35 @@ def generate_report(result: dict[str, Any], rows: list[dict[str, Any]]) -> str:
         )
         baseline_profile = comparison["baseline_profile"]
         candidate_profile = comparison["candidate_profile"]
+        baseline_name = profile_name(
+            baseline_profile["device"],
+            baseline_profile["precision"],
+        )
+        candidate_name = profile_name(
+            candidate_profile["device"],
+            candidate_profile["precision"],
+        )
         cold_comparison = comparison["cold"]
         memory_comparison = comparison["memory"]
         comparison_section = f"""
-## CPU versus MPS
+## {baseline_name} versus {candidate_name}
 
-Baseline: {profile_name(baseline_profile["device"], baseline_profile["precision"])}.
-Candidate: {profile_name(candidate_profile["device"], candidate_profile["precision"])}.
+Baseline: {baseline_name}.
+Candidate: {candidate_name}.
 Both measurements use the same model content digest and machine.
 
-- Backend load: {cold_comparison["baseline_backend_load_ms"]:.1f} ms CPU versus
-  {cold_comparison["candidate_backend_load_ms"]:.1f} ms MPS
-  ({cold_comparison["backend_load_ratio"]:.2f}x CPU/MPS ratio).
-- Cold first HTTP request: {cold_comparison["baseline_first_http_ms"]:.1f} ms CPU
-  versus {cold_comparison["candidate_first_http_ms"]:.1f} ms MPS
-  ({cold_comparison["first_http_ratio"]:.2f}x CPU/MPS ratio).
-- Steady RSS: {gibibytes(memory_comparison["baseline_steady_rss_bytes"])} CPU
-  versus {gibibytes(memory_comparison["candidate_steady_rss_bytes"])} MPS.
-- Peak process RSS: {gibibytes(memory_comparison["baseline_peak_rss_bytes"])} CPU
-  versus {gibibytes(memory_comparison["candidate_peak_rss_bytes"])} MPS.
+- Backend load: {cold_comparison["baseline_backend_load_ms"]:.1f} ms baseline
+  versus {cold_comparison["candidate_backend_load_ms"]:.1f} ms candidate
+  ({cold_comparison["backend_load_ratio"]:.2f}x baseline/candidate ratio).
+- Cold first HTTP request: {cold_comparison["baseline_first_http_ms"]:.1f} ms
+  baseline versus {cold_comparison["candidate_first_http_ms"]:.1f} ms candidate
+  ({cold_comparison["first_http_ratio"]:.2f}x baseline/candidate ratio).
+- Steady RSS: {gibibytes(memory_comparison["baseline_steady_rss_bytes"])} baseline
+  versus {gibibytes(memory_comparison["candidate_steady_rss_bytes"])} candidate.
+- Peak process RSS: {gibibytes(memory_comparison["baseline_peak_rss_bytes"])} baseline
+  versus {gibibytes(memory_comparison["candidate_peak_rss_bytes"])} candidate.
 
-| Tokens | Batch | CPU p50 ms | MPS p50 ms | Latency speedup | Throughput ratio |
+| Tokens | Batch | Baseline p50 ms | Candidate p50 ms | Latency speedup | Throughput ratio |
 | ---: | ---: | ---: | ---: | ---: | ---: |
 {comparison_rows}
 """

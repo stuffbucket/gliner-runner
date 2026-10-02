@@ -37,10 +37,13 @@ CLI options are the deployment interface for `serve`; environment loading is
 used by the importable ASGI app. Unsupported values fail at startup or
 capability negotiation.
 
-Supported PyTorch profiles are CPU/FP32, CUDA/FP32, CUDA/FP16, CUDA/BF16, and
-the parity-gated Apple Silicon MPS/FP16 profile. Device selection is
-process-wide and explicit. An unsupported precision for the selected device is
-rejected; the runtime never falls back to CPU or changes precision.
+Supported PyTorch profiles are discovered from the host. CPU/FP32 is always
+eligible. Available Apple Silicon exposes parity-gated MPS/FP16 and MPS/FP32.
+Available NVIDIA devices expose CUDA/FP32, CUDA/FP16 when their compute
+capability is at least 5.3, and CUDA/BF16 only when PyTorch reports BF16
+support. Device selection is process-wide and explicit. An unsupported
+precision for the selected device is rejected; the runtime never falls back to
+CPU or changes precision.
 
 ## Health and lifecycle
 
@@ -48,6 +51,14 @@ rejected; the runtime never falls back to CPU or changes precision.
 first request after all files are re-verified. On shutdown, admission stops,
 queued work drains, and model ownership is released. Orchestrators should use
 their own termination grace period.
+
+There is no idle eviction or model TTL: after the first successful request, a
+worker and its model remain warm until the server process shuts down. Keep the
+HTTP service alive and send a representative inference during deployment
+warm-up when cold-load latency is unacceptable. The one-shot `infer` CLI closes
+its runtime after every invocation and is not appropriate for repeated
+latency-sensitive calls. A future idle TTL would be an eviction policy, not a
+warmth guarantee, and must preserve one-owner and in-flight request semantics.
 
 A model update creates a new manifest digest alongside the old one. Install the
 new generation before changing the logical manifest entry and restarting the
