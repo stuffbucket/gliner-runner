@@ -16,6 +16,12 @@ Python changes must pass Ruff, strict mypy, and pytest through
 script. Keep these shared task names stable because CI and contributors use
 them as the cross-surface contract.
 
+Rust and Go are permitted where benchmarks or packaging requirements justify
+another runtime. New control-plane implementations must consume the checked-in
+OpenAPI contract, preserve scheduling and error semantics, and include
+cross-platform distribution tests. Do not move preprocessing or decoding out
+of Python merely to reduce the language count: oracle parity is the gate.
+
 ## Backend changes
 
 Python remains the inference authority. A new backend or precision must:

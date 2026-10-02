@@ -20,7 +20,7 @@ pnpm install --frozen-lockfile
 
 [tasks.check]
 description = "Run the default offline validation suite"
-depends = ["check:python", "check:client", "check:docs"]
+depends = ["check:python", "check:client", "check:openapi", "check:docs"]
 
 [tasks."check:python"]
 description = "Lint, type-check, and unit-test the Python implementation when present"
@@ -35,8 +35,12 @@ fi
 """
 
 [tasks."check:client"]
-description = "Type-check the TypeScript client"
+description = "Build and test the TypeScript client"
 run = "pnpm run check"
+
+[tasks."check:openapi"]
+description = "Verify the checked-in language-neutral API contract"
+run = "python scripts/export_openapi.py --check"
 
 [tasks."check:docs"]
 description = "Check tracked text files for whitespace errors"

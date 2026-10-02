@@ -1,8 +1,10 @@
 # Local HTTP protocol
 
-The generated OpenAPI document at `/openapi.json` is authoritative. The server
-uses JSON over HTTP, rejects unknown request fields, and binds to
-`127.0.0.1:8090` by default.
+The generated OpenAPI document at `/openapi.json` is authoritative. The same
+document is checked in at [`openapi/openapi.json`](../openapi/openapi.json) for
+client generation and non-Python implementations. CI regenerates it from the
+server and rejects drift. The server uses JSON over HTTP, rejects unknown
+request fields, and binds to `127.0.0.1:8090` by default.
 
 ## Endpoints
 
@@ -109,3 +111,6 @@ where present.
 Additive optional fields are allowed within `/v1`. Removing or reinterpreting
 fields requires a new version. Clients should use `/v1/capabilities`; enum
 membership does not imply that a backend is installed.
+
+The public contract deliberately avoids Python-specific serialization. A
+future Rust or Go daemon must serve the same document and error semantics.

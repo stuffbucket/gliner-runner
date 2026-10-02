@@ -9,6 +9,10 @@ importers:
   .: {}
 
   packages/client:
+    dependencies:
+      zod:
+        specifier: 4.1.11
+        version: 4.1.11
     devDependencies:
       typescript:
         specifier: 5.7.2
@@ -21,6 +25,11 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
+  zod@4.1.11:
+    resolution: {integrity: sha1-Sqti92z9RebGFmUZujGy6gGfdfU=, tarball: https://ms-feed-25.pkgs.visualstudio.com/1es-public/_packaging/npm-public/npm/registry/zod/-/zod-4.1.11.tgz}
+
 snapshots:
 
   typescript@5.7.2: {}
+
+  zod@4.1.11: {}

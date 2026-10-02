@@ -12,7 +12,7 @@ repositories when supplied through operator-owned, revision-pinned manifests.
 - one loaded model owner per `(backend, model digest, precision, device)`;
 - bounded queues, cancellation-aware admission, compatible-schema dynamic
   micro-batching, and explicit HTTP 429 backpressure;
-- strict Pydantic request/result/schema contracts and generated OpenAPI;
+- strict Pydantic request/result/schema contracts and reproducible OpenAPI;
 - external models with exact revisions, sizes, SHA-256 checksums, licenses,
   and content-addressed storage;
 - offline unit/parity-fixture tests; real-model integration is opt-in.
@@ -111,8 +111,10 @@ precision or operation fails; it is never rewritten.
 
 ## TypeScript client
 
-[`@gliner-runner/client`](packages/client) is a dependency-free transport
-client for Node/Electron. Python remains the only inference implementation.
+[`@gliner-runner/client`](packages/client) is a Zod-validated transport client
+for Node/Electron. It validates requests before transport and successful
+responses before they cross an application boundary. Python remains the model
+execution implementation, not a requirement for application integration.
 
 ```ts
 import { GlinerClient } from "@gliner-runner/client";

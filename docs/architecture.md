@@ -10,11 +10,41 @@ The system has four deliberate boundaries:
    It does not silently substitute another combination.
 3. **Worker supervisor** maintains queues and one inference worker for each
    loaded `(accelerator, model, backend, precision)` ownership key.
-4. **Python backend** owns preprocessing, tensor execution, decoding, and
-   backend capability reporting. PyTorch is the semantic reference.
+4. **Backend adapter** owns preprocessing, tensor execution, decoding, and
+   backend capability reporting. The initial adapters run in Python because
+   PyTorch and future native MLX execution are Python-native.
 
-The TypeScript package is only a transport client. It does not duplicate
-tokenization, decoding, or model logic.
+The boundaries are language-neutral: HTTP/OpenAPI is the process boundary,
+JSON-compatible Pydantic models are the contract authority, and model
+manifests are TOML. The TypeScript package is a Zod-validated transport client;
+it does not duplicate tokenization, decoding, or model logic.
+
+## Control-plane language decision
+
+Rust, Go, and Zod are valid implementation choices. The initial release keeps
+HTTP, scheduling, and model ownership in one Python process because that is the
+lowest-complexity and highest-reliability design for the current workload:
+
+- device inference dominates HTTP and queue bookkeeping costs;
+- in-process batching avoids copying text and results across IPC twice;
+- cancellation and model lifetime share one ownership domain;
+- wheels plus Docker cover the current distribution targets;
+- one runtime avoids shipping and supervising a native daemon alongside the
+  required Python/PyTorch environment on Windows, macOS, and Linux.
+
+A Rust or Go daemon becomes materially better when measurements show control
+plane saturation, hard multi-process resource isolation is required, or a
+single native executable must supervise several independently crashing model
+workers. That migration does not change callers: a daemon can implement the
+checked-in OpenAPI contract and supervise Python backend workers over a private,
+versioned IPC protocol. Rust is preferred for a single-binary, low-overhead
+daemon; Go is preferred when simpler operations and cross-compilation outweigh
+resident-memory and FFI concerns. Neither language should own model
+preprocessing or decoding unless parity with the Python oracle is demonstrated.
+
+The checked-in [`openapi.json`](../openapi/openapi.json) is generated from the
+Python server and verified in CI. This prevents a future daemon or client
+generator from defining a second public contract.
 
 ## Worker and batching model
 
