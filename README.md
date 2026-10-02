@@ -28,7 +28,6 @@ The supported development entry point uses
 
 ```sh
 mise install
-corepack enable
 mise run setup
 mise run check
 ```
