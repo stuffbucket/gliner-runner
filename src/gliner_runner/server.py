@@ -8,7 +8,6 @@ from uuid import UUID
 from fastapi import FastAPI, HTTPException, Request, Response, status
 from pydantic import BaseModel, ConfigDict, Field
 
-from gliner_runner import __version__
 from gliner_runner.contracts import (
     BackendCapabilities,
     BackendName,
@@ -40,6 +39,8 @@ from gliner_runner.model_inventory import (
 )
 from gliner_runner.runtime import Runtime, RuntimeConfig
 from gliner_runner.settings import Settings
+
+API_VERSION = "1.0.0"
 
 
 class BatchRequest(BaseModel):
@@ -84,7 +85,7 @@ def create_app(
     app = FastAPI(
         title="GLiNER Runner",
         summary="Local, explicitly configured GLiNER inference",
-        version=__version__,
+        version=API_VERSION,
         lifespan=lifespan,
     )
 

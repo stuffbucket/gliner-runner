@@ -18,11 +18,6 @@
           "jsonpath": "$.version"
         },
         {
-          "type": "json",
-          "path": "openapi/openapi.json",
-          "jsonpath": "$.info.version"
-        },
-        {
           "type": "generic",
           "path": "src/gliner_runner/__init__.py"
         },
