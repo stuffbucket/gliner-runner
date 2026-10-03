@@ -161,7 +161,12 @@ async def test_runtime_unloads_model_when_observed_memory_exceeds_limit(
     registry = BackendRegistry()
     registry.register(BackendName.PYTORCH, lambda *_args: backend)
     limit = 512 * 1024**2
-    monkeypatch.setattr(runtime_module, "_memory_pressure_bytes", lambda _device: limit + 1)
+
+    def memory_pressure(device: str) -> int:
+        assert device == "cpu"
+        return limit + 1
+
+    monkeypatch.setattr(runtime_module, "_memory_pressure_bytes", memory_pressure)
     runtime = Runtime(
         RuntimeConfig(batch_window_ms=0, memory_limit_bytes=limit),
         registry=registry,
@@ -188,7 +193,12 @@ async def test_memory_limit_is_inclusive_at_exact_boundary(
     registry = BackendRegistry()
     registry.register(BackendName.PYTORCH, lambda *_args: backend)
     limit = 512 * 1024**2
-    monkeypatch.setattr(runtime_module, "_memory_pressure_bytes", lambda _device: limit)
+
+    def memory_pressure(device: str) -> int:
+        assert device == "cpu"
+        return limit
+
+    monkeypatch.setattr(runtime_module, "_memory_pressure_bytes", memory_pressure)
     runtime = Runtime(
         RuntimeConfig(batch_window_ms=0, memory_limit_bytes=limit),
         registry=registry,
