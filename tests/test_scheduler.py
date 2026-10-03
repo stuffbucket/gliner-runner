@@ -6,7 +6,7 @@ from collections.abc import Sequence
 
 import pytest
 
-from conftest import RecordingBackend
+from conftest import RecordingBackend, bounded
 from gliner_runner.contracts import (
     BackendResult,
     InferenceOptions,
@@ -48,11 +48,13 @@ def test_scheduler_defaults_and_minimum_batch_size() -> None:
 async def test_compatible_requests_are_micro_batched(request_factory: object) -> None:
     backend = RecordingBackend()
     worker = ModelWorker(backend, max_batch_size=8, batch_window_ms=10)
-    await worker.start()
+    await bounded(worker.start())
     requests = [request_factory(text=f"text {index}") for index in range(3)]  # type: ignore[operator]
 
-    responses = await asyncio.gather(*(worker.submit(request) for request in requests))
-    await worker.close()
+    responses = await bounded(
+        asyncio.gather(*(worker.submit(request) for request in requests))
+    )
+    await bounded(worker.close())
 
     assert [len(batch) for batch in backend.batches] == [3]
     assert [response.request_id for response in responses] == [
@@ -68,13 +70,15 @@ async def test_compatible_requests_are_micro_batched(request_factory: object) ->
 async def test_incompatible_schemas_are_never_batched(request_factory: object) -> None:
     backend = RecordingBackend()
     worker = ModelWorker(backend, max_batch_size=8, batch_window_ms=10)
-    await worker.start()
+    await bounded(worker.start())
 
-    await asyncio.gather(
-        worker.submit(request_factory(labels=("positive", "negative"))),  # type: ignore[operator]
-        worker.submit(request_factory(labels=("urgent", "routine"))),  # type: ignore[operator]
+    await bounded(
+        asyncio.gather(
+            worker.submit(request_factory(labels=("positive", "negative"))),  # type: ignore[operator]
+            worker.submit(request_factory(labels=("urgent", "routine"))),  # type: ignore[operator]
+        )
     )
-    await worker.close()
+    await bounded(worker.close())
 
     assert [len(batch) for batch in backend.batches] == [1, 1]
 
@@ -82,14 +86,14 @@ async def test_incompatible_schemas_are_never_batched(request_factory: object) -
 async def test_incompatible_options_are_never_batched(request_factory: object) -> None:
     backend = RecordingBackend()
     worker = ModelWorker(backend, max_batch_size=8, batch_window_ms=10)
-    await worker.start()
+    await bounded(worker.start())
     first = request_factory(text="first")  # type: ignore[operator]
     second = request_factory(text="second").model_copy(  # type: ignore[operator]
         update={"options": InferenceOptions(threshold=0.9)}
     )
 
-    await asyncio.gather(worker.submit(first), worker.submit(second))
-    await worker.close()
+    await bounded(asyncio.gather(worker.submit(first), worker.submit(second)))
+    await bounded(worker.close())
 
     assert [len(batch) for batch in backend.batches] == [1, 1]
 
@@ -97,23 +101,25 @@ async def test_incompatible_options_are_never_batched(request_factory: object) -
 async def test_equivalent_mapping_order_is_batched(request_factory: object) -> None:
     backend = RecordingBackend()
     worker = ModelWorker(backend, max_batch_size=8, batch_window_ms=10)
-    await worker.start()
+    await bounded(worker.start())
 
-    await asyncio.gather(
-        worker.submit(
-            request_factory(  # type: ignore[operator]
-                text="first",
-                label_descriptions={"useful": "keep", "spam": "discard"},
-            )
-        ),
-        worker.submit(
-            request_factory(  # type: ignore[operator]
-                text="second",
-                label_descriptions={"spam": "discard", "useful": "keep"},
-            )
-        ),
+    await bounded(
+        asyncio.gather(
+            worker.submit(
+                request_factory(  # type: ignore[operator]
+                    text="first",
+                    label_descriptions={"useful": "keep", "spam": "discard"},
+                )
+            ),
+            worker.submit(
+                request_factory(  # type: ignore[operator]
+                    text="second",
+                    label_descriptions={"spam": "discard", "useful": "keep"},
+                )
+            ),
+        )
     )
-    await worker.close()
+    await bounded(worker.close())
 
     assert [len(batch) for batch in backend.batches] == [2]
 
@@ -121,15 +127,17 @@ async def test_equivalent_mapping_order_is_batched(request_factory: object) -> N
 async def test_interleaved_compatible_backlog_is_rebatched(request_factory: object) -> None:
     backend = RecordingBackend()
     worker = ModelWorker(backend, max_batch_size=8, batch_window_ms=10)
-    await worker.start()
+    await bounded(worker.start())
 
-    await asyncio.gather(
-        worker.submit(request_factory(text="a1", labels=("a", "other"))),  # type: ignore[operator]
-        worker.submit(request_factory(text="b1", labels=("b", "other"))),  # type: ignore[operator]
-        worker.submit(request_factory(text="a2", labels=("a", "other"))),  # type: ignore[operator]
-        worker.submit(request_factory(text="b2", labels=("b", "other"))),  # type: ignore[operator]
+    await bounded(
+        asyncio.gather(
+            worker.submit(request_factory(text="a1", labels=("a", "other"))),  # type: ignore[operator]
+            worker.submit(request_factory(text="b1", labels=("b", "other"))),  # type: ignore[operator]
+            worker.submit(request_factory(text="a2", labels=("a", "other"))),  # type: ignore[operator]
+            worker.submit(request_factory(text="b2", labels=("b", "other"))),  # type: ignore[operator]
+        )
     )
-    await worker.close()
+    await bounded(worker.close())
 
     assert [len(batch) for batch in backend.batches] == [2, 2]
 
@@ -137,7 +145,7 @@ async def test_interleaved_compatible_backlog_is_rebatched(request_factory: obje
 async def test_close_drains_incompatible_accepted_work(request_factory: object) -> None:
     backend = RecordingBackend()
     worker = ModelWorker(backend, batch_window_ms=10)
-    await worker.start()
+    await bounded(worker.start())
     tasks = [
         asyncio.create_task(
             worker.submit(request_factory(text="a", labels=("a", "other")))  # type: ignore[operator]
@@ -148,8 +156,8 @@ async def test_close_drains_incompatible_accepted_work(request_factory: object) 
     ]
     await asyncio.sleep(0)
 
-    await worker.close()
-    responses = await asyncio.gather(*tasks)
+    await bounded(worker.close())
+    responses = await bounded(asyncio.gather(*tasks))
 
     assert len(responses) == 2
     assert [len(batch) for batch in backend.batches] == [1, 1]
@@ -159,14 +167,14 @@ async def test_cancellation_is_removed_before_inference(request_factory: object)
     backend = RecordingBackend()
     metrics = Metrics()
     worker = ModelWorker(backend, batch_window_ms=25, metrics=metrics)
-    await worker.start()
+    await bounded(worker.start())
     task = asyncio.create_task(worker.submit(request_factory()))  # type: ignore[operator]
     await asyncio.sleep(0)
     task.cancel()
 
     with pytest.raises(asyncio.CancelledError):
-        await task
-    await worker.close()
+        await bounded(task)
+    await bounded(worker.close())
 
     assert backend.batches == []
     assert metrics.snapshot() == {
@@ -197,18 +205,18 @@ async def test_full_queue_applies_backpressure(request_factory: object) -> None:
         batch_window_ms=0,
         metrics=metrics,
     )
-    await worker.start()
+    await bounded(worker.start())
     first = asyncio.create_task(worker.submit(request_factory(text="first")))  # type: ignore[operator]
-    await backend.started.wait()
+    await bounded(backend.started.wait())
     second = asyncio.create_task(worker.submit(request_factory(text="second")))  # type: ignore[operator]
     await asyncio.sleep(0)
 
     with pytest.raises(QueueFullError):
-        await worker.submit(request_factory(text="third"))  # type: ignore[operator]
+        await bounded(worker.submit(request_factory(text="third")))  # type: ignore[operator]
 
     backend.release.set()
-    await asyncio.gather(first, second)
-    await worker.close()
+    await bounded(asyncio.gather(first, second))
+    await bounded(worker.close())
 
     assert metrics.snapshot() == {
         "requests_submitted_total": 2,
@@ -227,22 +235,22 @@ async def test_start_is_idempotent_and_closed_worker_rejects_work(
     worker = ModelWorker(backend, batch_window_ms=0)
 
     with pytest.raises(RunnerClosedError, match="not accepting"):
-        await worker.submit(request_factory())  # type: ignore[operator]
-    await worker.start()
+        await bounded(worker.submit(request_factory()))  # type: ignore[operator]
+    await bounded(worker.start())
     task = worker._task
-    await worker.start()
+    await bounded(worker.start())
     assert worker._task is task
-    await worker.close()
+    await bounded(worker.close())
     assert worker.accepting is False
     with pytest.raises(RunnerClosedError, match="not accepting"):
-        await worker.submit(request_factory())  # type: ignore[operator]
+        await bounded(worker.submit(request_factory()))  # type: ignore[operator]
 
 
 async def test_close_before_start_does_not_load_or_close_backend() -> None:
     backend = RecordingBackend()
     worker = ModelWorker(backend)
 
-    await worker.close()
+    await bounded(worker.close())
 
     assert worker.accepting is False
     assert backend.loaded is False
@@ -266,7 +274,7 @@ async def test_backend_failures_reach_submitter_and_metrics(
 ) -> None:
     metrics = Metrics()
     worker = ModelWorker(backend, batch_window_ms=0, metrics=metrics)
-    await worker.start()
+    await bounded(worker.start())
 
     with pytest.raises(
         RuntimeError,
@@ -276,8 +284,8 @@ async def test_backend_failures_reach_submitter_and_metrics(
             else "inference failed"
         ),
     ):
-        await worker.submit(request_factory())  # type: ignore[operator]
-    await worker.close()
+        await bounded(worker.submit(request_factory()))  # type: ignore[operator]
+    await bounded(worker.close())
 
     assert metrics.snapshot() == {
         "requests_submitted_total": 1,

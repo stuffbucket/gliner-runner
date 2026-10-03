@@ -5,6 +5,7 @@ from collections import Counter
 
 MINIMUM_DETECTED = 677
 MAXIMUM_SURVIVED = 103
+MAXIMUM_TIMEOUT = 0
 VERDICT = re.compile(r": (killed|survived|suspicious|timeout)$")
 
 
@@ -26,6 +27,10 @@ def validate_verdicts(verdicts: Counter[str]) -> list[str]:
     if verdicts["survived"] > MAXIMUM_SURVIVED:
         errors.append(
             f"surviving mutants regressed: {verdicts['survived']} > {MAXIMUM_SURVIVED}"
+        )
+    if verdicts["timeout"] > MAXIMUM_TIMEOUT:
+        errors.append(
+            f"timed-out mutants regressed: {verdicts['timeout']} > {MAXIMUM_TIMEOUT}"
         )
     if verdicts["suspicious"]:
         errors.append(f"suspicious mutants remain: {verdicts['suspicious']}")

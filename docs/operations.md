@@ -114,8 +114,8 @@ successful machine-readable response.
 `mise run test:mutation` mutates covered lines in the contracts, PyTorch
 adapter, scheduler, and runtime lifecycle. It fails when suspicious mutations
 appear, surviving mutants increase, or the checked-in detected-mutant baseline
-regresses. Both killed and timed-out mutants count as detected, while their
-individual totals remain visible in the gate output.
+regresses. Timed-out mutants are rejected: concurrency tests use local
+deadlines so broken liveness invariants must produce explicit test failures.
 The mutation job is intentionally separate from the faster offline-check job
 and is required by CI.
 

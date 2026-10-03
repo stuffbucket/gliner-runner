@@ -4,6 +4,7 @@ from collections import Counter
 
 from gliner_runner.mutation_gate import (
     MAXIMUM_SURVIVED,
+    MAXIMUM_TIMEOUT,
     MINIMUM_DETECTED,
     parse_verdicts,
     validate_verdicts,
@@ -29,6 +30,7 @@ def test_mutation_verdict_parser_and_baseline() -> None:
                 {
                     "killed": MINIMUM_DETECTED,
                     "survived": MAXIMUM_SURVIVED,
+                    "timeout": MAXIMUM_TIMEOUT,
                 }
             )
         )
@@ -40,11 +42,12 @@ def test_mutation_gate_rejects_each_regression() -> None:
     errors = validate_verdicts(
         Counter(
             {
-                "killed": MINIMUM_DETECTED - 1,
+                "killed": MINIMUM_DETECTED - 2,
                 "survived": MAXIMUM_SURVIVED + 1,
+                "timeout": MAXIMUM_TIMEOUT + 1,
                 "suspicious": 1,
             }
         )
     )
 
-    assert len(errors) == 3
+    assert len(errors) == 4

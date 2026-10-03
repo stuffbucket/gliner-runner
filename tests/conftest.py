@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from collections.abc import Sequence
-from typing import Any
+import asyncio
+from collections.abc import Awaitable, Sequence
+from typing import Any, TypeVar
 
 import pytest
 
@@ -16,6 +17,13 @@ from gliner_runner.contracts import (
     InferenceUsage,
     Precision,
 )
+
+T = TypeVar("T")
+
+
+async def bounded(awaitable: Awaitable[T]) -> T:
+    async with asyncio.timeout(3.0):
+        return await awaitable
 
 
 @pytest.fixture

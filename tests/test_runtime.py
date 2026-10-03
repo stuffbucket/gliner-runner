@@ -10,7 +10,7 @@ from typing import Any
 
 import pytest
 
-from conftest import RecordingBackend
+from conftest import RecordingBackend, bounded
 from gliner_runner import runtime as runtime_module
 from gliner_runner.backends.pytorch import PyTorchBackend
 from gliner_runner.backends.registry import BackendRegistry
@@ -32,9 +32,11 @@ async def test_runtime_has_one_model_owner_per_device(request_factory: object) -
     registry.register(BackendName.PYTORCH, factory)
     runtime = Runtime(RuntimeConfig(batch_window_ms=5), registry=registry)
 
-    await asyncio.gather(
-        runtime.infer(request_factory(text="one")),  # type: ignore[operator]
-        runtime.infer(request_factory(text="two")),  # type: ignore[operator]
+    await bounded(
+        asyncio.gather(
+            runtime.infer(request_factory(text="one")),  # type: ignore[operator]
+            runtime.infer(request_factory(text="two")),  # type: ignore[operator]
+        )
     )
     state = runtime.loaded_state()
 
@@ -45,7 +47,7 @@ async def test_runtime_has_one_model_owner_per_device(request_factory: object) -
     assert state["profile"] == {"device": "cpu", "precision": Precision.FP32}
     assert state["active_requests"] == 0
     assert isinstance(state["last_activity_monotonic"], float)
-    await runtime.close()
+    await bounded(runtime.close())
 
     assert len(created) == 1
     assert len(created[0].batches) == 1
@@ -72,14 +74,18 @@ async def test_runtime_replaces_the_single_resident_model(
         registry=registry,
     )
 
-    await runtime.infer(request_factory(model="decide-340m"))  # type: ignore[operator]
-    await runtime.infer(request_factory(model="decide-multilingual"))  # type: ignore[operator]
+    await bounded(
+        runtime.infer(request_factory(model="decide-340m"))  # type: ignore[operator]
+    )
+    await bounded(
+        runtime.infer(request_factory(model="decide-multilingual"))  # type: ignore[operator]
+    )
 
     assert len(created) == 2
     assert created[0].closed
     assert not created[1].closed
     assert runtime.loaded_state()["model"] == "decide-multilingual"  # type: ignore[index]
-    await runtime.close()
+    await bounded(runtime.close())
 
 
 async def test_runtime_passes_resolved_model_location_to_backend(
@@ -100,12 +106,14 @@ async def test_runtime_passes_resolved_model_location_to_backend(
         registry=registry,
     )
 
-    await runtime.infer(request_factory(model=spec.model_id))  # type: ignore[operator]
+    await bounded(
+        runtime.infer(request_factory(model=spec.model_id))  # type: ignore[operator]
+    )
 
     expected = tmp_path / spec.repository.replace("/", "--") / spec.pinned_revision
     assert received == [str(expected)]
     assert runtime.loaded_state()["revision"] == spec.pinned_revision  # type: ignore[index]
-    await runtime.close()
+    await bounded(runtime.close())
 
 
 async def test_runtime_evicts_model_after_idle_ttl(request_factory: object) -> None:
@@ -117,12 +125,12 @@ async def test_runtime_evicts_model_after_idle_ttl(request_factory: object) -> N
         registry=registry,
     )
 
-    await runtime.infer(request_factory())  # type: ignore[operator]
+    await bounded(runtime.infer(request_factory()))  # type: ignore[operator]
     await asyncio.sleep(0.03)
 
     assert backend.closed
     assert runtime.loaded_state() is None
-    await runtime.close()
+    await bounded(runtime.close())
 
 
 async def test_runtime_rejects_known_model_below_memory_floor(
@@ -141,8 +149,10 @@ async def test_runtime_rejects_known_model_below_memory_floor(
     )
 
     with pytest.raises(ModelMemoryLimitError, match="estimated minimum") as captured:
-        await runtime.infer(  # type: ignore[operator]
-            request_factory(model=spec.model_id, precision=Precision.FP32)
+        await bounded(
+            runtime.infer(  # type: ignore[operator]
+                request_factory(model=spec.model_id, precision=Precision.FP32)
+            )
         )
 
     assert captured.value.model == spec.model_id
@@ -151,7 +161,7 @@ async def test_runtime_rejects_known_model_below_memory_floor(
     assert captured.value.required_bytes > captured.value.limit_bytes
     assert captured.value.observed_bytes is None
     assert runtime.loaded_state() is None
-    await runtime.close()
+    await bounded(runtime.close())
 
 
 async def test_runtime_unloads_model_when_observed_memory_exceeds_limit(
@@ -173,7 +183,7 @@ async def test_runtime_unloads_model_when_observed_memory_exceeds_limit(
     )
 
     with pytest.raises(ModelMemoryLimitError) as captured:
-        await runtime.infer(request_factory())  # type: ignore[operator]
+        await bounded(runtime.infer(request_factory()))  # type: ignore[operator]
 
     assert captured.value.observed_bytes == limit + 1
     assert captured.value.model == "fastino/decide"
@@ -182,7 +192,7 @@ async def test_runtime_unloads_model_when_observed_memory_exceeds_limit(
     assert captured.value.required_bytes == 0
     assert backend.closed
     assert runtime.loaded_state() is None
-    await runtime.close()
+    await bounded(runtime.close())
 
 
 async def test_memory_limit_is_inclusive_at_exact_boundary(
@@ -204,11 +214,11 @@ async def test_memory_limit_is_inclusive_at_exact_boundary(
         registry=registry,
     )
 
-    response = await runtime.infer(request_factory())  # type: ignore[operator]
+    response = await bounded(runtime.infer(request_factory()))  # type: ignore[operator]
 
     assert response.output == {"label": "useful"}
     assert not backend.closed
-    await runtime.close()
+    await bounded(runtime.close())
 
 
 class LoadFailureBackend(RecordingBackend):
@@ -229,13 +239,15 @@ async def test_runtime_recovers_after_load_failure(request_factory: object) -> N
     runtime = Runtime(RuntimeConfig(batch_window_ms=0), registry=registry)
 
     with pytest.raises(RuntimeError, match="load failed"):
-        await runtime.infer(request_factory())  # type: ignore[operator]
-    response = await runtime.infer(request_factory(text="recovered"))  # type: ignore[operator]
+        await bounded(runtime.infer(request_factory()))  # type: ignore[operator]
+    response = await bounded(
+        runtime.infer(request_factory(text="recovered"))  # type: ignore[operator]
+    )
 
     assert response.output == {"label": "useful"}
     assert len(created) == 2
     assert runtime.loaded_state() is not None
-    await runtime.close()
+    await bounded(runtime.close())
 
 
 class BlockingBackend(RecordingBackend):
@@ -256,19 +268,19 @@ async def test_runtime_close_waits_for_active_request(request_factory: object) -
     registry.register(BackendName.PYTORCH, lambda *_args: backend)
     runtime = Runtime(RuntimeConfig(batch_window_ms=0), registry=registry)
     inference = asyncio.create_task(runtime.infer(request_factory()))  # type: ignore[operator]
-    await backend.started.wait()
+    await bounded(backend.started.wait())
 
     closing = asyncio.create_task(runtime.close())
     await asyncio.sleep(0)
     assert not closing.done()
     backend.release.set()
-    await inference
-    await closing
+    await bounded(inference)
+    await bounded(closing)
 
     assert backend.closed
     assert runtime.loaded_state() is None
     with pytest.raises(RunnerClosedError, match="runtime is closed"):
-        await runtime.infer(request_factory())  # type: ignore[operator]
+        await bounded(runtime.infer(request_factory()))  # type: ignore[operator]
 
 
 async def test_concurrent_model_switches_are_serialized(
@@ -285,16 +297,18 @@ async def test_concurrent_model_switches_are_serialized(
     registry.register(BackendName.PYTORCH, factory)
     runtime = Runtime(RuntimeConfig(batch_window_ms=0), registry=registry)
 
-    await asyncio.gather(
-        runtime.infer(request_factory(model="first/model")),  # type: ignore[operator]
-        runtime.infer(request_factory(model="second/model")),  # type: ignore[operator]
+    await bounded(
+        asyncio.gather(
+            runtime.infer(request_factory(model="first/model")),  # type: ignore[operator]
+            runtime.infer(request_factory(model="second/model")),  # type: ignore[operator]
+        )
     )
 
     assert len(created) == 2
     assert created[0].closed
     assert runtime.loaded_state() is not None
     assert runtime.loaded_state()["model"] in {"first/model", "second/model"}  # type: ignore[index]
-    await runtime.close()
+    await bounded(runtime.close())
 
 
 def test_runtime_uses_explicit_or_default_memory_limit(
