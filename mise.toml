@@ -75,6 +75,23 @@ test -f pyproject.toml || { echo 'Python package surface not present.' >&2; exit
 python benchmarks/benchmark_scheduler.py
 """
 
+[tasks."release:build"]
+description = "Build and verify GitHub release assets"
+run = """
+test -n "${GLINER_RUNNER_RELEASE_VERSION:-}" || {
+  echo 'Set GLINER_RUNNER_RELEASE_VERSION to the release version.' >&2
+  exit 1
+}
+rm -rf dist/release
+mkdir -p dist/release
+python -m build --outdir dist/release
+python -m twine check dist/release/gliner_runner-*
+pnpm --dir packages/client pack --pack-destination "$PWD/dist/release"
+python scripts/assemble_release.py \
+  --output-dir dist/release \
+  --version "$GLINER_RUNNER_RELEASE_VERSION"
+"""
+
 [tasks."benchmark:real"]
 description = "Run the opt-in pinned real-model characterization"
 run = """

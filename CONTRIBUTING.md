@@ -64,3 +64,12 @@ and OpenAPI contract.
 
 Contributions are accepted under the Apache License 2.0 as described in
 `LICENSE`.
+
+## Releases
+
+Release Please maintains the release pull request and synchronized versions.
+Merging that pull request creates the tag and GitHub release; publication of
+the built assets then requires approval through the GitHub `release`
+environment. Do not edit the release manifest version or changelog manually
+outside a release repair. See [releases and provider packaging](docs/releases.md)
+for the artifact contract and local build command.

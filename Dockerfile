@@ -31,6 +31,8 @@ RUN --mount=type=secret,id=pip_config,target=/etc/pip.conf,required=false \
 
 FROM python:3.12.12-slim-bookworm AS runtime
 
+ARG GLINER_RUNNER_VERSION=0.1.0 # x-release-please-version
+
 ENV PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PIP_NO_CACHE_DIR=1 \
     PYTHONDONTWRITEBYTECODE=1 \
@@ -40,7 +42,8 @@ RUN groupadd --system --gid 10001 gliner \
     && useradd --system --uid 10001 --gid gliner --create-home gliner
 COPY --from=builder /wheels /wheels
 COPY --from=client-builder /out /opt/gliner-runner/packages
-RUN python -m pip install --no-index --find-links=/wheels "gliner-runner[pytorch]==0.1.0" \
+RUN python -m pip install --no-index --find-links=/wheels \
+    "gliner-runner[pytorch]==${GLINER_RUNNER_VERSION}" \
     && rm -rf /wheels
 
 USER 10001:10001
