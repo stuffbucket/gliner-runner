@@ -34,7 +34,7 @@ RUN --mount=type=secret,id=pip_config,target=/etc/pip.conf,required=false \
 
 FROM python:3.12.12-slim-bookworm AS runtime
 
-ARG GLINER_RUNNER_VERSION=0.2.0 # x-release-please-version
+ARG GLINER_RUNNER_VERSION=0.2.1 # x-release-please-version
 
 ENV PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PIP_NO_CACHE_DIR=1 \
