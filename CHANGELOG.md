@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.2.1](https://github.com/stuffbucket/gliner-runner/compare/v0.2.0...v0.2.1) (2026-10-03)
+
+
+### Bug Fixes
+
+* decouple API and package versions ([e447c2c](https://github.com/stuffbucket/gliner-runner/commit/e447c2cbcf3bd76a9d78e15accb128bc296da93b))
+* isolate licensing tests from mutation workspace ([da1c758](https://github.com/stuffbucket/gliner-runner/commit/da1c75867b97f847823d096b782191a6f4f519c2))
+* keep release checks reproducible ([ed6f8eb](https://github.com/stuffbucket/gliner-runner/commit/ed6f8eb818f68f774155278f6e1e88ac1d64b9d6))
+
 ## [0.2.0](https://github.com/stuffbucket/gliner-runner/compare/v0.1.0...v0.2.0) (2026-10-03)
 
 
