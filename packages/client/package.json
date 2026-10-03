@@ -1,6 +1,6 @@
 {
   "name": "@gliner-runner/client",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Runtime-validated TypeScript client for the GLiNER Runner HTTP API",
   "license": "Apache-2.0",
   "type": "module",
