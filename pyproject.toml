@@ -104,6 +104,7 @@ pytest_add_cli_args = [
   "-m",
   "not integration and not benchmark",
   "--ignore=tests/test_release_assets.py",
+  "--ignore=tests/test_third_party_inventory.py",
 ]
 pytest_add_cli_args_test_selection = ["tests/"]
 mutate_only_covered_lines = true
