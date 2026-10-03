@@ -3,13 +3,21 @@ Copyright 2026 GLiNER Runner contributors
 
 This product includes software developed by the GLiNER Runner contributors.
 
-The optional PyTorch backend integrates Fastino GLiNER2, copyright its
-respective contributors, under the Apache License 2.0. Model artifacts are
-downloaded separately and retain the license recorded in their manifest.
+The optional PyTorch backend uses Fastino GLiNER2 2.0.0, licensed under the
+Apache License, Version 2.0. A copy of that license is provided in LICENSE.
 
-Third-party software and model artifacts are not covered by this notice.
-Their licenses and attribution requirements remain applicable and must be
-recorded alongside each distributed dependency or model.
+Requests
+Copyright 2019 Kenneth Reitz
 
-The model-management runtime uses huggingface_hub and psutil, each distributed
-under the BSD 3-Clause License by its respective contributors.
+Asyncio support for files
+Copyright 2016 Tin Tvrtkovic
+
+PyTorch contains software from PyTorch, Caffe2, and other contributors under
+Apache, BSD, MIT, and other licenses. The copyright, attribution, and license
+files installed with the PyTorch distribution remain applicable and must be
+retained.
+
+Third-party software details, required BSD/MIT notices, artifact boundaries,
+and model-license metadata are recorded in THIRD_PARTY_NOTICES.md. Model
+weights are not bundled with GLiNER Runner; operators download them separately
+after explicit approval.
