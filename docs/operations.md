@@ -109,6 +109,16 @@ The one-shot `gliner-runner infer` command accepts one JSON request from
 Operational logs and validation failures use stderr so they cannot corrupt a
 successful machine-readable response.
 
+## Mutation quality gate
+
+`mise run test:mutation` mutates covered lines in the contracts, PyTorch
+adapter, scheduler, and runtime lifecycle. It fails when suspicious mutations
+appear, surviving mutants increase, or the checked-in detected-mutant baseline
+regresses. Both killed and timed-out mutants count as detected, while their
+individual totals remain visible in the gate output.
+The mutation job is intentionally separate from the faster offline-check job
+and is required by CI.
+
 A model update creates a new manifest digest alongside the old one. Install the
 new generation before changing the logical manifest entry and restarting the
 service. Do not mutate files beneath a loaded worker.

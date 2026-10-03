@@ -114,9 +114,12 @@ class Runtime:
         async with self._condition:
             self._closed = True
             self._switching = True
+            self._condition.notify_all()
             while self._active_requests:
                 await self._condition.wait()
             worker = self._clear_worker_locked()
+            self._switching = False
+            self._condition.notify_all()
         if worker is not None:
             await worker.close()
 
@@ -124,7 +127,7 @@ class Runtime:
         model_location, model_key, revision, parameter_count = await self._resolve_model(request)
         key = (request.backend, model_key, request.precision, self.config.device)
         async with self._condition:
-            while self._switching:
+            while self._switching and not self._closed:
                 await self._condition.wait()
             if self._closed:
                 raise RunnerClosedError("runtime is closed")

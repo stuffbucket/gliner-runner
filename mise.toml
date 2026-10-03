@@ -63,7 +63,10 @@ python -m pytest -m integration
 
 [tasks."test:mutation"]
 description = "Mutation-test critical inference contracts and lifecycle code"
-run = "python -m mutmut run"
+run = """
+python -m mutmut run
+python ./scripts/check_mutation_results.py
+"""
 
 [tasks.benchmark]
 description = "Run the offline scheduler benchmark"

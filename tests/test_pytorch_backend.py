@@ -4,8 +4,20 @@ import sys
 from types import ModuleType, SimpleNamespace
 from typing import Any
 
-from gliner_runner.backends.pytorch import PyTorchBackend, _available_precision_profiles
-from gliner_runner.contracts import Precision, PrecisionProfile
+import pytest
+
+from gliner_runner.backends.pytorch import (
+    PyTorchBackend,
+    _available_precision_profiles,
+    _compatible,
+)
+from gliner_runner.contracts import (
+    BackendName,
+    InferenceOperation,
+    InferenceOptions,
+    Precision,
+    PrecisionProfile,
+)
 
 
 class FakeOracleSchema:
@@ -13,6 +25,10 @@ class FakeOracleSchema:
 
     @classmethod
     def from_dict(cls, value: dict[str, Any]) -> object:
+        assert set(value) == {"version", "tasks", "constraints"}
+        assert value["version"] == 3
+        assert value["constraints"] == []
+        assert set(value["tasks"]) == {"label"}
         cls.received = value
         return object()
 
@@ -32,6 +48,7 @@ class FakeResult:
 
 class FakeClassifier:
     instance: FakeClassifier | None = None
+    loads = 0
 
     def __init__(self) -> None:
         self.call: tuple[list[str], object, object] | None = None
@@ -41,6 +58,7 @@ class FakeClassifier:
 
     @classmethod
     def from_pretrained(cls, _path: str, **kwargs: object) -> FakeClassifier:
+        cls.loads += 1
         cls.instance = cls()
         cls.instance.load_kwargs = kwargs
         return cls.instance
@@ -67,6 +85,13 @@ class FakeClassifier:
 
 class FakeConfig:
     def __init__(self, **kwargs: object) -> None:
+        assert set(kwargs) == {
+            "candidate_threshold",
+            "batch_size",
+            "include_confidence",
+        }
+        assert kwargs["candidate_threshold"] == 0.5
+        assert kwargs["include_confidence"] is True
         self.kwargs = kwargs
 
 
@@ -105,6 +130,7 @@ class FakeProcessor:
 async def test_adapter_uses_fastino_public_batch_classify(
     monkeypatch: Any, request_factory: Any
 ) -> None:
+    FakeClassifier.loads = 0
     module = ModuleType("gliner2.classification")
     module.Classifier = FakeClassifier  # type: ignore[attr-defined]
     module.ClassificationSchema = FakeOracleSchema  # type: ignore[attr-defined]
@@ -121,14 +147,19 @@ async def test_adapter_uses_fastino_public_batch_classify(
     ]
 
     outputs = await backend.infer_batch(requests)
+    await backend.load()
 
     assert len(outputs) == 2
+    assert FakeClassifier.loads == 1
     assert [output.usage.input_tokens for output in outputs] == [7, 10]
     assert [output.usage.output_tokens for output in outputs] == [0, 0]
     assert [output.output["label"]["value"] for output in outputs] == [  # type: ignore[index]
         "useful",
         "useful",
     ]
+    assert outputs[0].output == {
+        "label": {"value": "useful", "confidence": 0.9}
+    }
     assert FakeClassifier.instance is not None
     assert FakeClassifier.instance.call is not None
     assert FakeClassifier.instance.call[0] == ["one", "longer"]
@@ -162,6 +193,40 @@ async def test_adapter_uses_fastino_public_batch_classify(
         "activation": "auto",
         "temperature": 1.0,
     }
+
+    incompatible = request_factory(model="other/model")
+    with pytest.raises(ValueError, match="incompatible requests"):
+        await backend.infer_batch([requests[0], incompatible])
+    await backend.close()
+    with pytest.raises(RuntimeError, match="loaded before inference"):
+        await backend.infer_batch([requests[0]])
+
+
+async def test_empty_batch_does_not_require_loaded_model() -> None:
+    backend = PyTorchBackend("/models/pinned", Precision.FP32, "cpu")
+
+    assert await backend.infer_batch([]) == []
+
+
+@pytest.mark.parametrize(
+    "update",
+    [
+        {"model": "other/model"},
+        {"backend": BackendName.MLX},
+        {"precision": Precision.FP16},
+        {"operation": InferenceOperation.EXTRACT_ENTITIES},
+        {"schema_": None},
+        {"options": InferenceOptions(threshold=0.9)},
+    ],
+)
+def test_batch_compatibility_requires_every_grouping_field(
+    request_factory: Any,
+    update: dict[str, object],
+) -> None:
+    request = request_factory()
+
+    assert _compatible(request, request)
+    assert not _compatible(request, request.model_copy(update=update))
 
 
 def test_capabilities_adapt_to_available_mps_profiles(
@@ -212,14 +277,53 @@ def test_available_profiles_follow_cuda_architecture(monkeypatch: Any) -> None:
 
     profiles = _available_precision_profiles()
 
-    assert PrecisionProfile(device="cuda", precision=Precision.FP32) in profiles
-    assert PrecisionProfile(device="cuda", precision=Precision.FP16) in profiles
-    assert PrecisionProfile(device="cuda", precision=Precision.BF16) in profiles
+    assert profiles == frozenset(
+        {
+            PrecisionProfile(device="cpu", precision=Precision.FP32),
+            PrecisionProfile(device="cuda", precision=Precision.FP32),
+            PrecisionProfile(device="cuda", precision=Precision.FP16),
+            PrecisionProfile(device="cuda", precision=Precision.BF16),
+        }
+    )
 
     torch.cuda.get_device_capability = lambda: (5, 2)  # type: ignore[attr-defined,method-assign]
     torch.cuda.is_bf16_supported = lambda: False  # type: ignore[attr-defined,method-assign]
     limited_profiles = _available_precision_profiles()
 
-    assert PrecisionProfile(device="cuda", precision=Precision.FP32) in limited_profiles
-    assert PrecisionProfile(device="cuda", precision=Precision.FP16) not in limited_profiles
-    assert PrecisionProfile(device="cuda", precision=Precision.BF16) not in limited_profiles
+    assert limited_profiles == frozenset(
+        {
+            PrecisionProfile(device="cpu", precision=Precision.FP32),
+            PrecisionProfile(device="cuda", precision=Precision.FP32),
+        }
+    )
+
+
+def test_available_profiles_without_torch_are_cpu_only(monkeypatch: Any) -> None:
+    def missing_torch(_name: str) -> ModuleType:
+        raise ImportError
+
+    monkeypatch.setattr(
+        "gliner_runner.backends.pytorch.importlib.import_module",
+        missing_torch,
+    )
+
+    assert _available_precision_profiles() == frozenset(
+        {PrecisionProfile(device="cpu", precision=Precision.FP32)}
+    )
+
+
+def test_available_profiles_include_both_mps_precisions(monkeypatch: Any) -> None:
+    torch = ModuleType("torch")
+    torch.cuda = SimpleNamespace(is_available=lambda: False)  # type: ignore[attr-defined]
+    torch.backends = SimpleNamespace(  # type: ignore[attr-defined]
+        mps=SimpleNamespace(is_available=lambda: True)
+    )
+    monkeypatch.setitem(sys.modules, "torch", torch)
+
+    assert _available_precision_profiles() == frozenset(
+        {
+            PrecisionProfile(device="cpu", precision=Precision.FP32),
+            PrecisionProfile(device="mps", precision=Precision.FP32),
+            PrecisionProfile(device="mps", precision=Precision.FP16),
+        }
+    )

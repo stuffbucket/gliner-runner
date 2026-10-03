@@ -40,6 +40,15 @@ def test_registry_rejects_unadvertised_precision(request_factory: object) -> Non
         registry.create(request, "cpu")
 
 
+def test_capabilities_restrict_validated_models(request_factory: Any) -> None:
+    capabilities = RecordingBackend().capabilities.model_copy(
+        update={"validated_models": frozenset({"validated/model"})}
+    )
+
+    assert capabilities.supports(request_factory(model="validated/model"), "cpu")
+    assert not capabilities.supports(request_factory(model="other/model"), "cpu")
+
+
 def test_registry_negotiates_available_mps_profiles(
     monkeypatch: Any,
     request_factory: Any,

@@ -208,7 +208,7 @@ period. Use it from Electron's main process, not a sandboxed renderer.
 ```sh
 mise run check        # lint, strict types, offline tests, client, docs
 mise run integration  # requires GLINER_RUNNER_INTEGRATION_REQUEST
-mise run test:mutation # slower mutation suite for critical Python paths
+mise run test:mutation # slower critical-path suite with a non-regression gate
 mise run benchmark    # scheduler benchmark; no model download
 mise run benchmark:real  # requires GLINER_RUNNER_BENCHMARK_MODEL
 ```
