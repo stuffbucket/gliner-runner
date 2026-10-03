@@ -327,3 +327,18 @@ def test_available_profiles_include_both_mps_precisions(monkeypatch: Any) -> Non
             PrecisionProfile(device="mps", precision=Precision.FP16),
         }
     )
+
+
+def test_available_profiles_with_unavailable_accelerators_are_cpu_only(
+    monkeypatch: Any,
+) -> None:
+    torch = ModuleType("torch")
+    torch.cuda = SimpleNamespace(is_available=lambda: False)  # type: ignore[attr-defined]
+    torch.backends = SimpleNamespace(  # type: ignore[attr-defined]
+        mps=SimpleNamespace(is_available=lambda: False)
+    )
+    monkeypatch.setitem(sys.modules, "torch", torch)
+
+    assert _available_precision_profiles() == frozenset(
+        {PrecisionProfile(device="cpu", precision=Precision.FP32)}
+    )
