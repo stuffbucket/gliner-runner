@@ -98,8 +98,10 @@ class Runtime:
         return self.config.memory_limit_bytes or int(physical_memory_bytes() * 0.75)
 
     def loaded_state(self) -> dict[str, object] | None:
-        if self._worker_key is None or self._loaded_model is None:
+        if self._worker_instance is None:
             return None
+        assert self._worker_key is not None
+        assert self._loaded_model is not None
         backend, _key, precision, device = self._worker_key
         return {
             "model": self._loaded_model,
@@ -192,7 +194,6 @@ class Runtime:
             if self._closed:
                 self._switching = False
                 self._condition.notify_all()
-                close_loaded = True
             else:
                 self._worker_instance = worker
                 self._worker_key = key
@@ -203,11 +204,9 @@ class Runtime:
                 self._generation += 1
                 self._switching = False
                 self._condition.notify_all()
-                close_loaded = False
-        if close_loaded:
-            await worker.close()
-            raise RunnerClosedError("runtime is closed")
-        return worker
+                return worker
+        await worker.close()
+        raise RunnerClosedError("runtime is closed")
 
     async def _resolve_model(
         self, request: InferenceRequest

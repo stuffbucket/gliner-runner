@@ -90,36 +90,43 @@ class ModelWorker:
         await self._backend.close()
 
     async def _run(self) -> None:
-        while True:
-            first = await self._next()
-            if first is _STOP:
-                break
-            assert isinstance(first, _Work)
-            batch = await self._collect(first)
-            active = [work for work in batch if not work.future.cancelled()]
-            if not active:
-                continue
-            started = self._clock()
-            self._metrics.increment("batches_total")
-            self._metrics.gauge("last_batch_size", float(len(active)))
-            try:
-                outputs = await self._backend.infer_batch([work.request for work in active])
-                if len(outputs) != len(active):
-                    raise RuntimeError("backend returned the wrong number of results")
-            except Exception as error:
-                self._metrics.increment("batch_failures_total")
-                for work in active:
-                    if not work.future.done():
-                        work.future.set_exception(error)
-            else:
-                finished = self._clock()
-                for work, result in zip(active, outputs, strict=True):
-                    if not work.future.done():
-                        work.future.set_result(self._response(work, result, started, finished))
-                self._metrics.increment("requests_completed_total", len(active))
-            finally:
-                self._update_depth()
-        self._fail_pending(RunnerClosedError("model worker closed"))
+        try:
+            while True:
+                first = await self._next()
+                if first is _STOP:
+                    return
+                assert isinstance(first, _Work)
+                batch = await self._collect(first)
+                active = [work for work in batch if not work.future.cancelled()]
+                if not active:
+                    continue
+                started = self._clock()
+                self._metrics.increment("batches_total")
+                self._metrics.gauge("last_batch_size", float(len(active)))
+                try:
+                    outputs = await self._backend.infer_batch(
+                        [work.request for work in active]
+                    )
+                    if len(outputs) != len(active):
+                        raise RuntimeError("backend returned the wrong number of results")
+                except Exception as error:
+                    self._metrics.increment("batch_failures_total")
+                    for work in active:
+                        if not work.future.done():
+                            work.future.set_exception(error)
+                else:
+                    finished = self._clock()
+                    for index, work in enumerate(active):
+                        result = outputs[index]
+                        if not work.future.done():
+                            work.future.set_result(
+                                self._response(work, result, started, finished)
+                            )
+                    self._metrics.increment("requests_completed_total", len(active))
+                finally:
+                    self._update_depth()
+        finally:
+            self._fail_pending(RunnerClosedError("model worker closed"))
 
     async def _next(self) -> _Work | object:
         if self._backlog:
@@ -138,7 +145,7 @@ class ModelWorker:
             item = self._backlog.popleft()
             if item is _STOP:
                 self._backlog.append(item)
-                continue
+                return batch
             assert isinstance(item, _Work)
             if len(batch) < self._max_batch_size and _batch_key(item.request) == key:
                 batch.append(item)
@@ -205,6 +212,6 @@ class ModelWorker:
 
 
 def _batch_key(request: InferenceRequest) -> BatchKey:
-    schema = json.dumps(request.schema_.model_dump(mode="json"), sort_keys=True)
-    options = json.dumps(request.options.model_dump(mode="json"), sort_keys=True)
+    schema = json.dumps(request.schema_.model_dump(), sort_keys=True)
+    options = json.dumps(request.options.model_dump())
     return request.operation, schema, options
