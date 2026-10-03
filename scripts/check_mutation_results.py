@@ -23,6 +23,7 @@ def main() -> int:
         print(f"mutation quality gate failed ({summary})", file=sys.stderr)
         for error in errors:
             print(f"- {error}", file=sys.stderr)
+        print(completed.stdout, file=sys.stderr, end="")
         return 1
     print(f"mutation quality gate: ok ({summary})")
     return 0
