@@ -6,6 +6,11 @@ client generation and non-Python implementations. CI regenerates it from the
 server and rejects drift. The server uses JSON over HTTP, rejects unknown
 request fields, and binds to `127.0.0.1:8090` by default.
 
+The OpenAPI contract version is `1.0.0` and is independent of the runner's
+package release version. Package patch and feature releases do not imply a
+wire-contract change; incompatible protocol changes require an explicit API
+version update.
+
 ## Endpoints
 
 | Method | Path | Purpose |

@@ -10,6 +10,7 @@ from gliner_runner.backends.pytorch import (
     PyTorchBackend,
     _available_precision_profiles,
     _compatible,
+    _json_value,
 )
 from gliner_runner.contracts import (
     BackendName,
@@ -18,10 +19,12 @@ from gliner_runner.contracts import (
     Precision,
     PrecisionProfile,
 )
+from gliner_runner.errors import BackendUnavailableError
 
 
 class FakeOracleSchema:
     received: dict[str, Any] | None = None
+    compiled_input = object()
 
     @classmethod
     def from_dict(cls, value: dict[str, Any]) -> object:
@@ -30,7 +33,7 @@ class FakeOracleSchema:
         assert value["constraints"] == []
         assert set(value["tasks"]) == {"label"}
         cls.received = value
-        return object()
+        return cls.compiled_input
 
 
 class FakeResult:
@@ -49,9 +52,11 @@ class FakeResult:
 class FakeClassifier:
     instance: FakeClassifier | None = None
     loads = 0
+    result_limit: int | None = None
 
     def __init__(self) -> None:
         self.call: tuple[list[str], object, object] | None = None
+        self.model_path = ""
         self.load_kwargs: dict[str, object] = {}
         self.to_kwargs: dict[str, object] = {}
         self.scorer = SimpleNamespace(processor=FakeProcessor())
@@ -60,6 +65,7 @@ class FakeClassifier:
     def from_pretrained(cls, _path: str, **kwargs: object) -> FakeClassifier:
         cls.loads += 1
         cls.instance = cls()
+        cls.instance.model_path = _path
         cls.instance.load_kwargs = kwargs
         return cls.instance
 
@@ -75,11 +81,15 @@ class FakeClassifier:
     ) -> list[FakeResult]:
         self.call = (texts, schema, config)
         self.scorer.processor.collate_fn_inference(
-            [(text, schema.build()) for text in texts]
+            [(text, schema.build()) for text in texts],
+            "forwarded",
+            expected=True,
         )
-        return [FakeResult(text) for text in texts]
+        results = [FakeResult(text) for text in texts]
+        return results[: self.result_limit]
 
-    def compile_schema(self, _schema: object) -> FakeCompiledSchema:
+    def compile_schema(self, schema: object) -> FakeCompiledSchema:
+        assert schema is FakeOracleSchema.compiled_input
         return FakeCompiledSchema()
 
 
@@ -119,8 +129,14 @@ class FakeAttentionMask:
 
 class FakeProcessor:
     def collate_fn_inference(
-        self, rows: list[tuple[str, dict[str, object]]], **_kwargs: object
+        self,
+        rows: list[tuple[str, dict[str, object]]],
+        marker: str,
+        *,
+        expected: bool,
     ) -> SimpleNamespace:
+        assert marker == "forwarded"
+        assert expected is True
         assert all(schema == {"compiled": True} for _text, schema in rows)
         return SimpleNamespace(
             attention_mask=FakeAttentionMask([len(text) + 4 for text, _schema in rows])
@@ -131,6 +147,7 @@ async def test_adapter_uses_fastino_public_batch_classify(
     monkeypatch: Any, request_factory: Any
 ) -> None:
     FakeClassifier.loads = 0
+    FakeClassifier.result_limit = None
     module = ModuleType("gliner2.classification")
     module.Classifier = FakeClassifier  # type: ignore[attr-defined]
     module.ClassificationSchema = FakeOracleSchema  # type: ignore[attr-defined]
@@ -163,6 +180,7 @@ async def test_adapter_uses_fastino_public_batch_classify(
     assert FakeClassifier.instance is not None
     assert FakeClassifier.instance.call is not None
     assert FakeClassifier.instance.call[0] == ["one", "longer"]
+    assert FakeClassifier.instance.model_path == "/models/pinned"
     assert FakeClassifier.instance.load_kwargs == {"device": "cpu", "dtype": "float32"}
     assert FakeClassifier.instance.to_kwargs == {"device": "cpu", "dtype": "float32"}
     assert FakeOracleSchema.received is not None
@@ -176,7 +194,9 @@ async def test_adapter_uses_fastino_public_batch_classify(
     processor = FakeClassifier.instance.scorer.processor
     assert callable(processor.collate_fn_inference)
     restored_batch = processor.collate_fn_inference(
-        [("restored", {"compiled": True})]
+        [("restored", {"compiled": True})],
+        "forwarded",
+        expected=True,
     )
     assert restored_batch.attention_mask.sum(dim=1).tolist() == [12]
 
@@ -195,17 +215,48 @@ async def test_adapter_uses_fastino_public_batch_classify(
     }
 
     incompatible = request_factory(model="other/model")
-    with pytest.raises(ValueError, match="incompatible requests"):
+    with pytest.raises(ValueError) as incompatible_error:
         await backend.infer_batch([requests[0], incompatible])
+    assert str(incompatible_error.value) == "infer_batch received incompatible requests"
+
+    FakeClassifier.result_limit = 1
+    with pytest.raises(RuntimeError) as invalid_result:
+        await backend.infer_batch(requests)
+    assert str(invalid_result.value) == "GLiNER2 backend returned an invalid batch result"
+    FakeClassifier.result_limit = None
+
     await backend.close()
-    with pytest.raises(RuntimeError, match="loaded before inference"):
+    with pytest.raises(RuntimeError) as unloaded:
         await backend.infer_batch([requests[0]])
+    assert str(unloaded.value) == "backend must be loaded before inference"
 
 
 async def test_empty_batch_does_not_require_loaded_model() -> None:
     backend = PyTorchBackend("/models/pinned", Precision.FP32, "cpu")
 
     assert await backend.infer_batch([]) == []
+
+
+def test_infer_sync_requires_loaded_model(request_factory: Any) -> None:
+    backend = PyTorchBackend("/models/pinned", Precision.FP32, "cpu")
+
+    with pytest.raises(RuntimeError) as captured:
+        backend._infer_sync([request_factory()])
+
+    assert str(captured.value) == "backend must be loaded before inference"
+
+
+async def test_load_requires_classifier_export(monkeypatch: Any) -> None:
+    monkeypatch.setitem(sys.modules, "gliner2.classification", ModuleType("classification"))
+    backend = PyTorchBackend("/models/pinned", Precision.FP32, "cpu")
+
+    with pytest.raises(BackendUnavailableError) as captured:
+        await backend.load()
+
+    assert (
+        str(captured.value)
+        == "installed gliner2 package does not export classification.Classifier"
+    )
 
 
 @pytest.mark.parametrize(
@@ -297,6 +348,14 @@ def test_available_profiles_follow_cuda_architecture(monkeypatch: Any) -> None:
         }
     )
 
+    torch.cuda.get_device_capability = lambda: (5, 3)  # type: ignore[attr-defined,method-assign]
+    boundary_profiles = _available_precision_profiles()
+
+    assert PrecisionProfile(
+        device="cuda",
+        precision=Precision.FP16,
+    ) in boundary_profiles
+
 
 def test_available_profiles_without_torch_are_cpu_only(monkeypatch: Any) -> None:
     def missing_torch(_name: str) -> ModuleType:
@@ -306,6 +365,39 @@ def test_available_profiles_without_torch_are_cpu_only(monkeypatch: Any) -> None
         "gliner_runner.backends.pytorch.importlib.import_module",
         missing_torch,
     )
+
+    assert _available_precision_profiles() == frozenset(
+        {PrecisionProfile(device="cpu", precision=Precision.FP32)}
+    )
+
+
+def test_available_profiles_without_cuda_api_are_cpu_only(monkeypatch: Any) -> None:
+    torch = ModuleType("torch")
+    torch.backends = SimpleNamespace(  # type: ignore[attr-defined]
+        mps=SimpleNamespace(is_available=lambda: False)
+    )
+    monkeypatch.setitem(sys.modules, "torch", torch)
+
+    assert _available_precision_profiles() == frozenset(
+        {PrecisionProfile(device="cpu", precision=Precision.FP32)}
+    )
+
+
+def test_available_profiles_without_backends_api_are_cpu_only(monkeypatch: Any) -> None:
+    torch = ModuleType("torch")
+    torch.cuda = SimpleNamespace(is_available=lambda: False)  # type: ignore[attr-defined]
+    monkeypatch.setitem(sys.modules, "torch", torch)
+
+    assert _available_precision_profiles() == frozenset(
+        {PrecisionProfile(device="cpu", precision=Precision.FP32)}
+    )
+
+
+def test_available_profiles_without_mps_api_are_cpu_only(monkeypatch: Any) -> None:
+    torch = ModuleType("torch")
+    torch.cuda = SimpleNamespace(is_available=lambda: False)  # type: ignore[attr-defined]
+    torch.backends = SimpleNamespace()  # type: ignore[attr-defined]
+    monkeypatch.setitem(sys.modules, "torch", torch)
 
     assert _available_precision_profiles() == frozenset(
         {PrecisionProfile(device="cpu", precision=Precision.FP32)}
@@ -342,3 +434,9 @@ def test_available_profiles_with_unavailable_accelerators_are_cpu_only(
     assert _available_precision_profiles() == frozenset(
         {PrecisionProfile(device="cpu", precision=Precision.FP32)}
     )
+
+
+def test_json_value_recursively_normalizes_collections() -> None:
+    assert _json_value({"items": (None, "value")}) == {
+        "items": [None, "value"],
+    }

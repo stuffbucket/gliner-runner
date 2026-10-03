@@ -116,18 +116,17 @@ class PyTorchBackend:
             result.to_dict(include_confidence=first.options.include_confidence)
             for result in results
         ]
-        if (
-            not isinstance(raw, list)
-            or len(raw) != len(requests)
-            or len(input_token_counts) != len(requests)
-        ):
+        if len(raw) != len(requests):
             raise RuntimeError("GLiNER2 backend returned an invalid batch result")
         return [
             BackendResult(
                 output=_json_value(item),
-                usage=InferenceUsage(input_tokens=input_tokens, output_tokens=0),
+                usage=InferenceUsage(
+                    input_tokens=input_token_counts[index],
+                    output_tokens=0,
+                ),
             )
-            for item, input_tokens in zip(raw, input_token_counts, strict=True)
+            for index, item in enumerate(raw)
         ]
 
     async def close(self) -> None:

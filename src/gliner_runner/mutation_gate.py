@@ -3,8 +3,8 @@ from __future__ import annotations
 import re
 from collections import Counter
 
-MINIMUM_DETECTED = 677
-MAXIMUM_SURVIVED = 103
+MINIMUM_DETECTED = 784
+MAXIMUM_SURVIVED = 0
 MAXIMUM_TIMEOUT = 0
 VERDICT = re.compile(r": (killed|survived|suspicious|timeout)$")
 

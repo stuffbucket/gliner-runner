@@ -34,6 +34,8 @@ RUN --mount=type=secret,id=pip_config,target=/etc/pip.conf,required=false \
 
 FROM python:3.12.12-slim-bookworm AS runtime
 
+ARG GLINER_RUNNER_VERSION=0.2.0 # x-release-please-version
+
 ENV PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PIP_NO_CACHE_DIR=1 \
     PYTHONDONTWRITEBYTECODE=1 \
@@ -46,7 +48,8 @@ COPY --from=client-builder /out /opt/gliner-runner/packages
 COPY --from=builder /build/LICENSE /build/NOTICE /build/THIRD_PARTY_NOTICES.md \
     /usr/share/doc/gliner-runner/
 COPY scripts/generate_third_party_inventory.py /tmp/generate_third_party_inventory.py
-RUN python -m pip install --no-index --find-links=/wheels "gliner-runner[pytorch]==0.1.0" \
+RUN python -m pip install --no-index --find-links=/wheels \
+        "gliner-runner[pytorch]==${GLINER_RUNNER_VERSION}" \
     && python /tmp/generate_third_party_inventory.py \
         --output /usr/share/doc/gliner-runner/PYTHON_PACKAGES.md \
         --exclude gliner-runner \
