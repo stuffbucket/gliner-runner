@@ -5,7 +5,10 @@
   "license": "Apache-2.0",
   "type": "module",
   "files": [
-    "dist"
+    "dist",
+    "LICENSE",
+    "NOTICE",
+    "THIRD_PARTY_NOTICES.md"
   ],
   "exports": {
     ".": {
@@ -21,7 +24,9 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "check": "pnpm run build && node --test index.test.mjs sidecar.test.mjs"
+    "check": "pnpm run build && node --test index.test.mjs sidecar.test.mjs",
+    "prepack": "node scripts/package-notices.mjs prepare",
+    "postpack": "node scripts/package-notices.mjs clean"
   },
   "dependencies": {
     "zod": "4.1.11"

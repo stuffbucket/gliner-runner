@@ -19,3 +19,6 @@ packages/client/dist/
 models/
 pip.conf
 pip.ini
+packages/client/LICENSE
+packages/client/NOTICE
+packages/client/THIRD_PARTY_NOTICES.md
