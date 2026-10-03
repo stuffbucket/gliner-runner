@@ -97,7 +97,12 @@ only_mutate = [
   "src/gliner_runner/scheduler.py",
   "src/gliner_runner/runtime.py",
 ]
-pytest_add_cli_args = ["-q", "-m", "not integration and not benchmark"]
+pytest_add_cli_args = [
+  "-q",
+  "-m",
+  "not integration and not benchmark",
+  "--ignore=tests/test_release_assets.py",
+]
 pytest_add_cli_args_test_selection = ["tests/"]
 mutate_only_covered_lines = true
 
