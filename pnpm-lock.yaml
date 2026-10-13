@@ -15,36 +15,36 @@ importers:
         version: 4.1.11
     devDependencies:
       '@types/node':
-        specifier: 24.10.1
-        version: 24.10.1
+        specifier: 26.6.4
+        version: 26.6.4
       typescript:
         specifier: 5.7.2
         version: 5.7.2
 
 packages:
 
-  '@types/node@24.10.1':
-    resolution: {integrity: sha1-kekhgsk9uL1iJPygMeI3DO+ajwE=}
+  '@types/node@26.6.4':
+    resolution: {integrity: sha512-ldVPDCzj7fsaGZrLB0NuHuTvJcsNasysBAqMolr/cgxrLd1xbqxIr3XJiPnHHJUCxj5sNF1vnRj9aWnrVh5Jcg==}
 
   typescript@5.7.2:
-    resolution: {integrity: sha1-MWnPjEyKgozeU7qeyz0rHV3We+Y=}
+    resolution: {integrity: sha512-i5t66RHxDvVN40HfDd1PsEThGNnlMCMT3jMUuoh9/0TaqWevNontacunWyN02LA9/fIbEWlcHZcgTKb9QoaLfg==}
     engines: {node: '>=14.17'}
     hasBin: true
 
-  undici-types@7.16.0:
-    resolution: {integrity: sha1-/8zf82rqSITL/OmnUKBYAiT1ikY=}
+  undici-types@8.9.0:
+    resolution: {integrity: sha512-KTDyRTYX8sWmKXAikPHHSyc63CRPETMctyjKFupcC6OBLXT3xsN0e9aF7m+mIXutFWpUXuedtowG7iLOzp0kQg==}
 
   zod@4.1.11:
-    resolution: {integrity: sha1-Sqti92z9RebGFmUZujGy6gGfdfU=}
+    resolution: {integrity: sha512-WPsqwxITS2tzx1bzhIKsEs19ABD5vmCVa4xBo2tq/SrV4RNZtfws1EnCWQXM6yh8bD08a1idvkB5MZSBiZsjwg==}
 
 snapshots:
 
-  '@types/node@24.10.1':
+  '@types/node@26.6.4':
     dependencies:
-      undici-types: 7.16.0
+      undici-types: 8.9.0
 
   typescript@5.7.2: {}
 
-  undici-types@7.16.0: {}
+  undici-types@8.9.0: {}
 
   zod@4.1.11: {}
