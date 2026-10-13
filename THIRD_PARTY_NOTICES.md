@@ -77,7 +77,7 @@ The exact production dependency in `pnpm-lock.yaml` is:
 
 | Package | Version | License |
 | --- | --- | --- |
-| `zod` | `4.1.11` | MIT |
+| `zod` | `4.6.5` | MIT |
 
 `@types/node`, `typescript`, and `undici-types` are build/test inputs and are
 not production dependencies of the published client package.
