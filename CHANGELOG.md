@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.3.0](https://github.com/stuffbucket/gliner-runner/compare/v0.2.1...v0.3.0) (2026-10-14)
+
+
+### Features
+
+* ship a Python-free ONNX runner with Homebrew releases ([e736c79](https://github.com/stuffbucket/gliner-runner/commit/e736c7965cfd651888358de57981779256e4eb6a))
+* ship a Python-free ONNX runner with Homebrew releases ([e664600](https://github.com/stuffbucket/gliner-runner/commit/e664600e906605dabf0e2946857c6c8a47ede2a0))
+
+
+### Bug Fixes
+
+* build workspace dependencies before the ONNX runner ([acc9746](https://github.com/stuffbucket/gliner-runner/commit/acc9746ab602afe674fec9a3ed7c1ce53de9c856))
+* load Node types with TypeScript 7 ([8dc8e2e](https://github.com/stuffbucket/gliner-runner/commit/8dc8e2e56c171ab77139a2c9e5a2f9cf39435b65))
+* update Zod licensing notice ([1e11460](https://github.com/stuffbucket/gliner-runner/commit/1e114608ca187442ef3dcf5a553baafbffef4c0b))
+
 ## [0.2.1](https://github.com/stuffbucket/gliner-runner/compare/v0.2.0...v0.2.1) (2026-10-03)
 
 

@@ -1,6 +1,6 @@
 {
   "name": "@gliner-runner/onnx-runner",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Python-free ONNX runner implementing the GLiNER Runner HTTP protocol",
   "license": "Apache-2.0",
   "private": true,
