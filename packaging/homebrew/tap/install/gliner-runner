@@ -51,6 +51,10 @@ fi
 
 # Tap explicitly; Homebrew will not load formulae from an untapped third-party tap
 brew tap stuffbucket/tap < /dev/null
+# Homebrew 7+ only loads formulae from trusted third-party taps; older versions lack `brew trust`
+if brew commands --quiet 2>/dev/null | grep -qx trust; then
+    brew trust stuffbucket/tap < /dev/null
+fi
 
 # Detect fresh install vs upgrade
 IS_UPGRADE=false

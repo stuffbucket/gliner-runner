@@ -63,11 +63,10 @@ Release Please has not been verified against `-rc.N` tags; confirm that its next
 release pull request still computes the right base version and changelog range
 after the first RC.
 
-The next stable release is `0.3.0` (`v0.2.1` is the current latest). Release
-Please is pinned to it with `"release-as": "0.3.0"` on the root package in
-`release-please-config.json`; **remove that line once `v0.3.0` is released**, or
-every later release pull request is forced to 0.3.0 again. Dispatch the
-`Release candidate` workflow with `0.3.0` to get `v0.3.0-rc.1`, `v0.3.0-rc.2`, ...
+Release candidates are numbered for the next stable version: dispatch the
+`Release candidate` workflow with `X.Y.Z` to get `vX.Y.Z-rc.1`, `vX.Y.Z-rc.2`, and so on.
+To force a specific stable version, set `"release-as"` on the root package in
+`release-please-config.json` and remove it after that release.
 
 ### Manifest and upgrade feed
 
@@ -134,9 +133,9 @@ expected version (up to 40 minutes), runs `brew install`, checks
 the release run failed after the release is already published; re-run it from the
 Actions tab once the tap sync is fixed.
 
-Users install with `brew tap stuffbucket/tap && brew install
-stuffbucket/tap/gliner-runner` (or `-rc`). Recent Homebrew refuses to load
-formulae from a third-party tap that was never tapped, so tap explicitly.
+Users install with `brew tap stuffbucket/tap && brew trust stuffbucket/tap && brew install
+gliner-runner` (or `gliner-runner-rc`). Homebrew 7 refuses to load formulae from a
+third-party tap that is not tapped and trusted, including the `conflicts_with` target.
 `brew update && brew outdated` reports new versions once the tap sync has copied
 them.
 

@@ -84,6 +84,8 @@ jobs:
           set -eu
           # Tap explicitly: recent Homebrew will not load formulae from an untapped third-party tap.
           brew tap stuffbucket/tap
+          # Homebrew 7+ refuses to load third-party formulae (including conflicts_with targets) until trusted.
+          brew trust stuffbucket/tap
           deadline=$((SECONDS + 2400))
           while :; do
             brew update --quiet || true
