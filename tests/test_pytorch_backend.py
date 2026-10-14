@@ -19,7 +19,7 @@ from gliner_runner.contracts import (
     Precision,
     PrecisionProfile,
 )
-from gliner_runner.errors import BackendUnavailableError
+from gliner_runner.errors import BackendUnavailableError, InvalidSchemaError
 
 
 class FakeOracleSchema:
@@ -34,6 +34,10 @@ class FakeOracleSchema:
         assert set(value["tasks"]) == {"label"}
         cls.received = value
         return cls.compiled_input
+
+
+class FakeSchemaError(ValueError):
+    pass
 
 
 class FakeResult:
@@ -53,6 +57,7 @@ class FakeClassifier:
     instance: FakeClassifier | None = None
     loads = 0
     result_limit: int | None = None
+    schema_error: FakeSchemaError | None = None
 
     def __init__(self) -> None:
         self.call: tuple[list[str], object, object] | None = None
@@ -90,6 +95,8 @@ class FakeClassifier:
 
     def compile_schema(self, schema: object) -> FakeCompiledSchema:
         assert schema is FakeOracleSchema.compiled_input
+        if self.schema_error is not None:
+            raise self.schema_error
         return FakeCompiledSchema()
 
 
@@ -148,10 +155,12 @@ async def test_adapter_uses_fastino_public_batch_classify(
 ) -> None:
     FakeClassifier.loads = 0
     FakeClassifier.result_limit = None
+    FakeClassifier.schema_error = None
     module = ModuleType("gliner2.classification")
     module.Classifier = FakeClassifier  # type: ignore[attr-defined]
     module.ClassificationSchema = FakeOracleSchema  # type: ignore[attr-defined]
     module.ClassificationConfig = FakeConfig  # type: ignore[attr-defined]
+    module.SchemaError = FakeSchemaError  # type: ignore[attr-defined]
     monkeypatch.setitem(sys.modules, "gliner2.classification", module)
     backend = PyTorchBackend("/models/pinned", Precision.FP32, "cpu")
     await backend.load()
@@ -174,9 +183,7 @@ async def test_adapter_uses_fastino_public_batch_classify(
         "useful",
         "useful",
     ]
-    assert outputs[0].output == {
-        "label": {"value": "useful", "confidence": 0.9}
-    }
+    assert outputs[0].output == {"label": {"value": "useful", "confidence": 0.9}}
     assert FakeClassifier.instance is not None
     assert FakeClassifier.instance.call is not None
     assert FakeClassifier.instance.call[0] == ["one", "longer"]
@@ -231,6 +238,28 @@ async def test_adapter_uses_fastino_public_batch_classify(
     assert str(unloaded.value) == "backend must be loaded before inference"
 
 
+async def test_adapter_translates_schema_error(
+    monkeypatch: Any,
+    request_factory: Any,
+) -> None:
+    upstream_error = FakeSchemaError("constraint set is infeasible")
+    monkeypatch.setattr(FakeClassifier, "schema_error", upstream_error)
+    module = ModuleType("gliner2.classification")
+    module.Classifier = FakeClassifier  # type: ignore[attr-defined]
+    module.ClassificationSchema = FakeOracleSchema  # type: ignore[attr-defined]
+    module.ClassificationConfig = FakeConfig  # type: ignore[attr-defined]
+    module.SchemaError = FakeSchemaError  # type: ignore[attr-defined]
+    monkeypatch.setitem(sys.modules, "gliner2.classification", module)
+    backend = PyTorchBackend("/models/pinned", Precision.FP32, "cpu")
+    await backend.load()
+
+    with pytest.raises(InvalidSchemaError) as captured:
+        await backend.infer_batch([request_factory()])
+
+    assert str(captured.value) == "constraint set is infeasible"
+    assert captured.value.__cause__ is upstream_error
+
+
 async def test_empty_batch_does_not_require_loaded_model() -> None:
     backend = PyTorchBackend("/models/pinned", Precision.FP32, "cpu")
 
@@ -254,8 +283,7 @@ async def test_load_requires_classifier_export(monkeypatch: Any) -> None:
         await backend.load()
 
     assert (
-        str(captured.value)
-        == "installed gliner2 package does not export classification.Classifier"
+        str(captured.value) == "installed gliner2 package does not export classification.Classifier"
     )
 
 
@@ -351,10 +379,13 @@ def test_available_profiles_follow_cuda_architecture(monkeypatch: Any) -> None:
     torch.cuda.get_device_capability = lambda: (5, 3)  # type: ignore[attr-defined,method-assign]
     boundary_profiles = _available_precision_profiles()
 
-    assert PrecisionProfile(
-        device="cuda",
-        precision=Precision.FP16,
-    ) in boundary_profiles
+    assert (
+        PrecisionProfile(
+            device="cuda",
+            precision=Precision.FP16,
+        )
+        in boundary_profiles
+    )
 
 
 def test_available_profiles_without_torch_are_cpu_only(monkeypatch: Any) -> None:

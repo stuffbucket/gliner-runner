@@ -1,0 +1,291 @@
+{
+  "architecture": "arm64",
+  "behavior_workload_sha256": "d8d311f235a96e1092b0841523e14b318831aa6e2c4ffe8bb2f47917ae9a7983",
+  "comparisons": [],
+  "example_count": 21,
+  "expected_gliner2_version": "2.1.0",
+  "format_version": 3,
+  "generated_at_utc": "2026-10-13T20:39:19Z",
+  "hardware": "Apple M5 Max",
+  "logical_cores": 18,
+  "model_bytes": 1954846857,
+  "model_card_sha256": "09a9705ee8c30392bb5a82ac503c01b889ff7e957a4c96bf7249f05acde709a3",
+  "model_content_sha256": "5081e1a9b994143fe7f98810c909c8f6498914016b9fbe58c46a5a1135e34946",
+  "model_files": 10,
+  "model_id": "fastino/GLiNER2.5-Decide",
+  "model_repository": "fastino/GLiNER2.5-Decide",
+  "model_revision": "9d1bfb848cd16d93ee56ccbc59cd92bf0f284d90",
+  "os": "Darwin 26.7.1",
+  "physical_cores": 18,
+  "profiles": [
+    {
+      "device": "cpu",
+      "examples": [
+        {
+          "actual_output": {
+            "intent": "refund_request"
+          },
+          "latency_ms": 159.31045800061838,
+          "matches_potential_output": true,
+          "name": "Customer support intent",
+          "potential_output": {
+            "intent": "refund_request"
+          }
+        },
+        {
+          "actual_output": {
+            "intent": "beneficiary_add"
+          },
+          "latency_ms": 137.00949999838485,
+          "matches_potential_output": false,
+          "name": "Banking request",
+          "potential_output": {
+            "intent": "transfer_cancel"
+          }
+        },
+        {
+          "actual_output": {
+            "request": "seat_change"
+          },
+          "latency_ms": 141.58441700055846,
+          "matches_potential_output": false,
+          "name": "Travel request",
+          "potential_output": {
+            "request": "change"
+          }
+        },
+        {
+          "actual_output": {
+            "request": "book_appointment"
+          },
+          "latency_ms": 134.39991700033715,
+          "matches_potential_output": true,
+          "name": "Clinic request",
+          "potential_output": {
+            "request": "book_appointment"
+          }
+        },
+        {
+          "actual_output": {
+            "sentiment": "positive"
+          },
+          "latency_ms": 104.28829199918255,
+          "matches_potential_output": false,
+          "name": "Review sentiment",
+          "potential_output": {
+            "sentiment": "mixed"
+          }
+        },
+        {
+          "actual_output": {
+            "aspects": [
+              "battery",
+              "keyboard",
+              "screen"
+            ]
+          },
+          "latency_ms": 104.7539159990265,
+          "matches_potential_output": true,
+          "name": "Product aspects",
+          "potential_output": {
+            "aspects": [
+              "battery",
+              "keyboard",
+              "screen"
+            ]
+          }
+        },
+        {
+          "actual_output": {
+            "topic": "business"
+          },
+          "latency_ms": 102.24974999982805,
+          "matches_potential_output": true,
+          "name": "News topic",
+          "potential_output": {
+            "topic": "business"
+          }
+        },
+        {
+          "actual_output": {
+            "document_type": "invoice"
+          },
+          "latency_ms": 143.06687499993131,
+          "matches_potential_output": true,
+          "name": "Document type",
+          "potential_output": {
+            "document_type": "invoice"
+          }
+        },
+        {
+          "actual_output": {
+            "intent": "request",
+            "route": "legal",
+            "urgency": "critical"
+          },
+          "latency_ms": 167.37266699965403,
+          "matches_potential_output": false,
+          "name": "Email triage",
+          "potential_output": {
+            "intent": "request",
+            "route": "legal",
+            "urgency": "high"
+          }
+        },
+        {
+          "actual_output": {
+            "queue": "benefits"
+          },
+          "latency_ms": 135.25654099976236,
+          "matches_potential_output": true,
+          "name": "Ticket routing",
+          "potential_output": {
+            "queue": "benefits"
+          }
+        },
+        {
+          "actual_output": {
+            "handoff": "no"
+          },
+          "latency_ms": 109.55829200065637,
+          "matches_potential_output": false,
+          "name": "Handoff to a person",
+          "potential_output": {
+            "handoff": "yes"
+          }
+        },
+        {
+          "actual_output": {
+            "finished": "no"
+          },
+          "latency_ms": 102.0714999995107,
+          "matches_potential_output": true,
+          "name": "Did the agent finish?",
+          "potential_output": {
+            "finished": "no"
+          }
+        },
+        {
+          "actual_output": {
+            "policy": "personal_data"
+          },
+          "latency_ms": 115.34429099992849,
+          "matches_potential_output": true,
+          "name": "Moderation",
+          "potential_output": {
+            "policy": "personal_data"
+          }
+        },
+        {
+          "actual_output": {
+            "severity": "info"
+          },
+          "latency_ms": 135.20045800032676,
+          "matches_potential_output": false,
+          "name": "Incident severity",
+          "potential_output": {
+            "severity": "low"
+          }
+        },
+        {
+          "actual_output": {
+            "urgency": "5"
+          },
+          "latency_ms": 136.14370800132747,
+          "matches_potential_output": true,
+          "name": "Urgency score",
+          "potential_output": {
+            "urgency": "5"
+          }
+        },
+        {
+          "actual_output": {
+            "label": "spam"
+          },
+          "latency_ms": 89.13945799940848,
+          "matches_potential_output": true,
+          "name": "Spam or not",
+          "potential_output": {
+            "label": "spam"
+          }
+        },
+        {
+          "actual_output": {
+            "intent": "room_change",
+            "needs_human": "yes",
+            "priority": "urgent",
+            "topics": [
+              "hvac"
+            ]
+          },
+          "latency_ms": 146.78691699919,
+          "matches_potential_output": false,
+          "name": "Several decisions at once",
+          "potential_output": {
+            "intent": "room_change",
+            "needs_human": "yes",
+            "priority": "high",
+            "topics": [
+              "hvac",
+              "billing"
+            ]
+          }
+        },
+        {
+          "actual_output": {
+            "answer": "yes"
+          },
+          "latency_ms": 105.81483300120453,
+          "matches_potential_output": false,
+          "name": "Question over a passage",
+          "potential_output": {
+            "answer": "no"
+          }
+        },
+        {
+          "actual_output": {
+            "genre": "history"
+          },
+          "latency_ms": 135.9454999983427,
+          "matches_potential_output": false,
+          "name": "Book",
+          "potential_output": {
+            "genre": "literary_fiction"
+          }
+        },
+        {
+          "actual_output": {
+            "intent": "card_pin_change"
+          },
+          "latency_ms": 162.99070800050686,
+          "matches_potential_output": true,
+          "name": "Labels with a description",
+          "potential_output": {
+            "intent": "card_pin_change"
+          }
+        },
+        {
+          "actual_output": {
+            "rating": "7"
+          },
+          "latency_ms": 110.55495899927337,
+          "matches_potential_output": true,
+          "name": "Ordinal score",
+          "potential_output": {
+            "rating": "7"
+          }
+        }
+      ],
+      "load_ms": 4594.536708000305,
+      "potential_output_matches": 12,
+      "precision": "fp32",
+      "successful_examples": 21
+    }
+  ],
+  "snapshot_identity_validation": "inventory-marker",
+  "versions": {
+    "gliner2": "2.1.0",
+    "python": "3.12.12",
+    "torch": "2.14.0"
+  }
+}

@@ -1,0 +1,122 @@
+{
+  "baseline": {
+    "gliner2_version": "2.1.0",
+    "kind": "real-model-runner",
+    "model_content_sha256": "0fc359fda9ab12da8c1b3a94320746de9a25be9e6ef1eb92cbc43051e5a508cb",
+    "model_repository": "fastino/GLiNER2.5-multi-Decide",
+    "model_revision": "e173bca1f0c4217d7a55b3b0c705d5ece8a0218d",
+    "profile": "cpu/fp32"
+  },
+  "candidate": {
+    "gliner2_version": "2.1.0",
+    "kind": "real-model-runner",
+    "model_content_sha256": "0fc359fda9ab12da8c1b3a94320746de9a25be9e6ef1eb92cbc43051e5a508cb",
+    "model_repository": "fastino/GLiNER2.5-multi-Decide",
+    "model_revision": "e173bca1f0c4217d7a55b3b0c705d5ece8a0218d",
+    "profile": "mps/fp32"
+  },
+  "cases": [
+    {
+      "baseline_mode_consistent": true,
+      "behavioral_output_match": true,
+      "candidate_mode_consistent": true,
+      "case_id": "described-single",
+      "decoder_metadata_match": true,
+      "exact_output_match": false,
+      "max_abs_numeric_difference": 2.5331974029541016e-06,
+      "numeric_path_sets_match": true,
+      "numeric_paths_compared": 18,
+      "token_usage_match": true
+    },
+    {
+      "baseline_mode_consistent": true,
+      "behavioral_output_match": true,
+      "candidate_mode_consistent": true,
+      "case_id": "multi-label",
+      "decoder_metadata_match": true,
+      "exact_output_match": false,
+      "max_abs_numeric_difference": 2.7418136596679688e-06,
+      "numeric_path_sets_match": true,
+      "numeric_paths_compared": 12,
+      "token_usage_match": true
+    },
+    {
+      "baseline_mode_consistent": true,
+      "behavioral_output_match": true,
+      "candidate_mode_consistent": true,
+      "case_id": "high-threshold-empty",
+      "decoder_metadata_match": true,
+      "exact_output_match": false,
+      "max_abs_numeric_difference": 5.508068958159917e-07,
+      "numeric_path_sets_match": true,
+      "numeric_paths_compared": 8,
+      "token_usage_match": true
+    },
+    {
+      "baseline_mode_consistent": true,
+      "behavioral_output_match": true,
+      "candidate_mode_consistent": true,
+      "case_id": "ordered-label",
+      "decoder_metadata_match": true,
+      "exact_output_match": false,
+      "max_abs_numeric_difference": 1.4603137969970703e-06,
+      "numeric_path_sets_match": true,
+      "numeric_paths_compared": 12,
+      "token_usage_match": true
+    },
+    {
+      "baseline_mode_consistent": true,
+      "behavioral_output_match": true,
+      "candidate_mode_consistent": true,
+      "case_id": "feasible-constraint",
+      "decoder_metadata_match": true,
+      "exact_output_match": false,
+      "max_abs_numeric_difference": 4.0978193283081055e-06,
+      "numeric_path_sets_match": true,
+      "numeric_paths_compared": 14,
+      "token_usage_match": true
+    },
+    {
+      "baseline_mode_consistent": true,
+      "behavioral_output_match": true,
+      "candidate_mode_consistent": true,
+      "case_id": "infeasible-constraint",
+      "decoder_metadata_match": null,
+      "exact_output_match": true,
+      "max_abs_numeric_difference": null,
+      "numeric_path_sets_match": null,
+      "numeric_paths_compared": 0,
+      "token_usage_match": null
+    },
+    {
+      "baseline_mode_consistent": true,
+      "behavioral_output_match": true,
+      "candidate_mode_consistent": true,
+      "case_id": "mixed-length-long",
+      "decoder_metadata_match": true,
+      "exact_output_match": false,
+      "max_abs_numeric_difference": 3.039836883544922e-06,
+      "numeric_path_sets_match": true,
+      "numeric_paths_compared": 18,
+      "token_usage_match": true
+    }
+  ],
+  "format_version": 2,
+  "summary": {
+    "baseline_mode_consistency_measured": 7,
+    "baseline_mode_consistent": 7,
+    "behavioral_output_matches": 7,
+    "candidate_mode_consistency_measured": 7,
+    "candidate_mode_consistent": 7,
+    "cases": 7,
+    "decoder_metadata_matches": 6,
+    "decoder_metadata_measured": 6,
+    "exact_output_matches": 1,
+    "max_abs_numeric_difference": 4.0978193283081055e-06,
+    "numeric_path_set_matches": 6,
+    "numeric_path_sets_measured": 6,
+    "token_usage_matches": 6,
+    "token_usage_measured": 6
+  },
+  "workload_sha256": "76cd554d9647436bf01f7db7c666074f52c9e127c84643bd2bf7d93dfb8238fb"
+}

@@ -1,0 +1,596 @@
+{
+  "format_version": 1,
+  "kind": "gliner-runner-onnx-reference-outputs",
+  "model_id": "decide-multilingual",
+  "repository": "fastino/GLiNER2.5-multi-Decide",
+  "revision": "e173bca1f0c4217d7a55b3b0c705d5ece8a0218d",
+  "corpus_id": "english-v1",
+  "corpus_sha256": "10aa107ccc49c0b0eab283a6d2ad74b98057e08b1c3b61dbec790d10d45c9de6",
+  "reference": {
+    "backend": "pytorch",
+    "device": "cpu",
+    "precision": "fp32",
+    "path": "gliner_runner.backends.pytorch.PyTorchBackend",
+    "versions": {
+      "python": "3.12.12",
+      "gliner2": "2.1.0",
+      "torch": "2.14.0",
+      "transformers": "5.19.0"
+    }
+  },
+  "singleton": [
+    {
+      "case_id": "described-single",
+      "categories": [
+        "single_label",
+        "described_label",
+        "repeated_run",
+        "token_accounting"
+      ],
+      "language": null,
+      "batch_group": "mixed-length",
+      "status": "success",
+      "http_status": 200,
+      "output": {
+        "intent": {
+          "value": "billing",
+          "confidence": 0.6985913145309812,
+          "probabilities": {
+            "billing": 0.6985913145309812,
+            "technical_support": 0.06380803683318056,
+            "account_access": 0.19395737084112455,
+            "shipping": 0.04364327779471366
+          }
+        },
+        "_meta": {
+          "feasible": true,
+          "decoder": "independent",
+          "exact": true,
+          "objective": 0.3729860186576843,
+          "violations": []
+        }
+      },
+      "usage": {
+        "inputTokens": 106,
+        "outputTokens": 0
+      },
+      "repeats": 2,
+      "repeat_identical": true
+    },
+    {
+      "case_id": "multi-label",
+      "categories": [
+        "multi_label",
+        "selected_order",
+        "token_accounting"
+      ],
+      "language": null,
+      "batch_group": null,
+      "status": "success",
+      "http_status": 200,
+      "output": {
+        "topics": {
+          "value": [
+            "billing",
+            "technical_support"
+          ],
+          "confidence": 0.7360015286060531,
+          "probabilities": {
+            "billing": 0.49526299460383666,
+            "technical_support": 0.7161382340900756,
+            "account_access": 0.14136135514663076,
+            "shipping": 0.03645568341073507
+          }
+        },
+        "_meta": {
+          "feasible": true,
+          "decoder": "independent",
+          "exact": true,
+          "objective": 2.6010329650406794,
+          "violations": []
+        }
+      },
+      "usage": {
+        "inputTokens": 40,
+        "outputTokens": 0
+      },
+      "repeats": 2,
+      "repeat_identical": true
+    },
+    {
+      "case_id": "high-threshold-empty",
+      "categories": [
+        "threshold",
+        "empty_result",
+        "token_accounting"
+      ],
+      "language": null,
+      "batch_group": null,
+      "status": "success",
+      "http_status": 200,
+      "output": {
+        "topics": {
+          "value": [],
+          "confidence": null,
+          "probabilities": {
+            "billing": 0.24585213236485218,
+            "technical_support": 0.3994232307974702,
+            "shipping": 0.2935980073300037
+          }
+        },
+        "_meta": {
+          "feasible": true,
+          "decoder": "independent",
+          "exact": true,
+          "objective": 0.0,
+          "violations": []
+        }
+      },
+      "usage": {
+        "inputTokens": 24,
+        "outputTokens": 0
+      },
+      "repeats": 2,
+      "repeat_identical": true
+    },
+    {
+      "case_id": "ordered-label",
+      "categories": [
+        "ordered",
+        "token_accounting"
+      ],
+      "language": null,
+      "batch_group": null,
+      "status": "success",
+      "http_status": 200,
+      "output": {
+        "priority": {
+          "value": "critical",
+          "confidence": 0.46953390414103063,
+          "probabilities": {
+            "low": 0.056599578394019794,
+            "medium": 0.08653572330053663,
+            "high": 0.387330794164413,
+            "critical": 0.46953390414103063
+          }
+        },
+        "_meta": {
+          "feasible": true,
+          "decoder": "independent",
+          "exact": true,
+          "objective": -0.2487563043832779,
+          "violations": []
+        }
+      },
+      "usage": {
+        "inputTokens": 33,
+        "outputTokens": 0
+      },
+      "repeats": 2,
+      "repeat_identical": true
+    },
+    {
+      "case_id": "feasible-constraint",
+      "categories": [
+        "constraint",
+        "feasible",
+        "token_accounting"
+      ],
+      "language": null,
+      "batch_group": null,
+      "status": "success",
+      "http_status": 200,
+      "output": {
+        "intent": {
+          "value": "refund",
+          "confidence": 0.9995038623915471,
+          "probabilities": {
+            "refund": 0.9995038623915471,
+            "question": 0.000496137608452938
+          }
+        },
+        "route": {
+          "value": "billing",
+          "confidence": 0.6443439921620813,
+          "probabilities": {
+            "billing": 0.6443439921620813,
+            "support": 0.3556560078379187
+          }
+        },
+        "_meta": {
+          "feasible": true,
+          "decoder": "exact",
+          "exact": true,
+          "objective": 4.486840486526489,
+          "violations": []
+        }
+      },
+      "usage": {
+        "inputTokens": 38,
+        "outputTokens": 0
+      },
+      "repeats": 2,
+      "repeat_identical": true
+    },
+    {
+      "case_id": "infeasible-constraint",
+      "categories": [
+        "constraint",
+        "infeasible",
+        "token_accounting"
+      ],
+      "language": null,
+      "batch_group": null,
+      "status": "error",
+      "http_status": 422,
+      "error": {
+        "code": "invalid_schema",
+        "message": "no label of exclusive task 'decision' satisfies its constraints; the task is pinned to the empty set",
+        "retryable": false
+      },
+      "repeats": 2,
+      "repeat_identical": true
+    },
+    {
+      "case_id": "mixed-length-long",
+      "categories": [
+        "mixed_length",
+        "singleton_batch",
+        "token_accounting"
+      ],
+      "language": null,
+      "batch_group": "mixed-length",
+      "status": "success",
+      "http_status": 200,
+      "output": {
+        "intent": {
+          "value": "account_access",
+          "confidence": 0.8025211060203384,
+          "probabilities": {
+            "billing": 0.04014747493178522,
+            "technical_support": 0.13193048715378802,
+            "account_access": 0.8025211060203384,
+            "shipping": 0.02540093189408827
+          }
+        },
+        "_meta": {
+          "feasible": true,
+          "decoder": "independent",
+          "exact": true,
+          "objective": 0.6315504312515259,
+          "violations": []
+        }
+      },
+      "usage": {
+        "inputTokens": 317,
+        "outputTokens": 0
+      },
+      "repeats": 2,
+      "repeat_identical": true
+    },
+    {
+      "case_id": "described-single-repeat",
+      "categories": [
+        "single_label",
+        "described_label",
+        "repeated_run",
+        "batching"
+      ],
+      "language": null,
+      "batch_group": "mixed-length",
+      "status": "success",
+      "http_status": 200,
+      "output": {
+        "intent": {
+          "value": "billing",
+          "confidence": 0.6985913145309812,
+          "probabilities": {
+            "billing": 0.6985913145309812,
+            "technical_support": 0.06380803683318056,
+            "account_access": 0.19395737084112455,
+            "shipping": 0.04364327779471366
+          }
+        },
+        "_meta": {
+          "feasible": true,
+          "decoder": "independent",
+          "exact": true,
+          "objective": 0.3729860186576843,
+          "violations": []
+        }
+      },
+      "usage": {
+        "inputTokens": 106,
+        "outputTokens": 0
+      },
+      "repeats": 2,
+      "repeat_identical": true
+    },
+    {
+      "case_id": "multi-task-described-instruction",
+      "categories": [
+        "multi_task",
+        "described_label",
+        "instruction",
+        "multi_label",
+        "token_accounting"
+      ],
+      "language": null,
+      "batch_group": null,
+      "status": "success",
+      "http_status": 200,
+      "output": {
+        "department": {
+          "value": "technical_support",
+          "confidence": 0.8226900067072073,
+          "probabilities": {
+            "billing": 0.08603407880405914,
+            "technical_support": 0.8226900067072073,
+            "account_access": 0.0755638483485687,
+            "shipping": 0.015712066140164904
+          }
+        },
+        "topics": {
+          "value": [
+            "technical_support"
+          ],
+          "confidence": 0.728693040075855,
+          "probabilities": {
+            "billing": 0.4191007416001129,
+            "technical_support": 0.7806124610808561,
+            "account_access": 0.3126229021901058,
+            "shipping": 0.09541969863332285
+          }
+        },
+        "_meta": {
+          "feasible": true,
+          "decoder": "independent",
+          "exact": true,
+          "objective": 3.2191557419332244,
+          "violations": []
+        }
+      },
+      "usage": {
+        "inputTokens": 139,
+        "outputTokens": 0
+      },
+      "repeats": 2,
+      "repeat_identical": true
+    },
+    {
+      "case_id": "default-temperature-multi-label",
+      "categories": [
+        "default",
+        "temperature",
+        "multi_label",
+        "token_accounting"
+      ],
+      "language": null,
+      "batch_group": null,
+      "status": "success",
+      "http_status": 200,
+      "output": {
+        "topics": {
+          "value": [
+            "other"
+          ],
+          "confidence": 0.6159246241959642,
+          "probabilities": {
+            "billing": 0.3319441701892217,
+            "shipping": 0.3294422013880535,
+            "other": 0.5215953675374245
+          }
+        },
+        "_meta": {
+          "feasible": true,
+          "decoder": "independent",
+          "exact": true,
+          "objective": 0.0864352434873581,
+          "violations": []
+        }
+      },
+      "usage": {
+        "inputTokens": 21,
+        "outputTokens": 0
+      },
+      "repeats": 2,
+      "repeat_identical": true
+    },
+    {
+      "case_id": "softmax-activation",
+      "categories": [
+        "activation",
+        "single_label",
+        "token_accounting"
+      ],
+      "language": null,
+      "batch_group": null,
+      "status": "success",
+      "http_status": 200,
+      "output": {
+        "intent": {
+          "value": "refund",
+          "confidence": 0.9996670849819054,
+          "probabilities": {
+            "refund": 0.9996670849819054,
+            "question": 0.00010672295355895043,
+            "complaint": 0.00022619206453572958
+          }
+        },
+        "_meta": {
+          "feasible": true,
+          "decoder": "independent",
+          "exact": true,
+          "objective": 4.773285865783691,
+          "violations": []
+        }
+      },
+      "usage": {
+        "inputTokens": 27,
+        "outputTokens": 0
+      },
+      "repeats": 2,
+      "repeat_identical": true
+    },
+    {
+      "case_id": "invalid-reserved-marker",
+      "categories": [
+        "invalid_schema",
+        "structured_error"
+      ],
+      "language": null,
+      "batch_group": null,
+      "status": "error",
+      "http_status": 422,
+      "error": {
+        "code": "invalid_schema",
+        "message": "label name may not contain '[P]': label and prompt strings are injected into the model prompt verbatim, and this would corrupt logit-to-label alignment",
+        "retryable": false
+      },
+      "repeats": 2,
+      "repeat_identical": true
+    },
+    {
+      "case_id": "invalid-min-exceeds-max",
+      "categories": [
+        "invalid_schema",
+        "structured_error"
+      ],
+      "language": null,
+      "batch_group": null,
+      "status": "error",
+      "http_status": 422,
+      "error": {
+        "code": "invalid_schema",
+        "message": "task 'intent': min_labels (2) exceeds max_labels (1)",
+        "retryable": false
+      },
+      "repeats": 2,
+      "repeat_identical": true
+    },
+    {
+      "case_id": "invalid-unknown-constraint-label",
+      "categories": [
+        "invalid_schema",
+        "structured_error",
+        "constraint"
+      ],
+      "language": null,
+      "batch_group": null,
+      "status": "error",
+      "http_status": 422,
+      "error": {
+        "code": "invalid_schema",
+        "message": "'maybe' is not a label of 'decision'",
+        "retryable": false
+      },
+      "repeats": 2,
+      "repeat_identical": true
+    }
+  ],
+  "batches": [
+    {
+      "batch_group": "mixed-length",
+      "case_ids": [
+        "described-single",
+        "mixed-length-long",
+        "described-single-repeat"
+      ],
+      "results": [
+        {
+          "case_id": "described-single",
+          "status": "success",
+          "http_status": 200,
+          "output": {
+            "intent": {
+              "value": "billing",
+              "confidence": 0.6985913145309812,
+              "probabilities": {
+                "billing": 0.6985913145309812,
+                "technical_support": 0.06380803683318056,
+                "account_access": 0.19395737084112455,
+                "shipping": 0.04364327779471366
+              }
+            },
+            "_meta": {
+              "feasible": true,
+              "decoder": "independent",
+              "exact": true,
+              "objective": 0.3729860186576843,
+              "violations": []
+            }
+          },
+          "usage": {
+            "inputTokens": 106,
+            "outputTokens": 0
+          },
+          "matches_singleton_structure": true,
+          "matches_singleton_exactly": true,
+          "max_abs_float_difference_vs_singleton": 0.0
+        },
+        {
+          "case_id": "mixed-length-long",
+          "status": "success",
+          "http_status": 200,
+          "output": {
+            "intent": {
+              "value": "account_access",
+              "confidence": 0.8025211060203384,
+              "probabilities": {
+                "billing": 0.04014747493178522,
+                "technical_support": 0.13193048715378802,
+                "account_access": 0.8025211060203384,
+                "shipping": 0.02540093189408827
+              }
+            },
+            "_meta": {
+              "feasible": true,
+              "decoder": "independent",
+              "exact": true,
+              "objective": 0.6315504312515259,
+              "violations": []
+            }
+          },
+          "usage": {
+            "inputTokens": 317,
+            "outputTokens": 0
+          },
+          "matches_singleton_structure": true,
+          "matches_singleton_exactly": true,
+          "max_abs_float_difference_vs_singleton": 0.0
+        },
+        {
+          "case_id": "described-single-repeat",
+          "status": "success",
+          "http_status": 200,
+          "output": {
+            "intent": {
+              "value": "billing",
+              "confidence": 0.6985913145309812,
+              "probabilities": {
+                "billing": 0.6985913145309812,
+                "technical_support": 0.06380803683318056,
+                "account_access": 0.19395737084112455,
+                "shipping": 0.04364327779471366
+              }
+            },
+            "_meta": {
+              "feasible": true,
+              "decoder": "independent",
+              "exact": true,
+              "objective": 0.3729860186576843,
+              "violations": []
+            }
+          },
+          "usage": {
+            "inputTokens": 106,
+            "outputTokens": 0
+          },
+          "matches_singleton_structure": true,
+          "matches_singleton_exactly": true,
+          "max_abs_float_difference_vs_singleton": 0.0
+        }
+      ]
+    }
+  ]
+}

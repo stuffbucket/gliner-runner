@@ -1,0 +1,106 @@
+{
+  "format_version": 1,
+  "kind": "gliner-runner-gliner2-preprocessing",
+  "gliner2_version": "2.1.0",
+  "model": {
+    "model_id": "decide-1b",
+    "repository": "fastino/GLiNER2.5-Decide-1B",
+    "revision": "67af949e17bebd20f05fe020a971079889e7a462",
+    "architecture": "span",
+    "encoder": "jhu-clsp/ettin-enc-from-dec-1b",
+    "token_pooling": "first",
+    "snapshot_config_max_len": null
+  },
+  "tokenizer": {
+    "tokenizer_json": "tokenizer.json",
+    "tokenizer_config_json": "tokenizer_config.json",
+    "special_tokens_map_json": null,
+    "tokenizer_class": "TokenizersBackend",
+    "encode_each_word_independently": true,
+    "add_special_tokens": false,
+    "unknown_token": {
+      "token": "[UNK]",
+      "id": 50280
+    }
+  },
+  "special_tokens": {
+    "[SEP_STRUCT]": 50368,
+    "[SEP_TEXT]": 50369,
+    "[P]": 50370,
+    "[C]": 50371,
+    "[E]": 50372,
+    "[R]": 50373,
+    "[L]": 50374,
+    "[EXAMPLE]": 50375,
+    "[OUTPUT]": 50376,
+    "[DESCRIPTION]": 50377
+  },
+  "markers": {
+    "structure_separator": "[SEP_STRUCT]",
+    "text_separator": "[SEP_TEXT]",
+    "prompt": "[P]",
+    "label": "[L]",
+    "description": "[DESCRIPTION]",
+    "example": "[EXAMPLE]",
+    "output": "[OUTPUT]"
+  },
+  "reserved_strings": [
+    "[P]",
+    "[L]",
+    "[C]",
+    "[E]",
+    "[R]",
+    "[DESCRIPTION]",
+    "[EXAMPLE]",
+    "[OUTPUT]",
+    "(",
+    ")"
+  ],
+  "text": {
+    "normalization": {
+      "empty_text": ".",
+      "terminal_characters": [
+        ".",
+        "!",
+        "?"
+      ],
+      "append_when_missing": "."
+    },
+    "word_splitter": "whitespace",
+    "lowercase_words": true,
+    "lowercase_scope": "text-words-only",
+    "max_words": null
+  },
+  "prompt": {
+    "task_words": [
+      "(",
+      "[P]",
+      "<prompt>",
+      "(",
+      "[L]",
+      "<label>",
+      "...",
+      ")",
+      ")"
+    ],
+    "prompt_text": "<task>[: <instruction>]",
+    "description_suffix": " [DESCRIPTION] <label>: <description>",
+    "example_suffix": " [EXAMPLE] <input> [OUTPUT] <label>",
+    "task_order": "schema declaration order"
+  },
+  "batching": {
+    "padding_side": "right",
+    "input_ids_pad_value": 0,
+    "attention_mask_pad_value": 0,
+    "label_positions_pad_value": 0,
+    "label_mask_pad_value": false
+  },
+  "label_positions": {
+    "marker": "[L]",
+    "scope": "all tasks concatenated in schema order, labels in declaration order",
+    "position": "index of the marker subword in input_ids"
+  },
+  "usage": {
+    "input_tokens": "sum of attention_mask for the request row"
+  }
+}

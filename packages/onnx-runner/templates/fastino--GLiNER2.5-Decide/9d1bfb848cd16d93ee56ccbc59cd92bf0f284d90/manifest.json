@@ -1,0 +1,170 @@
+{
+  "format_version": 1,
+  "kind": "gliner-runner-onnx-classifier",
+  "model_id": "decide-340m",
+  "repository": "fastino/GLiNER2.5-Decide",
+  "revision": "9d1bfb848cd16d93ee56ccbc59cd92bf0f284d90",
+  "source_snapshot_sha256": "5081e1a9b994143fe7f98810c909c8f6498914016b9fbe58c46a5a1135e34946",
+  "source_snapshot_bytes": 1954846857,
+  "parameter_count": 486444053,
+  "license": "apache-2.0",
+  "operations": [
+    "classify"
+  ],
+  "precision": "fp32",
+  "quantization": "none",
+  "provider": "CPUExecutionProvider",
+  "opset": 20,
+  "opset_imports": [
+    {
+      "domain": "ai.onnx",
+      "version": 20
+    }
+  ],
+  "preprocessing": "gliner2.json",
+  "graph": {
+    "path": "model.onnx",
+    "external_data": [
+      "model.onnx.data"
+    ],
+    "inputs": [
+      {
+        "name": "input_ids",
+        "type": "tensor(int64)",
+        "shape": [
+          "batch",
+          "sequence"
+        ]
+      },
+      {
+        "name": "attention_mask",
+        "type": "tensor(int64)",
+        "shape": [
+          "batch",
+          "sequence"
+        ]
+      },
+      {
+        "name": "label_positions",
+        "type": "tensor(int64)",
+        "shape": [
+          "batch",
+          "labels"
+        ]
+      },
+      {
+        "name": "label_mask",
+        "type": "tensor(bool)",
+        "shape": [
+          "batch",
+          "labels"
+        ]
+      }
+    ],
+    "outputs": [
+      {
+        "name": "logits",
+        "type": "tensor(float)",
+        "shape": [
+          "batch",
+          "labels"
+        ]
+      }
+    ]
+  },
+  "exporter": {
+    "gliner_runner": "0.2.1",
+    "gliner2": "2.1.0",
+    "torch": "2.14.0",
+    "transformers": "5.19.0",
+    "onnx": "1.23.2",
+    "onnxscript": "0.7.2",
+    "onnxruntime": "1.31.0"
+  },
+  "parity": {
+    "absolute_tolerance": 0.0001,
+    "max_abs_logit_difference": 5.0067901611328125e-06,
+    "official_max_abs_logit_difference": 4.76837158203125e-07,
+    "onnx_official_max_abs_logit_difference": 5.245208740234375e-06,
+    "batch_invariance_max_abs_logit_difference": 2.384185791015625e-06,
+    "selected_index_matches": 19,
+    "rows": 19,
+    "valid_logits_compared": 69,
+    "synthetic_zero_threshold": 0.0001,
+    "nonzero_differences_zeroed": 67,
+    "fixture_suite": "classification-logits-multitask-english-v1",
+    "fixture_sha256": "18d2d00472bb70c358472cae0a68f8b0664a16fd21b9d818a40189415557bc08",
+    "fixture_shapes": [
+      {
+        "batch": 1,
+        "sequence": 119,
+        "labels": 11,
+        "input_tokens": [
+          119
+        ]
+      },
+      {
+        "batch": 3,
+        "sequence": 127,
+        "labels": 11,
+        "input_tokens": [
+          15,
+          127,
+          95
+        ]
+      },
+      {
+        "batch": 2,
+        "sequence": 155,
+        "labels": 11,
+        "input_tokens": [
+          155,
+          116
+        ]
+      },
+      {
+        "batch": 4,
+        "sequence": 113,
+        "labels": 4,
+        "input_tokens": [
+          81,
+          113,
+          81,
+          77
+        ]
+      }
+    ]
+  },
+  "files": [
+    {
+      "path": "gliner2.json",
+      "size": 2551,
+      "sha256": "f8428dc05fd2f89e772f9aa5b522f2e5ad9bdb9dbdd28c30928055225c3241f0"
+    },
+    {
+      "path": "model.onnx",
+      "size": 4990967,
+      "sha256": "782fa7253b80f7035b66f7a068208cbe4f01a0ebc5101cbe789ecb1d76a26e89"
+    },
+    {
+      "path": "model.onnx.data",
+      "size": 1744089152,
+      "sha256": "2a7533742fd3301c7e30775fc75eddf7a9f42053ae66d954fea81b8a4f388262"
+    },
+    {
+      "path": "special_tokens_map.json",
+      "size": 2414,
+      "sha256": "84ea70143f533d7e99b393d87f20010887a9ac2cba955828ef313886e4e83f4f"
+    },
+    {
+      "path": "tokenizer.json",
+      "size": 8333952,
+      "sha256": "3ad87d9ffe669147063e70850927dd2da90249e2acc5c8527f1eb65df467bcc8"
+    },
+    {
+      "path": "tokenizer_config.json",
+      "size": 3356,
+      "sha256": "323199a4e946039410899f3779f2aa3eaef1500213c512727ad0f623d4f21309"
+    }
+  ]
+}

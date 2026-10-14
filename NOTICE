@@ -3,8 +3,19 @@ Copyright 2026 GLiNER Runner contributors
 
 This product includes software developed by the GLiNER Runner contributors.
 
-The optional PyTorch backend uses Fastino GLiNER2 2.0.0, licensed under the
+The optional PyTorch backend uses Fastino GLiNER2 2.1.0, licensed under the
 Apache License, Version 2.0. A copy of that license is provided in LICENSE.
+
+The Python-free ONNX runtime distribution bundles Node.js (MIT License and
+bundled third-party licenses), ONNX Runtime and onnxruntime-node (MIT License,
+Copyright (c) Microsoft Corporation), @huggingface/tokenizers (Apache License,
+Version 2.0), and Zod (MIT License), together with the npm packages listed in
+THIRD_PARTY_NOTICES.md. Each archive carries a generated notice file with the
+exact bundled versions.
+
+The research-only ONNX export tooling uses ONNX under Apache-2.0 and ONNX
+Runtime and ONNX Script under the MIT License. It is not part of the runtime
+distribution.
 
 Requests
 Copyright 2019 Kenneth Reitz

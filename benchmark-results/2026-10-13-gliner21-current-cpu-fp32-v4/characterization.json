@@ -1,0 +1,1148 @@
+{
+  "cold_oracle": {
+    "batch_inference_ms": 296.89466699892364,
+    "event": "finished",
+    "load_ms": 4645.065082999281,
+    "loaded_rss_bytes": 2485665792,
+    "outputs": [
+      {
+        "_meta": {
+          "decoder": "independent",
+          "exact": true,
+          "feasible": true,
+          "objective": 1.299420952796936,
+          "violations": []
+        },
+        "intent": {
+          "confidence": 0.8225280333510869,
+          "probabilities": {
+            "account_access": 0.06828462822762937,
+            "billing": 0.8225280333510869,
+            "shipping": 0.045007771943486666,
+            "technical_support": 0.06417956647779695
+          },
+          "value": "billing"
+        }
+      },
+      {
+        "_meta": {
+          "decoder": "independent",
+          "exact": true,
+          "feasible": true,
+          "objective": 1.6181336641311646,
+          "violations": []
+        },
+        "intent": {
+          "confidence": 0.9092442781779277,
+          "probabilities": {
+            "account_access": 0.038390505130437236,
+            "billing": 0.02638584810426732,
+            "shipping": 0.02597936858736758,
+            "technical_support": 0.9092442781779277
+          },
+          "value": "technical_support"
+        }
+      },
+      {
+        "_meta": {
+          "decoder": "independent",
+          "exact": true,
+          "feasible": true,
+          "objective": 1.1074495315551758,
+          "violations": []
+        },
+        "intent": {
+          "confidence": 0.7947374371604775,
+          "probabilities": {
+            "account_access": 0.7947374371604775,
+            "billing": 0.048133620177928854,
+            "shipping": 0.04156272550697054,
+            "technical_support": 0.11556621715462297
+          },
+          "value": "account_access"
+        }
+      },
+      {
+        "_meta": {
+          "decoder": "independent",
+          "exact": true,
+          "feasible": true,
+          "objective": 1.542157769203186,
+          "violations": []
+        },
+        "intent": {
+          "confidence": 0.9068104568572599,
+          "probabilities": {
+            "account_access": 0.037143929776833236,
+            "billing": 0.021527687505167436,
+            "shipping": 0.9068104568572599,
+            "technical_support": 0.034517925860739394
+          },
+          "value": "shipping"
+        }
+      }
+    ],
+    "peak_rss_bytes": 4154343424,
+    "process_start_ms": 66.55466699885437,
+    "starting_rss_bytes": 34258944,
+    "steady_rss_bytes": 2574483456,
+    "torch_threads": 6,
+    "versions": {
+      "gliner2": "2.1.0",
+      "python": "3.12.12",
+      "torch": "2.14.0",
+      "transformers": "5.19.0"
+    }
+  },
+  "format_version": 4,
+  "http_runner": {
+    "accelerator_peak_bytes": null,
+    "backend_load_events": [
+      {
+        "accelerator_memory": null,
+        "duration_ms": 6887.268665999727,
+        "event": "load",
+        "logical_model": "fastino/GLiNER2.5-Decide@9d1bfb848cd16d93ee56ccbc59cd92bf0f284d90"
+      },
+      {
+        "accelerator_memory": null,
+        "duration_ms": 4758.943458000431,
+        "event": "load",
+        "logical_model": "fastino/GLiNER2.5-Decide@9d1bfb848cd16d93ee56ccbc59cd92bf0f284d90#alias"
+      }
+    ],
+    "behavior_cases": [
+      {
+        "batch": {
+          "http_status": 200,
+          "output": {
+            "_meta": {
+              "decoder": "independent",
+              "exact": true,
+              "feasible": true,
+              "objective": 1.299420952796936,
+              "violations": []
+            },
+            "intent": {
+              "confidence": 0.8225280333510869,
+              "probabilities": {
+                "account_access": 0.06828462822762937,
+                "billing": 0.8225280333510869,
+                "shipping": 0.045007771943486666,
+                "technical_support": 0.06417956647779695
+              },
+              "value": "billing"
+            }
+          },
+          "status": "success",
+          "usage": {
+            "inputTokens": 81,
+            "outputTokens": 0
+          }
+        },
+        "case_id": "described-single",
+        "categories": [
+          "single_label",
+          "described_label",
+          "repeated_run",
+          "token_accounting"
+        ],
+        "repeated": {
+          "http_status": 200,
+          "output": {
+            "_meta": {
+              "decoder": "independent",
+              "exact": true,
+              "feasible": true,
+              "objective": 1.299420952796936,
+              "violations": []
+            },
+            "intent": {
+              "confidence": 0.8225280333510869,
+              "probabilities": {
+                "account_access": 0.06828462822762937,
+                "billing": 0.8225280333510869,
+                "shipping": 0.045007771943486666,
+                "technical_support": 0.06417956647779695
+              },
+              "value": "billing"
+            }
+          },
+          "status": "success",
+          "usage": {
+            "inputTokens": 81,
+            "outputTokens": 0
+          }
+        },
+        "singleton": {
+          "http_status": 200,
+          "output": {
+            "_meta": {
+              "decoder": "independent",
+              "exact": true,
+              "feasible": true,
+              "objective": 1.299420952796936,
+              "violations": []
+            },
+            "intent": {
+              "confidence": 0.8225280333510869,
+              "probabilities": {
+                "account_access": 0.06828462822762937,
+                "billing": 0.8225280333510869,
+                "shipping": 0.045007771943486666,
+                "technical_support": 0.06417956647779695
+              },
+              "value": "billing"
+            }
+          },
+          "status": "success",
+          "usage": {
+            "inputTokens": 81,
+            "outputTokens": 0
+          }
+        }
+      },
+      {
+        "case_id": "multi-label",
+        "categories": [
+          "multi_label",
+          "selected_order",
+          "token_accounting"
+        ],
+        "repeated": {
+          "http_status": 200,
+          "output": {
+            "_meta": {
+              "decoder": "independent",
+              "exact": true,
+              "feasible": true,
+              "objective": 5.139602568156,
+              "violations": []
+            },
+            "topics": {
+              "confidence": 0.8733842382762931,
+              "probabilities": {
+                "account_access": 0.16063717189751406,
+                "billing": 0.856618331607731,
+                "shipping": 0.03649510757550049,
+                "technical_support": 0.839905412179947
+              },
+              "value": [
+                "billing",
+                "technical_support"
+              ]
+            }
+          },
+          "status": "success",
+          "usage": {
+            "inputTokens": 29,
+            "outputTokens": 0
+          }
+        },
+        "singleton": {
+          "http_status": 200,
+          "output": {
+            "_meta": {
+              "decoder": "independent",
+              "exact": true,
+              "feasible": true,
+              "objective": 5.139602568156,
+              "violations": []
+            },
+            "topics": {
+              "confidence": 0.8733842382762931,
+              "probabilities": {
+                "account_access": 0.16063717189751406,
+                "billing": 0.856618331607731,
+                "shipping": 0.03649510757550049,
+                "technical_support": 0.839905412179947
+              },
+              "value": [
+                "billing",
+                "technical_support"
+              ]
+            }
+          },
+          "status": "success",
+          "usage": {
+            "inputTokens": 29,
+            "outputTokens": 0
+          }
+        }
+      },
+      {
+        "case_id": "high-threshold-empty",
+        "categories": [
+          "threshold",
+          "empty_result",
+          "token_accounting"
+        ],
+        "repeated": {
+          "http_status": 200,
+          "output": {
+            "_meta": {
+              "decoder": "independent",
+              "exact": true,
+              "feasible": true,
+              "objective": 0.0,
+              "violations": []
+            },
+            "topics": {
+              "confidence": null,
+              "probabilities": {
+                "billing": 0.3310691413649924,
+                "shipping": 0.3888157566448049,
+                "technical_support": 0.4089239397035953
+              },
+              "value": []
+            }
+          },
+          "status": "success",
+          "usage": {
+            "inputTokens": 18,
+            "outputTokens": 0
+          }
+        },
+        "singleton": {
+          "http_status": 200,
+          "output": {
+            "_meta": {
+              "decoder": "independent",
+              "exact": true,
+              "feasible": true,
+              "objective": 0.0,
+              "violations": []
+            },
+            "topics": {
+              "confidence": null,
+              "probabilities": {
+                "billing": 0.3310691413649924,
+                "shipping": 0.3888157566448049,
+                "technical_support": 0.4089239397035953
+              },
+              "value": []
+            }
+          },
+          "status": "success",
+          "usage": {
+            "inputTokens": 18,
+            "outputTokens": 0
+          }
+        }
+      },
+      {
+        "case_id": "ordered-label",
+        "categories": [
+          "ordered",
+          "token_accounting"
+        ],
+        "repeated": {
+          "http_status": 200,
+          "output": {
+            "_meta": {
+              "decoder": "independent",
+              "exact": true,
+              "feasible": true,
+              "objective": 0.1231456995010376,
+              "violations": []
+            },
+            "priority": {
+              "confidence": 0.641446805369165,
+              "probabilities": {
+                "critical": 0.641446805369165,
+                "high": 0.1997275148785231,
+                "low": 0.07229449505283067,
+                "medium": 0.08653118469948119
+              },
+              "value": "critical"
+            }
+          },
+          "status": "success",
+          "usage": {
+            "inputTokens": 27,
+            "outputTokens": 0
+          }
+        },
+        "singleton": {
+          "http_status": 200,
+          "output": {
+            "_meta": {
+              "decoder": "independent",
+              "exact": true,
+              "feasible": true,
+              "objective": 0.1231456995010376,
+              "violations": []
+            },
+            "priority": {
+              "confidence": 0.641446805369165,
+              "probabilities": {
+                "critical": 0.641446805369165,
+                "high": 0.1997275148785231,
+                "low": 0.07229449505283067,
+                "medium": 0.08653118469948119
+              },
+              "value": "critical"
+            }
+          },
+          "status": "success",
+          "usage": {
+            "inputTokens": 27,
+            "outputTokens": 0
+          }
+        }
+      },
+      {
+        "case_id": "feasible-constraint",
+        "categories": [
+          "constraint",
+          "feasible",
+          "token_accounting"
+        ],
+        "repeated": {
+          "http_status": 200,
+          "output": {
+            "_meta": {
+              "decoder": "exact",
+              "exact": true,
+              "feasible": true,
+              "objective": 5.559791624546051,
+              "violations": []
+            },
+            "intent": {
+              "confidence": 0.9999285539770193,
+              "probabilities": {
+                "question": 7.144602298072676e-05,
+                "refund": 0.9999285539770193
+              },
+              "value": "refund"
+            },
+            "route": {
+              "confidence": 0.747009833806528,
+              "probabilities": {
+                "billing": 0.747009833806528,
+                "support": 0.252990166193472
+              },
+              "value": "billing"
+            }
+          },
+          "status": "success",
+          "usage": {
+            "inputTokens": 29,
+            "outputTokens": 0
+          }
+        },
+        "singleton": {
+          "http_status": 200,
+          "output": {
+            "_meta": {
+              "decoder": "exact",
+              "exact": true,
+              "feasible": true,
+              "objective": 5.559791624546051,
+              "violations": []
+            },
+            "intent": {
+              "confidence": 0.9999285539770193,
+              "probabilities": {
+                "question": 7.144602298072676e-05,
+                "refund": 0.9999285539770193
+              },
+              "value": "refund"
+            },
+            "route": {
+              "confidence": 0.747009833806528,
+              "probabilities": {
+                "billing": 0.747009833806528,
+                "support": 0.252990166193472
+              },
+              "value": "billing"
+            }
+          },
+          "status": "success",
+          "usage": {
+            "inputTokens": 29,
+            "outputTokens": 0
+          }
+        }
+      },
+      {
+        "case_id": "infeasible-constraint",
+        "categories": [
+          "constraint",
+          "infeasible",
+          "token_accounting"
+        ],
+        "repeated": {
+          "error": {
+            "detail": {
+              "code": "invalid_schema",
+              "message": "no label of exclusive task 'decision' satisfies its constraints; the task is pinned to the empty set",
+              "retryable": false
+            }
+          },
+          "http_status": 422,
+          "status": "error"
+        },
+        "singleton": {
+          "error": {
+            "detail": {
+              "code": "invalid_schema",
+              "message": "no label of exclusive task 'decision' satisfies its constraints; the task is pinned to the empty set",
+              "retryable": false
+            }
+          },
+          "http_status": 422,
+          "status": "error"
+        }
+      },
+      {
+        "batch": {
+          "http_status": 200,
+          "output": {
+            "_meta": {
+              "decoder": "independent",
+              "exact": true,
+              "feasible": true,
+              "objective": 0.7255659103393555,
+              "violations": []
+            },
+            "intent": {
+              "confidence": 0.6289616762126552,
+              "probabilities": {
+                "account_access": 0.6289616762126552,
+                "billing": 0.10728777235028751,
+                "shipping": 0.08486139548270807,
+                "technical_support": 0.17888915595434918
+              },
+              "value": "account_access"
+            }
+          },
+          "status": "success",
+          "usage": {
+            "inputTokens": 250,
+            "outputTokens": 0
+          }
+        },
+        "case_id": "mixed-length-long",
+        "categories": [
+          "mixed_length",
+          "singleton_batch",
+          "token_accounting"
+        ],
+        "repeated": {
+          "http_status": 200,
+          "output": {
+            "_meta": {
+              "decoder": "independent",
+              "exact": true,
+              "feasible": true,
+              "objective": 0.7255663275718689,
+              "violations": []
+            },
+            "intent": {
+              "confidence": 0.6289620504778968,
+              "probabilities": {
+                "account_access": 0.6289620504778968,
+                "billing": 0.10728768911062213,
+                "shipping": 0.08486134987516071,
+                "technical_support": 0.17888891053632044
+              },
+              "value": "account_access"
+            }
+          },
+          "status": "success",
+          "usage": {
+            "inputTokens": 250,
+            "outputTokens": 0
+          }
+        },
+        "singleton": {
+          "http_status": 200,
+          "output": {
+            "_meta": {
+              "decoder": "independent",
+              "exact": true,
+              "feasible": true,
+              "objective": 0.7255663275718689,
+              "violations": []
+            },
+            "intent": {
+              "confidence": 0.6289620504778968,
+              "probabilities": {
+                "account_access": 0.6289620504778968,
+                "billing": 0.10728768911062213,
+                "shipping": 0.08486134987516071,
+                "technical_support": 0.17888891053632044
+              },
+              "value": "account_access"
+            }
+          },
+          "status": "success",
+          "usage": {
+            "inputTokens": 250,
+            "outputTokens": 0
+          }
+        }
+      }
+    ],
+    "behavior_outputs": [
+      {
+        "_meta": {
+          "decoder": "independent",
+          "exact": true,
+          "feasible": true,
+          "objective": 1.299420952796936,
+          "violations": []
+        },
+        "intent": {
+          "confidence": 0.8225280333510869,
+          "probabilities": {
+            "account_access": 0.06828462822762937,
+            "billing": 0.8225280333510869,
+            "shipping": 0.045007771943486666,
+            "technical_support": 0.06417956647779695
+          },
+          "value": "billing"
+        }
+      },
+      {
+        "_meta": {
+          "decoder": "independent",
+          "exact": true,
+          "feasible": true,
+          "objective": 1.6181334257125854,
+          "violations": []
+        },
+        "intent": {
+          "confidence": 0.9092442022093272,
+          "probabilities": {
+            "account_access": 0.03839053853491126,
+            "billing": 0.02638587735409188,
+            "shipping": 0.025979381901669558,
+            "technical_support": 0.9092442022093272
+          },
+          "value": "technical_support"
+        }
+      },
+      {
+        "_meta": {
+          "decoder": "independent",
+          "exact": true,
+          "feasible": true,
+          "objective": 1.1074498891830444,
+          "violations": []
+        },
+        "intent": {
+          "confidence": 0.7947375267989901,
+          "probabilities": {
+            "account_access": 0.7947375267989901,
+            "billing": 0.04813357396517443,
+            "shipping": 0.04156271037618495,
+            "technical_support": 0.11556618885965059
+          },
+          "value": "account_access"
+        }
+      },
+      {
+        "_meta": {
+          "decoder": "independent",
+          "exact": true,
+          "feasible": true,
+          "objective": 1.542157769203186,
+          "violations": []
+        },
+        "intent": {
+          "confidence": 0.9068104568572599,
+          "probabilities": {
+            "account_access": 0.037143929776833236,
+            "billing": 0.021527687505167436,
+            "shipping": 0.9068104568572599,
+            "technical_support": 0.034517925860739394
+          },
+          "value": "shipping"
+        }
+      }
+    ],
+    "cold_first_http_ms": 7715.001499998834,
+    "expected_label_accuracy": {
+      "cases": 4,
+      "correct": 4
+    },
+    "fill_window": [
+      {
+        "arrival_offsets_ms": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "http_statuses": [
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200
+        ],
+        "observed_batch_sizes": [
+          8
+        ],
+        "scenario": "simultaneous"
+      },
+      {
+        "arrival_offsets_ms": [
+          0.0,
+          0.4,
+          0.8,
+          1.2000000000000002,
+          1.6,
+          2.0,
+          2.4000000000000004,
+          2.8
+        ],
+        "http_statuses": [
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200
+        ],
+        "observed_batch_sizes": [
+          4,
+          4
+        ],
+        "scenario": "inside_window"
+      },
+      {
+        "arrival_offsets_ms": [
+          0.0,
+          12.0,
+          24.0,
+          36.00000000000001
+        ],
+        "http_statuses": [
+          200,
+          200,
+          200,
+          200
+        ],
+        "observed_batch_sizes": [
+          1,
+          3
+        ],
+        "scenario": "outside_window"
+      }
+    ],
+    "metrics_excerpt": [
+      "gliner_runner_internal{metric=\"last_batch_size\"} 1.0"
+    ],
+    "model_grouping": {
+      "batches": [
+        {
+          "accelerator_memory": null,
+          "duration_ms": 134.87145900035102,
+          "event": "batch",
+          "logical_model": "fastino/GLiNER2.5-Decide@9d1bfb848cd16d93ee56ccbc59cd92bf0f284d90",
+          "size": 1,
+          "task_names": [
+            "intent"
+          ]
+        },
+        {
+          "accelerator_memory": null,
+          "duration_ms": 130.84833299944876,
+          "event": "batch",
+          "logical_model": "fastino/GLiNER2.5-Decide@9d1bfb848cd16d93ee56ccbc59cd92bf0f284d90#alias",
+          "size": 1,
+          "task_names": [
+            "intent"
+          ]
+        }
+      ],
+      "http_statuses": [
+        200,
+        200
+      ],
+      "logical_models_observed": [
+        "fastino/GLiNER2.5-Decide@9d1bfb848cd16d93ee56ccbc59cd92bf0f284d90",
+        "fastino/GLiNER2.5-Decide@9d1bfb848cd16d93ee56ccbc59cd92bf0f284d90#alias"
+      ]
+    },
+    "parity": {
+      "cases": 4,
+      "exact_output_matches": 2,
+      "exact_output_rate": 0.5,
+      "max_abs_numeric_difference": 3.5762786865234375e-07,
+      "selected_label_matches": 4,
+      "selected_label_rate": 1.0
+    },
+    "parity_usage": [
+      {
+        "inputTokens": 81,
+        "outputTokens": 0
+      },
+      {
+        "inputTokens": 80,
+        "outputTokens": 0
+      },
+      {
+        "inputTokens": 79,
+        "outputTokens": 0
+      },
+      {
+        "inputTokens": 81,
+        "outputTokens": 0
+      }
+    ],
+    "post_two_model_grouping_rss_bytes": 2713698304,
+    "schema_grouping": {
+      "batches": [
+        {
+          "accelerator_memory": null,
+          "duration_ms": 318.87099999948987,
+          "event": "batch",
+          "logical_model": "fastino/GLiNER2.5-Decide@9d1bfb848cd16d93ee56ccbc59cd92bf0f284d90",
+          "size": 4,
+          "task_names": [
+            "group_a"
+          ]
+        },
+        {
+          "accelerator_memory": null,
+          "duration_ms": 338.18833400073345,
+          "event": "batch",
+          "logical_model": "fastino/GLiNER2.5-Decide@9d1bfb848cd16d93ee56ccbc59cd92bf0f284d90",
+          "size": 4,
+          "task_names": [
+            "group_b"
+          ]
+        }
+      ],
+      "http_statuses": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "mixed_schema_batch_observed": false
+    },
+    "server_ready_ms": 399.6471249993192,
+    "starting_rss_bytes": 67698688,
+    "steady_single_model_rss_bytes": 2697723904
+  },
+  "latency_rows": [
+    {
+      "actual_tokens": 17,
+      "batch_samples": 3,
+      "batch_size": 1,
+      "inference_p50_ms": 173.6719999989873,
+      "output_tokens": 0,
+      "queue_p50_ms": 4.577582998535945,
+      "runner_input_tokens": 86,
+      "target_tokens": 16,
+      "throughput_requests_per_s": 5.918432658225933,
+      "total_requests": 3,
+      "wall_p50_ms": 179.22095799985982,
+      "wall_p95_ms": 192.01618330098427
+    },
+    {
+      "actual_tokens": 17,
+      "batch_samples": 3,
+      "batch_size": 2,
+      "inference_p50_ms": 194.6362090002367,
+      "output_tokens": 0,
+      "queue_p50_ms": 4.620499499651487,
+      "runner_input_tokens": 86,
+      "target_tokens": 16,
+      "throughput_requests_per_s": 9.101566087088903,
+      "total_requests": 6,
+      "wall_p50_ms": 200.2425829996355,
+      "wall_p95_ms": 252.9427579995172
+    },
+    {
+      "actual_tokens": 17,
+      "batch_samples": 3,
+      "batch_size": 4,
+      "inference_p50_ms": 287.2686250011611,
+      "output_tokens": 0,
+      "queue_p50_ms": 4.713249499218364,
+      "runner_input_tokens": 86,
+      "target_tokens": 16,
+      "throughput_requests_per_s": 12.749258535795247,
+      "total_requests": 12,
+      "wall_p50_ms": 293.75045799861255,
+      "wall_p95_ms": 347.894120500132
+    },
+    {
+      "actual_tokens": 17,
+      "batch_samples": 3,
+      "batch_size": 8,
+      "inference_p50_ms": 530.2370839999639,
+      "output_tokens": 0,
+      "queue_p50_ms": 4.666708000513609,
+      "runner_input_tokens": 86,
+      "target_tokens": 16,
+      "throughput_requests_per_s": 15.125756875613723,
+      "total_requests": 24,
+      "wall_p50_ms": 540.5087919989455,
+      "wall_p95_ms": 544.687417300338
+    },
+    {
+      "actual_tokens": 64,
+      "batch_samples": 3,
+      "batch_size": 1,
+      "inference_p50_ms": 170.1321669988829,
+      "output_tokens": 0,
+      "queue_p50_ms": 4.577208001137478,
+      "runner_input_tokens": 133,
+      "target_tokens": 64,
+      "throughput_requests_per_s": 5.331836466452242,
+      "total_requests": 3,
+      "wall_p50_ms": 175.69812500005355,
+      "wall_p95_ms": 209.79635029998462
+    },
+    {
+      "actual_tokens": 64,
+      "batch_samples": 3,
+      "batch_size": 2,
+      "inference_p50_ms": 262.24429099966073,
+      "output_tokens": 0,
+      "queue_p50_ms": 4.634332999557955,
+      "runner_input_tokens": 133,
+      "target_tokens": 64,
+      "throughput_requests_per_s": 7.172126608626043,
+      "total_requests": 6,
+      "wall_p50_ms": 272.85699999993085,
+      "wall_p95_ms": 307.20276220017695
+    },
+    {
+      "actual_tokens": 64,
+      "batch_samples": 3,
+      "batch_size": 4,
+      "inference_p50_ms": 426.34820800049056,
+      "output_tokens": 0,
+      "queue_p50_ms": 4.6221665006669355,
+      "runner_input_tokens": 133,
+      "target_tokens": 64,
+      "throughput_requests_per_s": 9.092325744128011,
+      "total_requests": 12,
+      "wall_p50_ms": 432.68245900071634,
+      "wall_p95_ms": 452.8682205998848
+    },
+    {
+      "actual_tokens": 64,
+      "batch_samples": 3,
+      "batch_size": 8,
+      "inference_p50_ms": 851.3742919985816,
+      "output_tokens": 0,
+      "queue_p50_ms": 4.7146460001386,
+      "runner_input_tokens": 133,
+      "target_tokens": 64,
+      "throughput_requests_per_s": 9.52035335597539,
+      "total_requests": 24,
+      "wall_p50_ms": 857.1619169997575,
+      "wall_p95_ms": 874.8497295000561
+    },
+    {
+      "actual_tokens": 256,
+      "batch_samples": 3,
+      "batch_size": 1,
+      "inference_p50_ms": 388.2938329988974,
+      "output_tokens": 0,
+      "queue_p50_ms": 4.64595799894596,
+      "runner_input_tokens": 325,
+      "target_tokens": 256,
+      "throughput_requests_per_s": 2.4950743946267138,
+      "total_requests": 3,
+      "wall_p50_ms": 400.9708749999845,
+      "wall_p95_ms": 425.7680494005399
+    },
+    {
+      "actual_tokens": 256,
+      "batch_samples": 3,
+      "batch_size": 2,
+      "inference_p50_ms": 529.0864999988116,
+      "output_tokens": 0,
+      "queue_p50_ms": 4.637603999981366,
+      "runner_input_tokens": 325,
+      "target_tokens": 256,
+      "throughput_requests_per_s": 3.5649262054463953,
+      "total_requests": 6,
+      "wall_p50_ms": 537.2915829993872,
+      "wall_p95_ms": 606.5836333005791
+    },
+    {
+      "actual_tokens": 256,
+      "batch_samples": 3,
+      "batch_size": 4,
+      "inference_p50_ms": 1106.2705000003916,
+      "output_tokens": 0,
+      "queue_p50_ms": 4.442353999365878,
+      "runner_input_tokens": 325,
+      "target_tokens": 256,
+      "throughput_requests_per_s": 3.593773967012344,
+      "total_requests": 12,
+      "wall_p50_ms": 1120.0077079993207,
+      "wall_p95_ms": 1127.6948707991323
+    },
+    {
+      "actual_tokens": 256,
+      "batch_samples": 3,
+      "batch_size": 8,
+      "inference_p50_ms": 2007.0687080005882,
+      "output_tokens": 0,
+      "queue_p50_ms": 4.757291998430446,
+      "runner_input_tokens": 325,
+      "target_tokens": 256,
+      "throughput_requests_per_s": 3.9523409704371875,
+      "total_requests": 24,
+      "wall_p50_ms": 2013.1527920002554,
+      "wall_p95_ms": 2050.8839797998007
+    }
+  ],
+  "memory": {
+    "accelerator_peak_bytes": null,
+    "http_peak_rss_bytes": 4280532992,
+    "oracle_peak_rss_bytes": 4154343424,
+    "overload_peak_rss_bytes": 4364304384,
+    "peak_rss_bytes": 4364304384
+  },
+  "metadata": {
+    "batch_sizes": [
+      1,
+      2,
+      4,
+      8
+    ],
+    "batch_window_ms": 4.0,
+    "behavior_case_ids": [
+      "described-single",
+      "multi-label",
+      "high-threshold-empty",
+      "ordered-label",
+      "feasible-constraint",
+      "infeasible-constraint",
+      "mixed-length-long"
+    ],
+    "behavior_workload_sha256": "096ab29800d9d141345b65d5a888262e2a5b25172671529ed3401ef2a66b9c51",
+    "device": "cpu",
+    "expected_gliner2_version": "2.1.0",
+    "generated_at_utc": "2026-10-13T20:37:32Z",
+    "host": {
+      "architecture": "arm64",
+      "cpu": "Apple M5 Max",
+      "logical_cores": 18,
+      "memory_bytes": 137438953472,
+      "os": "Darwin",
+      "os_release": "25.6.0",
+      "os_version": "26.7.1",
+      "physical_cores": 18
+    },
+    "model_bytes": 1954846857,
+    "model_content_sha256": "5081e1a9b994143fe7f98810c909c8f6498914016b9fbe58c46a5a1135e34946",
+    "model_files": 10,
+    "model_id": "fastino/GLiNER2.5-Decide",
+    "model_repository": "fastino/GLiNER2.5-Decide",
+    "model_revision": "9d1bfb848cd16d93ee56ccbc59cd92bf0f284d90",
+    "oracle_device": "cpu",
+    "oracle_precision": "fp32",
+    "overload_tokens": 256,
+    "precision": "fp32",
+    "repetitions": 3,
+    "rss_sampling_interval_ms": 20,
+    "schema_label_descriptions": {
+      "account_access": "Authentication, passwords, and account sign-in problems",
+      "billing": "Invoices, charges, refunds, and payment problems",
+      "shipping": "Package delivery, tracking, and shipment status",
+      "technical_support": "Application failures, defects, and technical troubleshooting"
+    },
+    "snapshot_identity_validation": "inventory-marker",
+    "token_targets": [
+      16,
+      64,
+      256
+    ],
+    "torch_threads": 6,
+    "versions": {
+      "gliner2": "2.1.0",
+      "python": "3.12.12",
+      "torch": "2.14.0",
+      "transformers": "5.19.0"
+    }
+  },
+  "overload": {
+    "accepted": 1,
+    "burst_statuses": [
+      200,
+      429,
+      429,
+      429,
+      429,
+      429,
+      429,
+      429,
+      429,
+      429
+    ],
+    "client_task_cancelled": true,
+    "first_status": 200,
+    "observed_batches": [
+      {
+        "accelerator_memory": null,
+        "duration_ms": 199.54562499879103,
+        "event": "batch",
+        "logical_model": "fastino/GLiNER2.5-Decide@9d1bfb848cd16d93ee56ccbc59cd92bf0f284d90",
+        "size": 1,
+        "task_names": [
+          "warmup"
+        ]
+      },
+      {
+        "accelerator_memory": null,
+        "duration_ms": 314.9551660008001,
+        "event": "batch",
+        "logical_model": "fastino/GLiNER2.5-Decide@9d1bfb848cd16d93ee56ccbc59cd92bf0f284d90",
+        "size": 1,
+        "task_names": [
+          "overload"
+        ]
+      },
+      {
+        "accelerator_memory": null,
+        "duration_ms": 375.2095410000038,
+        "event": "batch",
+        "logical_model": "fastino/GLiNER2.5-Decide@9d1bfb848cd16d93ee56ccbc59cd92bf0f284d90",
+        "size": 1,
+        "task_names": [
+          "cancelled"
+        ]
+      },
+      {
+        "accelerator_memory": null,
+        "duration_ms": 307.60587499935355,
+        "event": "batch",
+        "logical_model": "fastino/GLiNER2.5-Decide@9d1bfb848cd16d93ee56ccbc59cd92bf0f284d90",
+        "size": 1,
+        "task_names": [
+          "overload"
+        ]
+      }
+    ],
+    "rejected_429": 9,
+    "server_cancelled_metric": 0.0,
+    "server_rejected_metric": 9.0
+  }
+}

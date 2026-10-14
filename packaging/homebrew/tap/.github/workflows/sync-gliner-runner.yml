@@ -1,0 +1,98 @@
+name: Sync gliner-runner
+
+# Copies the formulas that stuffbucket/gliner-runner attaches to its GitHub releases into Formula/:
+#   gliner-runner.rb      from the latest stable release (/releases/latest)
+#   gliner-runner-rc.rb   from the newest prerelease
+# Each formula is verified against that release's SHA256SUMS before it is written. Only public GitHub
+# data is read, so no cross-repository secret is needed. The source repository may also send a
+# repository_dispatch (type gliner-runner-release) right after publishing, which only shortens the wait.
+#
+# Note: pushes made with GITHUB_TOKEN do not start other workflows (tests.yml, transform-formulas.yml).
+# Both are safe to skip: the formulas are already in the shape the transform produces (class-level
+# install/test, no GoReleaser marker, so it leaves them untouched).
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+  repository_dispatch:
+    types: [gliner-runner-release]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-gliner-runner
+  cancel-in-progress: false
+
+env:
+  SOURCE_REPOSITORY: stuffbucket/gliner-runner
+
+jobs:
+  sync:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out tap
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Fetch, verify, and write formulas
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          work=$(mktemp -d)
+          : > "$work/changes"
+
+          # sync_one FORMULA TAG: download FORMULA.rb from release TAG, verify it, write Formula/FORMULA.rb.
+          sync_one() {
+            local formula=$1 tag=$2 version dir assets archive digest
+            version=${tag#v}
+            dir=$work/$formula
+            mkdir -p "$dir"
+            assets=$(gh release view "$tag" --repo "$SOURCE_REPOSITORY" --json assets --jq '.assets[].name')
+            if ! grep -qx "$formula.rb" <<<"$assets" || ! grep -qx SHA256SUMS <<<"$assets"; then
+              echo "::notice::$tag has no $formula.rb or SHA256SUMS; leaving Formula/$formula.rb as is."
+              return 0
+            fi
+            gh release download "$tag" --repo "$SOURCE_REPOSITORY" --dir "$dir" \
+              --pattern SHA256SUMS --pattern "$formula.rb"
+
+            # The formula must be the file the release's SHA256SUMS lists.
+            (cd "$dir" && grep -E "^[0-9a-f]{64}  $formula\.rb\$" SHA256SUMS | sha256sum --check --strict -)
+            # It must be for this release, and pin exactly the archive digests the release lists.
+            grep -qF "/releases/download/v$version/" "$dir/$formula.rb" || {
+              echo "::error::$formula.rb does not download version $version"; return 1; }
+            while read -r digest archive; do
+              grep -qF "\"$digest\"" "$dir/$formula.rb" || {
+                echo "::error::$formula.rb lacks the SHA256SUMS digest of $archive"; return 1; }
+            done < <(grep -E "  gliner-runner-onnx-.*\.tar\.gz\$" "$dir/SHA256SUMS")
+            ruby -c "$dir/$formula.rb" > /dev/null
+
+            mkdir -p Formula
+            if ! cmp -s "$dir/$formula.rb" "Formula/$formula.rb"; then
+              cp "$dir/$formula.rb" "Formula/$formula.rb"
+              echo "$formula $version" >> "$work/changes"
+              echo "Updated Formula/$formula.rb to $version"
+            else
+              echo "Formula/$formula.rb is already at $version"
+            fi
+          }
+
+          stable_tag=$(gh api "repos/$SOURCE_REPOSITORY/releases/latest" --jq .tag_name)
+          rc_tag=$(gh api "repos/$SOURCE_REPOSITORY/releases?per_page=30" \
+            --jq '[.[] | select(.prerelease and (.draft | not))][0].tag_name // empty')
+
+          [ -z "$stable_tag" ] || sync_one gliner-runner "$stable_tag"
+          [ -z "$rc_tag" ] || sync_one gliner-runner-rc "$rc_tag"
+          echo "CHANGES=$(paste -sd ',' "$work/changes" | sed 's/,/, /g')" >> "$GITHUB_ENV"
+      - name: Commit and push changes
+        run: |
+          set -euo pipefail
+          if [ -z "$CHANGES" ]; then
+            echo "Tap is up to date."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Formula
+          git commit -m "gliner-runner: sync from stuffbucket/gliner-runner releases ($CHANGES)"
+          git push

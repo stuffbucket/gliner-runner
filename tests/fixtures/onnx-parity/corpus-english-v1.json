@@ -1,0 +1,579 @@
+{
+  "format_version": 1,
+  "corpus_id": "english-v1",
+  "description": "Runner classification requests for the english-v1 compatibility workload. The first seven cases are the benchmark_real behavior cases; the rest add multi-task, default/temperature, repeated, and structured-error coverage. Consumers replace request.model (and backend) with the implementation under test.",
+  "languages": [
+    "en"
+  ],
+  "cases": [
+    {
+      "case_id": "described-single",
+      "categories": [
+        "single_label",
+        "described_label",
+        "repeated_run",
+        "token_accounting"
+      ],
+      "batch_group": "mixed-length",
+      "request": {
+        "model": "decide-340m",
+        "backend": "pytorch",
+        "precision": "fp32",
+        "operation": "classify",
+        "text": "My credit card was charged twice for the same invoice.",
+        "schema": {
+          "kind": "classification",
+          "tasks": {
+            "intent": {
+              "labels": [
+                "billing",
+                "technical_support",
+                "account_access",
+                "shipping"
+              ],
+              "label_descriptions": {
+                "billing": "Invoices, charges, refunds, and payment problems",
+                "technical_support": "Application failures, defects, and technical troubleshooting",
+                "account_access": "Authentication, passwords, and account sign-in problems",
+                "shipping": "Package delivery, tracking, and shipment status"
+              },
+              "min_labels": 1,
+              "max_labels": 1
+            }
+          }
+        },
+        "options": {
+          "threshold": 0.5,
+          "output_format": "native",
+          "include_confidence": true
+        }
+      }
+    },
+    {
+      "case_id": "multi-label",
+      "categories": [
+        "multi_label",
+        "selected_order",
+        "token_accounting"
+      ],
+      "request": {
+        "model": "decide-340m",
+        "backend": "pytorch",
+        "precision": "fp32",
+        "operation": "classify",
+        "text": "The app crashes and my card was charged twice.",
+        "schema": {
+          "kind": "classification",
+          "tasks": {
+            "topics": {
+              "labels": [
+                "billing",
+                "technical_support",
+                "account_access",
+                "shipping"
+              ],
+              "min_labels": 0,
+              "max_labels": 3,
+              "activation": "sigmoid",
+              "threshold": 0.3
+            }
+          }
+        },
+        "options": {
+          "threshold": 0.3,
+          "output_format": "native",
+          "include_confidence": true
+        }
+      }
+    },
+    {
+      "case_id": "high-threshold-empty",
+      "categories": [
+        "threshold",
+        "empty_result",
+        "token_accounting"
+      ],
+      "request": {
+        "model": "decide-340m",
+        "backend": "pytorch",
+        "precision": "fp32",
+        "operation": "classify",
+        "text": "Hello there.",
+        "schema": {
+          "kind": "classification",
+          "tasks": {
+            "topics": {
+              "labels": [
+                "billing",
+                "technical_support",
+                "shipping"
+              ],
+              "min_labels": 0,
+              "max_labels": 3,
+              "activation": "sigmoid",
+              "threshold": 0.999999
+            }
+          }
+        },
+        "options": {
+          "threshold": 0.999999,
+          "output_format": "native",
+          "include_confidence": true
+        }
+      }
+    },
+    {
+      "case_id": "ordered-label",
+      "categories": [
+        "ordered",
+        "token_accounting"
+      ],
+      "request": {
+        "model": "decide-340m",
+        "backend": "pytorch",
+        "precision": "fp32",
+        "operation": "classify",
+        "text": "Production is down for every customer and immediate action is required.",
+        "schema": {
+          "kind": "classification",
+          "tasks": {
+            "priority": {
+              "labels": [
+                "low",
+                "medium",
+                "high",
+                "critical"
+              ],
+              "min_labels": 1,
+              "max_labels": 1,
+              "ordered": true
+            }
+          }
+        },
+        "options": {
+          "threshold": 0.5,
+          "output_format": "native",
+          "include_confidence": true
+        }
+      }
+    },
+    {
+      "case_id": "feasible-constraint",
+      "categories": [
+        "constraint",
+        "feasible",
+        "token_accounting"
+      ],
+      "request": {
+        "model": "decide-340m",
+        "backend": "pytorch",
+        "precision": "fp32",
+        "operation": "classify",
+        "text": "Please refund the duplicate invoice charge.",
+        "schema": {
+          "kind": "classification",
+          "tasks": {
+            "intent": {
+              "labels": [
+                "refund",
+                "question"
+              ],
+              "min_labels": 1,
+              "max_labels": 1
+            },
+            "route": {
+              "labels": [
+                "billing",
+                "support"
+              ],
+              "min_labels": 1,
+              "max_labels": 1
+            }
+          },
+          "constraints": [
+            {
+              "type": "Implies",
+              "cond": {
+                "type": "LabelRef",
+                "task": "intent",
+                "label": "refund"
+              },
+              "then": {
+                "type": "LabelRef",
+                "task": "route",
+                "label": "billing"
+              }
+            }
+          ]
+        },
+        "options": {
+          "threshold": 0.5,
+          "output_format": "native",
+          "include_confidence": true
+        }
+      }
+    },
+    {
+      "case_id": "infeasible-constraint",
+      "categories": [
+        "constraint",
+        "infeasible",
+        "token_accounting"
+      ],
+      "request": {
+        "model": "decide-340m",
+        "backend": "pytorch",
+        "precision": "fp32",
+        "operation": "classify",
+        "text": "Answer yes or no.",
+        "schema": {
+          "kind": "classification",
+          "tasks": {
+            "decision": {
+              "labels": [
+                "yes",
+                "no"
+              ],
+              "min_labels": 1,
+              "max_labels": 1
+            }
+          },
+          "constraints": [
+            {
+              "type": "LabelRef",
+              "task": "decision",
+              "label": "yes"
+            },
+            {
+              "type": "LabelRef",
+              "task": "decision",
+              "label": "no"
+            }
+          ]
+        },
+        "options": {
+          "threshold": 0.5,
+          "output_format": "native",
+          "include_confidence": true
+        }
+      }
+    },
+    {
+      "case_id": "mixed-length-long",
+      "categories": [
+        "mixed_length",
+        "singleton_batch",
+        "token_accounting"
+      ],
+      "batch_group": "mixed-length",
+      "request": {
+        "model": "decide-340m",
+        "backend": "pytorch",
+        "precision": "fp32",
+        "operation": "classify",
+        "text": "The customer cannot sign in after a password reset and needs account access help. The customer cannot sign in after a password reset and needs account access help. The customer cannot sign in after a password reset and needs account access help. The customer cannot sign in after a password reset and needs account access help. The customer cannot sign in after a password reset and needs account access help. The customer cannot sign in after a password reset and needs account access help. The customer cannot sign in after a password reset and needs account access help. The customer cannot sign in after a password reset and needs account access help. The customer cannot sign in after a password reset and needs account access help. The customer cannot sign in after a password reset and needs account access help. The customer cannot sign in after a password reset and needs account access help. The customer cannot sign in after a password reset and needs account access help.",
+        "schema": {
+          "kind": "classification",
+          "tasks": {
+            "intent": {
+              "labels": [
+                "billing",
+                "technical_support",
+                "account_access",
+                "shipping"
+              ],
+              "label_descriptions": {
+                "billing": "Invoices, charges, refunds, and payment problems",
+                "technical_support": "Application failures, defects, and technical troubleshooting",
+                "account_access": "Authentication, passwords, and account sign-in problems",
+                "shipping": "Package delivery, tracking, and shipment status"
+              },
+              "min_labels": 1,
+              "max_labels": 1
+            }
+          }
+        },
+        "options": {
+          "threshold": 0.5,
+          "output_format": "native",
+          "include_confidence": true
+        }
+      }
+    },
+    {
+      "case_id": "described-single-repeat",
+      "categories": [
+        "single_label",
+        "described_label",
+        "repeated_run",
+        "batching"
+      ],
+      "batch_group": "mixed-length",
+      "request": {
+        "model": "decide-340m",
+        "backend": "pytorch",
+        "precision": "fp32",
+        "operation": "classify",
+        "text": "My credit card was charged twice for the same invoice.",
+        "schema": {
+          "kind": "classification",
+          "tasks": {
+            "intent": {
+              "labels": [
+                "billing",
+                "technical_support",
+                "account_access",
+                "shipping"
+              ],
+              "label_descriptions": {
+                "billing": "Invoices, charges, refunds, and payment problems",
+                "technical_support": "Application failures, defects, and technical troubleshooting",
+                "account_access": "Authentication, passwords, and account sign-in problems",
+                "shipping": "Package delivery, tracking, and shipment status"
+              },
+              "min_labels": 1,
+              "max_labels": 1
+            }
+          }
+        },
+        "options": {
+          "threshold": 0.5,
+          "output_format": "native",
+          "include_confidence": true
+        }
+      }
+    },
+    {
+      "case_id": "multi-task-described-instruction",
+      "categories": [
+        "multi_task",
+        "described_label",
+        "instruction",
+        "multi_label",
+        "token_accounting"
+      ],
+      "request": {
+        "model": "decide-340m",
+        "backend": "pytorch",
+        "precision": "fp32",
+        "operation": "classify",
+        "text": "The app crashes and my card was charged twice.",
+        "schema": {
+          "kind": "classification",
+          "tasks": {
+            "department": {
+              "labels": [
+                "billing",
+                "technical_support",
+                "account_access",
+                "shipping"
+              ],
+              "label_descriptions": {
+                "billing": "Invoices, charges, refunds, and payment problems",
+                "technical_support": "Application failures, defects, and technical troubleshooting",
+                "account_access": "Authentication, passwords, and account sign-in problems",
+                "shipping": "Package delivery, tracking, and shipment status"
+              },
+              "min_labels": 1,
+              "max_labels": 1,
+              "instruction": "Choose the department that should handle the message"
+            },
+            "topics": {
+              "labels": [
+                "billing",
+                "technical_support",
+                "account_access",
+                "shipping"
+              ],
+              "min_labels": 0,
+              "max_labels": 3,
+              "activation": "sigmoid",
+              "threshold": 0.3
+            }
+          }
+        },
+        "options": {
+          "threshold": 0.5,
+          "output_format": "native",
+          "include_confidence": true
+        }
+      }
+    },
+    {
+      "case_id": "default-temperature-multi-label",
+      "categories": [
+        "default",
+        "temperature",
+        "multi_label",
+        "token_accounting"
+      ],
+      "request": {
+        "model": "decide-340m",
+        "backend": "pytorch",
+        "precision": "fp32",
+        "operation": "classify",
+        "text": "Hello there.",
+        "schema": {
+          "kind": "classification",
+          "tasks": {
+            "topics": {
+              "labels": [
+                "billing",
+                "shipping",
+                "other"
+              ],
+              "min_labels": 0,
+              "max_labels": 2,
+              "activation": "sigmoid",
+              "temperature": 2.0,
+              "default": "other"
+            }
+          }
+        },
+        "options": {
+          "threshold": 0.5,
+          "output_format": "native",
+          "include_confidence": true
+        }
+      }
+    },
+    {
+      "case_id": "softmax-activation",
+      "categories": [
+        "activation",
+        "single_label",
+        "token_accounting"
+      ],
+      "request": {
+        "model": "decide-340m",
+        "backend": "pytorch",
+        "precision": "fp32",
+        "operation": "classify",
+        "text": "Please refund the duplicate invoice charge.",
+        "schema": {
+          "kind": "classification",
+          "tasks": {
+            "intent": {
+              "labels": [
+                "refund",
+                "question",
+                "complaint"
+              ],
+              "min_labels": 1,
+              "max_labels": 1,
+              "activation": "softmax"
+            }
+          }
+        },
+        "options": {
+          "threshold": 0.5,
+          "output_format": "native",
+          "include_confidence": true
+        }
+      }
+    },
+    {
+      "case_id": "invalid-reserved-marker",
+      "categories": [
+        "invalid_schema",
+        "structured_error"
+      ],
+      "request": {
+        "model": "decide-340m",
+        "backend": "pytorch",
+        "precision": "fp32",
+        "operation": "classify",
+        "text": "Answer yes or no.",
+        "schema": {
+          "kind": "classification",
+          "tasks": {
+            "intent": {
+              "labels": [
+                "yes",
+                "[P]no"
+              ],
+              "min_labels": 1
+            }
+          }
+        },
+        "options": {
+          "threshold": 0.5,
+          "output_format": "native",
+          "include_confidence": true
+        }
+      }
+    },
+    {
+      "case_id": "invalid-min-exceeds-max",
+      "categories": [
+        "invalid_schema",
+        "structured_error"
+      ],
+      "request": {
+        "model": "decide-340m",
+        "backend": "pytorch",
+        "precision": "fp32",
+        "operation": "classify",
+        "text": "Answer yes or no.",
+        "schema": {
+          "kind": "classification",
+          "tasks": {
+            "intent": {
+              "labels": [
+                "yes",
+                "no"
+              ],
+              "min_labels": 2,
+              "max_labels": 1
+            }
+          }
+        },
+        "options": {
+          "threshold": 0.5,
+          "output_format": "native",
+          "include_confidence": true
+        }
+      }
+    },
+    {
+      "case_id": "invalid-unknown-constraint-label",
+      "categories": [
+        "invalid_schema",
+        "structured_error",
+        "constraint"
+      ],
+      "request": {
+        "model": "decide-340m",
+        "backend": "pytorch",
+        "precision": "fp32",
+        "operation": "classify",
+        "text": "Answer yes or no.",
+        "schema": {
+          "kind": "classification",
+          "tasks": {
+            "decision": {
+              "labels": [
+                "yes",
+                "no"
+              ],
+              "min_labels": 1,
+              "max_labels": 1
+            }
+          },
+          "constraints": [
+            {
+              "type": "LabelRef",
+              "task": "decision",
+              "label": "maybe"
+            }
+          ]
+        },
+        "options": {
+          "threshold": 0.5,
+          "output_format": "native",
+          "include_confidence": true
+        }
+      }
+    }
+  ]
+}

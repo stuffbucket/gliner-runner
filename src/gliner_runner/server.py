@@ -19,6 +19,7 @@ from gliner_runner.contracts import (
 )
 from gliner_runner.errors import (
     BackendUnavailableError,
+    InvalidSchemaError,
     ModelDownloadRequiredError,
     ModelIntegrityError,
     ModelMemoryLimitError,
@@ -265,6 +266,11 @@ async def _infer(runtime: Runtime, request: InferenceRequest) -> InferenceRespon
                 "attempted_load_unloaded": error.observed_bytes is not None,
             },
         ) from error
+    except InvalidSchemaError as error:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            detail={"code": "invalid_schema", "message": str(error), "retryable": False},
+        ) from error
     except ModelIntegrityError as error:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
@@ -304,8 +310,7 @@ def _models_response(
                 Precision.FP32,
             )
             for profile in profiles
-            if profile.device == runtime.config.device
-            and profile.precision is preferred_precision
+            if profile.device == runtime.config.device and profile.precision is preferred_precision
         ),
         profiles[0],
     )

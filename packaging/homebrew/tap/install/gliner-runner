@@ -1,0 +1,86 @@
+#!/bin/bash
+# Install gliner-runner (self-contained GLiNER2 ONNX runner, no Python)
+# Usage:
+#   curl -fsSL https://raw.githubusercontent.com/stuffbucket/homebrew-tap/main/install/gliner-runner | bash && \
+#     eval "$(brew shellenv)"
+# Release candidates (conflicts with the stable formula):
+#   curl -fsSL .../install/gliner-runner | bash -s -- --rc
+set -e
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m'
+
+abort() { echo -e "${RED}Error:${NC} ${1}" >&2; exit 1; }
+info() { echo -e "${GREEN}==>${NC} ${1}"; }
+
+FORMULA=gliner-runner
+OTHER=gliner-runner-rc
+case "${1:-}" in
+    "") ;;
+    --rc) FORMULA=gliner-runner-rc; OTHER=gliner-runner ;;
+    *) abort "unknown option: ${1} (supported: --rc)" ;;
+esac
+
+case "$OSTYPE" in
+    darwin*)
+        [[ "$(uname -m)" == "arm64" ]] || abort "macOS on Apple silicon (arm64) only" ;;
+    linux*)
+        case "$(uname -m)" in
+            x86_64 | aarch64 | arm64) ;;
+            *) abort "Linux x86_64 or arm64 only" ;;
+        esac ;;
+    *) abort "macOS (arm64) or Linux (x86_64, arm64) only" ;;
+esac
+
+# Setup Homebrew PATH
+for brew_bin in /opt/homebrew/bin/brew /usr/local/bin/brew \
+    /home/linuxbrew/.linuxbrew/bin/brew "$HOME/.linuxbrew/bin/brew"; do
+    if [[ -x "$brew_bin" ]]; then
+        eval "$("$brew_bin" shellenv)"
+        break
+    fi
+done
+
+command -v brew &>/dev/null || abort "Homebrew required. Install: https://brew.sh"
+
+# The two formulas install the same executable
+if brew list --formula "stuffbucket/tap/${OTHER}" &>/dev/null 2>&1; then
+    abort "${OTHER} is installed and conflicts with ${FORMULA}. Run: brew uninstall ${OTHER}"
+fi
+
+# Tap explicitly; Homebrew will not load formulae from an untapped third-party tap
+brew tap stuffbucket/tap < /dev/null
+
+# Detect fresh install vs upgrade
+IS_UPGRADE=false
+if brew list --formula "stuffbucket/tap/${FORMULA}" &>/dev/null 2>&1; then
+    IS_UPGRADE=true
+fi
+
+if $IS_UPGRADE; then
+    info "Upgrading ${FORMULA}..."
+    brew upgrade "stuffbucket/tap/${FORMULA}" < /dev/null
+else
+    info "Installing ${FORMULA}..."
+    brew install "stuffbucket/tap/${FORMULA}" < /dev/null
+fi
+
+echo ""
+if $IS_UPGRADE; then
+    info "${FORMULA} upgraded successfully"
+else
+    info "${FORMULA} installed successfully"
+    echo ""
+    info "To use immediately, run:"
+    echo ""
+    echo "  eval \"\$(brew shellenv)\""
+fi
+echo ""
+echo "==> Next steps"
+echo ""
+echo "Install a model (downloads from Hugging Face after you confirm):"
+echo "  gliner-runner models install <model-id> --yes"
+echo ""
+echo "Then start the server:"
+echo "  gliner-runner serve"

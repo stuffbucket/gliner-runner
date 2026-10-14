@@ -1,0 +1,1177 @@
+{
+  "format_version": 1,
+  "kind": "gliner-runner-node-vs-pytorch-parity",
+  "model_id": "decide-340m",
+  "repository": "fastino/GLiNER2.5-Decide",
+  "revision": "9d1bfb848cd16d93ee56ccbc59cd92bf0f284d90",
+  "corpus_id": "english-v1",
+  "corpus_sha256": "10aa107ccc49c0b0eab283a6d2ad74b98057e08b1c3b61dbec790d10d45c9de6",
+  "golden_file": "decide-340m-english-v1.json",
+  "reference": {
+    "backend": "pytorch",
+    "device": "cpu",
+    "precision": "fp32",
+    "path": "gliner_runner.backends.pytorch.PyTorchBackend",
+    "versions": {
+      "python": "3.12.12",
+      "gliner2": "2.1.0",
+      "torch": "2.14.0",
+      "transformers": "5.19.0"
+    }
+  },
+  "runtime": {
+    "node": "v24.21.0",
+    "platform": "darwin-arm64",
+    "onnxruntime-node": "1.30.0",
+    "@huggingface/tokenizers": "0.2.0"
+  },
+  "generated_at": "2026-10-14T20:39:36.363Z",
+  "tolerance": 0.0001,
+  "passed": true,
+  "repeat_identical": true,
+  "modes": {
+    "singleton": {
+      "requests": 14,
+      "exact_semantic_matches": 14,
+      "mismatches": 0,
+      "numeric": {
+        "compared_values": 62,
+        "exact_zero_diffs": 3,
+        "synthetic_zero_diffs": 59,
+        "over_tolerance_diffs": 0,
+        "max_raw_abs_diff": 0.000007152557373046875
+      }
+    },
+    "repeated": {
+      "requests": 28,
+      "exact_semantic_matches": 28,
+      "mismatches": 0,
+      "numeric": {
+        "compared_values": 124,
+        "exact_zero_diffs": 6,
+        "synthetic_zero_diffs": 118,
+        "over_tolerance_diffs": 0,
+        "max_raw_abs_diff": 0.000007152557373046875
+      }
+    },
+    "batch": {
+      "requests": 3,
+      "exact_semantic_matches": 3,
+      "mismatches": 0,
+      "numeric": {
+        "compared_values": 18,
+        "exact_zero_diffs": 0,
+        "synthetic_zero_diffs": 18,
+        "over_tolerance_diffs": 0,
+        "max_raw_abs_diff": 4.76837158203125e-7
+      }
+    },
+    "concurrent-group": {
+      "requests": 3,
+      "exact_semantic_matches": 3,
+      "mismatches": 0,
+      "numeric": {
+        "compared_values": 18,
+        "exact_zero_diffs": 0,
+        "synthetic_zero_diffs": 18,
+        "over_tolerance_diffs": 0,
+        "max_raw_abs_diff": 8.344650268554688e-7
+      }
+    },
+    "concurrent-all": {
+      "requests": 14,
+      "exact_semantic_matches": 14,
+      "mismatches": 0,
+      "numeric": {
+        "compared_values": 62,
+        "exact_zero_diffs": 3,
+        "synthetic_zero_diffs": 59,
+        "over_tolerance_diffs": 0,
+        "max_raw_abs_diff": 0.000007152557373046875
+      }
+    }
+  },
+  "overall": {
+    "requests": 62,
+    "exact_semantic_matches": 62,
+    "max_raw_abs_diff": 0.000007152557373046875,
+    "compared_values": 284,
+    "synthetic_zero_diffs": 272
+  },
+  "batching": [
+    {
+      "mode": "batch",
+      "requests": 3,
+      "batches": 1,
+      "submitted": 3
+    },
+    {
+      "mode": "concurrent-group",
+      "requests": 3,
+      "batches": 1,
+      "submitted": 3
+    },
+    {
+      "mode": "concurrent-all",
+      "requests": 14,
+      "batches": 12,
+      "submitted": 14
+    }
+  ],
+  "records": [
+    {
+      "mode": "singleton",
+      "case_id": "described-single",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 6,
+        "exactZero": 0,
+        "syntheticZero": 6,
+        "overTolerance": 0,
+        "maxAbsDiff": 3.5762786865234375e-7
+      },
+      "input_tokens": 81,
+      "expected_input_tokens": 81
+    },
+    {
+      "mode": "singleton",
+      "case_id": "multi-label",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 6,
+        "exactZero": 1,
+        "syntheticZero": 5,
+        "overTolerance": 0,
+        "maxAbsDiff": 4.76837158203125e-7
+      },
+      "input_tokens": 29,
+      "expected_input_tokens": 29
+    },
+    {
+      "mode": "singleton",
+      "case_id": "high-threshold-empty",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 4,
+        "exactZero": 1,
+        "syntheticZero": 3,
+        "overTolerance": 0,
+        "maxAbsDiff": 4.249991836235978e-7
+      },
+      "input_tokens": 18,
+      "expected_input_tokens": 18
+    },
+    {
+      "mode": "singleton",
+      "case_id": "ordered-label",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 6,
+        "exactZero": 0,
+        "syntheticZero": 6,
+        "overTolerance": 0,
+        "maxAbsDiff": 7.003545761108398e-7
+      },
+      "input_tokens": 27,
+      "expected_input_tokens": 27
+    },
+    {
+      "mode": "singleton",
+      "case_id": "feasible-constraint",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 7,
+        "exactZero": 0,
+        "syntheticZero": 7,
+        "overTolerance": 0,
+        "maxAbsDiff": 0.0000013709068298339844
+      },
+      "input_tokens": 29,
+      "expected_input_tokens": 29
+    },
+    {
+      "mode": "singleton",
+      "case_id": "infeasible-constraint",
+      "http_status": 422,
+      "expected_http_status": 422,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 0,
+        "exactZero": 0,
+        "syntheticZero": 0,
+        "overTolerance": 0,
+        "maxAbsDiff": 0
+      },
+      "input_tokens": null,
+      "expected_input_tokens": null
+    },
+    {
+      "mode": "singleton",
+      "case_id": "mixed-length-long",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 6,
+        "exactZero": 0,
+        "syntheticZero": 6,
+        "overTolerance": 0,
+        "maxAbsDiff": 8.344650268554688e-7
+      },
+      "input_tokens": 250,
+      "expected_input_tokens": 250
+    },
+    {
+      "mode": "singleton",
+      "case_id": "described-single-repeat",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 6,
+        "exactZero": 0,
+        "syntheticZero": 6,
+        "overTolerance": 0,
+        "maxAbsDiff": 3.5762786865234375e-7
+      },
+      "input_tokens": 81,
+      "expected_input_tokens": 81
+    },
+    {
+      "mode": "singleton",
+      "case_id": "multi-task-described-instruction",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 11,
+        "exactZero": 1,
+        "syntheticZero": 10,
+        "overTolerance": 0,
+        "maxAbsDiff": 0.0000013709068298339844
+      },
+      "input_tokens": 108,
+      "expected_input_tokens": 108
+    },
+    {
+      "mode": "singleton",
+      "case_id": "default-temperature-multi-label",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 5,
+        "exactZero": 0,
+        "syntheticZero": 5,
+        "overTolerance": 0,
+        "maxAbsDiff": 1.3413811539297882e-7
+      },
+      "input_tokens": 16,
+      "expected_input_tokens": 16
+    },
+    {
+      "mode": "singleton",
+      "case_id": "softmax-activation",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 5,
+        "exactZero": 0,
+        "syntheticZero": 5,
+        "overTolerance": 0,
+        "maxAbsDiff": 0.000007152557373046875
+      },
+      "input_tokens": 20,
+      "expected_input_tokens": 20
+    },
+    {
+      "mode": "singleton",
+      "case_id": "invalid-reserved-marker",
+      "http_status": 422,
+      "expected_http_status": 422,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 0,
+        "exactZero": 0,
+        "syntheticZero": 0,
+        "overTolerance": 0,
+        "maxAbsDiff": 0
+      },
+      "input_tokens": null,
+      "expected_input_tokens": null
+    },
+    {
+      "mode": "singleton",
+      "case_id": "invalid-min-exceeds-max",
+      "http_status": 422,
+      "expected_http_status": 422,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 0,
+        "exactZero": 0,
+        "syntheticZero": 0,
+        "overTolerance": 0,
+        "maxAbsDiff": 0
+      },
+      "input_tokens": null,
+      "expected_input_tokens": null
+    },
+    {
+      "mode": "singleton",
+      "case_id": "invalid-unknown-constraint-label",
+      "http_status": 422,
+      "expected_http_status": 422,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 0,
+        "exactZero": 0,
+        "syntheticZero": 0,
+        "overTolerance": 0,
+        "maxAbsDiff": 0
+      },
+      "input_tokens": null,
+      "expected_input_tokens": null
+    },
+    {
+      "mode": "repeated",
+      "case_id": "described-single",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 6,
+        "exactZero": 0,
+        "syntheticZero": 6,
+        "overTolerance": 0,
+        "maxAbsDiff": 3.5762786865234375e-7
+      },
+      "input_tokens": 81,
+      "expected_input_tokens": 81
+    },
+    {
+      "mode": "repeated",
+      "case_id": "described-single",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 6,
+        "exactZero": 0,
+        "syntheticZero": 6,
+        "overTolerance": 0,
+        "maxAbsDiff": 3.5762786865234375e-7
+      },
+      "input_tokens": 81,
+      "expected_input_tokens": 81
+    },
+    {
+      "mode": "repeated",
+      "case_id": "multi-label",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 6,
+        "exactZero": 1,
+        "syntheticZero": 5,
+        "overTolerance": 0,
+        "maxAbsDiff": 4.76837158203125e-7
+      },
+      "input_tokens": 29,
+      "expected_input_tokens": 29
+    },
+    {
+      "mode": "repeated",
+      "case_id": "multi-label",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 6,
+        "exactZero": 1,
+        "syntheticZero": 5,
+        "overTolerance": 0,
+        "maxAbsDiff": 4.76837158203125e-7
+      },
+      "input_tokens": 29,
+      "expected_input_tokens": 29
+    },
+    {
+      "mode": "repeated",
+      "case_id": "high-threshold-empty",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 4,
+        "exactZero": 1,
+        "syntheticZero": 3,
+        "overTolerance": 0,
+        "maxAbsDiff": 4.249991836235978e-7
+      },
+      "input_tokens": 18,
+      "expected_input_tokens": 18
+    },
+    {
+      "mode": "repeated",
+      "case_id": "high-threshold-empty",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 4,
+        "exactZero": 1,
+        "syntheticZero": 3,
+        "overTolerance": 0,
+        "maxAbsDiff": 4.249991836235978e-7
+      },
+      "input_tokens": 18,
+      "expected_input_tokens": 18
+    },
+    {
+      "mode": "repeated",
+      "case_id": "ordered-label",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 6,
+        "exactZero": 0,
+        "syntheticZero": 6,
+        "overTolerance": 0,
+        "maxAbsDiff": 7.003545761108398e-7
+      },
+      "input_tokens": 27,
+      "expected_input_tokens": 27
+    },
+    {
+      "mode": "repeated",
+      "case_id": "ordered-label",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 6,
+        "exactZero": 0,
+        "syntheticZero": 6,
+        "overTolerance": 0,
+        "maxAbsDiff": 7.003545761108398e-7
+      },
+      "input_tokens": 27,
+      "expected_input_tokens": 27
+    },
+    {
+      "mode": "repeated",
+      "case_id": "feasible-constraint",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 7,
+        "exactZero": 0,
+        "syntheticZero": 7,
+        "overTolerance": 0,
+        "maxAbsDiff": 0.0000013709068298339844
+      },
+      "input_tokens": 29,
+      "expected_input_tokens": 29
+    },
+    {
+      "mode": "repeated",
+      "case_id": "feasible-constraint",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 7,
+        "exactZero": 0,
+        "syntheticZero": 7,
+        "overTolerance": 0,
+        "maxAbsDiff": 0.0000013709068298339844
+      },
+      "input_tokens": 29,
+      "expected_input_tokens": 29
+    },
+    {
+      "mode": "repeated",
+      "case_id": "infeasible-constraint",
+      "http_status": 422,
+      "expected_http_status": 422,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 0,
+        "exactZero": 0,
+        "syntheticZero": 0,
+        "overTolerance": 0,
+        "maxAbsDiff": 0
+      },
+      "input_tokens": null,
+      "expected_input_tokens": null
+    },
+    {
+      "mode": "repeated",
+      "case_id": "infeasible-constraint",
+      "http_status": 422,
+      "expected_http_status": 422,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 0,
+        "exactZero": 0,
+        "syntheticZero": 0,
+        "overTolerance": 0,
+        "maxAbsDiff": 0
+      },
+      "input_tokens": null,
+      "expected_input_tokens": null
+    },
+    {
+      "mode": "repeated",
+      "case_id": "mixed-length-long",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 6,
+        "exactZero": 0,
+        "syntheticZero": 6,
+        "overTolerance": 0,
+        "maxAbsDiff": 8.344650268554688e-7
+      },
+      "input_tokens": 250,
+      "expected_input_tokens": 250
+    },
+    {
+      "mode": "repeated",
+      "case_id": "mixed-length-long",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 6,
+        "exactZero": 0,
+        "syntheticZero": 6,
+        "overTolerance": 0,
+        "maxAbsDiff": 8.344650268554688e-7
+      },
+      "input_tokens": 250,
+      "expected_input_tokens": 250
+    },
+    {
+      "mode": "repeated",
+      "case_id": "described-single-repeat",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 6,
+        "exactZero": 0,
+        "syntheticZero": 6,
+        "overTolerance": 0,
+        "maxAbsDiff": 3.5762786865234375e-7
+      },
+      "input_tokens": 81,
+      "expected_input_tokens": 81
+    },
+    {
+      "mode": "repeated",
+      "case_id": "described-single-repeat",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 6,
+        "exactZero": 0,
+        "syntheticZero": 6,
+        "overTolerance": 0,
+        "maxAbsDiff": 3.5762786865234375e-7
+      },
+      "input_tokens": 81,
+      "expected_input_tokens": 81
+    },
+    {
+      "mode": "repeated",
+      "case_id": "multi-task-described-instruction",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 11,
+        "exactZero": 1,
+        "syntheticZero": 10,
+        "overTolerance": 0,
+        "maxAbsDiff": 0.0000013709068298339844
+      },
+      "input_tokens": 108,
+      "expected_input_tokens": 108
+    },
+    {
+      "mode": "repeated",
+      "case_id": "multi-task-described-instruction",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 11,
+        "exactZero": 1,
+        "syntheticZero": 10,
+        "overTolerance": 0,
+        "maxAbsDiff": 0.0000013709068298339844
+      },
+      "input_tokens": 108,
+      "expected_input_tokens": 108
+    },
+    {
+      "mode": "repeated",
+      "case_id": "default-temperature-multi-label",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 5,
+        "exactZero": 0,
+        "syntheticZero": 5,
+        "overTolerance": 0,
+        "maxAbsDiff": 1.3413811539297882e-7
+      },
+      "input_tokens": 16,
+      "expected_input_tokens": 16
+    },
+    {
+      "mode": "repeated",
+      "case_id": "default-temperature-multi-label",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 5,
+        "exactZero": 0,
+        "syntheticZero": 5,
+        "overTolerance": 0,
+        "maxAbsDiff": 1.3413811539297882e-7
+      },
+      "input_tokens": 16,
+      "expected_input_tokens": 16
+    },
+    {
+      "mode": "repeated",
+      "case_id": "softmax-activation",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 5,
+        "exactZero": 0,
+        "syntheticZero": 5,
+        "overTolerance": 0,
+        "maxAbsDiff": 0.000007152557373046875
+      },
+      "input_tokens": 20,
+      "expected_input_tokens": 20
+    },
+    {
+      "mode": "repeated",
+      "case_id": "softmax-activation",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 5,
+        "exactZero": 0,
+        "syntheticZero": 5,
+        "overTolerance": 0,
+        "maxAbsDiff": 0.000007152557373046875
+      },
+      "input_tokens": 20,
+      "expected_input_tokens": 20
+    },
+    {
+      "mode": "repeated",
+      "case_id": "invalid-reserved-marker",
+      "http_status": 422,
+      "expected_http_status": 422,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 0,
+        "exactZero": 0,
+        "syntheticZero": 0,
+        "overTolerance": 0,
+        "maxAbsDiff": 0
+      },
+      "input_tokens": null,
+      "expected_input_tokens": null
+    },
+    {
+      "mode": "repeated",
+      "case_id": "invalid-reserved-marker",
+      "http_status": 422,
+      "expected_http_status": 422,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 0,
+        "exactZero": 0,
+        "syntheticZero": 0,
+        "overTolerance": 0,
+        "maxAbsDiff": 0
+      },
+      "input_tokens": null,
+      "expected_input_tokens": null
+    },
+    {
+      "mode": "repeated",
+      "case_id": "invalid-min-exceeds-max",
+      "http_status": 422,
+      "expected_http_status": 422,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 0,
+        "exactZero": 0,
+        "syntheticZero": 0,
+        "overTolerance": 0,
+        "maxAbsDiff": 0
+      },
+      "input_tokens": null,
+      "expected_input_tokens": null
+    },
+    {
+      "mode": "repeated",
+      "case_id": "invalid-min-exceeds-max",
+      "http_status": 422,
+      "expected_http_status": 422,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 0,
+        "exactZero": 0,
+        "syntheticZero": 0,
+        "overTolerance": 0,
+        "maxAbsDiff": 0
+      },
+      "input_tokens": null,
+      "expected_input_tokens": null
+    },
+    {
+      "mode": "repeated",
+      "case_id": "invalid-unknown-constraint-label",
+      "http_status": 422,
+      "expected_http_status": 422,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 0,
+        "exactZero": 0,
+        "syntheticZero": 0,
+        "overTolerance": 0,
+        "maxAbsDiff": 0
+      },
+      "input_tokens": null,
+      "expected_input_tokens": null
+    },
+    {
+      "mode": "repeated",
+      "case_id": "invalid-unknown-constraint-label",
+      "http_status": 422,
+      "expected_http_status": 422,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 0,
+        "exactZero": 0,
+        "syntheticZero": 0,
+        "overTolerance": 0,
+        "maxAbsDiff": 0
+      },
+      "input_tokens": null,
+      "expected_input_tokens": null
+    },
+    {
+      "mode": "batch",
+      "case_id": "described-single",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 6,
+        "exactZero": 0,
+        "syntheticZero": 6,
+        "overTolerance": 0,
+        "maxAbsDiff": 4.76837158203125e-7
+      },
+      "input_tokens": 81,
+      "expected_input_tokens": 81
+    },
+    {
+      "mode": "batch",
+      "case_id": "mixed-length-long",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 6,
+        "exactZero": 0,
+        "syntheticZero": 6,
+        "overTolerance": 0,
+        "maxAbsDiff": 3.5762786865234375e-7
+      },
+      "input_tokens": 250,
+      "expected_input_tokens": 250
+    },
+    {
+      "mode": "batch",
+      "case_id": "described-single-repeat",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 6,
+        "exactZero": 0,
+        "syntheticZero": 6,
+        "overTolerance": 0,
+        "maxAbsDiff": 4.76837158203125e-7
+      },
+      "input_tokens": 81,
+      "expected_input_tokens": 81
+    },
+    {
+      "mode": "concurrent-group",
+      "case_id": "described-single",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 6,
+        "exactZero": 0,
+        "syntheticZero": 6,
+        "overTolerance": 0,
+        "maxAbsDiff": 4.76837158203125e-7
+      },
+      "input_tokens": 81,
+      "expected_input_tokens": 81
+    },
+    {
+      "mode": "concurrent-group",
+      "case_id": "mixed-length-long",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 6,
+        "exactZero": 0,
+        "syntheticZero": 6,
+        "overTolerance": 0,
+        "maxAbsDiff": 8.344650268554688e-7
+      },
+      "input_tokens": 250,
+      "expected_input_tokens": 250
+    },
+    {
+      "mode": "concurrent-group",
+      "case_id": "described-single-repeat",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 6,
+        "exactZero": 0,
+        "syntheticZero": 6,
+        "overTolerance": 0,
+        "maxAbsDiff": 4.76837158203125e-7
+      },
+      "input_tokens": 81,
+      "expected_input_tokens": 81
+    },
+    {
+      "mode": "concurrent-all",
+      "case_id": "described-single",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 6,
+        "exactZero": 0,
+        "syntheticZero": 6,
+        "overTolerance": 0,
+        "maxAbsDiff": 4.76837158203125e-7
+      },
+      "input_tokens": 81,
+      "expected_input_tokens": 81
+    },
+    {
+      "mode": "concurrent-all",
+      "case_id": "multi-label",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 6,
+        "exactZero": 1,
+        "syntheticZero": 5,
+        "overTolerance": 0,
+        "maxAbsDiff": 4.76837158203125e-7
+      },
+      "input_tokens": 29,
+      "expected_input_tokens": 29
+    },
+    {
+      "mode": "concurrent-all",
+      "case_id": "high-threshold-empty",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 4,
+        "exactZero": 1,
+        "syntheticZero": 3,
+        "overTolerance": 0,
+        "maxAbsDiff": 4.249991836235978e-7
+      },
+      "input_tokens": 18,
+      "expected_input_tokens": 18
+    },
+    {
+      "mode": "concurrent-all",
+      "case_id": "ordered-label",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 6,
+        "exactZero": 0,
+        "syntheticZero": 6,
+        "overTolerance": 0,
+        "maxAbsDiff": 7.003545761108398e-7
+      },
+      "input_tokens": 27,
+      "expected_input_tokens": 27
+    },
+    {
+      "mode": "concurrent-all",
+      "case_id": "feasible-constraint",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 7,
+        "exactZero": 0,
+        "syntheticZero": 7,
+        "overTolerance": 0,
+        "maxAbsDiff": 0.0000013709068298339844
+      },
+      "input_tokens": 29,
+      "expected_input_tokens": 29
+    },
+    {
+      "mode": "concurrent-all",
+      "case_id": "infeasible-constraint",
+      "http_status": 422,
+      "expected_http_status": 422,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 0,
+        "exactZero": 0,
+        "syntheticZero": 0,
+        "overTolerance": 0,
+        "maxAbsDiff": 0
+      },
+      "input_tokens": null,
+      "expected_input_tokens": null
+    },
+    {
+      "mode": "concurrent-all",
+      "case_id": "mixed-length-long",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 6,
+        "exactZero": 0,
+        "syntheticZero": 6,
+        "overTolerance": 0,
+        "maxAbsDiff": 8.344650268554688e-7
+      },
+      "input_tokens": 250,
+      "expected_input_tokens": 250
+    },
+    {
+      "mode": "concurrent-all",
+      "case_id": "described-single-repeat",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 6,
+        "exactZero": 0,
+        "syntheticZero": 6,
+        "overTolerance": 0,
+        "maxAbsDiff": 4.76837158203125e-7
+      },
+      "input_tokens": 81,
+      "expected_input_tokens": 81
+    },
+    {
+      "mode": "concurrent-all",
+      "case_id": "multi-task-described-instruction",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 11,
+        "exactZero": 1,
+        "syntheticZero": 10,
+        "overTolerance": 0,
+        "maxAbsDiff": 0.0000013709068298339844
+      },
+      "input_tokens": 108,
+      "expected_input_tokens": 108
+    },
+    {
+      "mode": "concurrent-all",
+      "case_id": "default-temperature-multi-label",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 5,
+        "exactZero": 0,
+        "syntheticZero": 5,
+        "overTolerance": 0,
+        "maxAbsDiff": 1.3413811539297882e-7
+      },
+      "input_tokens": 16,
+      "expected_input_tokens": 16
+    },
+    {
+      "mode": "concurrent-all",
+      "case_id": "softmax-activation",
+      "http_status": 200,
+      "expected_http_status": 200,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 5,
+        "exactZero": 0,
+        "syntheticZero": 5,
+        "overTolerance": 0,
+        "maxAbsDiff": 0.000007152557373046875
+      },
+      "input_tokens": 20,
+      "expected_input_tokens": 20
+    },
+    {
+      "mode": "concurrent-all",
+      "case_id": "invalid-reserved-marker",
+      "http_status": 422,
+      "expected_http_status": 422,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 0,
+        "exactZero": 0,
+        "syntheticZero": 0,
+        "overTolerance": 0,
+        "maxAbsDiff": 0
+      },
+      "input_tokens": null,
+      "expected_input_tokens": null
+    },
+    {
+      "mode": "concurrent-all",
+      "case_id": "invalid-min-exceeds-max",
+      "http_status": 422,
+      "expected_http_status": 422,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 0,
+        "exactZero": 0,
+        "syntheticZero": 0,
+        "overTolerance": 0,
+        "maxAbsDiff": 0
+      },
+      "input_tokens": null,
+      "expected_input_tokens": null
+    },
+    {
+      "mode": "concurrent-all",
+      "case_id": "invalid-unknown-constraint-label",
+      "http_status": 422,
+      "expected_http_status": 422,
+      "exact_semantic_match": true,
+      "mismatches": [],
+      "numeric": {
+        "compared": 0,
+        "exactZero": 0,
+        "syntheticZero": 0,
+        "overTolerance": 0,
+        "maxAbsDiff": 0
+      },
+      "input_tokens": null,
+      "expected_input_tokens": null
+    }
+  ]
+}

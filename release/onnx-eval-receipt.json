@@ -1,0 +1,144 @@
+{
+  "all_passed": true,
+  "corpora": [
+    {
+      "id": "english-v1",
+      "path": "tests/fixtures/onnx-parity/corpus-english-v1.json",
+      "sha256": "10aa107ccc49c0b0eab283a6d2ad74b98057e08b1c3b61dbec790d10d45c9de6"
+    },
+    {
+      "id": "multilingual-v1",
+      "path": "tests/fixtures/onnx-parity/corpus-multilingual-v1.json",
+      "sha256": "b97b2041d4dcc4caf194167bc0aad5d5d3604cd7119a61cef1267f8bcbeaceff"
+    }
+  ],
+  "created_at": "2026-10-14T22:05:18.179Z",
+  "format_version": 1,
+  "goldens": [
+    {
+      "path": "tests/fixtures/onnx-parity/goldens/decide-340m-english-v1.json",
+      "sha256": "9aeb5a5b13684a16a615dff8650ab84995c1a4fd57659dd4c8cadfee8011fab6"
+    },
+    {
+      "path": "tests/fixtures/onnx-parity/goldens/decide-340m-multilingual-v1.json",
+      "sha256": "d09fef717c221c4245b38b179639a3e0ed369ce36f52d30ca7e56c794d96f49d"
+    },
+    {
+      "path": "tests/fixtures/onnx-parity/goldens/decide-multilingual-english-v1.json",
+      "sha256": "ee586a91c6ff9b9a2d67e57b9f00435b5761e4260708eb3035c3e6b47e18407a"
+    },
+    {
+      "path": "tests/fixtures/onnx-parity/goldens/decide-multilingual-multilingual-v1.json",
+      "sha256": "b102d402f6d08d49aea3016425a5b00fa0e3516078d582a3ef10487239bdaa1d"
+    },
+    {
+      "path": "tests/fixtures/onnx-parity/goldens/decide-1b-english-v1.json",
+      "sha256": "6bcefcbd992dac5cac105bfee35ed245a2987eb8292fd2be3ba266023fd5787a"
+    },
+    {
+      "path": "tests/fixtures/onnx-parity/goldens/decide-1b-multilingual-v1.json",
+      "sha256": "31430160a0c5c8b40c4429b0673dc5a35061e9bfbc3b29424341c9f1da1ff921"
+    }
+  ],
+  "host": {
+    "arch": "arm64",
+    "cpu_cores": 18,
+    "cpu_model": "Apple M5 Max",
+    "node": "v24.21.0",
+    "onnxruntime_node": "1.30.0",
+    "platform": "darwin"
+  },
+  "kind": "gliner-runner-onnx-eval-receipt",
+  "models": [
+    {
+      "manifest_sha256": "2912a88ced2122618212266bf8be7b0d988deabe2d655d34577d246eb0033d86",
+      "model_id": "decide-340m",
+      "repository": "fastino/GLiNER2.5-Decide",
+      "revision": "9d1bfb848cd16d93ee56ccbc59cd92bf0f284d90",
+      "template_sha256": "fd1620a01f2631659e323bfa14749bc86f90933dffb185c39c713f0ecab8a6c2"
+    },
+    {
+      "manifest_sha256": "b8dcad0c7b124a090ae527906cb62efe1456607db058d3f9c4e62659eefa3976",
+      "model_id": "decide-multilingual",
+      "repository": "fastino/GLiNER2.5-multi-Decide",
+      "revision": "e173bca1f0c4217d7a55b3b0c705d5ece8a0218d",
+      "template_sha256": "281bbdca7f3e0a9738c4dfc9e422581a52ec7c2d6ba5f2d072fc279407f1dfd6"
+    },
+    {
+      "manifest_sha256": "d022d90526d50ff11045d65eb659902889c9acdb925d46f4f025fd3b82a6287e",
+      "model_id": "decide-1b",
+      "repository": "fastino/GLiNER2.5-Decide-1B",
+      "revision": "67af949e17bebd20f05fe020a971079889e7a462",
+      "template_sha256": "c29714b48dcc634debb04ad6b7f420745f12c3d423d284a2fcf474650666a52b"
+    }
+  ],
+  "previous_receipt_sha256": "32bb54b93a0bdb1ba4ca7dbc7ff563e16550fad180574abebf4f53f8e98e0bf7",
+  "results": [
+    {
+      "compared_values": 284,
+      "corpus": "english-v1",
+      "exact_semantic_matches": 62,
+      "max_raw_abs_diff": 0.000007152557373046875,
+      "model_id": "decide-340m",
+      "passed": true,
+      "requests": 62,
+      "synthetic_zero_diffs": 272
+    },
+    {
+      "compared_values": 284,
+      "corpus": "multilingual-v1",
+      "exact_semantic_matches": 62,
+      "max_raw_abs_diff": 0.000004291534423828125,
+      "model_id": "decide-340m",
+      "passed": true,
+      "requests": 62,
+      "synthetic_zero_diffs": 280
+    },
+    {
+      "compared_values": 284,
+      "corpus": "english-v1",
+      "exact_semantic_matches": 62,
+      "max_raw_abs_diff": 0.000015497207641601562,
+      "model_id": "decide-multilingual",
+      "passed": true,
+      "requests": 62,
+      "synthetic_zero_diffs": 280
+    },
+    {
+      "compared_values": 284,
+      "corpus": "multilingual-v1",
+      "exact_semantic_matches": 62,
+      "max_raw_abs_diff": 0.000021889805793762207,
+      "model_id": "decide-multilingual",
+      "passed": true,
+      "requests": 62,
+      "synthetic_zero_diffs": 280
+    },
+    {
+      "compared_values": 284,
+      "corpus": "english-v1",
+      "exact_semantic_matches": 62,
+      "max_raw_abs_diff": 0.000002205371856689453,
+      "model_id": "decide-1b",
+      "passed": true,
+      "requests": 62,
+      "synthetic_zero_diffs": 272
+    },
+    {
+      "compared_values": 284,
+      "corpus": "multilingual-v1",
+      "exact_semantic_matches": 62,
+      "max_raw_abs_diff": 0.000003978610038757324,
+      "model_id": "decide-1b",
+      "passed": true,
+      "requests": 62,
+      "synthetic_zero_diffs": 280
+    }
+  ],
+  "run_id": "87efd331-cbf6-450c-b013-d8b2c95146e4",
+  "runner": {
+    "identity_sha256": "a8a1b976e3dae2d7fef35fbb52097c2d4d2f46f4f0fcabdcf88474a146ec495d",
+    "version": "0.2.1"
+  },
+  "tolerance": 0.0001
+}

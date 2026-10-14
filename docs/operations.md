@@ -17,6 +17,42 @@ Package registry configuration and container secret mounts are defined in the
 [registry policy](registries.md). Registry credentials are build-time inputs,
 not application configuration, image metadata, or runtime environment.
 
+## ONNX runner deployment
+
+ONNX inference runs in a separate process, the Python-free Node runner
+`gliner-runner-onnx`, distributed as the `gliner-runner-onnx-<version>-<platform>-<arch>.tar.gz`
+release asset (with a `.sha256` file; both are also listed in `SHA256SUMS` and
+`release-manifest.json`). It bundles Node.js, ONNX Runtime, and per-revision
+graph templates, and no Python and no models. Its models are
+`onnx/<owner>--<name>/<revision>/` artifacts under its `--models-dir` that it
+assembles itself from the pinned Hugging Face files, with no Python (see
+[installing models](onnx-runtime.md#installing-models)), and it verifies every
+file's SHA-256 before loading. It is not an option of the Python server: the
+Python `GLINER_RUNNER_DEVICE`, manifest, model-store, and download settings below
+do not apply to it. It has its own settings (host, port, queue, batching, idle
+TTL, memory limit, `--models-dir`, `--templates-dir`, `--auto-download`)
+documented in [ONNX runtime](onnx-runtime.md), and supports only CPU/FP32
+`classify`.
+
+Model acquisition on the ONNX runner follows the same approval rules as the
+Python server: inference never downloads unless the operator starts the server
+with `--auto-download` (or `GLINER_RUNNER_AUTO_DOWNLOAD=1`, off by default);
+otherwise a missing model returns `409 model_download_required`, an approved
+`POST /v1/models/{model_id}/downloads` (destination equal to the models
+directory) starts a job, and `GET /v1/model-downloads/{job_id}` reports it.
+Operators can pre-install without a server using
+`gliner-runner-onnx models install <model-id> --yes` (a terminal prompts
+instead; a non-terminal without `--yes` refuses), `models prepare` for offline
+preparation from a local snapshot, and `models scan` / `models list` to see
+which snapshots were found and what was processed. A verified local snapshot
+(Hugging Face cache, `GLINER_RUNNER_SNAPSHOT_DIRS`, the Python runner's provider
+store) is always used before any download. Downloads honor `HF_ENDPOINT` and
+`HF_TOKEN` (sent only to the Hub origin). Each attempt is recorded in
+`<models-dir>/onnx/<owner>--<name>/<revision>.gliner-runner.json`, a best-effort
+record outside the artifact directory; `POST /v1/models/refresh` writes
+`<models-dir>/catalog-cache.json`. Details: [ONNX runtime](onnx-runtime.md). Run one server process per backend; one
+process never serves both PyTorch and ONNX requests.
+
 ## Configuration
 
 The server reads these environment variables when corresponding CLI options are
@@ -104,6 +140,11 @@ HTTP/OpenAPI protocol; Electron IPC should proxy application requests from a
 sandboxed renderer to the main process rather than exposing the local server or
 child-process APIs directly.
 
+To supervise the ONNX runner instead, set `command` to the absolute path of its
+`bin/gliner-runner-onnx` launcher and pass `runnerArguments:
+["--models-dir", "<dir>"]`; the sidecar then runs the same `serve --host --port
+--device` interface (see [ONNX runtime](onnx-runtime.md#sidecar-use-from-the-typescript-client)).
+
 The one-shot `gliner-runner infer` command accepts one JSON request from
 `--request` or stdin, emits exactly one JSON response on stdout, and exits.
 Operational logs and validation failures use stderr so they cannot corrupt a
@@ -132,7 +173,9 @@ drivers, and scheduling. They must retain the non-root process, immutable
 application layer, external model volume, explicit device selection, and
 health behavior. The image contains no model weights. Its container command
 explicitly listens on all container interfaces; publish it only to loopback
-unless an authenticated, encrypted proxy protects the service.
+unless an authenticated, encrypted proxy protects the service. The Dockerfile
+packages the Python/PyTorch server only; the ONNX runner ships as a platform
+archive, and a container for it would need its own review.
 
 ## Observability and privacy
 

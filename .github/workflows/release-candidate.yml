@@ -1,0 +1,121 @@
+name: Release candidate
+
+# Manual prerelease. Tags vX.Y.Z-rc.N and publishes a GitHub *prerelease* built from the dispatched
+# commit. Prereleases never become /releases/latest and carry no latest.json, so they never trigger
+# an upgrade notification. They are published to Homebrew only as the separate gliner-runner-rc formula
+# (stuffbucket/tap/gliner-runner-rc), never as gliner-runner.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Target stable version, X.Y.Z (the rc number is chosen automatically)
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-candidate
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    name: Choose release candidate number
+    runs-on: ubuntu-24.04
+    outputs:
+      version: ${{ steps.next.outputs.version }}
+      tag: ${{ steps.next.outputs.tag }}
+    steps:
+      - name: Compute next vX.Y.Z-rc.N
+        id: next
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TARGET: ${{ inputs.version }}
+        run: |
+          set -eu
+          printf '%s' "$TARGET" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' || {
+            echo "version must be X.Y.Z, got '$TARGET'" >&2
+            exit 1
+          }
+          tags=$(gh api --paginate "repos/$GITHUB_REPOSITORY/git/matching-refs/tags/v$TARGET" --jq '.[].ref')
+          if printf '%s\n' "$tags" | grep -qx "refs/tags/v$TARGET"; then
+            echo "v$TARGET is already released; choose a newer version." >&2
+            exit 1
+          fi
+          last=$(printf '%s\n' "$tags" | sed -n "s|^refs/tags/v$TARGET-rc\.\([0-9][0-9]*\)$|\1|p" | sort -n | tail -n 1)
+          number=$(( ${last:-0} + 1 ))
+          echo "version=$TARGET-rc.$number" >> "$GITHUB_OUTPUT"
+          echo "tag=v$TARGET-rc.$number" >> "$GITHUB_OUTPUT"
+
+  build:
+    name: Build release candidate
+    needs: prepare
+    uses: ./.github/workflows/_release-build.yml
+    permissions:
+      contents: read
+    with:
+      ref: ${{ github.sha }}
+      version: ${{ needs.prepare.outputs.version }}
+      channel: rc
+
+  publish:
+    name: Publish prerelease
+    needs: [prepare, build]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Download release assets
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release-assets
+          path: dist/release
+      - name: Create tag and prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ needs.prepare.outputs.tag }}
+        run: |
+          set -eu
+          gh release create "$TAG" dist/release/* \
+            --target "$GITHUB_SHA" \
+            --prerelease \
+            --latest=false \
+            --title "$TAG" \
+            --notes "Release candidate built from $GITHUB_SHA. Not a stable release: it is not an upgrade target. Install with: brew install stuffbucket/tap/gliner-runner-rc"
+
+  notify-tap:
+    name: Notify Homebrew tap
+    needs: [prepare, publish]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      # The tap's sync-gliner-runner workflow also runs on a schedule, so this only shortens the wait.
+      - name: Send repository_dispatch to the tap (when HOMEBREW_TAP_TOKEN exists)
+        env:
+          GH_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          TAG: ${{ needs.prepare.outputs.tag }}
+        run: |
+          set -eu
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::notice::HOMEBREW_TAP_TOKEN is not configured; the tap picks up $TAG on its next scheduled sync."
+            exit 0
+          fi
+          gh api repos/stuffbucket/homebrew-tap/dispatches \
+            -f event_type=gliner-runner-release \
+            -f "client_payload[tag]=$TAG" \
+            -f "client_payload[channel]=rc"
+
+  brew-smoke:
+    name: Homebrew install smoke test
+    needs: [prepare, notify-tap]
+    uses: ./.github/workflows/brew-smoke.yml
+    permissions:
+      contents: read
+    with:
+      channel: rc
+      version: ${{ needs.prepare.outputs.version }}

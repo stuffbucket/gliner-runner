@@ -1,0 +1,165 @@
+{
+  "format_version": 1,
+  "kind": "gliner-runner-onnx-classifier",
+  "model_id": "decide-1b",
+  "repository": "fastino/GLiNER2.5-Decide-1B",
+  "revision": "67af949e17bebd20f05fe020a971079889e7a462",
+  "source_snapshot_sha256": "6c183eb70b52b6683a1489a56df3eedb7fea7e12a2c5535c67fe00a1eb515d98",
+  "source_snapshot_bytes": 4759465708,
+  "parameter_count": 1188796693,
+  "license": "apache-2.0",
+  "operations": [
+    "classify"
+  ],
+  "precision": "fp32",
+  "quantization": "none",
+  "provider": "CPUExecutionProvider",
+  "opset": 20,
+  "opset_imports": [
+    {
+      "domain": "ai.onnx",
+      "version": 20
+    }
+  ],
+  "preprocessing": "gliner2.json",
+  "graph": {
+    "path": "model.onnx",
+    "external_data": [
+      "model.onnx.data"
+    ],
+    "inputs": [
+      {
+        "name": "input_ids",
+        "type": "tensor(int64)",
+        "shape": [
+          "batch",
+          "sequence"
+        ]
+      },
+      {
+        "name": "attention_mask",
+        "type": "tensor(int64)",
+        "shape": [
+          "batch",
+          "sequence"
+        ]
+      },
+      {
+        "name": "label_positions",
+        "type": "tensor(int64)",
+        "shape": [
+          "batch",
+          "labels"
+        ]
+      },
+      {
+        "name": "label_mask",
+        "type": "tensor(bool)",
+        "shape": [
+          "batch",
+          "labels"
+        ]
+      }
+    ],
+    "outputs": [
+      {
+        "name": "logits",
+        "type": "tensor(float)",
+        "shape": [
+          "batch",
+          "labels"
+        ]
+      }
+    ]
+  },
+  "exporter": {
+    "gliner_runner": "0.2.1",
+    "gliner2": "2.1.0",
+    "torch": "2.14.0",
+    "transformers": "5.19.0",
+    "onnx": "1.23.2",
+    "onnxscript": "0.7.2",
+    "onnxruntime": "1.31.0"
+  },
+  "parity": {
+    "absolute_tolerance": 0.0001,
+    "max_abs_logit_difference": 1.9311904907226562e-05,
+    "official_max_abs_logit_difference": 9.5367431640625e-07,
+    "onnx_official_max_abs_logit_difference": 1.9311904907226562e-05,
+    "batch_invariance_max_abs_logit_difference": 1.8775463104248047e-06,
+    "selected_index_matches": 19,
+    "rows": 19,
+    "valid_logits_compared": 69,
+    "synthetic_zero_threshold": 0.0001,
+    "nonzero_differences_zeroed": 69,
+    "fixture_suite": "classification-logits-multitask-english-v1",
+    "fixture_sha256": "18d2d00472bb70c358472cae0a68f8b0664a16fd21b9d818a40189415557bc08",
+    "fixture_shapes": [
+      {
+        "batch": 1,
+        "sequence": 138,
+        "labels": 11,
+        "input_tokens": [
+          138
+        ]
+      },
+      {
+        "batch": 3,
+        "sequence": 145,
+        "labels": 11,
+        "input_tokens": [
+          18,
+          145,
+          110
+        ]
+      },
+      {
+        "batch": 2,
+        "sequence": 180,
+        "labels": 11,
+        "input_tokens": [
+          180,
+          135
+        ]
+      },
+      {
+        "batch": 4,
+        "sequence": 133,
+        "labels": 4,
+        "input_tokens": [
+          95,
+          133,
+          97,
+          91
+        ]
+      }
+    ]
+  },
+  "files": [
+    {
+      "path": "gliner2.json",
+      "size": 2528,
+      "sha256": "30fd562d39a53f224a8447f4f8982af13b98c49f8adae589aec5f5a9d05214f2"
+    },
+    {
+      "path": "model.onnx",
+      "size": 3206205,
+      "sha256": "ee6de4e15bb6d0e0dabf17264ba784fa1efad000718752a9694b2209bc04661e"
+    },
+    {
+      "path": "model.onnx.data",
+      "size": 4137993280,
+      "sha256": "89ef00057048e6c45433608886964be3ffdb525536e73aefab923d5ee7cd8716"
+    },
+    {
+      "path": "tokenizer.json",
+      "size": 3585055,
+      "sha256": "ddb379b6a4679ee16646bf0b726de9ec538d7c80ea9d4d4e33b069f19c9e1efb"
+    },
+    {
+      "path": "tokenizer_config.json",
+      "size": 559,
+      "sha256": "8bb8d094c7cde84942866ef98fb5b24f7387245573a7f707c8349729484c27b3"
+    }
+  ]
+}

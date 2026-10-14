@@ -4,10 +4,10 @@ import argparse
 import asyncio
 import csv
 import gc
-import hashlib
 import importlib.metadata
 import json
 import math
+import os
 import platform
 import socket
 import subprocess
@@ -15,14 +15,39 @@ import sys
 import tempfile
 import threading
 import time
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from contextlib import suppress
+from dataclasses import dataclass
 from pathlib import Path
+from types import MappingProxyType
 from typing import Any
 
-MODEL_ID = "fastino/GLiNER2.5-Decide"
-MODEL_REVISION = "5a7adf72a23b4d311abae6ce050d7f0012bb3416"
-LOGICAL_MODEL = f"{MODEL_ID}@{MODEL_REVISION}"
+for _name, _value in {
+    "DO_NOT_TRACK": "1",
+    "HF_HUB_DISABLE_TELEMETRY": "1",
+    "HF_HUB_OFFLINE": "1",
+    "TOKENIZERS_PARALLELISM": "false",
+    "TRANSFORMERS_OFFLINE": "1",
+}.items():
+    os.environ[_name] = _value
+
+if __package__:
+    from .benchmark_support import (
+        prepare_output_directory,
+        snapshot_tree_digest,
+        stable_sha256,
+        validate_gliner2_version,
+        validate_model_snapshot,
+    )
+else:
+    from benchmark_support import (  # type: ignore[no-redef]
+        prepare_output_directory,
+        snapshot_tree_digest,
+        stable_sha256,
+        validate_gliner2_version,
+        validate_model_snapshot,
+    )
+
 SUPPORTED_PROFILES = {
     ("cpu", "fp32"),
     ("cuda", "fp32"),
@@ -31,20 +56,38 @@ SUPPORTED_PROFILES = {
     ("mps", "fp16"),
     ("mps", "fp32"),
 }
-SCHEMA_LABELS = ("billing", "technical_support", "account_access", "shipping")
-SCHEMA_LABEL_DESCRIPTIONS = {
-    "billing": "Invoices, charges, refunds, and payment problems",
-    "technical_support": "Application failures, defects, and technical troubleshooting",
-    "account_access": "Authentication, passwords, and account sign-in problems",
-    "shipping": "Package delivery, tracking, and shipment status",
-}
-PARITY_CASES = (
-    ("My credit card was charged twice for the same invoice.", "billing"),
-    ("The desktop application crashes whenever I export a report.", "technical_support"),
-    ("I cannot sign in after resetting my password.", "account_access"),
-    ("Where is the package that was supposed to arrive yesterday?", "shipping"),
+
+
+@dataclass(frozen=True)
+class WorkloadSpec:
+    workload_id: str
+    languages: tuple[str, ...]
+    labels: tuple[str, ...]
+    label_descriptions: Mapping[str, str]
+    parity_cases: tuple[tuple[str, str, str], ...]
+    base_words: tuple[str, ...]
+
+
+_LABELS = ("billing", "technical_support", "account_access", "shipping")
+_LABEL_DESCRIPTIONS = MappingProxyType(
+    {
+        "billing": "Invoices, charges, refunds, and payment problems",
+        "technical_support": "Application failures, defects, and technical troubleshooting",
+        "account_access": "Authentication, passwords, and account sign-in problems",
+        "shipping": "Package delivery, tracking, and shipment status",
+    }
 )
-BASE_WORDS = (
+_ENGLISH_PARITY_CASES = (
+    ("My credit card was charged twice for the same invoice.", "billing", "en"),
+    (
+        "The desktop application crashes whenever I export a report.",
+        "technical_support",
+        "en",
+    ),
+    ("I cannot sign in after resetting my password.", "account_access", "en"),
+    ("Where is the package that was supposed to arrive yesterday?", "shipping", "en"),
+)
+_ENGLISH_BASE_WORDS = (
     "The",
     "customer",
     "reported",
@@ -67,6 +110,62 @@ BASE_WORDS = (
     "access",
     "history.",
 )
+_MULTILINGUAL_PARITY_CASES = (
+    ("Mi tarjeta fue cobrada dos veces por la misma factura.", "billing", "es"),
+    ("L'application plante chaque fois que j'exporte un rapport.", "technical_support", "fr"),
+    ("Ich kann mich nach dem Zurücksetzen des Passworts nicht anmelden.", "account_access", "de"),
+    ("昨日届くはずだった荷物はどこにありますか?", "shipping", "ja"),
+)
+_MULTILINGUAL_BASE_WORDS = (
+    "El",
+    "cliente",
+    "berichtete",
+    "un",
+    "problème",
+    "de",
+    "cuenta",
+    "et",
+    "bat",
+    "um",
+    "eine",
+    "sorgfältige",
+    "Überprüfung",
+    "der",
+    "factura,",
+    "livraison,",
+    "aplicación",
+    "und",
+    "アクセス履歴を",
+    "依頼しました。",
+)
+
+WORKLOADS: Mapping[str, WorkloadSpec] = MappingProxyType(
+    {
+        "english-v1": WorkloadSpec(
+            workload_id="english-v1",
+            languages=("en",),
+            labels=_LABELS,
+            label_descriptions=_LABEL_DESCRIPTIONS,
+            parity_cases=_ENGLISH_PARITY_CASES,
+            base_words=_ENGLISH_BASE_WORDS,
+        ),
+        "multilingual-v1": WorkloadSpec(
+            workload_id="multilingual-v1",
+            languages=("de", "es", "fr", "ja"),
+            labels=_LABELS,
+            label_descriptions=_LABEL_DESCRIPTIONS,
+            parity_cases=_MULTILINGUAL_PARITY_CASES,
+            base_words=_MULTILINGUAL_BASE_WORDS,
+        ),
+    }
+)
+
+
+def workload_spec(workload_id: str) -> WorkloadSpec:
+    try:
+        return WORKLOADS[workload_id]
+    except KeyError as error:
+        raise ValueError(f"unsupported benchmark workload {workload_id!r}") from error
 
 
 def percentile(values: Sequence[float], probability: float) -> float:
@@ -81,13 +180,18 @@ def percentile(values: Sequence[float], probability: float) -> float:
     return ordered[lower] + (ordered[upper] - ordered[lower]) * (position - lower)
 
 
-def schema(task_name: str = "intent") -> dict[str, Any]:
+def schema(
+    task_name: str = "intent",
+    *,
+    workload: WorkloadSpec | None = None,
+) -> dict[str, Any]:
+    selected = workload or WORKLOADS["english-v1"]
     return {
         "kind": "classification",
         "tasks": {
             task_name: {
-                "labels": list(SCHEMA_LABELS),
-                "label_descriptions": SCHEMA_LABEL_DESCRIPTIONS,
+                "labels": list(selected.labels),
+                "label_descriptions": dict(selected.label_descriptions),
                 "min_labels": 1,
                 "max_labels": 1,
             }
@@ -99,8 +203,11 @@ def request(
     text: str,
     *,
     precision: str,
-    model: str = LOGICAL_MODEL,
+    model: str,
+    workload: WorkloadSpec | None = None,
     task_name: str = "intent",
+    schema_payload: dict[str, Any] | None = None,
+    threshold: float = 0.5,
 ) -> dict[str, Any]:
     return {
         "model": model,
@@ -108,13 +215,168 @@ def request(
         "precision": precision,
         "operation": "classify",
         "text": text,
-        "schema": schema(task_name),
+        "schema": schema_payload or schema(task_name, workload=workload),
         "options": {
-            "threshold": 0.5,
+            "threshold": threshold,
             "output_format": "native",
             "include_confidence": True,
         },
     }
+
+
+def behavior_cases(workload: WorkloadSpec | None = None) -> list[dict[str, Any]]:
+    selected = workload or WORKLOADS["english-v1"]
+    standard = schema(workload=selected)
+    multi_label = {
+        "kind": "classification",
+        "tasks": {
+            "topics": {
+                "labels": ["billing", "technical_support", "account_access", "shipping"],
+                "min_labels": 0,
+                "max_labels": 3,
+                "activation": "sigmoid",
+                "threshold": 0.3,
+            }
+        },
+    }
+    high_threshold = {
+        "kind": "classification",
+        "tasks": {
+            "topics": {
+                "labels": ["billing", "technical_support", "shipping"],
+                "min_labels": 0,
+                "max_labels": 3,
+                "activation": "sigmoid",
+                "threshold": 0.999999,
+            }
+        },
+    }
+    ordered = {
+        "kind": "classification",
+        "tasks": {
+            "priority": {
+                "labels": ["low", "medium", "high", "critical"],
+                "min_labels": 1,
+                "max_labels": 1,
+                "ordered": True,
+            }
+        },
+    }
+    feasible_constraint = {
+        "kind": "classification",
+        "tasks": {
+            "intent": {"labels": ["refund", "question"], "min_labels": 1, "max_labels": 1},
+            "route": {"labels": ["billing", "support"], "min_labels": 1, "max_labels": 1},
+        },
+        "constraints": [
+            {
+                "type": "Implies",
+                "cond": {"type": "LabelRef", "task": "intent", "label": "refund"},
+                "then": {"type": "LabelRef", "task": "route", "label": "billing"},
+            }
+        ],
+    }
+    infeasible_constraint = {
+        "kind": "classification",
+        "tasks": {"decision": {"labels": ["yes", "no"], "min_labels": 1, "max_labels": 1}},
+        "constraints": [
+            {"type": "LabelRef", "task": "decision", "label": "yes"},
+            {"type": "LabelRef", "task": "decision", "label": "no"},
+        ],
+    }
+    if selected.workload_id == "multilingual-v1":
+        texts = (
+            ("Mi tarjeta fue cobrada dos veces por la misma factura.", "es"),
+            ("L'application plante et ma carte a été débitée deux fois.", "fr"),
+            ("こんにちは。", "ja"),
+            (
+                "Die Produktion ist für alle Kunden ausgefallen und erfordert sofortiges Handeln.",
+                "de",
+            ),
+            ("Por favor, reembolse el cargo duplicado de la factura.", "es"),
+            ("Répondez oui ou non.", "fr"),
+            (
+                "El cliente no puede iniciar sesión después de restablecer la contraseña "
+                "y necesita ayuda para acceder a la cuenta.",
+                "es",
+            ),
+        )
+    else:
+        texts = (
+            ("My credit card was charged twice for the same invoice.", "en"),
+            ("The app crashes and my card was charged twice.", "en"),
+            ("Hello there.", "en"),
+            ("Production is down for every customer and immediate action is required.", "en"),
+            ("Please refund the duplicate invoice charge.", "en"),
+            ("Answer yes or no.", "en"),
+            (
+                "The customer cannot sign in after a password reset and needs account access help.",
+                "en",
+            ),
+        )
+    long_text = " ".join([texts[6][0]] * 12)
+    cases = [
+        {
+            "case_id": "described-single",
+            "categories": [
+                "single_label",
+                "described_label",
+                "repeated_run",
+                "token_accounting",
+            ],
+            "text": texts[0][0],
+            "schema": standard,
+            "threshold": 0.5,
+            "batch_group": "mixed-length",
+        },
+        {
+            "case_id": "multi-label",
+            "categories": ["multi_label", "selected_order", "token_accounting"],
+            "text": texts[1][0],
+            "schema": multi_label,
+            "threshold": 0.3,
+        },
+        {
+            "case_id": "high-threshold-empty",
+            "categories": ["threshold", "empty_result", "token_accounting"],
+            "text": texts[2][0],
+            "schema": high_threshold,
+            "threshold": 0.999999,
+        },
+        {
+            "case_id": "ordered-label",
+            "categories": ["ordered", "token_accounting"],
+            "text": texts[3][0],
+            "schema": ordered,
+            "threshold": 0.5,
+        },
+        {
+            "case_id": "feasible-constraint",
+            "categories": ["constraint", "feasible", "token_accounting"],
+            "text": texts[4][0],
+            "schema": feasible_constraint,
+            "threshold": 0.5,
+        },
+        {
+            "case_id": "infeasible-constraint",
+            "categories": ["constraint", "infeasible", "token_accounting"],
+            "text": texts[5][0],
+            "schema": infeasible_constraint,
+            "threshold": 0.5,
+        },
+        {
+            "case_id": "mixed-length-long",
+            "categories": ["mixed_length", "singleton_batch", "token_accounting"],
+            "text": long_text,
+            "schema": standard,
+            "threshold": 0.5,
+            "batch_group": "mixed-length",
+        },
+    ]
+    if selected.workload_id == "multilingual-v1":
+        for case, (_text, language) in zip(cases, texts, strict=True):
+            case["language"] = language
+    return cases
 
 
 def append_event(path: Path, event: dict[str, Any]) -> None:
@@ -122,7 +384,11 @@ def append_event(path: Path, event: dict[str, Any]) -> None:
         stream.write(json.dumps(event, sort_keys=True) + "\n")
 
 
-def worker_oracle(model_path: Path, event_path: Path) -> None:
+def worker_oracle(
+    model_path: Path,
+    event_path: Path,
+    workload: WorkloadSpec,
+) -> None:
     import psutil
 
     process = psutil.Process()
@@ -152,12 +418,12 @@ def worker_oracle(model_path: Path, event_path: Path) -> None:
     loaded_rss = process.memory_info().rss
     official_schema = ClassificationSchema().single(
         "intent",
-        SCHEMA_LABEL_DESCRIPTIONS,
+        dict(workload.label_descriptions),
     )
-    config = ClassificationConfig(batch_size=len(PARITY_CASES), include_confidence=True)
+    config = ClassificationConfig(batch_size=len(workload.parity_cases), include_confidence=True)
     inference_started = time.perf_counter()
     results = classifier.batch_classify(
-        [text for text, _ in PARITY_CASES],
+        [text for text, _expected, _language in workload.parity_cases],
         official_schema,
         config=config,
     )
@@ -225,11 +491,7 @@ class RecordedBackend:
 
     async def infer_batch(self, requests: Sequence[Any]) -> list[Any]:
         task_names = sorted(
-            {
-                task_name
-                for item in requests
-                for task_name in getattr(item.schema_, "tasks", {})
-            }
+            {task_name for item in requests for task_name in getattr(item.schema_, "tasks", {})}
         )
         started = time.perf_counter()
         outputs = await self._backend.infer_batch(requests)
@@ -312,9 +574,7 @@ def read_events(path: Path) -> list[dict[str, Any]]:
     if not path.exists():
         return []
     return [
-        json.loads(line)
-        for line in path.read_text(encoding="utf-8").splitlines()
-        if line.strip()
+        json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()
     ]
 
 
@@ -433,24 +693,6 @@ def wait_for_server(
     raise TimeoutError("server did not become healthy")
 
 
-def tree_digest(path: Path) -> tuple[str, int, int]:
-    digest = hashlib.sha256()
-    total_bytes = 0
-    file_count = 0
-    for file_path in sorted(item for item in path.rglob("*") if item.is_file()):
-        relative = file_path.relative_to(path).as_posix()
-        file_digest = hashlib.sha256()
-        with file_path.open("rb") as stream:
-            for chunk in iter(lambda: stream.read(1024 * 1024), b""):
-                file_digest.update(chunk)
-                total_bytes += len(chunk)
-        digest.update(relative.encode())
-        digest.update(b"\0")
-        digest.update(file_digest.digest())
-        file_count += 1
-    return digest.hexdigest(), total_bytes, file_count
-
-
 def host_metadata() -> dict[str, Any]:
     import psutil
 
@@ -479,11 +721,20 @@ def host_metadata() -> dict[str, Any]:
 def direct_oracle_measurement(
     model_path: Path,
     temporary: Path,
+    workload: WorkloadSpec,
 ) -> tuple[dict[str, Any], int]:
     event_path = temporary / "oracle.jsonl"
     spawn_started = time.monotonic()
     process = launch_worker(
-        ["_oracle", "--model-path", str(model_path), "--events", str(event_path)]
+        [
+            "_oracle",
+            "--model-path",
+            str(model_path),
+            "--events",
+            str(event_path),
+            "--workload-suite",
+            workload.workload_id,
+        ]
     )
     sampler = ProcessRssSampler(process)
     sampler.start()
@@ -503,11 +754,15 @@ def direct_oracle_measurement(
     return finished, sampler.peak
 
 
-def make_text(tokenizer: Any, target_tokens: int) -> tuple[str, int]:
+def make_text(
+    tokenizer: Any,
+    target_tokens: int,
+    words_source: Sequence[str] = _ENGLISH_BASE_WORDS,
+) -> tuple[str, int]:
     words: list[str] = []
     index = 0
     while True:
-        words.append(BASE_WORDS[index % len(BASE_WORDS)])
+        words.append(words_source[index % len(words_source)])
         index += 1
         text = " ".join(words)
         count = len(tokenizer.encode(text, add_special_tokens=True))
@@ -526,6 +781,42 @@ def response_payload(response: Any) -> dict[str, Any]:
     if usage["outputTokens"] != 0:
         raise RuntimeError("classification unexpectedly reported output tokens")
     return body
+
+
+def behavior_payload(body: dict[str, Any], http_status: int) -> dict[str, Any]:
+    error = body.get("error")
+    if http_status >= 400 or error is not None:
+        return {
+            "status": "error",
+            "http_status": http_status,
+            "error": error if error is not None else body,
+        }
+    usage = body.get("usage")
+    if not isinstance(usage, dict) or set(usage) != {"inputTokens", "outputTokens"}:
+        raise RuntimeError("inference response is missing the exact usage contract")
+    if usage["outputTokens"] != 0:
+        raise RuntimeError("classification unexpectedly reported output tokens")
+    return {
+        "status": "success",
+        "http_status": http_status,
+        "output": body["output"],
+        "usage": usage,
+    }
+
+
+def behavior_response(response: Any) -> dict[str, Any]:
+    try:
+        body = response.json()
+    except json.JSONDecodeError:
+        return {
+            "status": "error",
+            "http_status": response.status_code,
+            "error": {
+                "type": "non_json_response",
+                "body": response.text[:1000],
+            },
+        }
+    return behavior_payload(body, response.status_code)
 
 
 def response_output(response: Any) -> dict[str, Any]:
@@ -595,6 +886,7 @@ async def concurrent_infer(
 
     delays = delays or [0.0] * len(requests)
     async with httpx.AsyncClient(timeout=300) as client:
+
         async def send(item: dict[str, Any], delay: float) -> int:
             await asyncio.sleep(delay)
             response = await client.post(f"{base_url}/v1/infer", json=item)
@@ -606,11 +898,7 @@ async def concurrent_infer(
 
 
 def batch_events_since(path: Path, offset: int) -> list[dict[str, Any]]:
-    return [
-        event
-        for event in read_events(path)[offset:]
-        if event.get("event") == "batch"
-    ]
+    return [event for event in read_events(path)[offset:] if event.get("event") == "batch"]
 
 
 def run_normal_server(
@@ -621,6 +909,8 @@ def run_normal_server(
     token_targets: list[int],
     device: str,
     precision: str,
+    logical_model: str,
+    workload: WorkloadSpec,
 ) -> tuple[dict[str, Any], list[dict[str, Any]], int]:
     import httpx
     import psutil
@@ -660,21 +950,78 @@ def run_normal_server(
             first_response = response_payload(
                 client.post(
                     f"{base_url}/v1/infer",
-                    json=request(PARITY_CASES[0][0], precision=precision),
+                    json=request(
+                        workload.parity_cases[0][0],
+                        precision=precision,
+                        model=logical_model,
+                        workload=workload,
+                    ),
                 )
             )
             cold_http_ms = (time.perf_counter() - cold_started) * 1000
             parity_outputs = [first_response["output"]]
             parity_usage = [first_response["usage"]]
-            for text, _ in PARITY_CASES[1:]:
+            for text, _expected, _language in workload.parity_cases[1:]:
                 parity_response = response_payload(
                     client.post(
                         f"{base_url}/v1/infer",
-                        json=request(text, precision=precision),
+                        json=request(
+                            text,
+                            precision=precision,
+                            model=logical_model,
+                            workload=workload,
+                        ),
                     )
                 )
                 parity_outputs.append(parity_response["output"])
                 parity_usage.append(parity_response["usage"])
+
+            behavior_specs = behavior_cases(workload)
+            behavior_records: list[dict[str, Any]] = []
+            behavior_payloads: dict[str, dict[str, Any]] = {}
+            for case in behavior_specs:
+                payload = request(
+                    case["text"],
+                    precision=precision,
+                    model=logical_model,
+                    workload=workload,
+                    schema_payload=case["schema"],
+                    threshold=case["threshold"],
+                )
+                behavior_payloads[case["case_id"]] = payload
+                singleton = behavior_response(client.post(f"{base_url}/v1/infer", json=payload))
+                repeated = behavior_response(client.post(f"{base_url}/v1/infer", json=payload))
+                behavior_records.append(
+                    {
+                        "case_id": case["case_id"],
+                        "categories": case["categories"],
+                        "language": case.get("language", workload.languages[0]),
+                        "singleton": singleton,
+                        "repeated": repeated,
+                    }
+                )
+
+            records_by_id = {record["case_id"]: record for record in behavior_records}
+            batch_groups = sorted(
+                {
+                    case["batch_group"]
+                    for case in behavior_specs
+                    if case.get("batch_group") is not None
+                }
+            )
+            for group in batch_groups:
+                group_cases = [case for case in behavior_specs if case.get("batch_group") == group]
+                response = client.post(
+                    f"{base_url}/v1/batch",
+                    json={"requests": [behavior_payloads[case["case_id"]] for case in group_cases]},
+                )
+                response.raise_for_status()
+                batch_responses = response.json()["responses"]
+                if len(batch_responses) != len(group_cases):
+                    raise RuntimeError("behavior batch returned an invalid response count")
+                for case, body in zip(group_cases, batch_responses, strict=True):
+                    records_by_id[case["case_id"]]["batch"] = behavior_payload(body, 200)
+
             steady_rss = psutil.Process(process.pid).memory_info().rss
 
             tokenizer = AutoTokenizer.from_pretrained(
@@ -682,7 +1029,7 @@ def run_normal_server(
                 local_files_only=True,
             )
             texts = {
-                target: make_text(tokenizer, target)
+                target: make_text(tokenizer, target, workload.base_words)
                 for target in token_targets
             }
             rows: list[dict[str, Any]] = []
@@ -696,7 +1043,13 @@ def run_normal_server(
                     for _ in range(repetitions):
                         payload = {
                             "requests": [
-                                request(text, precision=precision, task_name="latency")
+                                request(
+                                    text,
+                                    precision=precision,
+                                    model=logical_model,
+                                    workload=workload,
+                                    task_name="latency",
+                                )
                                 for _index in range(batch_size)
                             ]
                         }
@@ -761,6 +1114,8 @@ def run_normal_server(
                             request(
                                 fill_text,
                                 precision=precision,
+                                model=logical_model,
+                                workload=workload,
                                 task_name=f"fill_{name}",
                             )
                             for _ in delays
@@ -786,6 +1141,8 @@ def run_normal_server(
                         request(
                             fill_text,
                             precision=precision,
+                            model=logical_model,
+                            workload=workload,
                             task_name="group_a" if index % 2 == 0 else "group_b",
                         )
                         for index in range(8)
@@ -799,11 +1156,17 @@ def run_normal_server(
                 concurrent_infer(
                     base_url,
                     [
-                        request(fill_text, precision=precision, model=LOGICAL_MODEL),
                         request(
                             fill_text,
                             precision=precision,
-                            model=f"{LOGICAL_MODEL}#alias",
+                            model=logical_model,
+                            workload=workload,
+                        ),
+                        request(
+                            fill_text,
+                            precision=precision,
+                            model=f"{logical_model}#alias",
+                            workload=workload,
                         ),
                     ],
                 )
@@ -812,9 +1175,7 @@ def run_normal_server(
             post_grouping_rss = psutil.Process(process.pid).memory_info().rss
             metrics_text = client.get(f"{base_url}/metrics").text
 
-        load_events = [
-            event for event in read_events(event_path) if event.get("event") == "load"
-        ]
+        load_events = [event for event in read_events(event_path) if event.get("event") == "load"]
         accelerator_values = [
             event["accelerator_memory"]["driver_allocated_bytes"]
             for event in read_events(event_path)
@@ -828,14 +1189,30 @@ def run_normal_server(
             "cold_first_http_ms": cold_http_ms,
             "backend_load_events": load_events,
             "accelerator_peak_bytes": max(accelerator_values, default=None),
+            "behavior_outputs": parity_outputs,
+            "transparent_cases": [
+                {
+                    "case_id": f"transparent-{index}",
+                    "language": language,
+                    "expected_label": expected,
+                    "selected_label": selected_label(output),
+                }
+                for index, (output, (_text, expected, language)) in enumerate(
+                    zip(parity_outputs, workload.parity_cases, strict=True),
+                    start=1,
+                )
+            ],
+            "behavior_cases": behavior_records,
             "parity": parity_summary(oracle["outputs"], parity_outputs),
             "parity_usage": parity_usage,
             "expected_label_accuracy": {
-                "cases": len(PARITY_CASES),
+                "cases": len(workload.parity_cases),
                 "correct": sum(
                     selected_label(output) == expected
-                    for output, (_text, expected) in zip(
-                        parity_outputs, PARITY_CASES, strict=True
+                    for output, (_text, expected, _language) in zip(
+                        parity_outputs,
+                        workload.parity_cases,
+                        strict=True,
                     )
                 ),
             },
@@ -872,6 +1249,8 @@ async def overload_requests(
     base_url: str,
     long_text: str,
     precision: str,
+    logical_model: str,
+    workload: WorkloadSpec,
 ) -> dict[str, Any]:
     import httpx
 
@@ -880,14 +1259,26 @@ async def overload_requests(
         first = asyncio.create_task(
             client.post(
                 f"{base_url}/v1/infer",
-                json=request(long_text, precision=precision, task_name="overload"),
+                json=request(
+                    long_text,
+                    precision=precision,
+                    model=logical_model,
+                    workload=workload,
+                    task_name="overload",
+                ),
             )
         )
         await asyncio.sleep(0.01)
         cancellable = asyncio.create_task(
             client.post(
                 f"{base_url}/v1/infer",
-                json=request(long_text, precision=precision, task_name="cancelled"),
+                json=request(
+                    long_text,
+                    precision=precision,
+                    model=logical_model,
+                    workload=workload,
+                    task_name="cancelled",
+                ),
             )
         )
         await asyncio.sleep(0.001)
@@ -898,7 +1289,13 @@ async def overload_requests(
             *(
                 client.post(
                     f"{base_url}/v1/infer",
-                    json=request(long_text, precision=precision, task_name="overload"),
+                    json=request(
+                        long_text,
+                        precision=precision,
+                        model=logical_model,
+                        workload=workload,
+                        task_name="overload",
+                    ),
                 )
                 for _ in range(10)
             )
@@ -906,6 +1303,7 @@ async def overload_requests(
         first_response = await first
         await asyncio.sleep(0.1)
         metrics = await client.get(f"{base_url}/metrics")
+        metrics.raise_for_status()
         return {
             "first_status": first_response.status_code,
             "burst_statuses": [response.status_code for response in burst],
@@ -920,8 +1318,11 @@ def metric_value(metrics: str, name: str) -> float:
     marker = f'gliner_runner_internal{{metric="{name}"}} '
     for line in metrics.splitlines():
         if line.startswith(marker):
-            return float(line.removeprefix(marker))
-    return 0.0
+            value = float(line.removeprefix(marker))
+            if not math.isfinite(value):
+                raise ValueError(f"metric {name!r} is not finite")
+            return value
+    raise ValueError(f"required metric {name!r} is missing")
 
 
 def run_overload_server(
@@ -930,6 +1331,8 @@ def run_overload_server(
     long_text: str,
     device: str,
     precision: str,
+    logical_model: str,
+    workload: WorkloadSpec,
 ) -> tuple[dict[str, Any], int]:
     import httpx
 
@@ -964,19 +1367,25 @@ def run_overload_server(
                 client.post(
                     f"{base_url}/v1/infer",
                     json=request(
-                        PARITY_CASES[0][0],
+                        workload.parity_cases[0][0],
                         precision=precision,
+                        model=logical_model,
+                        workload=workload,
                         task_name="warmup",
                     ),
                 )
             )
-        result = asyncio.run(overload_requests(base_url, long_text, precision))
+        result = asyncio.run(
+            overload_requests(base_url, long_text, precision, logical_model, workload)
+        )
         result["server_cancelled_metric"] = metric_value(
             result.pop("metrics"),
             "requests_cancelled_total",
         )
+        metrics_response = httpx.get(f"{base_url}/metrics", timeout=30)
+        metrics_response.raise_for_status()
         result["server_rejected_metric"] = metric_value(
-            httpx.get(f"{base_url}/metrics", timeout=30).text,
+            metrics_response.text,
             "requests_rejected_total",
         )
         result["observed_batches"] = batch_events_since(event_path, 0)
@@ -1010,16 +1419,31 @@ def comparison_summary(
     candidate_metadata = candidate["metadata"]
     if baseline_metadata["model_content_sha256"] != candidate_metadata["model_content_sha256"]:
         raise ValueError("baseline model content digest does not match the candidate")
-    if baseline_metadata["host"]["cpu"] != candidate_metadata["host"]["cpu"]:
-        raise ValueError("baseline CPU does not match the candidate host")
+    if baseline_metadata["host"] != candidate_metadata["host"]:
+        raise ValueError("baseline host identity does not match the candidate")
     if baseline_metadata.get("schema_label_descriptions") != candidate_metadata.get(
         "schema_label_descriptions"
     ):
         raise ValueError("baseline classification label descriptions do not match")
+    if baseline_metadata.get("behavior_workload_sha256") != candidate_metadata.get(
+        "behavior_workload_sha256"
+    ):
+        raise ValueError("baseline behavior workload does not match the candidate")
+    baseline_workload = baseline_metadata.get("workload_id")
+    candidate_workload = candidate_metadata.get("workload_id")
+    if (baseline_workload is None) != (candidate_workload is None):
+        raise ValueError("baseline workload suite identity is incomplete")
+    if baseline_workload != candidate_workload:
+        raise ValueError("baseline workload suite does not match the candidate")
+    baseline_workload_digest = baseline_metadata.get("workload_sha256")
+    candidate_workload_digest = candidate_metadata.get("workload_sha256")
+    if (baseline_workload_digest is None) != (candidate_workload_digest is None):
+        raise ValueError("baseline complete workload identity is incomplete")
+    if baseline_workload_digest != candidate_workload_digest:
+        raise ValueError("baseline complete workload does not match the candidate")
 
     baseline_rows = {
-        (row["target_tokens"], row["batch_size"]): row
-        for row in baseline["latency_rows"]
+        (row["target_tokens"], row["batch_size"]): row for row in baseline["latency_rows"]
     }
     matrix: list[dict[str, Any]] = []
     for candidate_row in candidate["latency_rows"]:
@@ -1033,15 +1457,9 @@ def comparison_summary(
                 "batch_size": key[1],
                 "baseline_wall_p50_ms": baseline_row["wall_p50_ms"],
                 "candidate_wall_p50_ms": candidate_row["wall_p50_ms"],
-                "wall_p50_speedup": (
-                    baseline_row["wall_p50_ms"] / candidate_row["wall_p50_ms"]
-                ),
-                "baseline_throughput_requests_per_s": baseline_row[
-                    "throughput_requests_per_s"
-                ],
-                "candidate_throughput_requests_per_s": candidate_row[
-                    "throughput_requests_per_s"
-                ],
+                "wall_p50_speedup": (baseline_row["wall_p50_ms"] / candidate_row["wall_p50_ms"]),
+                "baseline_throughput_requests_per_s": baseline_row["throughput_requests_per_s"],
+                "candidate_throughput_requests_per_s": candidate_row["throughput_requests_per_s"],
                 "throughput_ratio": (
                     candidate_row["throughput_requests_per_s"]
                     / baseline_row["throughput_requests_per_s"]
@@ -1071,17 +1489,11 @@ def comparison_summary(
             ),
         },
         "memory": {
-            "baseline_steady_rss_bytes": baseline["http_runner"][
-                "steady_single_model_rss_bytes"
-            ],
-            "candidate_steady_rss_bytes": candidate["http_runner"][
-                "steady_single_model_rss_bytes"
-            ],
+            "baseline_steady_rss_bytes": baseline["http_runner"]["steady_single_model_rss_bytes"],
+            "candidate_steady_rss_bytes": candidate["http_runner"]["steady_single_model_rss_bytes"],
             "baseline_peak_rss_bytes": baseline["memory"]["http_peak_rss_bytes"],
             "candidate_peak_rss_bytes": candidate["memory"]["http_peak_rss_bytes"],
-            "candidate_accelerator_peak_bytes": candidate["memory"].get(
-                "accelerator_peak_bytes"
-            ),
+            "candidate_accelerator_peak_bytes": candidate["memory"].get("accelerator_peak_bytes"),
         },
         "matrix": matrix,
     }
@@ -1106,6 +1518,7 @@ def generate_report(result: dict[str, Any], rows: list[dict[str, Any]]) -> str:
     cold = result["cold_oracle"]
     server = result["http_runner"]
     overload = result["overload"]
+    transparent_case_count = metadata["transparent_case_count"]
     fastest = max(rows, key=lambda row: row["throughput_requests_per_s"])
     slowest_tail = max(rows, key=lambda row: row["wall_p95_ms"])
     accuracy = server["expected_label_accuracy"]
@@ -1116,15 +1529,12 @@ def generate_report(result: dict[str, Any], rows: list[dict[str, Any]]) -> str:
         f"{', '.join(map(str, item['observed_batch_sizes']))} |"
         for item in server["fill_window"]
     )
-    schema_batch_sizes = [
-        event["size"] for event in server["schema_grouping"]["batches"]
-    ]
+    schema_batch_sizes = [event["size"] for event in server["schema_grouping"]["batches"]]
     cancellation_observation = (
         "The client task was cancelled, but the server recorded no scheduler "
         "cancellation; this loopback HTTP disconnect did not propagate to the "
         "in-flight route task."
-        if overload["client_task_cancelled"]
-        and overload["server_cancelled_metric"] == 0
+        if overload["client_task_cancelled"] and overload["server_cancelled_metric"] == 0
         else "Client and server cancellation counters are recorded in the JSON artifact."
     )
     accelerator_memory_row = ""
@@ -1180,7 +1590,7 @@ Both measurements use the same model content digest and machine.
 {comparison_rows}
 """
     title_profile = f"{metadata['device'].upper()} {metadata['precision'].upper()}"
-    return f"""# Real-model characterization: GLiNER2.5-Decide 340M ({title_profile})
+    return f"""# Real-model characterization: {metadata["model_repository"]} ({title_profile})
 
 Generated from `characterization.json` by `benchmarks/benchmark_real.py`.
 
@@ -1201,6 +1611,7 @@ distribution.
   GLiNER2 {metadata["versions"]["gliner2"]}; Transformers {metadata["versions"]["transformers"]}
 - Candidate device/precision: {profile_name(metadata["device"], metadata["precision"])}
 - Correctness oracle: CPU / FP32
+- Workload: `{metadata["workload_id"]}` ({", ".join(metadata["workload_languages"])})
 - Model: `{metadata["model_id"]}` at `{metadata["model_revision"]}`
 - Snapshot content SHA-256: `{metadata["model_content_sha256"]}`
 - Snapshot: {metadata["model_files"]} files, {gibibytes(metadata["model_bytes"])}
@@ -1211,7 +1622,7 @@ distribution.
 | --- | ---: |
 | Oracle process startup | {cold["process_start_ms"]:.1f} ms |
 | Direct official model load | {cold["load_ms"]:.1f} ms |
-| First direct batch ({len(PARITY_CASES)} items) | {cold["batch_inference_ms"]:.1f} ms |
+| First direct batch ({transparent_case_count} items) | {cold["batch_inference_ms"]:.1f} ms |
 | Oracle starting RSS | {gibibytes(cold["starting_rss_bytes"])} |
 | Oracle steady RSS | {gibibytes(cold["steady_rss_bytes"])} |
 | Oracle peak RSS | {gibibytes(cold["peak_rss_bytes"])} |
@@ -1244,8 +1655,8 @@ encoded input targets {", ".join(map(str, metadata["token_targets"]))}.
   {server["parity"]["selected_label_matches"]}/{server["parity"]["cases"]}
   ({server["parity"]["selected_label_rate"]:.1%}).
 - Maximum numeric difference: {server["parity"]["max_abs_numeric_difference"]:.3g}.
-- Expected-label accuracy on the four transparent examples:
-  {accuracy["correct"]}/{accuracy["cases"]}.
+- Expected-label accuracy on the {transparent_case_count} transparent
+  `{metadata["workload_id"]}` examples: {accuracy["correct"]}/{accuracy["cases"]}.
 - Mixed-schema batch observed: {server["schema_grouping"]["mixed_schema_batch_observed"]}.
 - Interleaved schema batch sizes: {schema_batch_sizes}.
 - Distinct logical models observed:
@@ -1274,21 +1685,29 @@ Fastino's compiled-schema processor for the actual encoder batch;
 classification output usage is zero. Direct-oracle and runner requests use the
 same described-label schema recorded in result metadata. The model snapshot
 stayed outside Git. Inputs are deterministic synthetic length probes plus the
-four examples visible in the benchmark source.
+{transparent_case_count} transparent `{metadata["workload_id"]}` examples
+visible in the benchmark source.
 """
 
 
 def orchestrate(arguments: argparse.Namespace) -> None:
-    model_path = arguments.model_path.expanduser().resolve()
-    if not model_path.is_dir():
-        raise FileNotFoundError(model_path)
-    output_dir = arguments.output_dir
-    output_dir.mkdir(parents=True, exist_ok=True)
+    workload = workload_spec(arguments.workload_suite)
+    model_path = validate_model_snapshot(
+        arguments.model_path,
+        arguments.model_repository,
+        arguments.model_revision,
+    )
+    validate_gliner2_version(arguments.expected_gliner2_version)
+    if arguments.output_dir.expanduser().resolve().exists():
+        raise FileExistsError(
+            f"benchmark output path already exists: {arguments.output_dir.expanduser().resolve()}"
+        )
+    logical_model = f"{arguments.model_repository}@{arguments.model_revision}"
 
-    digest, model_bytes, model_files = tree_digest(model_path)
+    digest, model_bytes, model_files = snapshot_tree_digest(model_path)
     with tempfile.TemporaryDirectory(prefix="gliner-runner-benchmark-") as temporary_name:
         temporary = Path(temporary_name)
-        oracle, oracle_peak = direct_oracle_measurement(model_path, temporary)
+        oracle, oracle_peak = direct_oracle_measurement(model_path, temporary, workload)
         server, rows, server_peak = run_normal_server(
             model_path,
             temporary,
@@ -1297,22 +1716,42 @@ def orchestrate(arguments: argparse.Namespace) -> None:
             arguments.token_targets,
             arguments.device,
             arguments.precision,
+            logical_model,
+            workload,
         )
 
         from transformers import AutoTokenizer
 
         tokenizer = AutoTokenizer.from_pretrained(str(model_path), local_files_only=True)
-        overload_text, overload_tokens = make_text(tokenizer, max(arguments.token_targets))
+        overload_text, overload_tokens = make_text(
+            tokenizer,
+            max(arguments.token_targets),
+            workload.base_words,
+        )
         overload, overload_peak = run_overload_server(
             model_path,
             temporary,
             overload_text,
             arguments.device,
             arguments.precision,
+            logical_model,
+            workload,
         )
         del tokenizer
         gc.collect()
 
+    behavior_specs = behavior_cases(workload)
+    workload_sha256 = stable_sha256(
+        {
+            "workload_id": workload.workload_id,
+            "languages": list(workload.languages),
+            "labels": list(workload.labels),
+            "label_descriptions": dict(workload.label_descriptions),
+            "parity_cases": [list(case) for case in workload.parity_cases],
+            "behavior_cases": behavior_specs,
+            "base_words": list(workload.base_words),
+        }
+    )
     metadata = {
         "generated_at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "host": host_metadata(),
@@ -1322,21 +1761,34 @@ def orchestrate(arguments: argparse.Namespace) -> None:
         "precision": arguments.precision,
         "oracle_device": "cpu",
         "oracle_precision": "fp32",
-        "model_id": MODEL_ID,
-        "model_revision": MODEL_REVISION,
+        "model_id": arguments.model_repository,
+        "model_repository": arguments.model_repository,
+        "model_revision": arguments.model_revision,
+        "expected_gliner2_version": arguments.expected_gliner2_version,
+        "snapshot_identity_validation": (
+            "inventory-marker"
+            if (model_path / ".gliner-runner.json").is_file()
+            else "hugging-face-cache-path"
+        ),
         "model_content_sha256": digest,
+        "workload_id": workload.workload_id,
+        "workload_languages": list(workload.languages),
+        "workload_sha256": workload_sha256,
+        "transparent_case_count": len(workload.parity_cases),
+        "behavior_case_ids": [case["case_id"] for case in behavior_specs],
+        "behavior_workload_sha256": stable_sha256(behavior_specs),
         "model_bytes": model_bytes,
         "model_files": model_files,
         "batch_sizes": [1, 2, 4, 8],
         "token_targets": arguments.token_targets,
-        "schema_label_descriptions": SCHEMA_LABEL_DESCRIPTIONS,
+        "schema_label_descriptions": dict(workload.label_descriptions),
         "repetitions": arguments.repetitions,
         "overload_tokens": overload_tokens,
         "batch_window_ms": 4.0,
         "rss_sampling_interval_ms": 20,
     }
     result: dict[str, Any] = {
-        "format_version": 2,
+        "format_version": 5,
         "metadata": metadata,
         "cold_oracle": oracle,
         "http_runner": server,
@@ -1353,15 +1805,14 @@ def orchestrate(arguments: argparse.Namespace) -> None:
     if arguments.baseline_result is not None:
         baseline = json.loads(arguments.baseline_result.read_text(encoding="utf-8"))
         result["comparison"] = comparison_summary(baseline, result)
+    report = generate_report(result, rows)
+    output_dir = prepare_output_directory(arguments.output_dir)
     (output_dir / "characterization.json").write_text(
         json.dumps(result, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
     write_csv(output_dir / "latency.csv", rows)
-    (output_dir / "REPORT.md").write_text(
-        generate_report(result, rows),
-        encoding="utf-8",
-    )
+    (output_dir / "REPORT.md").write_text(report, encoding="utf-8")
 
 
 def parser() -> argparse.ArgumentParser:
@@ -1371,6 +1822,7 @@ def parser() -> argparse.ArgumentParser:
     oracle = subparsers.add_parser("_oracle")
     oracle.add_argument("--model-path", type=Path, required=True)
     oracle.add_argument("--events", type=Path, required=True)
+    oracle.add_argument("--workload-suite", choices=tuple(WORKLOADS), required=True)
 
     server = subparsers.add_parser("_server")
     server.add_argument("--model-path", type=Path, required=True)
@@ -1382,11 +1834,15 @@ def parser() -> argparse.ArgumentParser:
     server.add_argument("--device", required=True)
 
     root.add_argument("--model-path", type=Path)
+    root.add_argument("--model-repository")
+    root.add_argument("--model-revision")
+    root.add_argument("--expected-gliner2-version")
     root.add_argument("--output-dir", type=Path, default=Path("benchmark-results/local"))
     root.add_argument("--repetitions", type=int, default=3)
     root.add_argument("--token-targets", type=int, nargs="+", default=[16, 64, 256])
     root.add_argument("--device", choices=("cpu", "cuda", "mps"), default="cpu")
     root.add_argument("--precision", choices=("fp32", "fp16", "bf16"), default="fp32")
+    root.add_argument("--workload-suite", choices=tuple(WORKLOADS), default="english-v1")
     root.add_argument("--baseline-result", type=Path)
     return root
 
@@ -1394,7 +1850,11 @@ def parser() -> argparse.ArgumentParser:
 def main() -> None:
     arguments = parser().parse_args()
     if arguments.command == "_oracle":
-        worker_oracle(arguments.model_path, arguments.events)
+        worker_oracle(
+            arguments.model_path,
+            arguments.events,
+            workload_spec(arguments.workload_suite),
+        )
     elif arguments.command == "_server":
         worker_server(
             arguments.model_path,
@@ -1406,15 +1866,20 @@ def main() -> None:
             arguments.device,
         )
     else:
-        if arguments.model_path is None:
-            raise SystemExit("--model-path is required")
+        required = {
+            "--model-path": arguments.model_path,
+            "--model-repository": arguments.model_repository,
+            "--model-revision": arguments.model_revision,
+            "--expected-gliner2-version": arguments.expected_gliner2_version,
+        }
+        missing = [option for option, value in required.items() if value is None]
+        if missing:
+            raise SystemExit(f"required benchmark arguments missing: {', '.join(missing)}")
         if arguments.repetitions < 2:
             raise SystemExit("--repetitions must be at least 2")
         profile = (arguments.device, arguments.precision)
         if profile not in SUPPORTED_PROFILES:
-            raise SystemExit(
-                f"unsupported benchmark profile {profile}; no fallback was attempted"
-            )
+            raise SystemExit(f"unsupported benchmark profile {profile}; no fallback was attempted")
         if arguments.device == "mps":
             import torch
 

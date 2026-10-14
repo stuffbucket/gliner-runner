@@ -12,6 +12,13 @@ from platformdirs import user_cache_path, user_config_path
 
 from gliner_runner.contracts import InferenceRequest
 from gliner_runner.model_manifest import ModelManifest, ModelStore
+from gliner_runner.onnx_prepare import DEFAULT_ATOL, prepare_onnx
+from gliner_runner.onnx_reference import DEFAULT_REPEATS, run_reference
+from gliner_runner.onnx_template import (
+    assemble_from_template,
+    load_template,
+    template_artifact_path,
+)
 from gliner_runner.runtime import Runtime, RuntimeConfig
 from gliner_runner.server import create_app
 from gliner_runner.settings import Settings
@@ -117,6 +124,100 @@ def infer(
             await runtime.close()
 
     typer.echo(asyncio.run(execute()))
+
+
+@app.command("prepare-onnx")
+def prepare_onnx_command(
+    model: Annotated[str, typer.Option(help="Curated logical model id or repository.")],
+    snapshot: Annotated[
+        Path, typer.Option(exists=True, file_okay=False, help="Pinned local model snapshot.")
+    ],
+    output_dir: Annotated[
+        Path, typer.Option(help="Models directory that receives onnx/<owner>--<name>/<revision>.")
+    ],
+    revision: Annotated[
+        str | None, typer.Option(help="Exact pinned revision SHA; defaults to the pinned one.")
+    ] = None,
+    atol: Annotated[
+        float, typer.Option(help="Absolute logit tolerance gate, at most 1e-3.")
+    ] = DEFAULT_ATOL,
+    template_dir: Annotated[
+        Path | None,
+        typer.Option(help="Also write the template package to <dir>/<owner>--<name>/<revision>/."),
+    ] = None,
+) -> None:
+    """Build and verify a Python-free ONNX artifact from a pinned snapshot (build time only)."""
+    try:
+        artifact = prepare_onnx(
+            model,
+            snapshot=snapshot,
+            output_dir=output_dir,
+            revision=revision,
+            atol=atol,
+            template_dir=template_dir,
+        )
+    except (ValueError, FileExistsError, FileNotFoundError, RuntimeError) as error:
+        typer.echo(f"error: {error}", err=True)
+        raise typer.Exit(1) from error
+    typer.echo(json.dumps({"artifact": str(artifact)}, sort_keys=True))
+
+
+@app.command("assemble-onnx")
+def assemble_onnx_command(
+    template: Annotated[
+        Path,
+        typer.Option(
+            exists=True, file_okay=False, help="Template package directory (holds template.json)."
+        ),
+    ],
+    snapshot: Annotated[
+        Path, typer.Option(exists=True, file_okay=False, help="Pinned local model snapshot.")
+    ],
+    output_dir: Annotated[
+        Path, typer.Option(help="Models directory that receives onnx/<owner>--<name>/<revision>.")
+    ],
+) -> None:
+    """Rebuild a verified ONNX artifact from a template package and a snapshot, no conversion."""
+    try:
+        target = template_artifact_path(output_dir, load_template(template))
+        artifact = assemble_from_template(template, snapshot, target)
+    except (ValueError, FileExistsError, FileNotFoundError, RuntimeError) as error:
+        typer.echo(f"error: {error}", err=True)
+        raise typer.Exit(1) from error
+    typer.echo(json.dumps({"artifact": str(artifact)}, sort_keys=True))
+
+
+@app.command("onnx-reference")
+def onnx_reference_command(
+    model: Annotated[str, typer.Option(help="Curated logical model id or repository.")],
+    snapshot: Annotated[
+        Path, typer.Option(exists=True, file_okay=False, help="Pinned local model snapshot.")
+    ],
+    corpus: Annotated[
+        Path, typer.Option(exists=True, dir_okay=False, help="Request corpus JSON file.")
+    ],
+    output: Annotated[Path, typer.Option(help="New JSON file for golden PyTorch outputs.")],
+    revision: Annotated[
+        str | None, typer.Option(help="Exact pinned revision SHA; defaults to the pinned one.")
+    ] = None,
+    repeats: Annotated[
+        int, typer.Option(min=1, help="Singleton runs per case for repeatability.")
+    ] = DEFAULT_REPEATS,
+) -> None:
+    """Emit golden end-to-end PyTorch outputs for a request corpus."""
+    try:
+        written = run_reference(
+            model,
+            snapshot=snapshot,
+            corpus_path=corpus,
+            output=output,
+            revision=revision,
+            repeats=repeats,
+        )
+    except (ValueError, FileExistsError, FileNotFoundError, RuntimeError) as error:
+        typer.echo(f"error: {error}", err=True)
+        raise typer.Exit(1) from error
+    typer.echo(json.dumps({"output": str(written)}, sort_keys=True))
 
 
 @models_app.command("verify")

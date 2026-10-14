@@ -54,8 +54,11 @@ RUN python -m pip install --no-index --find-links=/wheels \
         --output /usr/share/doc/gliner-runner/PYTHON_PACKAGES.md \
         --exclude gliner-runner \
         --license-override "cuda-toolkit=NVIDIA CUDA Toolkit EULA (metadata override)" \
-        --require gliner2==2.0.0 \
+        --require gliner2==2.1.0 \
+        --require protobuf \
+        --require sentencepiece \
         --require torch \
+        --require transformers \
     && rm /tmp/generate_third_party_inventory.py \
     && rm -rf /wheels
 

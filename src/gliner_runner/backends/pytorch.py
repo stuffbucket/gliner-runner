@@ -18,7 +18,11 @@ from gliner_runner.contracts import (
     Precision,
     PrecisionProfile,
 )
-from gliner_runner.errors import BackendUnavailableError, UnsupportedCapabilityError
+from gliner_runner.errors import (
+    BackendUnavailableError,
+    InvalidSchemaError,
+    UnsupportedCapabilityError,
+)
 
 
 class PyTorchBackend:
@@ -64,11 +68,15 @@ class PyTorchBackend:
             dtype = "float16"
         elif self._precision is Precision.BF16:
             dtype = "bfloat16"
-        self._model = model_class.from_pretrained(
-            self._model_id,
-            device=self._device,
-            dtype=dtype,
-        ).to(device=self._device, dtype=dtype).eval()
+        self._model = (
+            model_class.from_pretrained(
+                self._model_id,
+                device=self._device,
+                dtype=dtype,
+            )
+            .to(device=self._device, dtype=dtype)
+            .eval()
+        )
 
     async def infer_batch(self, requests: Sequence[InferenceRequest]) -> list[BackendResult]:
         if not requests:
@@ -90,22 +98,22 @@ class PyTorchBackend:
         if model is None:
             raise RuntimeError("backend must be loaded before inference")
         module = importlib.import_module("gliner2.classification")
-        oracle_schema = module.ClassificationSchema.from_dict(
-            {
-                "version": 3,
-                "tasks": {
-                    name: _oracle_task(task)
-                    for name, task in schema.tasks.items()
-                },
-                "constraints": list(schema.constraints),
-            }
-        )
+        try:
+            oracle_schema = module.ClassificationSchema.from_dict(
+                {
+                    "version": 3,
+                    "tasks": {name: _oracle_task(task) for name, task in schema.tasks.items()},
+                    "constraints": list(schema.constraints),
+                }
+            )
+            compiled_schema = model.compile_schema(oracle_schema)
+        except module.SchemaError as error:
+            raise InvalidSchemaError(str(error)) from error
         config = module.ClassificationConfig(
             candidate_threshold=first.options.threshold,
             batch_size=len(texts),
             include_confidence=first.options.include_confidence,
         )
-        compiled_schema = model.compile_schema(oracle_schema)
         results, input_token_counts = _batch_classify_with_usage(
             model,
             texts,
@@ -148,10 +156,7 @@ def _oracle_task(task: ClassificationTask) -> dict[str, Any]:
     payload = task.model_dump(mode="json", exclude_none=True)
     descriptions = payload.pop("label_descriptions", None)
     if descriptions is not None:
-        payload["labels"] = {
-            label: descriptions.get(label)
-            for label in task.labels
-        }
+        payload["labels"] = {label: descriptions.get(label) for label in task.labels}
     return payload
 
 

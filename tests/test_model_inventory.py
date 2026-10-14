@@ -10,6 +10,7 @@ from unittest.mock import AsyncMock
 import pytest
 
 from gliner_runner import model_inventory
+from gliner_runner.contracts import Precision, PrecisionProfile
 from gliner_runner.errors import ModelDownloadRequiredError
 from gliner_runner.model_inventory import (
     KNOWN_MODELS,
@@ -18,6 +19,68 @@ from gliner_runner.model_inventory import (
     DownloadState,
     ModelInventory,
 )
+
+
+def test_curated_model_catalog_has_exact_release_identity() -> None:
+    assert {spec.model_id: (spec.repository, spec.pinned_revision) for spec in KNOWN_MODELS} == {
+        "decide-340m": (
+            "fastino/GLiNER2.5-Decide",
+            "9d1bfb848cd16d93ee56ccbc59cd92bf0f284d90",
+        ),
+        "decide-multilingual": (
+            "fastino/GLiNER2.5-multi-Decide",
+            "e173bca1f0c4217d7a55b3b0c705d5ece8a0218d",
+        ),
+        "decide-1b": (
+            "fastino/GLiNER2.5-Decide-1B",
+            "67af949e17bebd20f05fe020a971079889e7a462",
+        ),
+    }
+
+
+def test_profile_guidance_uses_reviewed_current_revision_evidence() -> None:
+    spec = next(item for item in KNOWN_MODELS if item.model_id == "decide-340m")
+    expected = {
+        ("cpu", Precision.FP32): 3.5762786865234375e-7,
+        ("mps", Precision.FP32): 3.814697265625e-6,
+        ("mps", Precision.FP16): 0.0010069608688354492,
+    }
+
+    for (device, precision), drift in expected.items():
+        guidance = model_inventory.profile_guidance(
+            spec,
+            PrecisionProfile(device=device, precision=precision),
+        )
+        assert guidance.observed_max_abs_score_drift == drift
+        assert "current-revision" in guidance.characterization_scope
+
+    multilingual = next(item for item in KNOWN_MODELS if item.model_id == "decide-multilingual")
+    multilingual_expected = {
+        ("cpu", Precision.FP32): 0.0,
+        ("mps", Precision.FP32): 2.205371856689453e-6,
+        ("mps", Precision.FP16): 0.0053369998931884766,
+    }
+    for (device, precision), drift in multilingual_expected.items():
+        guidance = model_inventory.profile_guidance(
+            multilingual,
+            PrecisionProfile(device=device, precision=precision),
+        )
+        assert guidance.observed_max_abs_score_drift == drift
+        assert "multilingual-v1" in guidance.characterization_scope
+
+    one_billion = next(item for item in KNOWN_MODELS if item.model_id == "decide-1b")
+    one_billion_expected = {
+        ("cpu", Precision.FP32): 4.76837158203125e-7,
+        ("mps", Precision.FP16): 0.0015290528535842896,
+        ("mps", Precision.FP32): 7.748603820800781e-7,
+    }
+    for (device, precision), drift in one_billion_expected.items():
+        guidance = model_inventory.profile_guidance(
+            one_billion,
+            PrecisionProfile(device=device, precision=precision),
+        )
+        assert guidance.observed_max_abs_score_drift == drift
+        assert "english-v1" in guidance.characterization_scope
 
 
 def test_inventory_requires_explicit_download_for_missing_model(tmp_path: Path) -> None:
@@ -104,8 +167,7 @@ async def test_refresh_caches_revisions_and_uncurated_official_candidates(
     class FakeApi:
         def model_info(self, repository: str) -> SimpleNamespace:
             revisions = {
-                spec.repository: f"{index:040x}"
-                for index, spec in enumerate(KNOWN_MODELS, start=1)
+                spec.repository: f"{index:040x}" for index, spec in enumerate(KNOWN_MODELS, start=1)
             }
             return SimpleNamespace(sha=revisions[repository])
 
