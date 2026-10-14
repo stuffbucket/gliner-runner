@@ -20,6 +20,8 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+      # Release Please labels its pull requests through the Issues API.
+      issues: write
     outputs:
       release-created: ${{ steps.release.outputs.release_created }}
       tag-name: ${{ steps.release.outputs.tag_name }}
