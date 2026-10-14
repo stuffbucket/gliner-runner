@@ -1,0 +1,238 @@
+{
+  "absolute_tolerance": 0.0001,
+  "artifacts": [
+    {
+      "path": "classifier.onnx",
+      "sha256": "d51cb607467f93117c263f74869d813f70b71b1d5bdb8066edf4b1f53ba78bbe",
+      "size": 1117368768
+    },
+    {
+      "path": "export-report/onnx_export_2026-10-13_15-37-35-221720_success.md",
+      "sha256": "ab2a421ae414328390ad551e3a90df8a214f9ce7683a38288ea4839a4dc159b9",
+      "size": 441955
+    }
+  ],
+  "external_data_files": [],
+  "fixture_languages": [
+    "es",
+    "fr",
+    "de"
+  ],
+  "fixture_sha256": "09c048286786b19b1e3ac5786c0f408916666f961b4be9e3e5781044020455dc",
+  "fixture_shapes": [
+    "B=1/S=57/K=3",
+    "B=2/S=40/K=4"
+  ],
+  "fixture_suite": "classification-logits-multilingual-v1",
+  "fixtures": [
+    {
+      "batch": 1,
+      "comparison": {
+        "max_abs_logit_difference": 4.76837158203125e-07,
+        "rows": [
+          {
+            "max_abs_logit_difference": 4.76837158203125e-07,
+            "onnx_selected_index": 0,
+            "pytorch_selected_index": 0,
+            "selected_index_match": true,
+            "valid_labels": 3
+          }
+        ],
+        "selected_index_matches": 1,
+        "valid_logits_compared": 3
+      },
+      "labels": 3,
+      "official_comparison": {
+        "max_abs_logit_difference": 0.0,
+        "rows": [
+          {
+            "max_abs_logit_difference": 0.0,
+            "onnx_selected_index": 0,
+            "pytorch_selected_index": 0,
+            "selected_index_match": true,
+            "valid_labels": 3
+          }
+        ],
+        "selected_index_matches": 1,
+        "valid_logits_compared": 3
+      },
+      "sequence": 57
+    },
+    {
+      "batch": 2,
+      "comparison": {
+        "max_abs_logit_difference": 2.384185791015625e-06,
+        "rows": [
+          {
+            "max_abs_logit_difference": 8.940696716308594e-07,
+            "onnx_selected_index": 1,
+            "pytorch_selected_index": 1,
+            "selected_index_match": true,
+            "valid_labels": 2
+          },
+          {
+            "max_abs_logit_difference": 2.384185791015625e-06,
+            "onnx_selected_index": 3,
+            "pytorch_selected_index": 3,
+            "selected_index_match": true,
+            "valid_labels": 4
+          }
+        ],
+        "selected_index_matches": 2,
+        "valid_logits_compared": 6
+      },
+      "labels": 4,
+      "official_comparison": {
+        "max_abs_logit_difference": 0.0,
+        "rows": [
+          {
+            "max_abs_logit_difference": 0.0,
+            "onnx_selected_index": 1,
+            "pytorch_selected_index": 1,
+            "selected_index_match": true,
+            "valid_labels": 2
+          },
+          {
+            "max_abs_logit_difference": 0.0,
+            "onnx_selected_index": 3,
+            "pytorch_selected_index": 3,
+            "selected_index_match": true,
+            "valid_labels": 4
+          }
+        ],
+        "selected_index_matches": 2,
+        "valid_logits_compared": 6
+      },
+      "sequence": 40
+    }
+  ],
+  "format_version": 2,
+  "graph": {
+    "inputs": [
+      {
+        "name": "input_ids",
+        "shape": [
+          "batch",
+          "sequence"
+        ],
+        "type": "tensor(int64)"
+      },
+      {
+        "name": "attention_mask",
+        "shape": [
+          "batch",
+          "sequence"
+        ],
+        "type": "tensor(int64)"
+      },
+      {
+        "name": "label_positions",
+        "shape": [
+          "batch",
+          "labels"
+        ],
+        "type": "tensor(int64)"
+      },
+      {
+        "name": "label_mask",
+        "shape": [
+          "batch",
+          "labels"
+        ],
+        "type": "tensor(bool)"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "logits",
+        "shape": [
+          "batch",
+          "labels"
+        ],
+        "type": "tensor(float)"
+      }
+    ]
+  },
+  "kind": "classification-logits-research",
+  "model_bytes": 1166175946,
+  "model_content_sha256": "0fc359fda9ab12da8c1b3a94320746de9a25be9e6ef1eb92cbc43051e5a508cb",
+  "model_files": 9,
+  "model_repository": "fastino/GLiNER2.5-multi-Decide",
+  "model_revision": "e173bca1f0c4217d7a55b3b0c705d5ece8a0218d",
+  "official_parity": {
+    "max_abs_logit_difference": 0.0,
+    "rows": [
+      {
+        "max_abs_logit_difference": 0.0,
+        "onnx_selected_index": 0,
+        "pytorch_selected_index": 0,
+        "selected_index_match": true,
+        "valid_labels": 3
+      },
+      {
+        "max_abs_logit_difference": 0.0,
+        "onnx_selected_index": 1,
+        "pytorch_selected_index": 1,
+        "selected_index_match": true,
+        "valid_labels": 2
+      },
+      {
+        "max_abs_logit_difference": 0.0,
+        "onnx_selected_index": 3,
+        "pytorch_selected_index": 3,
+        "selected_index_match": true,
+        "valid_labels": 4
+      }
+    ],
+    "selected_index_matches": 3,
+    "valid_logits_compared": 9
+  },
+  "official_path": "gliner2.classification.Classifier.batch_score",
+  "opset": 20,
+  "opset_imports": [
+    {
+      "domain": "ai.onnx",
+      "version": 20
+    }
+  ],
+  "parity": {
+    "max_abs_logit_difference": 2.384185791015625e-06,
+    "rows": [
+      {
+        "max_abs_logit_difference": 4.76837158203125e-07,
+        "onnx_selected_index": 0,
+        "pytorch_selected_index": 0,
+        "selected_index_match": true,
+        "valid_labels": 3
+      },
+      {
+        "max_abs_logit_difference": 8.940696716308594e-07,
+        "onnx_selected_index": 1,
+        "pytorch_selected_index": 1,
+        "selected_index_match": true,
+        "valid_labels": 2
+      },
+      {
+        "max_abs_logit_difference": 2.384185791015625e-06,
+        "onnx_selected_index": 3,
+        "pytorch_selected_index": 3,
+        "selected_index_match": true,
+        "valid_labels": 4
+      }
+    ],
+    "selected_index_matches": 3,
+    "valid_logits_compared": 9
+  },
+  "provider": "CPUExecutionProvider",
+  "quantization": "none",
+  "target_kind": "decide-multilingual",
+  "versions": {
+    "gliner2": "2.1.0",
+    "onnx": "1.23.2",
+    "onnxruntime": "1.31.0",
+    "onnxscript": "0.7.2",
+    "python": "3.12.12",
+    "torch": "2.14.0",
+    "transformers": "5.19.0"
+  }
+}

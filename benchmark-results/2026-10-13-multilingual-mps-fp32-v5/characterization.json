@@ -1,0 +1,1375 @@
+{
+  "cold_oracle": {
+    "batch_inference_ms": 117.20637499820441,
+    "event": "finished",
+    "load_ms": 3541.560792000382,
+    "loaded_rss_bytes": 2397978624,
+    "outputs": [
+      {
+        "_meta": {
+          "decoder": "independent",
+          "exact": true,
+          "feasible": true,
+          "objective": 0.3915451169013977,
+          "violations": []
+        },
+        "intent": {
+          "confidence": 0.7386408383393401,
+          "probabilities": {
+            "account_access": 0.1700835285849899,
+            "billing": 0.7386408383393401,
+            "shipping": 0.05043719940853112,
+            "technical_support": 0.040838433667138824
+          },
+          "value": "billing"
+        }
+      },
+      {
+        "_meta": {
+          "decoder": "independent",
+          "exact": true,
+          "feasible": true,
+          "objective": 1.6565160751342773,
+          "violations": []
+        },
+        "intent": {
+          "confidence": 0.9375702769837229,
+          "probabilities": {
+            "account_access": 0.030879698704414513,
+            "billing": 0.02079401209860406,
+            "shipping": 0.01075601221325865,
+            "technical_support": 0.9375702769837229
+          },
+          "value": "technical_support"
+        }
+      },
+      {
+        "_meta": {
+          "decoder": "independent",
+          "exact": true,
+          "feasible": true,
+          "objective": 0.9340479373931885,
+          "violations": []
+        },
+        "intent": {
+          "confidence": 0.9002384812403749,
+          "probabilities": {
+            "account_access": 0.9002384812403749,
+            "billing": 0.023505829504392933,
+            "shipping": 0.017524743582944976,
+            "technical_support": 0.058730945672287184
+          },
+          "value": "account_access"
+        }
+      },
+      {
+        "_meta": {
+          "decoder": "independent",
+          "exact": true,
+          "feasible": true,
+          "objective": 0.29892271757125854,
+          "violations": []
+        },
+        "intent": {
+          "confidence": 0.6396844535436456,
+          "probabilities": {
+            "account_access": 0.15168910801651903,
+            "billing": 0.10846409011109204,
+            "shipping": 0.6396844535436456,
+            "technical_support": 0.1001623483287434
+          },
+          "value": "shipping"
+        }
+      }
+    ],
+    "peak_rss_bytes": 2851422208,
+    "process_start_ms": 102.83979199812165,
+    "starting_rss_bytes": 34816000,
+    "steady_rss_bytes": 2436939776,
+    "torch_threads": 6,
+    "versions": {
+      "gliner2": "2.1.0",
+      "python": "3.12.12",
+      "torch": "2.14.0",
+      "transformers": "5.19.0"
+    }
+  },
+  "comparison": {
+    "baseline_profile": {
+      "device": "cpu",
+      "precision": "fp32"
+    },
+    "candidate_profile": {
+      "device": "mps",
+      "precision": "fp32"
+    },
+    "cold": {
+      "backend_load_ratio": 0.9905667079212381,
+      "baseline_backend_load_ms": 5575.313625002309,
+      "baseline_first_http_ms": 6174.512542002049,
+      "candidate_backend_load_ms": 5628.408042000956,
+      "candidate_first_http_ms": 6638.781000001472,
+      "first_http_ratio": 0.9300672129417553
+    },
+    "matrix": [
+      {
+        "baseline_throughput_requests_per_s": 17.61102966093213,
+        "baseline_wall_p50_ms": 56.07633299950976,
+        "batch_size": 1,
+        "candidate_throughput_requests_per_s": 36.17970444882118,
+        "candidate_wall_p50_ms": 24.72245799799566,
+        "target_tokens": 16,
+        "throughput_ratio": 2.0543775773134567,
+        "wall_p50_speedup": 2.2682345341250483
+      },
+      {
+        "baseline_throughput_requests_per_s": 27.431471327152227,
+        "baseline_wall_p50_ms": 72.99554199926206,
+        "batch_size": 2,
+        "candidate_throughput_requests_per_s": 47.20873440373892,
+        "candidate_wall_p50_ms": 33.88679099953151,
+        "target_tokens": 16,
+        "throughput_ratio": 1.720969824794296,
+        "wall_p50_speedup": 2.1541001625167526
+      },
+      {
+        "baseline_throughput_requests_per_s": 36.01743243743587,
+        "baseline_wall_p50_ms": 111.96279200157733,
+        "batch_size": 4,
+        "candidate_throughput_requests_per_s": 56.898543466436124,
+        "candidate_wall_p50_ms": 36.38124999997672,
+        "target_tokens": 16,
+        "throughput_ratio": 1.5797501269773133,
+        "wall_p50_speedup": 3.077486122704662
+      },
+      {
+        "baseline_throughput_requests_per_s": 44.55375584705025,
+        "baseline_wall_p50_ms": 178.08474999765167,
+        "batch_size": 8,
+        "candidate_throughput_requests_per_s": 86.93751738602649,
+        "candidate_wall_p50_ms": 51.309875001607,
+        "target_tokens": 16,
+        "throughput_ratio": 1.951294918535635,
+        "wall_p50_speedup": 3.4707695154602143
+      },
+      {
+        "baseline_throughput_requests_per_s": 15.63209346967698,
+        "baseline_wall_p50_ms": 61.669624999922235,
+        "batch_size": 1,
+        "candidate_throughput_requests_per_s": 41.10384372211343,
+        "candidate_wall_p50_ms": 18.175041001086356,
+        "target_tokens": 64,
+        "throughput_ratio": 2.629452274056982,
+        "wall_p50_speedup": 3.3930941336658402
+      },
+      {
+        "baseline_throughput_requests_per_s": 21.535218831641885,
+        "baseline_wall_p50_ms": 93.70520799711812,
+        "batch_size": 2,
+        "candidate_throughput_requests_per_s": 40.481561914985065,
+        "candidate_wall_p50_ms": 32.62833299959311,
+        "target_tokens": 64,
+        "throughput_ratio": 1.879784098386089,
+        "wall_p50_speedup": 2.871896887845501
+      },
+      {
+        "baseline_throughput_requests_per_s": 27.558877676131473,
+        "baseline_wall_p50_ms": 146.40850000068895,
+        "batch_size": 4,
+        "candidate_throughput_requests_per_s": 100.4507728443286,
+        "candidate_wall_p50_ms": 40.71712500081048,
+        "target_tokens": 64,
+        "throughput_ratio": 3.644951511625897,
+        "wall_p50_speedup": 3.5957474894844528
+      },
+      {
+        "baseline_throughput_requests_per_s": 30.802079686635608,
+        "baseline_wall_p50_ms": 258.8369170007354,
+        "batch_size": 8,
+        "candidate_throughput_requests_per_s": 107.60116267786908,
+        "candidate_wall_p50_ms": 66.5839169996616,
+        "target_tokens": 64,
+        "throughput_ratio": 3.4933083665956173,
+        "wall_p50_speedup": 3.887378944708989
+      },
+      {
+        "baseline_throughput_requests_per_s": 9.009491490239828,
+        "baseline_wall_p50_ms": 110.01849999956903,
+        "batch_size": 1,
+        "candidate_throughput_requests_per_s": 22.69145186342777,
+        "candidate_wall_p50_ms": 40.03133399965009,
+        "target_tokens": 256,
+        "throughput_ratio": 2.518616271296765,
+        "wall_p50_speedup": 2.748309611678959
+      },
+      {
+        "baseline_throughput_requests_per_s": 10.845459297946514,
+        "baseline_wall_p50_ms": 185.36149999999907,
+        "batch_size": 2,
+        "candidate_throughput_requests_per_s": 35.31172157950103,
+        "candidate_wall_p50_ms": 55.29887499869801,
+        "target_tokens": 256,
+        "throughput_ratio": 3.2558991380094873,
+        "wall_p50_speedup": 3.351994050590782
+      },
+      {
+        "baseline_throughput_requests_per_s": 12.21366639289798,
+        "baseline_wall_p50_ms": 328.0659169977298,
+        "batch_size": 4,
+        "candidate_throughput_requests_per_s": 34.01902139010588,
+        "candidate_wall_p50_ms": 111.3167080002313,
+        "target_tokens": 256,
+        "throughput_ratio": 2.7853242667482143,
+        "wall_p50_speedup": 2.9471399477340645
+      },
+      {
+        "baseline_throughput_requests_per_s": 12.85099274605672,
+        "baseline_wall_p50_ms": 608.7797079999291,
+        "batch_size": 8,
+        "candidate_throughput_requests_per_s": 44.43256136741663,
+        "candidate_wall_p50_ms": 179.65579199881176,
+        "target_tokens": 256,
+        "throughput_ratio": 3.457519760957814,
+        "wall_p50_speedup": 3.3885893754205014
+      }
+    ],
+    "memory": {
+      "baseline_peak_rss_bytes": 3583459328,
+      "baseline_steady_rss_bytes": 2598305792,
+      "candidate_accelerator_peak_bytes": 2386296832,
+      "candidate_peak_rss_bytes": 2805891072,
+      "candidate_steady_rss_bytes": 1259765760
+    }
+  },
+  "format_version": 5,
+  "http_runner": {
+    "accelerator_peak_bytes": 2386296832,
+    "backend_load_events": [
+      {
+        "accelerator_memory": {
+          "current_allocated_bytes": 1158335488,
+          "driver_allocated_bytes": 1191657472,
+          "recommended_max_bytes": 115448725504
+        },
+        "duration_ms": 5628.408042000956,
+        "event": "load",
+        "logical_model": "fastino/GLiNER2.5-multi-Decide@e173bca1f0c4217d7a55b3b0c705d5ece8a0218d"
+      },
+      {
+        "accelerator_memory": {
+          "current_allocated_bytes": 1156140032,
+          "driver_allocated_bytes": 2384199680,
+          "recommended_max_bytes": 115448725504
+        },
+        "duration_ms": 3609.1613749995304,
+        "event": "load",
+        "logical_model": "fastino/GLiNER2.5-multi-Decide@e173bca1f0c4217d7a55b3b0c705d5ece8a0218d#alias"
+      }
+    ],
+    "behavior_cases": [
+      {
+        "batch": {
+          "http_status": 200,
+          "output": {
+            "_meta": {
+              "decoder": "independent",
+              "exact": true,
+              "feasible": true,
+              "objective": 0.39154765009880066,
+              "violations": []
+            },
+            "intent": {
+              "confidence": 0.738641665648004,
+              "probabilities": {
+                "account_access": 0.17008290299635825,
+                "billing": 0.738641665648004,
+                "shipping": 0.050437104082651195,
+                "technical_support": 0.040838327272986565
+              },
+              "value": "billing"
+            }
+          },
+          "status": "success",
+          "usage": {
+            "inputTokens": 107,
+            "outputTokens": 0
+          }
+        },
+        "case_id": "described-single",
+        "categories": [
+          "single_label",
+          "described_label",
+          "repeated_run",
+          "token_accounting"
+        ],
+        "language": "es",
+        "repeated": {
+          "http_status": 200,
+          "output": {
+            "_meta": {
+              "decoder": "independent",
+              "exact": true,
+              "feasible": true,
+              "objective": 0.3915473222732544,
+              "violations": []
+            },
+            "intent": {
+              "confidence": 0.7386414714604838,
+              "probabilities": {
+                "account_access": 0.17008313706963749,
+                "billing": 0.7386414714604838,
+                "shipping": 0.05043707128198238,
+                "technical_support": 0.04083832018789646
+              },
+              "value": "billing"
+            }
+          },
+          "status": "success",
+          "usage": {
+            "inputTokens": 107,
+            "outputTokens": 0
+          }
+        },
+        "singleton": {
+          "http_status": 200,
+          "output": {
+            "_meta": {
+              "decoder": "independent",
+              "exact": true,
+              "feasible": true,
+              "objective": 0.3915473222732544,
+              "violations": []
+            },
+            "intent": {
+              "confidence": 0.7386414714604838,
+              "probabilities": {
+                "account_access": 0.17008313706963749,
+                "billing": 0.7386414714604838,
+                "shipping": 0.05043707128198238,
+                "technical_support": 0.04083832018789646
+              },
+              "value": "billing"
+            }
+          },
+          "status": "success",
+          "usage": {
+            "inputTokens": 107,
+            "outputTokens": 0
+          }
+        }
+      },
+      {
+        "case_id": "multi-label",
+        "categories": [
+          "multi_label",
+          "selected_order",
+          "token_accounting"
+        ],
+        "language": "fr",
+        "repeated": {
+          "http_status": 200,
+          "output": {
+            "_meta": {
+              "decoder": "independent",
+              "exact": true,
+              "feasible": true,
+              "objective": 1.3595719468625762,
+              "violations": []
+            },
+            "topics": {
+              "confidence": 0.7627437766260282,
+              "probabilities": {
+                "account_access": 0.27192251140165086,
+                "billing": 0.6253394219331662,
+                "shipping": 0.04127728989138235,
+                "technical_support": 0.2245955926649913
+              },
+              "value": [
+                "billing"
+              ]
+            }
+          },
+          "status": "success",
+          "usage": {
+            "inputTokens": 46,
+            "outputTokens": 0
+          }
+        },
+        "singleton": {
+          "http_status": 200,
+          "output": {
+            "_meta": {
+              "decoder": "independent",
+              "exact": true,
+              "feasible": true,
+              "objective": 1.3595719468625762,
+              "violations": []
+            },
+            "topics": {
+              "confidence": 0.7627437766260282,
+              "probabilities": {
+                "account_access": 0.27192251140165086,
+                "billing": 0.6253394219331662,
+                "shipping": 0.04127728989138235,
+                "technical_support": 0.2245955926649913
+              },
+              "value": [
+                "billing"
+              ]
+            }
+          },
+          "status": "success",
+          "usage": {
+            "inputTokens": 46,
+            "outputTokens": 0
+          }
+        }
+      },
+      {
+        "case_id": "high-threshold-empty",
+        "categories": [
+          "threshold",
+          "empty_result",
+          "token_accounting"
+        ],
+        "language": "ja",
+        "repeated": {
+          "http_status": 200,
+          "output": {
+            "_meta": {
+              "decoder": "independent",
+              "exact": true,
+              "feasible": true,
+              "objective": 0.0,
+              "violations": []
+            },
+            "topics": {
+              "confidence": null,
+              "probabilities": {
+                "billing": 0.25018663503814187,
+                "shipping": 0.2742094388119113,
+                "technical_support": 0.44022430822433334
+              },
+              "value": []
+            }
+          },
+          "status": "success",
+          "usage": {
+            "inputTokens": 25,
+            "outputTokens": 0
+          }
+        },
+        "singleton": {
+          "http_status": 200,
+          "output": {
+            "_meta": {
+              "decoder": "independent",
+              "exact": true,
+              "feasible": true,
+              "objective": 0.0,
+              "violations": []
+            },
+            "topics": {
+              "confidence": null,
+              "probabilities": {
+                "billing": 0.25018663503814187,
+                "shipping": 0.2742094388119113,
+                "technical_support": 0.44022430822433334
+              },
+              "value": []
+            }
+          },
+          "status": "success",
+          "usage": {
+            "inputTokens": 25,
+            "outputTokens": 0
+          }
+        }
+      },
+      {
+        "case_id": "ordered-label",
+        "categories": [
+          "ordered",
+          "token_accounting"
+        ],
+        "language": "de",
+        "repeated": {
+          "http_status": 200,
+          "output": {
+            "_meta": {
+              "decoder": "independent",
+              "exact": true,
+              "feasible": true,
+              "objective": -0.3102610409259796,
+              "violations": []
+            },
+            "priority": {
+              "confidence": 0.46299664546314184,
+              "probabilities": {
+                "critical": 0.46299664546314184,
+                "high": 0.363796509771247,
+                "low": 0.07427270471714009,
+                "medium": 0.09893414004847108
+              },
+              "value": "critical"
+            }
+          },
+          "status": "success",
+          "usage": {
+            "inputTokens": 40,
+            "outputTokens": 0
+          }
+        },
+        "singleton": {
+          "http_status": 200,
+          "output": {
+            "_meta": {
+              "decoder": "independent",
+              "exact": true,
+              "feasible": true,
+              "objective": -0.3102610409259796,
+              "violations": []
+            },
+            "priority": {
+              "confidence": 0.46299664546314184,
+              "probabilities": {
+                "critical": 0.46299664546314184,
+                "high": 0.363796509771247,
+                "low": 0.07427270471714009,
+                "medium": 0.09893414004847108
+              },
+              "value": "critical"
+            }
+          },
+          "status": "success",
+          "usage": {
+            "inputTokens": 40,
+            "outputTokens": 0
+          }
+        }
+      },
+      {
+        "case_id": "feasible-constraint",
+        "categories": [
+          "constraint",
+          "feasible",
+          "token_accounting"
+        ],
+        "language": "es",
+        "repeated": {
+          "http_status": 200,
+          "output": {
+            "_meta": {
+              "decoder": "exact",
+              "exact": true,
+              "feasible": true,
+              "objective": 4.361057281494141,
+              "violations": []
+            },
+            "intent": {
+              "confidence": 0.9993944230247717,
+              "probabilities": {
+                "question": 0.0006055769752283534,
+                "refund": 0.9993944230247717
+              },
+              "value": "refund"
+            },
+            "route": {
+              "confidence": 0.6657084118905003,
+              "probabilities": {
+                "billing": 0.6657084118905003,
+                "support": 0.3342915881094996
+              },
+              "value": "billing"
+            }
+          },
+          "status": "success",
+          "usage": {
+            "inputTokens": 45,
+            "outputTokens": 0
+          }
+        },
+        "singleton": {
+          "http_status": 200,
+          "output": {
+            "_meta": {
+              "decoder": "exact",
+              "exact": true,
+              "feasible": true,
+              "objective": 4.361057281494141,
+              "violations": []
+            },
+            "intent": {
+              "confidence": 0.9993944230247717,
+              "probabilities": {
+                "question": 0.0006055769752283534,
+                "refund": 0.9993944230247717
+              },
+              "value": "refund"
+            },
+            "route": {
+              "confidence": 0.6657084118905003,
+              "probabilities": {
+                "billing": 0.6657084118905003,
+                "support": 0.3342915881094996
+              },
+              "value": "billing"
+            }
+          },
+          "status": "success",
+          "usage": {
+            "inputTokens": 45,
+            "outputTokens": 0
+          }
+        }
+      },
+      {
+        "case_id": "infeasible-constraint",
+        "categories": [
+          "constraint",
+          "infeasible",
+          "token_accounting"
+        ],
+        "language": "fr",
+        "repeated": {
+          "error": {
+            "detail": {
+              "code": "invalid_schema",
+              "message": "no label of exclusive task 'decision' satisfies its constraints; the task is pinned to the empty set",
+              "retryable": false
+            }
+          },
+          "http_status": 422,
+          "status": "error"
+        },
+        "singleton": {
+          "error": {
+            "detail": {
+              "code": "invalid_schema",
+              "message": "no label of exclusive task 'decision' satisfies its constraints; the task is pinned to the empty set",
+              "retryable": false
+            }
+          },
+          "http_status": 422,
+          "status": "error"
+        }
+      },
+      {
+        "batch": {
+          "http_status": 200,
+          "output": {
+            "_meta": {
+              "decoder": "independent",
+              "exact": true,
+              "feasible": true,
+              "objective": 0.7097901105880737,
+              "violations": []
+            },
+            "intent": {
+              "confidence": 0.851568914763922,
+              "probabilities": {
+                "account_access": 0.851568914763922,
+                "billing": 0.03403292628402825,
+                "shipping": 0.02060715952620212,
+                "technical_support": 0.0937909994258476
+              },
+              "value": "account_access"
+            }
+          },
+          "status": "success",
+          "usage": {
+            "inputTokens": 461,
+            "outputTokens": 0
+          }
+        },
+        "case_id": "mixed-length-long",
+        "categories": [
+          "mixed_length",
+          "singleton_batch",
+          "token_accounting"
+        ],
+        "language": "es",
+        "repeated": {
+          "http_status": 200,
+          "output": {
+            "_meta": {
+              "decoder": "independent",
+              "exact": true,
+              "feasible": true,
+              "objective": 0.7097901105880737,
+              "violations": []
+            },
+            "intent": {
+              "confidence": 0.851568914763922,
+              "probabilities": {
+                "account_access": 0.851568914763922,
+                "billing": 0.03403292628402825,
+                "shipping": 0.02060715952620212,
+                "technical_support": 0.0937909994258476
+              },
+              "value": "account_access"
+            }
+          },
+          "status": "success",
+          "usage": {
+            "inputTokens": 461,
+            "outputTokens": 0
+          }
+        },
+        "singleton": {
+          "http_status": 200,
+          "output": {
+            "_meta": {
+              "decoder": "independent",
+              "exact": true,
+              "feasible": true,
+              "objective": 0.7097901105880737,
+              "violations": []
+            },
+            "intent": {
+              "confidence": 0.851568914763922,
+              "probabilities": {
+                "account_access": 0.851568914763922,
+                "billing": 0.03403292628402825,
+                "shipping": 0.02060715952620212,
+                "technical_support": 0.0937909994258476
+              },
+              "value": "account_access"
+            }
+          },
+          "status": "success",
+          "usage": {
+            "inputTokens": 461,
+            "outputTokens": 0
+          }
+        }
+      }
+    ],
+    "behavior_outputs": [
+      {
+        "_meta": {
+          "decoder": "independent",
+          "exact": true,
+          "feasible": true,
+          "objective": 0.3915473222732544,
+          "violations": []
+        },
+        "intent": {
+          "confidence": 0.7386414714604838,
+          "probabilities": {
+            "account_access": 0.17008313706963749,
+            "billing": 0.7386414714604838,
+            "shipping": 0.05043707128198238,
+            "technical_support": 0.04083832018789646
+          },
+          "value": "billing"
+        }
+      },
+      {
+        "_meta": {
+          "decoder": "independent",
+          "exact": true,
+          "feasible": true,
+          "objective": 1.656515121459961,
+          "violations": []
+        },
+        "intent": {
+          "confidence": 0.9375701808405429,
+          "probabilities": {
+            "account_access": 0.030879563016862586,
+            "billing": 0.02079418348574612,
+            "shipping": 0.010756072656848309,
+            "technical_support": 0.9375701808405429
+          },
+          "value": "technical_support"
+        }
+      },
+      {
+        "_meta": {
+          "decoder": "independent",
+          "exact": true,
+          "feasible": true,
+          "objective": 0.9340493679046631,
+          "violations": []
+        },
+        "intent": {
+          "confidence": 0.9002389091407527,
+          "probabilities": {
+            "account_access": 0.9002389091407527,
+            "billing": 0.02350572298864109,
+            "shipping": 0.017524597319090292,
+            "technical_support": 0.05873077055151604
+          },
+          "value": "account_access"
+        }
+      },
+      {
+        "_meta": {
+          "decoder": "independent",
+          "exact": true,
+          "feasible": true,
+          "objective": 0.29892364144325256,
+          "violations": []
+        },
+        "intent": {
+          "confidence": 0.6396848663066217,
+          "probabilities": {
+            "account_access": 0.15168886684405955,
+            "billing": 0.10846413747127759,
+            "shipping": 0.6396848663066217,
+            "technical_support": 0.1001621293780412
+          },
+          "value": "shipping"
+        }
+      }
+    ],
+    "cold_first_http_ms": 6638.781000001472,
+    "expected_label_accuracy": {
+      "cases": 4,
+      "correct": 4
+    },
+    "fill_window": [
+      {
+        "arrival_offsets_ms": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "http_statuses": [
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200
+        ],
+        "observed_batch_sizes": [
+          8
+        ],
+        "scenario": "simultaneous"
+      },
+      {
+        "arrival_offsets_ms": [
+          0.0,
+          0.4,
+          0.8,
+          1.2000000000000002,
+          1.6,
+          2.0,
+          2.4000000000000004,
+          2.8
+        ],
+        "http_statuses": [
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200,
+          200
+        ],
+        "observed_batch_sizes": [
+          8
+        ],
+        "scenario": "inside_window"
+      },
+      {
+        "arrival_offsets_ms": [
+          0.0,
+          12.0,
+          24.0,
+          36.00000000000001
+        ],
+        "http_statuses": [
+          200,
+          200,
+          200,
+          200
+        ],
+        "observed_batch_sizes": [
+          1,
+          2,
+          1
+        ],
+        "scenario": "outside_window"
+      }
+    ],
+    "metrics_excerpt": [
+      "gliner_runner_internal{metric=\"last_batch_size\"} 1.0"
+    ],
+    "model_grouping": {
+      "batches": [
+        {
+          "accelerator_memory": {
+            "current_allocated_bytes": 1158335488,
+            "driver_allocated_bytes": 2386296832,
+            "recommended_max_bytes": 115448725504
+          },
+          "duration_ms": 13.705834000575123,
+          "event": "batch",
+          "logical_model": "fastino/GLiNER2.5-multi-Decide@e173bca1f0c4217d7a55b3b0c705d5ece8a0218d",
+          "size": 1,
+          "task_names": [
+            "intent"
+          ]
+        },
+        {
+          "accelerator_memory": {
+            "current_allocated_bytes": 1156140032,
+            "driver_allocated_bytes": 2384199680,
+            "recommended_max_bytes": 115448725504
+          },
+          "duration_ms": 11.968334001721814,
+          "event": "batch",
+          "logical_model": "fastino/GLiNER2.5-multi-Decide@e173bca1f0c4217d7a55b3b0c705d5ece8a0218d#alias",
+          "size": 1,
+          "task_names": [
+            "intent"
+          ]
+        }
+      ],
+      "http_statuses": [
+        200,
+        200
+      ],
+      "logical_models_observed": [
+        "fastino/GLiNER2.5-multi-Decide@e173bca1f0c4217d7a55b3b0c705d5ece8a0218d",
+        "fastino/GLiNER2.5-multi-Decide@e173bca1f0c4217d7a55b3b0c705d5ece8a0218d#alias"
+      ]
+    },
+    "parity": {
+      "cases": 4,
+      "exact_output_matches": 0,
+      "exact_output_rate": 0.0,
+      "max_abs_numeric_difference": 2.205371856689453e-06,
+      "selected_label_matches": 4,
+      "selected_label_rate": 1.0
+    },
+    "parity_usage": [
+      {
+        "inputTokens": 107,
+        "outputTokens": 0
+      },
+      {
+        "inputTokens": 110,
+        "outputTokens": 0
+      },
+      {
+        "inputTokens": 105,
+        "outputTokens": 0
+      },
+      {
+        "inputTokens": 100,
+        "outputTokens": 0
+      }
+    ],
+    "post_two_model_grouping_rss_bytes": 1479868416,
+    "schema_grouping": {
+      "batches": [
+        {
+          "accelerator_memory": {
+            "current_allocated_bytes": 1158335488,
+            "driver_allocated_bytes": 2386296832,
+            "recommended_max_bytes": 115448725504
+          },
+          "duration_ms": 25.009124998177867,
+          "event": "batch",
+          "logical_model": "fastino/GLiNER2.5-multi-Decide@e173bca1f0c4217d7a55b3b0c705d5ece8a0218d",
+          "size": 4,
+          "task_names": [
+            "group_a"
+          ]
+        },
+        {
+          "accelerator_memory": {
+            "current_allocated_bytes": 1158335488,
+            "driver_allocated_bytes": 2386296832,
+            "recommended_max_bytes": 115448725504
+          },
+          "duration_ms": 21.082374998513842,
+          "event": "batch",
+          "logical_model": "fastino/GLiNER2.5-multi-Decide@e173bca1f0c4217d7a55b3b0c705d5ece8a0218d",
+          "size": 4,
+          "task_names": [
+            "group_b"
+          ]
+        }
+      ],
+      "http_statuses": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "mixed_schema_batch_observed": false
+    },
+    "server_ready_ms": 341.62779100006446,
+    "starting_rss_bytes": 67698688,
+    "steady_single_model_rss_bytes": 1259765760,
+    "transparent_cases": [
+      {
+        "case_id": "transparent-1",
+        "expected_label": "billing",
+        "language": "es",
+        "selected_label": "billing"
+      },
+      {
+        "case_id": "transparent-2",
+        "expected_label": "technical_support",
+        "language": "fr",
+        "selected_label": "technical_support"
+      },
+      {
+        "case_id": "transparent-3",
+        "expected_label": "account_access",
+        "language": "de",
+        "selected_label": "account_access"
+      },
+      {
+        "case_id": "transparent-4",
+        "expected_label": "shipping",
+        "language": "ja",
+        "selected_label": "shipping"
+      }
+    ]
+  },
+  "latency_rows": [
+    {
+      "actual_tokens": 16,
+      "batch_samples": 3,
+      "batch_size": 1,
+      "inference_p50_ms": 15.318083998863585,
+      "output_tokens": 0,
+      "queue_p50_ms": 5.0797500007320195,
+      "runner_input_tokens": 106,
+      "target_tokens": 16,
+      "throughput_requests_per_s": 36.17970444882118,
+      "total_requests": 3,
+      "wall_p50_ms": 24.72245799799566,
+      "wall_p95_ms": 35.587033897900255
+    },
+    {
+      "actual_tokens": 16,
+      "batch_samples": 3,
+      "batch_size": 2,
+      "inference_p50_ms": 20.36437499918975,
+      "output_tokens": 0,
+      "queue_p50_ms": 5.116792000990245,
+      "runner_input_tokens": 106,
+      "target_tokens": 16,
+      "throughput_requests_per_s": 47.20873440373892,
+      "total_requests": 6,
+      "wall_p50_ms": 33.88679099953151,
+      "wall_p95_ms": 63.6689168994053
+    },
+    {
+      "actual_tokens": 16,
+      "batch_samples": 3,
+      "batch_size": 4,
+      "inference_p50_ms": 23.31758299987996,
+      "output_tokens": 0,
+      "queue_p50_ms": 5.129062499690917,
+      "runner_input_tokens": 106,
+      "target_tokens": 16,
+      "throughput_requests_per_s": 56.898543466436124,
+      "total_requests": 12,
+      "wall_p50_ms": 36.38124999997672,
+      "wall_p95_ms": 134.2691497025953
+    },
+    {
+      "actual_tokens": 16,
+      "batch_samples": 3,
+      "batch_size": 8,
+      "inference_p50_ms": 36.23291699841502,
+      "output_tokens": 0,
+      "queue_p50_ms": 5.165521000890294,
+      "runner_input_tokens": 106,
+      "target_tokens": 16,
+      "throughput_requests_per_s": 86.93751738602649,
+      "total_requests": 24,
+      "wall_p50_ms": 51.309875001607,
+      "wall_p95_ms": 169.263312500334
+    },
+    {
+      "actual_tokens": 64,
+      "batch_samples": 3,
+      "batch_size": 1,
+      "inference_p50_ms": 12.257875001523644,
+      "output_tokens": 0,
+      "queue_p50_ms": 5.08004099901882,
+      "runner_input_tokens": 158,
+      "target_tokens": 64,
+      "throughput_requests_per_s": 41.10384372211343,
+      "total_requests": 3,
+      "wall_p50_ms": 18.175041001086356,
+      "wall_p95_ms": 35.029341900371946
+    },
+    {
+      "actual_tokens": 64,
+      "batch_samples": 3,
+      "batch_size": 2,
+      "inference_p50_ms": 23.578042000735877,
+      "output_tokens": 0,
+      "queue_p50_ms": 5.119478999404237,
+      "runner_input_tokens": 158,
+      "target_tokens": 64,
+      "throughput_requests_per_s": 40.481561914985065,
+      "total_requests": 6,
+      "wall_p50_ms": 32.62833299959311,
+      "wall_p95_ms": 81.30370799735829
+    },
+    {
+      "actual_tokens": 64,
+      "batch_samples": 3,
+      "batch_size": 4,
+      "inference_p50_ms": 30.383334000362083,
+      "output_tokens": 0,
+      "queue_p50_ms": 5.172291501366999,
+      "runner_input_tokens": 158,
+      "target_tokens": 64,
+      "throughput_requests_per_s": 100.4507728443286,
+      "total_requests": 12,
+      "wall_p50_ms": 40.71712500081048,
+      "wall_p95_ms": 41.307263099224656
+    },
+    {
+      "actual_tokens": 64,
+      "batch_samples": 3,
+      "batch_size": 8,
+      "inference_p50_ms": 53.696041999501176,
+      "output_tokens": 0,
+      "queue_p50_ms": 5.165000000488362,
+      "runner_input_tokens": 158,
+      "target_tokens": 64,
+      "throughput_requests_per_s": 107.60116267786908,
+      "total_requests": 24,
+      "wall_p50_ms": 66.5839169996616,
+      "wall_p95_ms": 93.60825390031096
+    },
+    {
+      "actual_tokens": 256,
+      "batch_samples": 3,
+      "batch_size": 1,
+      "inference_p50_ms": 30.167166001774604,
+      "output_tokens": 0,
+      "queue_p50_ms": 5.078250000224216,
+      "runner_input_tokens": 364,
+      "target_tokens": 256,
+      "throughput_requests_per_s": 22.69145186342777,
+      "total_requests": 3,
+      "wall_p50_ms": 40.03133399965009,
+      "wall_p95_ms": 51.86097090008843
+    },
+    {
+      "actual_tokens": 256,
+      "batch_samples": 3,
+      "batch_size": 2,
+      "inference_p50_ms": 46.29916599878925,
+      "output_tokens": 0,
+      "queue_p50_ms": 5.123271001139074,
+      "runner_input_tokens": 364,
+      "target_tokens": 256,
+      "throughput_requests_per_s": 35.31172157950103,
+      "total_requests": 6,
+      "wall_p50_ms": 55.29887499869801,
+      "wall_p95_ms": 61.56392529919685
+    },
+    {
+      "actual_tokens": 256,
+      "batch_samples": 3,
+      "batch_size": 4,
+      "inference_p50_ms": 92.66475000185892,
+      "output_tokens": 0,
+      "queue_p50_ms": 5.141207999258768,
+      "runner_input_tokens": 364,
+      "target_tokens": 256,
+      "throughput_requests_per_s": 34.01902139010588,
+      "total_requests": 12,
+      "wall_p50_ms": 111.3167080002313,
+      "wall_p95_ms": 145.56797109835315
+    },
+    {
+      "actual_tokens": 256,
+      "batch_samples": 3,
+      "batch_size": 8,
+      "inference_p50_ms": 171.5399159984372,
+      "output_tokens": 0,
+      "queue_p50_ms": 5.173604500669171,
+      "runner_input_tokens": 364,
+      "target_tokens": 256,
+      "throughput_requests_per_s": 44.43256136741663,
+      "total_requests": 24,
+      "wall_p50_ms": 179.65579199881176,
+      "wall_p95_ms": 182.24587950062414
+    }
+  ],
+  "memory": {
+    "accelerator_peak_bytes": 2386296832,
+    "http_peak_rss_bytes": 2805891072,
+    "oracle_peak_rss_bytes": 2851422208,
+    "overload_peak_rss_bytes": 3499016192,
+    "peak_rss_bytes": 3499016192
+  },
+  "metadata": {
+    "batch_sizes": [
+      1,
+      2,
+      4,
+      8
+    ],
+    "batch_window_ms": 4.0,
+    "behavior_case_ids": [
+      "described-single",
+      "multi-label",
+      "high-threshold-empty",
+      "ordered-label",
+      "feasible-constraint",
+      "infeasible-constraint",
+      "mixed-length-long"
+    ],
+    "behavior_workload_sha256": "76cd554d9647436bf01f7db7c666074f52c9e127c84643bd2bf7d93dfb8238fb",
+    "device": "mps",
+    "expected_gliner2_version": "2.1.0",
+    "generated_at_utc": "2026-10-13T22:46:51Z",
+    "host": {
+      "architecture": "arm64",
+      "cpu": "Apple M5 Max",
+      "logical_cores": 18,
+      "memory_bytes": 137438953472,
+      "os": "Darwin",
+      "os_release": "25.6.0",
+      "os_version": "26.7.1",
+      "physical_cores": 18
+    },
+    "model_bytes": 1166175946,
+    "model_content_sha256": "0fc359fda9ab12da8c1b3a94320746de9a25be9e6ef1eb92cbc43051e5a508cb",
+    "model_files": 9,
+    "model_id": "fastino/GLiNER2.5-multi-Decide",
+    "model_repository": "fastino/GLiNER2.5-multi-Decide",
+    "model_revision": "e173bca1f0c4217d7a55b3b0c705d5ece8a0218d",
+    "oracle_device": "cpu",
+    "oracle_precision": "fp32",
+    "overload_tokens": 256,
+    "precision": "fp32",
+    "repetitions": 3,
+    "rss_sampling_interval_ms": 20,
+    "schema_label_descriptions": {
+      "account_access": "Authentication, passwords, and account sign-in problems",
+      "billing": "Invoices, charges, refunds, and payment problems",
+      "shipping": "Package delivery, tracking, and shipment status",
+      "technical_support": "Application failures, defects, and technical troubleshooting"
+    },
+    "snapshot_identity_validation": "inventory-marker",
+    "token_targets": [
+      16,
+      64,
+      256
+    ],
+    "torch_threads": 6,
+    "transparent_case_count": 4,
+    "versions": {
+      "gliner2": "2.1.0",
+      "python": "3.12.12",
+      "torch": "2.14.0",
+      "transformers": "5.19.0"
+    },
+    "workload_id": "multilingual-v1",
+    "workload_languages": [
+      "de",
+      "es",
+      "fr",
+      "ja"
+    ],
+    "workload_sha256": "3812cc36348ad828aa42693969e758d229f77f3c48c5d8e92317f08b659cfa73"
+  },
+  "overload": {
+    "accepted": 1,
+    "burst_statuses": [
+      200,
+      429,
+      429,
+      429,
+      429,
+      429,
+      429,
+      429,
+      429,
+      429
+    ],
+    "client_task_cancelled": true,
+    "first_status": 200,
+    "observed_batches": [
+      {
+        "accelerator_memory": {
+          "current_allocated_bytes": 1158335488,
+          "driver_allocated_bytes": 1200324608,
+          "recommended_max_bytes": 115448725504
+        },
+        "duration_ms": 113.77891699885367,
+        "event": "batch",
+        "logical_model": "fastino/GLiNER2.5-multi-Decide@e173bca1f0c4217d7a55b3b0c705d5ece8a0218d",
+        "size": 1,
+        "task_names": [
+          "warmup"
+        ]
+      },
+      {
+        "accelerator_memory": {
+          "current_allocated_bytes": 1158335488,
+          "driver_allocated_bytes": 1267433472,
+          "recommended_max_bytes": 115448725504
+        },
+        "duration_ms": 59.34995799907483,
+        "event": "batch",
+        "logical_model": "fastino/GLiNER2.5-multi-Decide@e173bca1f0c4217d7a55b3b0c705d5ece8a0218d",
+        "size": 1,
+        "task_names": [
+          "overload"
+        ]
+      },
+      {
+        "accelerator_memory": {
+          "current_allocated_bytes": 1158335488,
+          "driver_allocated_bytes": 1267433472,
+          "recommended_max_bytes": 115448725504
+        },
+        "duration_ms": 27.05512499960605,
+        "event": "batch",
+        "logical_model": "fastino/GLiNER2.5-multi-Decide@e173bca1f0c4217d7a55b3b0c705d5ece8a0218d",
+        "size": 1,
+        "task_names": [
+          "cancelled"
+        ]
+      },
+      {
+        "accelerator_memory": {
+          "current_allocated_bytes": 1158335488,
+          "driver_allocated_bytes": 1267433472,
+          "recommended_max_bytes": 115448725504
+        },
+        "duration_ms": 27.527209000254516,
+        "event": "batch",
+        "logical_model": "fastino/GLiNER2.5-multi-Decide@e173bca1f0c4217d7a55b3b0c705d5ece8a0218d",
+        "size": 1,
+        "task_names": [
+          "overload"
+        ]
+      }
+    ],
+    "rejected_429": 9,
+    "server_cancelled_metric": 0.0,
+    "server_rejected_metric": 9.0
+  }
+}

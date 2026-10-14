@@ -1,0 +1,140 @@
+name: Homebrew smoke
+
+# Installs gliner-runner (stable) or gliner-runner-rc (release candidate) from stuffbucket/homebrew-tap on
+# macOS arm64 and Linux x64/arm64, then starts the server and probes /healthz and /v1/capabilities. No
+# models are downloaded.
+#
+# The tap copies each release's formula on a schedule (and on repository_dispatch when HOMEBREW_TAP_TOKEN
+# is set), so the install step first polls until the tap serves the expected version, for up to 40 minutes.
+# The release workflows call this workflow after publishing; run it by hand to check what the tap serves now.
+on:
+  workflow_dispatch:
+    inputs:
+      channel:
+        description: Formula channel to install
+        required: true
+        default: stable
+        type: choice
+        options:
+          - stable
+          - rc
+      version:
+        description: Expected version (default is the newest GitHub release of the channel)
+        required: false
+        type: string
+  workflow_call:
+    inputs:
+      channel:
+        description: stable or rc
+        required: true
+        type: string
+      version:
+        description: Expected version, X.Y.Z or X.Y.Z-rc.N
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    name: brew install (${{ matrix.runner }})
+    strategy:
+      fail-fast: false
+      matrix:
+        runner:
+          - macos-15
+          - ubuntu-24.04
+          - ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    env:
+      CHANNEL: ${{ inputs.channel }}
+      INPUT_VERSION: ${{ inputs.version }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Resolve expected version and formula
+        run: |
+          set -eu
+          case "$CHANNEL" in
+            stable) formula=gliner-runner ;;
+            rc) formula=gliner-runner-rc ;;
+            *) echo "channel must be stable or rc, got '$CHANNEL'" >&2; exit 1 ;;
+          esac
+          version=${INPUT_VERSION:-}
+          if [ -z "$version" ]; then
+            if [ "$CHANNEL" = stable ]; then
+              tag=$(gh api "repos/$GITHUB_REPOSITORY/releases/latest" --jq .tag_name)
+            else
+              tag=$(gh api "repos/$GITHUB_REPOSITORY/releases?per_page=30" \
+                --jq '[.[] | select(.prerelease and (.draft | not))][0].tag_name')
+            fi
+            version=${tag#v}
+          fi
+          test -n "$version" && test "$version" != null || { echo 'could not resolve a version' >&2; exit 1; }
+          echo "Expecting $formula $version"
+          echo "FORMULA=$formula" >> "$GITHUB_ENV"
+          echo "EXPECTED_VERSION=$version" >> "$GITHUB_ENV"
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@f9676f1ffe2e1a720f81b2c54c51cfb99915ec14 # main
+      - name: Tap stuffbucket/tap and wait for the expected version
+        env:
+          HOMEBREW_NO_ANALYTICS: "1"
+        run: |
+          set -eu
+          # Tap explicitly: recent Homebrew will not load formulae from an untapped third-party tap.
+          brew tap stuffbucket/tap
+          deadline=$((SECONDS + 2400))
+          while :; do
+            brew update --quiet || true
+            current=$(brew info --json=v2 "stuffbucket/tap/$FORMULA" 2>/dev/null | jq -r '.formulae[0].versions.stable // empty' || true)
+            echo "tap serves $FORMULA ${current:-<none>}; expecting $EXPECTED_VERSION"
+            [ "$current" = "$EXPECTED_VERSION" ] && break
+            if [ "$SECONDS" -ge "$deadline" ]; then
+              echo "::error::stuffbucket/tap did not serve $FORMULA $EXPECTED_VERSION within 40 minutes. Is the tap's sync-gliner-runner workflow installed and passing?"
+              exit 1
+            fi
+            sleep 60
+          done
+      - name: Install
+        env:
+          HOMEBREW_NO_ANALYTICS: "1"
+          HOMEBREW_NO_AUTO_UPDATE: "1"
+        run: brew install "stuffbucket/tap/$FORMULA"
+      - name: Check the installed version
+        run: |
+          set -eu
+          command -v gliner-runner
+          reported=$(gliner-runner --version)
+          echo "$reported"
+          case "$reported" in
+            *"$EXPECTED_VERSION"*) ;;
+            *) echo "::error::gliner-runner --version did not mention $EXPECTED_VERSION" >&2; exit 1 ;;
+          esac
+          gliner-runner-onnx --version
+      - name: Serve, then probe /healthz and /v1/capabilities
+        run: |
+          set -eu
+          gliner-runner serve --host 127.0.0.1 --port 18090 --device cpu > "$RUNNER_TEMP/serve.log" 2>&1 &
+          pid=$!
+          trap 'kill "$pid" 2>/dev/null || true; wait "$pid" 2>/dev/null || true' EXIT
+          ready=
+          for _ in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:18090/healthz > "$RUNNER_TEMP/healthz.json" 2>/dev/null; then
+              ready=1
+              break
+            fi
+            kill -0 "$pid" 2>/dev/null || break
+            sleep 1
+          done
+          if [ -z "$ready" ]; then
+            echo '::error::server did not become healthy'
+            cat "$RUNNER_TEMP/serve.log"
+            exit 1
+          fi
+          cat "$RUNNER_TEMP/healthz.json"; echo
+          curl -fsS http://127.0.0.1:18090/v1/capabilities
+          echo
+      - name: Uninstall
+        if: always()
+        run: brew uninstall --force "stuffbucket/tap/$FORMULA" || true

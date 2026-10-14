@@ -31,21 +31,21 @@ KNOWN_MODELS = (
     InventoryModelSpec(
         model_id="decide-340m",
         repository="fastino/GLiNER2.5-Decide",
-        pinned_revision="5a7adf72a23b4d311abae6ce050d7f0012bb3416",
+        pinned_revision="9d1bfb848cd16d93ee56ccbc59cd92bf0f284d90",
         parameter_count=486_444_053,
         description="English GLiNER2.5 classification model",
     ),
     InventoryModelSpec(
         model_id="decide-multilingual",
         repository="fastino/GLiNER2.5-multi-Decide",
-        pinned_revision="a35a0cd3b7a0f00f2effc576f454cd48fa98aa5f",
+        pinned_revision="e173bca1f0c4217d7a55b3b0c705d5ece8a0218d",
         parameter_count=287_355_159,
         description="Multilingual GLiNER2.5 classification model",
     ),
     InventoryModelSpec(
         model_id="decide-1b",
         repository="fastino/GLiNER2.5-Decide-1B",
-        pinned_revision="688cd7ba8917a0855ad3ce929cba5a9998932e79",
+        pinned_revision="67af949e17bebd20f05fe020a971079889e7a462",
         parameter_count=1_188_796_693,
         description="One-billion-parameter English GLiNER2.5 classification model",
     ),
@@ -194,9 +194,7 @@ class ModelInventory:
                     "refreshed_at": refreshed_at,
                 }
             provider_models = await asyncio.to_thread(
-                lambda: list(
-                    api.list_models(author="fastino", search="GLiNER2.5", full=True)
-                )
+                lambda: list(api.list_models(author="fastino", search="GLiNER2.5", full=True))
             )
             known_repositories = {spec.repository for spec in KNOWN_MODELS}
             discovered = sorted(
@@ -309,16 +307,65 @@ class ModelInventory:
         temporary.replace(self._cache_path)
 
 
-def profile_guidance(
-    spec: InventoryModelSpec, profile: PrecisionProfile
-) -> ProfileGuidance:
+def profile_guidance(spec: InventoryModelSpec, profile: PrecisionProfile) -> ProfileGuidance:
     profile_name = f"{profile.device}/{profile.precision}"
-    drift: dict[str, tuple[float, str]] = {
-        "cpu/fp32": (3.6e-7, "1e-7"),
-        "mps/fp32": (2.9802322387695312e-6, "1e-6"),
-        "mps/fp16": (0.0018429756164550781, "1e-3"),
+    characterization: dict[tuple[str, str], tuple[float, str, str]] = {
+        ("decide-340m", "cpu/fp32"): (
+            3.5762786865234375e-7,
+            "1e-7",
+            "Four-example Apple M5 Max current-revision english-v1 characterization; "
+            "not a universal accuracy guarantee.",
+        ),
+        ("decide-340m", "mps/fp32"): (
+            3.814697265625e-6,
+            "1e-6",
+            "Four-example Apple M5 Max current-revision english-v1 characterization; "
+            "not a universal accuracy guarantee.",
+        ),
+        ("decide-340m", "mps/fp16"): (
+            0.0010069608688354492,
+            "1e-3",
+            "Four-example Apple M5 Max current-revision english-v1 characterization; "
+            "not a universal accuracy guarantee.",
+        ),
+        ("decide-multilingual", "cpu/fp32"): (
+            0.0,
+            "0",
+            "Four-example Apple M5 Max multilingual-v1 characterization across de, es, "
+            "fr, and ja; not a universal accuracy guarantee.",
+        ),
+        ("decide-multilingual", "mps/fp32"): (
+            2.205371856689453e-6,
+            "1e-6",
+            "Four-example Apple M5 Max multilingual-v1 characterization across de, es, "
+            "fr, and ja; not a universal accuracy guarantee.",
+        ),
+        ("decide-multilingual", "mps/fp16"): (
+            0.0053369998931884766,
+            "1e-3",
+            "Four-example Apple M5 Max multilingual-v1 characterization across de, es, "
+            "fr, and ja; not a universal accuracy guarantee.",
+        ),
+        ("decide-1b", "cpu/fp32"): (
+            4.76837158203125e-7,
+            "1e-7",
+            "Four-example Apple M5 Max english-v1 characterization; "
+            "not a universal accuracy guarantee.",
+        ),
+        ("decide-1b", "mps/fp16"): (
+            0.0015290528535842896,
+            "1e-3",
+            "Four-example Apple M5 Max english-v1 characterization; "
+            "not a universal accuracy guarantee.",
+        ),
+        ("decide-1b", "mps/fp32"): (
+            7.748603820800781e-7,
+            "1e-7",
+            "Four-example Apple M5 Max english-v1 characterization; "
+            "not a universal accuracy guarantee.",
+        ),
     }
-    observed = drift.get(profile_name) if spec.model_id == "decide-340m" else None
+    observed = characterization.get((spec.model_id, profile_name))
     return ProfileGuidance(
         estimated_minimum_memory_bytes=minimum_memory_bytes(
             spec.parameter_count, profile.precision
@@ -331,7 +378,7 @@ def profile_guidance(
         observed_max_abs_score_drift=observed[0] if observed else None,
         drift_order_of_magnitude=observed[1] if observed else None,
         characterization_scope=(
-            "Four-example Apple M5 Max characterization; not a universal accuracy guarantee."
+            observed[2]
             if observed
             else "No published numeric characterization for this model/profile."
         ),
@@ -390,9 +437,7 @@ class DownloadJobManager:
                 update={"state": DownloadState.FAILED, "error": str(error)}
             )
         else:
-            self._jobs[job.job_id] = job.model_copy(
-                update={"state": DownloadState.SUCCEEDED}
-            )
+            self._jobs[job.job_id] = job.model_copy(update={"state": DownloadState.SUCCEEDED})
 
 
 def minimum_memory_bytes(parameter_count: int, precision: Precision) -> int:

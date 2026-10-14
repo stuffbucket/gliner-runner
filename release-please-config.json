@@ -4,6 +4,7 @@
     ".": {
       "release-type": "python",
       "package-name": "gliner-runner",
+      "release-as": "0.3.0",
       "include-component-in-tag": false,
       "changelog-path": "CHANGELOG.md",
       "extra-files": [
@@ -15,6 +16,11 @@
         {
           "type": "json",
           "path": "packages/client/package.json",
+          "jsonpath": "$.version"
+        },
+        {
+          "type": "json",
+          "path": "packages/onnx-runner/package.json",
           "jsonpath": "$.version"
         },
         {

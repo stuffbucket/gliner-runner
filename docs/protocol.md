@@ -6,6 +6,22 @@ client generation and non-Python implementations. CI regenerates it from the
 server and rejects drift. The server uses JSON over HTTP, rejects unknown
 request fields, and binds to `127.0.0.1:8090` by default.
 
+Two servers implement this contract: the Python server (`gliner-runner serve`),
+which registers PyTorch, and the Python-free Node ONNX runner
+(`gliner-runner-onnx serve`), which registers only the ONNX CPU/FP32 `classify`
+backend. See [ONNX runtime](onnx-runtime.md). They share the same envelopes,
+error codes, and usage semantics. Each advertises only what it implements in its
+own `/v1/capabilities`. The Node runner implements the download endpoints too:
+an approved `POST /v1/models/{model_id}/downloads` (destination equal to its
+models directory) starts a job that finds a verified local snapshot or downloads
+the pinned Hugging Face files and assembles the ONNX artifact from a bundled
+template, with no Python; `GET /v1/model-downloads/{job_id}` reports it. Its
+`POST /v1/models/refresh` looks up current revisions on the Hub and writes
+`catalog-cache.json`, and never installs anything. With `--auto-download` (off by
+default) an inference request for a missing model waits for a shared download job
+instead of returning `model_download_required`. See
+[ONNX runtime](onnx-runtime.md#installing-models).
+
 The OpenAPI contract version is `1.0.0` and is independent of the runner's
 package release version. Package patch and feature releases do not imply a
 wire-contract change; incompatible protocol changes require an explicit API
@@ -125,10 +141,13 @@ Runtime failures use FastAPI's `detail` envelope:
 }
 ```
 
-- `409`: the explicit configuration is unsupported, the memory ceiling is
-  exceeded, or a known model requires an approved download;
-- `422`: validation failure, unknown manifest, missing artifact, or checksum
-  failure;
+- `409`: the explicit configuration is unsupported (for example `onnx` with a
+  precision other than `fp32`, or `pytorch` sent to the ONNX runner), the memory
+  ceiling is exceeded, or a known model requires an approved download;
+- `422`: validation failure, semantically invalid inference schema (`invalid_schema`),
+  unknown manifest, missing artifact, or checksum failure;
+- `413`: the Node ONNX runner rejects a request body above its configured limit
+  (default 16 MiB) with `request_too_large`;
 - `429`: bounded queue is full, with `Retry-After: 1`;
 - `503`: the worker is closing.
 
@@ -138,7 +157,9 @@ where present.
 
 `model_download_required` includes an `event` object with `model`, exact
 `revision`, `destination`, and `download_endpoint`. It is a notification, not
-approval: inference never starts the download. `model_memory_limit` includes
+approval: inference never starts the download (unless the Node runner was
+started with `--auto-download`; if that automatic install fails, the same error
+is returned with the reason). `model_memory_limit` includes
 the configured limit, estimated minimum, optional observed usage, profile, and
 whether a just-loaded model was unloaded.
 
@@ -146,7 +167,10 @@ whether a just-loaded model was unloaded.
 
 Additive optional fields are allowed within `/v1`. Removing or reinterpreting
 fields requires a new version. Clients should use `/v1/capabilities`; enum
-membership does not imply that a backend is installed.
+membership does not imply that a backend is installed. The `backend` enum
+includes `pytorch`, `mlx`, and `onnx`, but the Python server registers only
+PyTorch and the Node runner registers only ONNX; `mlx` is registered by neither.
+Selecting an unregistered backend returns `409`, never a fallback.
 
 `usage` became a required response field in the initial `0.x` contract so the
 runner can satisfy integrations that require exact token accounting. Clients

@@ -21,6 +21,9 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # The ONNX evaluation receipt check compares the ledger with the base revision.
+          fetch-depth: 0
       - name: Install pinned tools
         uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
         with:
@@ -31,6 +34,10 @@ jobs:
       - name: Install dependencies
         run: mise run setup
       - name: Check
+        env:
+          # Pull requests compare against the PR base; pushes compare against the previous tip of the branch.
+          # CI never runs models: it only checks the receipt recorded by `mise run eval:onnx-receipt`.
+          GLINER_RUNNER_RECEIPT_BASE_REF: ${{ github.event_name == 'pull_request' && format('origin/{0}', github.base_ref) || github.event.before }}
         run: mise run check
   mutation:
     name: Mutation quality gate
@@ -50,3 +57,47 @@ jobs:
         run: mise run setup
       - name: Mutation test
         run: mise run test:mutation
+  package-smoke:
+    name: Package smoke (${{ matrix.platform }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: darwin-arm64
+            runner: macos-15
+          - platform: linux-x64
+            runner: ubuntu-24.04
+          - platform: linux-arm64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 20
+    env:
+      # Never fetch the optional GPU libraries; the CPU runtime ships inside onnxruntime-node.
+      ONNXRUNTIME_NODE_INSTALL: skip
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install pinned tools
+        uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
+        with:
+          version: 2026.9.5
+          sha256: 32f644d8c291bb182f702c6d2b0dda9f8b01441e940d74d328aad5f08446b2fd
+          install: true
+          cache: true
+      - name: Locate pnpm store
+        id: pnpm
+        run: echo "store=$(mise exec -- pnpm store path --silent)" >> "$GITHUB_OUTPUT"
+      - name: Cache pnpm store
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ steps.pnpm.outputs.store }}
+          key: pnpm-${{ matrix.platform }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: pnpm-${{ matrix.platform }}-
+      - name: Install Node dependencies
+        run: mise exec -- pnpm install --frozen-lockfile
+      # Packages the runner and runs the sanitized-environment smoke test. No models are present or
+      # downloaded, so inference checks are skipped; this proves the archive boots on the platform.
+      - name: Package and smoke-verify ONNX runner (no models)
+        run: mise run release:onnx-archive

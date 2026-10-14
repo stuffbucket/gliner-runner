@@ -37,10 +37,12 @@ def test_inventory_records_exact_versions_licenses_and_files() -> None:
     installed = distributions(
         FakeDistribution(
             "gliner2",
-            "2.0.0",
+            "2.1.0",
             license_expression="Apache-2.0",
-            files=("gliner2-2.0.0.dist-info/licenses/LICENSE",),
+            files=("gliner2-2.1.0.dist-info/licenses/LICENSE",),
         ),
+        FakeDistribution("protobuf", "7.36.2", license_expression="BSD-3-Clause"),
+        FakeDistribution("sentencepiece", "0.2.2", license_expression="Apache-2.0"),
         FakeDistribution(
             "torch",
             "2.14.0",
@@ -50,17 +52,27 @@ def test_inventory_records_exact_versions_licenses_and_files() -> None:
                 "torch-2.14.0.dist-info/licenses/NOTICE",
             ),
         ),
+        FakeDistribution("transformers", "5.19.0", license_expression="Apache-2.0"),
     )
 
     result = generate_inventory(
         cast("list", installed),
         excluded=frozenset(),
         license_overrides={},
-        required=("gliner2==2.0.0", "torch"),
+        required=(
+            "gliner2==2.1.0",
+            "protobuf",
+            "sentencepiece",
+            "torch",
+            "transformers",
+        ),
     )
 
-    assert "| `gliner2` | `2.0.0` | Apache-2.0 |" in result
+    assert "| `gliner2` | `2.1.0` | Apache-2.0 |" in result
+    assert "| `protobuf` | `7.36.2` | BSD-3-Clause |" in result
+    assert "| `sentencepiece` | `0.2.2` | Apache-2.0 |" in result
     assert "| `torch` | `2.14.0` | BSD-3-Clause AND MIT |" in result
+    assert "| `transformers` | `5.19.0` | Apache-2.0 |" in result
     assert "`torch-2.14.0.dist-info/licenses/NOTICE`" in result
 
 
@@ -77,16 +89,14 @@ def test_inventory_rejects_missing_license_evidence() -> None:
 
 
 def test_inventory_rejects_missing_or_changed_required_distribution() -> None:
-    installed = distributions(
-        FakeDistribution("gliner2", "2.0.1", license_expression="Apache-2.0")
-    )
+    installed = distributions(FakeDistribution("gliner2", "2.0.1", license_expression="Apache-2.0"))
 
-    with pytest.raises(ValueError, match=r"required gliner2==2\.0\.0, found 2\.0\.1"):
+    with pytest.raises(ValueError, match=r"required gliner2==2\.1\.0, found 2\.0\.1"):
         generate_inventory(
             cast("list", installed),
             excluded=frozenset(),
             license_overrides={},
-            required=("gliner2==2.0.0", "torch"),
+            required=("gliner2==2.1.0", "torch"),
         )
 
 

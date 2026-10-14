@@ -6,6 +6,7 @@ import gc
 import hashlib
 import importlib.metadata
 import json
+import os
 import platform
 import re
 import subprocess
@@ -13,13 +14,38 @@ import time
 from pathlib import Path
 from typing import Any
 
-MODEL_ID = "fastino/GLiNER2.5-Decide"
-MODEL_REVISION = "5a7adf72a23b4d311abae6ce050d7f0012bb3416"
+for _name, _value in {
+    "DO_NOT_TRACK": "1",
+    "HF_HUB_DISABLE_TELEMETRY": "1",
+    "HF_HUB_OFFLINE": "1",
+    "TOKENIZERS_PARALLELISM": "false",
+    "TRANSFORMERS_OFFLINE": "1",
+}.items():
+    os.environ[_name] = _value
+
+if __package__:
+    from .benchmark_support import (
+        prepare_output_directory,
+        snapshot_tree_digest,
+        stable_sha256,
+        validate_gliner2_version,
+        validate_model_snapshot,
+    )
+else:
+    from benchmark_support import (  # type: ignore[no-redef]
+        prepare_output_directory,
+        snapshot_tree_digest,
+        stable_sha256,
+        validate_gliner2_version,
+        validate_model_snapshot,
+    )
+
 EXAMPLE_PATTERN = re.compile(
     r"^### (.+?)\n.*?```python\n(model\.classify_text\(.*?\n\))\n```"
     r".*?Potential output:\n\n```text\n(.*?)\n```",
     re.MULTILINE | re.DOTALL,
 )
+CLASSIFY_TEXT_CALL_PATTERN = re.compile(r"\bmodel\.classify_text\s*\(")
 SUPPORTED_PROFILES = {
     ("cpu", "fp32"),
     ("mps", "fp16"),
@@ -27,20 +53,52 @@ SUPPORTED_PROFILES = {
 }
 
 
+def discovered_example_count(card: str) -> int:
+    """Count every model-card call that claims to be an executable example."""
+    return len(CLASSIFY_TEXT_CALL_PATTERN.findall(card))
+
+
 def parse_examples(card: str) -> list[dict[str, Any]]:
+    """Parse all literal classify_text examples, failing if any call is omitted."""
+    discovered = discovered_example_count(card)
+    matches = EXAMPLE_PATTERN.findall(card)
+    if len(matches) != discovered:
+        raise ValueError(
+            "model card classify_text discovery mismatch: "
+            f"discovered {discovered}, parsed {len(matches)}"
+        )
+
     examples: list[dict[str, Any]] = []
-    for name, source, expected_source in EXAMPLE_PATTERN.findall(card):
-        expression = ast.parse(source).body[0]
+    names: set[str] = set()
+    for name, source, expected_source in matches:
+        module = ast.parse(source)
+        if len(module.body) != 1:
+            raise ValueError(f"unexpected example shape: {name}")
+        expression = module.body[0]
         if not isinstance(expression, ast.Expr) or not isinstance(expression.value, ast.Call):
             raise ValueError(f"unexpected example shape: {name}")
-        arguments = [ast.literal_eval(argument) for argument in expression.value.args]
-        if len(arguments) != 2:
+        call = expression.value
+        if not (
+            isinstance(call.func, ast.Attribute)
+            and isinstance(call.func.value, ast.Name)
+            and call.func.value.id == "model"
+            and call.func.attr == "classify_text"
+        ):
+            raise ValueError(f"unexpected example call: {name}")
+        if call.keywords or len(call.args) != 2:
             raise ValueError(f"expected text and schema arguments: {name}")
+        if name in names:
+            raise ValueError(f"duplicate example heading: {name}")
+        names.add(name)
+        arguments = [ast.literal_eval(argument) for argument in call.args]
+        text, schema = arguments
+        if not isinstance(text, str) or not isinstance(schema, dict):
+            raise ValueError(f"expected literal text and schema arguments: {name}")
         examples.append(
             {
                 "name": name,
-                "text": arguments[0],
-                "schema": arguments[1],
+                "text": text,
+                "schema": schema,
                 "potential_output": ast.literal_eval(expected_source),
             }
         )
@@ -152,6 +210,7 @@ def generate_report(result: dict[str, Any]) -> str:
         for comparison in result["comparisons"]
     )
     baseline = result["profiles"][0]
+    baseline_name = f"{baseline['device'].upper()}/{baseline['precision'].upper()}"
     example_rows = "\n".join(
         "| "
         f"{example['name']} | "
@@ -173,7 +232,9 @@ reported as characterization rather than a test failure.
 - Python {result["versions"]["python"]}; PyTorch {result["versions"]["torch"]};
   GLiNER2 {result["versions"]["gliner2"]}
 - Model-card SHA-256: `{result["model_card_sha256"]}`
-- Parsed examples: {result["example_count"]}
+- Discovered `model.classify_text` calls: {result["discovered_example_count"]}
+- Parsed executable examples: {result["example_count"]}
+- Every discovered example parsed: {result["all_discovered_examples_parsed"]}
 
 ## Execution
 
@@ -183,13 +244,13 @@ reported as characterization rather than a test failure.
 
 ## Device output parity
 
-CPU/FP32 is the baseline.
+{baseline_name} is the baseline.
 
 | Candidate | Exact output matches |
 | --- | ---: |
 {comparison_rows}
 
-## CPU/FP32 outputs
+## {baseline_name} outputs
 
 Input text and schemas remain in the pinned upstream card and are not duplicated
 in this artifact.
@@ -214,11 +275,22 @@ def hardware_name() -> str:
 
 
 def orchestrate(arguments: argparse.Namespace) -> None:
-    model_path = arguments.model_path.expanduser().resolve()
+    model_path = validate_model_snapshot(
+        arguments.model_path,
+        arguments.model_repository,
+        arguments.model_revision,
+    )
+    validate_gliner2_version(arguments.expected_gliner2_version)
+    if arguments.output_dir.expanduser().resolve().exists():
+        raise FileExistsError(
+            f"benchmark output path already exists: {arguments.output_dir.expanduser().resolve()}"
+        )
+    model_content_sha256, model_bytes, model_files = snapshot_tree_digest(model_path)
     card_path = model_path / "README.md"
     if not card_path.is_file():
         raise FileNotFoundError(card_path)
     card = card_path.read_text(encoding="utf-8")
+    discovered_examples = discovered_example_count(card)
     examples = parse_examples(card)
     profiles: list[dict[str, Any]] = []
     for value in arguments.profile:
@@ -227,16 +299,44 @@ def orchestrate(arguments: argparse.Namespace) -> None:
             raise ValueError(f"unsupported profile {value}; no fallback was attempted")
         profiles.append(run_profile(model_path, examples, device, precision))
 
+    failures = [
+        example for profile in profiles for example in profile["examples"] if "error" in example
+    ]
+    if failures:
+        raise RuntimeError(f"{len(failures)} model-card example executions failed")
+
     import psutil
     import torch
 
     result = {
-        "format_version": 1,
+        "format_version": 4,
         "generated_at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-        "model_id": MODEL_ID,
-        "model_revision": MODEL_REVISION,
+        "model_id": arguments.model_repository,
+        "model_repository": arguments.model_repository,
+        "model_revision": arguments.model_revision,
+        "expected_gliner2_version": arguments.expected_gliner2_version,
+        "snapshot_identity_validation": (
+            "inventory-marker"
+            if (model_path / ".gliner-runner.json").is_file()
+            else "hugging-face-cache-path"
+        ),
         "model_card_sha256": hashlib.sha256(card.encode()).hexdigest(),
+        "model_content_sha256": model_content_sha256,
+        "model_bytes": model_bytes,
+        "model_files": model_files,
+        "behavior_workload_sha256": stable_sha256(
+            [
+                {
+                    "name": example["name"],
+                    "text": example["text"],
+                    "schema": example["schema"],
+                }
+                for example in examples
+            ]
+        ),
+        "discovered_example_count": discovered_examples,
         "example_count": len(examples),
+        "all_discovered_examples_parsed": discovered_examples == len(examples),
         "hardware": hardware_name(),
         "architecture": platform.machine(),
         "physical_cores": psutil.cpu_count(logical=False),
@@ -250,25 +350,19 @@ def orchestrate(arguments: argparse.Namespace) -> None:
         "profiles": profiles,
         "comparisons": build_comparison(profiles),
     }
-    arguments.output_dir.mkdir(parents=True, exist_ok=True)
-    (arguments.output_dir / "characterization.json").write_text(
-        json.dumps(result, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
-    )
-    (arguments.output_dir / "REPORT.md").write_text(
-        generate_report(result),
-        encoding="utf-8",
-    )
-    failures = [
-        example for profile in profiles for example in profile["examples"] if "error" in example
-    ]
-    if failures:
-        raise RuntimeError(f"{len(failures)} model-card example executions failed")
+    characterization = json.dumps(result, indent=2, sort_keys=True) + "\n"
+    report = generate_report(result)
+    output_dir = prepare_output_directory(arguments.output_dir)
+    (output_dir / "characterization.json").write_text(characterization, encoding="utf-8")
+    (output_dir / "REPORT.md").write_text(report, encoding="utf-8")
 
 
 def parser() -> argparse.ArgumentParser:
     root = argparse.ArgumentParser()
     root.add_argument("--model-path", type=Path, required=True)
+    root.add_argument("--model-repository", required=True)
+    root.add_argument("--model-revision", required=True)
+    root.add_argument("--expected-gliner2-version", required=True)
     root.add_argument("--output-dir", type=Path, required=True)
     root.add_argument(
         "--profile",

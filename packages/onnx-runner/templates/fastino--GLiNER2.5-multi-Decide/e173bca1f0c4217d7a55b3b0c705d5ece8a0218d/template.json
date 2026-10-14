@@ -1,0 +1,3062 @@
+{
+  "format_version": 1,
+  "kind": "gliner-runner-onnx-template",
+  "model_id": "decide-multilingual",
+  "repository": "fastino/GLiNER2.5-multi-Decide",
+  "revision": "e173bca1f0c4217d7a55b3b0c705d5ece8a0218d",
+  "source_files": [
+    {
+      "path": "model.safetensors",
+      "size": 1149461028,
+      "sha256": "9efe0f88c99f2aa794452e9559dc60e98d60d9fa2bf1b60cf2710411b6da5b4e",
+      "role": "weights"
+    },
+    {
+      "path": "tokenizer.json",
+      "size": 16035853,
+      "sha256": "c62446df87ae18ec98b133f8f84fc449a07cc89bbf8ef192a4cb5f9c53777a7a",
+      "role": "tokenizer"
+    },
+    {
+      "path": "tokenizer_config.json",
+      "size": 646,
+      "sha256": "fd4a31dc2f1f17e31638c5f0e783b81cdb2fbe6bddd116a8d9e5d50d78148cf1",
+      "role": "tokenizer"
+    }
+  ],
+  "template_files": [
+    {
+      "path": "graph.onnx",
+      "size": 2562370,
+      "sha256": "b07af9ca98fa064adde2582ca9ddaae467bc582e565e36e5f6d5e3f598fc920f",
+      "output": "model.onnx"
+    },
+    {
+      "path": "gliner2.json",
+      "size": 2548,
+      "sha256": "f834a77d5e1e2e9c0cdac0d0a1a67d1153c9b030097ff5fe40ea30d9dd299c9a",
+      "output": "gliner2.json"
+    },
+    {
+      "path": "manifest.json",
+      "size": 3813,
+      "sha256": "b8dcad0c7b124a090ae527906cb62efe1456607db058d3f9c4e62659eefa3976",
+      "output": "manifest.json"
+    }
+  ],
+  "data": {
+    "path": "model.onnx.data",
+    "alignment": 64,
+    "size": 1114878016,
+    "sha256": "0b1be2d5c57980320ff3fef2e4cab74e106b098628798f170b6e9db1479b6888",
+    "tensors": [
+      {
+        "name": "encoder.embeddings.word_embeddings.weight",
+        "source": "encoder.embeddings.word_embeddings.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          250112,
+          768
+        ],
+        "shape": [
+          250112,
+          768
+        ],
+        "offset": 0,
+        "length": 768344064
+      },
+      {
+        "name": "encoder.embeddings.LayerNorm.weight",
+        "source": "encoder.embeddings.LayerNorm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 768344064,
+        "length": 3072
+      },
+      {
+        "name": "encoder.embeddings.LayerNorm.bias",
+        "source": "encoder.embeddings.LayerNorm.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 768347136,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.0.attention.self.query_proj.weight",
+        "source": "encoder.encoder.layer.0.attention.self.query_proj.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 768350208,
+        "length": 2359296
+      },
+      {
+        "name": "encoder.encoder.layer.0.attention.self.query_proj.bias",
+        "source": "encoder.encoder.layer.0.attention.self.query_proj.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 770709504,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.0.attention.self.key_proj.weight",
+        "source": "encoder.encoder.layer.0.attention.self.key_proj.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 770712576,
+        "length": 2359296
+      },
+      {
+        "name": "encoder.encoder.layer.0.attention.self.key_proj.bias",
+        "source": "encoder.encoder.layer.0.attention.self.key_proj.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 773071872,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.0.attention.self.value_proj.bias",
+        "source": "encoder.encoder.layer.0.attention.self.value_proj.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 773074944,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.0.attention.output.dense.bias",
+        "source": "encoder.encoder.layer.0.attention.output.dense.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 773078016,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.0.attention.output.LayerNorm.weight",
+        "source": "encoder.encoder.layer.0.attention.output.LayerNorm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 773081088,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.0.attention.output.LayerNorm.bias",
+        "source": "encoder.encoder.layer.0.attention.output.LayerNorm.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 773084160,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.0.intermediate.dense.bias",
+        "source": "encoder.encoder.layer.0.intermediate.dense.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          3072
+        ],
+        "shape": [
+          3072
+        ],
+        "offset": 773087232,
+        "length": 12288
+      },
+      {
+        "name": "encoder.encoder.layer.0.output.dense.bias",
+        "source": "encoder.encoder.layer.0.output.dense.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 773099520,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.0.output.LayerNorm.weight",
+        "source": "encoder.encoder.layer.0.output.LayerNorm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 773102592,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.0.output.LayerNorm.bias",
+        "source": "encoder.encoder.layer.0.output.LayerNorm.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 773105664,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.1.attention.self.query_proj.weight",
+        "source": "encoder.encoder.layer.1.attention.self.query_proj.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 773108736,
+        "length": 2359296
+      },
+      {
+        "name": "encoder.encoder.layer.1.attention.self.query_proj.bias",
+        "source": "encoder.encoder.layer.1.attention.self.query_proj.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 775468032,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.1.attention.self.key_proj.weight",
+        "source": "encoder.encoder.layer.1.attention.self.key_proj.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 775471104,
+        "length": 2359296
+      },
+      {
+        "name": "encoder.encoder.layer.1.attention.self.key_proj.bias",
+        "source": "encoder.encoder.layer.1.attention.self.key_proj.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 777830400,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.1.attention.self.value_proj.bias",
+        "source": "encoder.encoder.layer.1.attention.self.value_proj.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 777833472,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.1.attention.output.dense.bias",
+        "source": "encoder.encoder.layer.1.attention.output.dense.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 777836544,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.1.attention.output.LayerNorm.weight",
+        "source": "encoder.encoder.layer.1.attention.output.LayerNorm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 777839616,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.1.attention.output.LayerNorm.bias",
+        "source": "encoder.encoder.layer.1.attention.output.LayerNorm.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 777842688,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.1.intermediate.dense.bias",
+        "source": "encoder.encoder.layer.1.intermediate.dense.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          3072
+        ],
+        "shape": [
+          3072
+        ],
+        "offset": 777845760,
+        "length": 12288
+      },
+      {
+        "name": "encoder.encoder.layer.1.output.dense.bias",
+        "source": "encoder.encoder.layer.1.output.dense.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 777858048,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.1.output.LayerNorm.weight",
+        "source": "encoder.encoder.layer.1.output.LayerNorm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 777861120,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.1.output.LayerNorm.bias",
+        "source": "encoder.encoder.layer.1.output.LayerNorm.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 777864192,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.2.attention.self.query_proj.weight",
+        "source": "encoder.encoder.layer.2.attention.self.query_proj.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 777867264,
+        "length": 2359296
+      },
+      {
+        "name": "encoder.encoder.layer.2.attention.self.query_proj.bias",
+        "source": "encoder.encoder.layer.2.attention.self.query_proj.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 780226560,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.2.attention.self.key_proj.weight",
+        "source": "encoder.encoder.layer.2.attention.self.key_proj.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 780229632,
+        "length": 2359296
+      },
+      {
+        "name": "encoder.encoder.layer.2.attention.self.key_proj.bias",
+        "source": "encoder.encoder.layer.2.attention.self.key_proj.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 782588928,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.2.attention.self.value_proj.bias",
+        "source": "encoder.encoder.layer.2.attention.self.value_proj.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 782592000,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.2.attention.output.dense.bias",
+        "source": "encoder.encoder.layer.2.attention.output.dense.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 782595072,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.2.attention.output.LayerNorm.weight",
+        "source": "encoder.encoder.layer.2.attention.output.LayerNorm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 782598144,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.2.attention.output.LayerNorm.bias",
+        "source": "encoder.encoder.layer.2.attention.output.LayerNorm.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 782601216,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.2.intermediate.dense.bias",
+        "source": "encoder.encoder.layer.2.intermediate.dense.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          3072
+        ],
+        "shape": [
+          3072
+        ],
+        "offset": 782604288,
+        "length": 12288
+      },
+      {
+        "name": "encoder.encoder.layer.2.output.dense.bias",
+        "source": "encoder.encoder.layer.2.output.dense.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 782616576,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.2.output.LayerNorm.weight",
+        "source": "encoder.encoder.layer.2.output.LayerNorm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 782619648,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.2.output.LayerNorm.bias",
+        "source": "encoder.encoder.layer.2.output.LayerNorm.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 782622720,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.3.attention.self.query_proj.weight",
+        "source": "encoder.encoder.layer.3.attention.self.query_proj.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 782625792,
+        "length": 2359296
+      },
+      {
+        "name": "encoder.encoder.layer.3.attention.self.query_proj.bias",
+        "source": "encoder.encoder.layer.3.attention.self.query_proj.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 784985088,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.3.attention.self.key_proj.weight",
+        "source": "encoder.encoder.layer.3.attention.self.key_proj.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 784988160,
+        "length": 2359296
+      },
+      {
+        "name": "encoder.encoder.layer.3.attention.self.key_proj.bias",
+        "source": "encoder.encoder.layer.3.attention.self.key_proj.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 787347456,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.3.attention.self.value_proj.bias",
+        "source": "encoder.encoder.layer.3.attention.self.value_proj.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 787350528,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.3.attention.output.dense.bias",
+        "source": "encoder.encoder.layer.3.attention.output.dense.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 787353600,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.3.attention.output.LayerNorm.weight",
+        "source": "encoder.encoder.layer.3.attention.output.LayerNorm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 787356672,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.3.attention.output.LayerNorm.bias",
+        "source": "encoder.encoder.layer.3.attention.output.LayerNorm.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 787359744,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.3.intermediate.dense.bias",
+        "source": "encoder.encoder.layer.3.intermediate.dense.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          3072
+        ],
+        "shape": [
+          3072
+        ],
+        "offset": 787362816,
+        "length": 12288
+      },
+      {
+        "name": "encoder.encoder.layer.3.output.dense.bias",
+        "source": "encoder.encoder.layer.3.output.dense.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 787375104,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.3.output.LayerNorm.weight",
+        "source": "encoder.encoder.layer.3.output.LayerNorm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 787378176,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.3.output.LayerNorm.bias",
+        "source": "encoder.encoder.layer.3.output.LayerNorm.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 787381248,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.4.attention.self.query_proj.weight",
+        "source": "encoder.encoder.layer.4.attention.self.query_proj.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 787384320,
+        "length": 2359296
+      },
+      {
+        "name": "encoder.encoder.layer.4.attention.self.query_proj.bias",
+        "source": "encoder.encoder.layer.4.attention.self.query_proj.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 789743616,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.4.attention.self.key_proj.weight",
+        "source": "encoder.encoder.layer.4.attention.self.key_proj.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 789746688,
+        "length": 2359296
+      },
+      {
+        "name": "encoder.encoder.layer.4.attention.self.key_proj.bias",
+        "source": "encoder.encoder.layer.4.attention.self.key_proj.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 792105984,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.4.attention.self.value_proj.bias",
+        "source": "encoder.encoder.layer.4.attention.self.value_proj.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 792109056,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.4.attention.output.dense.bias",
+        "source": "encoder.encoder.layer.4.attention.output.dense.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 792112128,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.4.attention.output.LayerNorm.weight",
+        "source": "encoder.encoder.layer.4.attention.output.LayerNorm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 792115200,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.4.attention.output.LayerNorm.bias",
+        "source": "encoder.encoder.layer.4.attention.output.LayerNorm.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 792118272,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.4.intermediate.dense.bias",
+        "source": "encoder.encoder.layer.4.intermediate.dense.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          3072
+        ],
+        "shape": [
+          3072
+        ],
+        "offset": 792121344,
+        "length": 12288
+      },
+      {
+        "name": "encoder.encoder.layer.4.output.dense.bias",
+        "source": "encoder.encoder.layer.4.output.dense.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 792133632,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.4.output.LayerNorm.weight",
+        "source": "encoder.encoder.layer.4.output.LayerNorm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 792136704,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.4.output.LayerNorm.bias",
+        "source": "encoder.encoder.layer.4.output.LayerNorm.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 792139776,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.5.attention.self.query_proj.weight",
+        "source": "encoder.encoder.layer.5.attention.self.query_proj.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 792142848,
+        "length": 2359296
+      },
+      {
+        "name": "encoder.encoder.layer.5.attention.self.query_proj.bias",
+        "source": "encoder.encoder.layer.5.attention.self.query_proj.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 794502144,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.5.attention.self.key_proj.weight",
+        "source": "encoder.encoder.layer.5.attention.self.key_proj.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 794505216,
+        "length": 2359296
+      },
+      {
+        "name": "encoder.encoder.layer.5.attention.self.key_proj.bias",
+        "source": "encoder.encoder.layer.5.attention.self.key_proj.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 796864512,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.5.attention.self.value_proj.bias",
+        "source": "encoder.encoder.layer.5.attention.self.value_proj.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 796867584,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.5.attention.output.dense.bias",
+        "source": "encoder.encoder.layer.5.attention.output.dense.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 796870656,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.5.attention.output.LayerNorm.weight",
+        "source": "encoder.encoder.layer.5.attention.output.LayerNorm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 796873728,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.5.attention.output.LayerNorm.bias",
+        "source": "encoder.encoder.layer.5.attention.output.LayerNorm.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 796876800,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.5.intermediate.dense.bias",
+        "source": "encoder.encoder.layer.5.intermediate.dense.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          3072
+        ],
+        "shape": [
+          3072
+        ],
+        "offset": 796879872,
+        "length": 12288
+      },
+      {
+        "name": "encoder.encoder.layer.5.output.dense.bias",
+        "source": "encoder.encoder.layer.5.output.dense.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 796892160,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.5.output.LayerNorm.weight",
+        "source": "encoder.encoder.layer.5.output.LayerNorm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 796895232,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.5.output.LayerNorm.bias",
+        "source": "encoder.encoder.layer.5.output.LayerNorm.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 796898304,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.6.attention.self.query_proj.weight",
+        "source": "encoder.encoder.layer.6.attention.self.query_proj.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 796901376,
+        "length": 2359296
+      },
+      {
+        "name": "encoder.encoder.layer.6.attention.self.query_proj.bias",
+        "source": "encoder.encoder.layer.6.attention.self.query_proj.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 799260672,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.6.attention.self.key_proj.weight",
+        "source": "encoder.encoder.layer.6.attention.self.key_proj.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 799263744,
+        "length": 2359296
+      },
+      {
+        "name": "encoder.encoder.layer.6.attention.self.key_proj.bias",
+        "source": "encoder.encoder.layer.6.attention.self.key_proj.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 801623040,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.6.attention.self.value_proj.bias",
+        "source": "encoder.encoder.layer.6.attention.self.value_proj.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 801626112,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.6.attention.output.dense.bias",
+        "source": "encoder.encoder.layer.6.attention.output.dense.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 801629184,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.6.attention.output.LayerNorm.weight",
+        "source": "encoder.encoder.layer.6.attention.output.LayerNorm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 801632256,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.6.attention.output.LayerNorm.bias",
+        "source": "encoder.encoder.layer.6.attention.output.LayerNorm.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 801635328,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.6.intermediate.dense.bias",
+        "source": "encoder.encoder.layer.6.intermediate.dense.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          3072
+        ],
+        "shape": [
+          3072
+        ],
+        "offset": 801638400,
+        "length": 12288
+      },
+      {
+        "name": "encoder.encoder.layer.6.output.dense.bias",
+        "source": "encoder.encoder.layer.6.output.dense.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 801650688,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.6.output.LayerNorm.weight",
+        "source": "encoder.encoder.layer.6.output.LayerNorm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 801653760,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.6.output.LayerNorm.bias",
+        "source": "encoder.encoder.layer.6.output.LayerNorm.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 801656832,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.7.attention.self.query_proj.weight",
+        "source": "encoder.encoder.layer.7.attention.self.query_proj.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 801659904,
+        "length": 2359296
+      },
+      {
+        "name": "encoder.encoder.layer.7.attention.self.query_proj.bias",
+        "source": "encoder.encoder.layer.7.attention.self.query_proj.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 804019200,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.7.attention.self.key_proj.weight",
+        "source": "encoder.encoder.layer.7.attention.self.key_proj.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 804022272,
+        "length": 2359296
+      },
+      {
+        "name": "encoder.encoder.layer.7.attention.self.key_proj.bias",
+        "source": "encoder.encoder.layer.7.attention.self.key_proj.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 806381568,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.7.attention.self.value_proj.bias",
+        "source": "encoder.encoder.layer.7.attention.self.value_proj.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 806384640,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.7.attention.output.dense.bias",
+        "source": "encoder.encoder.layer.7.attention.output.dense.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 806387712,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.7.attention.output.LayerNorm.weight",
+        "source": "encoder.encoder.layer.7.attention.output.LayerNorm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 806390784,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.7.attention.output.LayerNorm.bias",
+        "source": "encoder.encoder.layer.7.attention.output.LayerNorm.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 806393856,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.7.intermediate.dense.bias",
+        "source": "encoder.encoder.layer.7.intermediate.dense.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          3072
+        ],
+        "shape": [
+          3072
+        ],
+        "offset": 806396928,
+        "length": 12288
+      },
+      {
+        "name": "encoder.encoder.layer.7.output.dense.bias",
+        "source": "encoder.encoder.layer.7.output.dense.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 806409216,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.7.output.LayerNorm.weight",
+        "source": "encoder.encoder.layer.7.output.LayerNorm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 806412288,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.7.output.LayerNorm.bias",
+        "source": "encoder.encoder.layer.7.output.LayerNorm.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 806415360,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.8.attention.self.query_proj.weight",
+        "source": "encoder.encoder.layer.8.attention.self.query_proj.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 806418432,
+        "length": 2359296
+      },
+      {
+        "name": "encoder.encoder.layer.8.attention.self.query_proj.bias",
+        "source": "encoder.encoder.layer.8.attention.self.query_proj.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 808777728,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.8.attention.self.key_proj.weight",
+        "source": "encoder.encoder.layer.8.attention.self.key_proj.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 808780800,
+        "length": 2359296
+      },
+      {
+        "name": "encoder.encoder.layer.8.attention.self.key_proj.bias",
+        "source": "encoder.encoder.layer.8.attention.self.key_proj.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 811140096,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.8.attention.self.value_proj.bias",
+        "source": "encoder.encoder.layer.8.attention.self.value_proj.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 811143168,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.8.attention.output.dense.bias",
+        "source": "encoder.encoder.layer.8.attention.output.dense.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 811146240,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.8.attention.output.LayerNorm.weight",
+        "source": "encoder.encoder.layer.8.attention.output.LayerNorm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 811149312,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.8.attention.output.LayerNorm.bias",
+        "source": "encoder.encoder.layer.8.attention.output.LayerNorm.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 811152384,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.8.intermediate.dense.bias",
+        "source": "encoder.encoder.layer.8.intermediate.dense.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          3072
+        ],
+        "shape": [
+          3072
+        ],
+        "offset": 811155456,
+        "length": 12288
+      },
+      {
+        "name": "encoder.encoder.layer.8.output.dense.bias",
+        "source": "encoder.encoder.layer.8.output.dense.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 811167744,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.8.output.LayerNorm.weight",
+        "source": "encoder.encoder.layer.8.output.LayerNorm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 811170816,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.8.output.LayerNorm.bias",
+        "source": "encoder.encoder.layer.8.output.LayerNorm.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 811173888,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.9.attention.self.query_proj.weight",
+        "source": "encoder.encoder.layer.9.attention.self.query_proj.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 811176960,
+        "length": 2359296
+      },
+      {
+        "name": "encoder.encoder.layer.9.attention.self.query_proj.bias",
+        "source": "encoder.encoder.layer.9.attention.self.query_proj.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 813536256,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.9.attention.self.key_proj.weight",
+        "source": "encoder.encoder.layer.9.attention.self.key_proj.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 813539328,
+        "length": 2359296
+      },
+      {
+        "name": "encoder.encoder.layer.9.attention.self.key_proj.bias",
+        "source": "encoder.encoder.layer.9.attention.self.key_proj.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 815898624,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.9.attention.self.value_proj.bias",
+        "source": "encoder.encoder.layer.9.attention.self.value_proj.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 815901696,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.9.attention.output.dense.bias",
+        "source": "encoder.encoder.layer.9.attention.output.dense.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 815904768,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.9.attention.output.LayerNorm.weight",
+        "source": "encoder.encoder.layer.9.attention.output.LayerNorm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 815907840,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.9.attention.output.LayerNorm.bias",
+        "source": "encoder.encoder.layer.9.attention.output.LayerNorm.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 815910912,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.9.intermediate.dense.bias",
+        "source": "encoder.encoder.layer.9.intermediate.dense.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          3072
+        ],
+        "shape": [
+          3072
+        ],
+        "offset": 815913984,
+        "length": 12288
+      },
+      {
+        "name": "encoder.encoder.layer.9.output.dense.bias",
+        "source": "encoder.encoder.layer.9.output.dense.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 815926272,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.9.output.LayerNorm.weight",
+        "source": "encoder.encoder.layer.9.output.LayerNorm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 815929344,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.9.output.LayerNorm.bias",
+        "source": "encoder.encoder.layer.9.output.LayerNorm.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 815932416,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.10.attention.self.query_proj.weight",
+        "source": "encoder.encoder.layer.10.attention.self.query_proj.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 815935488,
+        "length": 2359296
+      },
+      {
+        "name": "encoder.encoder.layer.10.attention.self.query_proj.bias",
+        "source": "encoder.encoder.layer.10.attention.self.query_proj.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 818294784,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.10.attention.self.key_proj.weight",
+        "source": "encoder.encoder.layer.10.attention.self.key_proj.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 818297856,
+        "length": 2359296
+      },
+      {
+        "name": "encoder.encoder.layer.10.attention.self.key_proj.bias",
+        "source": "encoder.encoder.layer.10.attention.self.key_proj.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 820657152,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.10.attention.self.value_proj.bias",
+        "source": "encoder.encoder.layer.10.attention.self.value_proj.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 820660224,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.10.attention.output.dense.bias",
+        "source": "encoder.encoder.layer.10.attention.output.dense.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 820663296,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.10.attention.output.LayerNorm.weight",
+        "source": "encoder.encoder.layer.10.attention.output.LayerNorm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 820666368,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.10.attention.output.LayerNorm.bias",
+        "source": "encoder.encoder.layer.10.attention.output.LayerNorm.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 820669440,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.10.intermediate.dense.bias",
+        "source": "encoder.encoder.layer.10.intermediate.dense.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          3072
+        ],
+        "shape": [
+          3072
+        ],
+        "offset": 820672512,
+        "length": 12288
+      },
+      {
+        "name": "encoder.encoder.layer.10.output.dense.bias",
+        "source": "encoder.encoder.layer.10.output.dense.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 820684800,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.10.output.LayerNorm.weight",
+        "source": "encoder.encoder.layer.10.output.LayerNorm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 820687872,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.10.output.LayerNorm.bias",
+        "source": "encoder.encoder.layer.10.output.LayerNorm.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 820690944,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.11.attention.self.query_proj.weight",
+        "source": "encoder.encoder.layer.11.attention.self.query_proj.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 820694016,
+        "length": 2359296
+      },
+      {
+        "name": "encoder.encoder.layer.11.attention.self.query_proj.bias",
+        "source": "encoder.encoder.layer.11.attention.self.query_proj.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 823053312,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.11.attention.self.key_proj.weight",
+        "source": "encoder.encoder.layer.11.attention.self.key_proj.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 823056384,
+        "length": 2359296
+      },
+      {
+        "name": "encoder.encoder.layer.11.attention.self.key_proj.bias",
+        "source": "encoder.encoder.layer.11.attention.self.key_proj.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 825415680,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.11.attention.self.value_proj.bias",
+        "source": "encoder.encoder.layer.11.attention.self.value_proj.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 825418752,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.11.attention.output.dense.bias",
+        "source": "encoder.encoder.layer.11.attention.output.dense.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 825421824,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.11.attention.output.LayerNorm.weight",
+        "source": "encoder.encoder.layer.11.attention.output.LayerNorm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 825424896,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.11.attention.output.LayerNorm.bias",
+        "source": "encoder.encoder.layer.11.attention.output.LayerNorm.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 825427968,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.11.intermediate.dense.bias",
+        "source": "encoder.encoder.layer.11.intermediate.dense.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          3072
+        ],
+        "shape": [
+          3072
+        ],
+        "offset": 825431040,
+        "length": 12288
+      },
+      {
+        "name": "encoder.encoder.layer.11.output.dense.bias",
+        "source": "encoder.encoder.layer.11.output.dense.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 825443328,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.11.output.LayerNorm.weight",
+        "source": "encoder.encoder.layer.11.output.LayerNorm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 825446400,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.layer.11.output.LayerNorm.bias",
+        "source": "encoder.encoder.layer.11.output.LayerNorm.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 825449472,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.rel_embeddings.weight",
+        "source": "encoder.encoder.rel_embeddings.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          512,
+          768
+        ],
+        "shape": [
+          512,
+          768
+        ],
+        "offset": 825452544,
+        "length": 1572864
+      },
+      {
+        "name": "encoder.encoder.LayerNorm.weight",
+        "source": "encoder.encoder.LayerNorm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 827025408,
+        "length": 3072
+      },
+      {
+        "name": "encoder.encoder.LayerNorm.bias",
+        "source": "encoder.encoder.LayerNorm.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          768
+        ],
+        "shape": [
+          768
+        ],
+        "offset": 827028480,
+        "length": 3072
+      },
+      {
+        "name": "classifier.0.bias",
+        "source": "classifier.0.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1536
+        ],
+        "shape": [
+          1536
+        ],
+        "offset": 827031552,
+        "length": 6144
+      },
+      {
+        "name": "classifier.3.bias",
+        "source": "classifier.3.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1
+        ],
+        "shape": [
+          1
+        ],
+        "offset": 827037696,
+        "length": 4
+      },
+      {
+        "name": "val_83",
+        "source": "encoder.encoder.layer.0.attention.self.value_proj.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 827037760,
+        "length": 2359296
+      },
+      {
+        "name": "val_175",
+        "source": "encoder.encoder.layer.0.attention.output.dense.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 829397056,
+        "length": 2359296
+      },
+      {
+        "name": "val_179",
+        "source": "encoder.encoder.layer.0.intermediate.dense.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          3072,
+          768
+        ],
+        "shape": [
+          768,
+          3072
+        ],
+        "offset": 831756352,
+        "length": 9437184
+      },
+      {
+        "name": "val_181",
+        "source": "encoder.encoder.layer.0.output.dense.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          3072
+        ],
+        "shape": [
+          3072,
+          768
+        ],
+        "offset": 841193536,
+        "length": 9437184
+      },
+      {
+        "name": "val_211",
+        "source": "encoder.encoder.layer.1.attention.self.value_proj.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 850630720,
+        "length": 2359296
+      },
+      {
+        "name": "val_297",
+        "source": "encoder.encoder.layer.1.attention.output.dense.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 852990016,
+        "length": 2359296
+      },
+      {
+        "name": "val_301",
+        "source": "encoder.encoder.layer.1.intermediate.dense.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          3072,
+          768
+        ],
+        "shape": [
+          768,
+          3072
+        ],
+        "offset": 855349312,
+        "length": 9437184
+      },
+      {
+        "name": "val_303",
+        "source": "encoder.encoder.layer.1.output.dense.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          3072
+        ],
+        "shape": [
+          3072,
+          768
+        ],
+        "offset": 864786496,
+        "length": 9437184
+      },
+      {
+        "name": "val_333",
+        "source": "encoder.encoder.layer.2.attention.self.value_proj.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 874223680,
+        "length": 2359296
+      },
+      {
+        "name": "val_419",
+        "source": "encoder.encoder.layer.2.attention.output.dense.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 876582976,
+        "length": 2359296
+      },
+      {
+        "name": "val_423",
+        "source": "encoder.encoder.layer.2.intermediate.dense.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          3072,
+          768
+        ],
+        "shape": [
+          768,
+          3072
+        ],
+        "offset": 878942272,
+        "length": 9437184
+      },
+      {
+        "name": "val_425",
+        "source": "encoder.encoder.layer.2.output.dense.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          3072
+        ],
+        "shape": [
+          3072,
+          768
+        ],
+        "offset": 888379456,
+        "length": 9437184
+      },
+      {
+        "name": "val_455",
+        "source": "encoder.encoder.layer.3.attention.self.value_proj.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 897816640,
+        "length": 2359296
+      },
+      {
+        "name": "val_541",
+        "source": "encoder.encoder.layer.3.attention.output.dense.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 900175936,
+        "length": 2359296
+      },
+      {
+        "name": "val_545",
+        "source": "encoder.encoder.layer.3.intermediate.dense.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          3072,
+          768
+        ],
+        "shape": [
+          768,
+          3072
+        ],
+        "offset": 902535232,
+        "length": 9437184
+      },
+      {
+        "name": "val_547",
+        "source": "encoder.encoder.layer.3.output.dense.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          3072
+        ],
+        "shape": [
+          3072,
+          768
+        ],
+        "offset": 911972416,
+        "length": 9437184
+      },
+      {
+        "name": "val_577",
+        "source": "encoder.encoder.layer.4.attention.self.value_proj.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 921409600,
+        "length": 2359296
+      },
+      {
+        "name": "val_663",
+        "source": "encoder.encoder.layer.4.attention.output.dense.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 923768896,
+        "length": 2359296
+      },
+      {
+        "name": "val_667",
+        "source": "encoder.encoder.layer.4.intermediate.dense.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          3072,
+          768
+        ],
+        "shape": [
+          768,
+          3072
+        ],
+        "offset": 926128192,
+        "length": 9437184
+      },
+      {
+        "name": "val_669",
+        "source": "encoder.encoder.layer.4.output.dense.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          3072
+        ],
+        "shape": [
+          3072,
+          768
+        ],
+        "offset": 935565376,
+        "length": 9437184
+      },
+      {
+        "name": "val_699",
+        "source": "encoder.encoder.layer.5.attention.self.value_proj.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 945002560,
+        "length": 2359296
+      },
+      {
+        "name": "val_785",
+        "source": "encoder.encoder.layer.5.attention.output.dense.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 947361856,
+        "length": 2359296
+      },
+      {
+        "name": "val_789",
+        "source": "encoder.encoder.layer.5.intermediate.dense.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          3072,
+          768
+        ],
+        "shape": [
+          768,
+          3072
+        ],
+        "offset": 949721152,
+        "length": 9437184
+      },
+      {
+        "name": "val_791",
+        "source": "encoder.encoder.layer.5.output.dense.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          3072
+        ],
+        "shape": [
+          3072,
+          768
+        ],
+        "offset": 959158336,
+        "length": 9437184
+      },
+      {
+        "name": "val_821",
+        "source": "encoder.encoder.layer.6.attention.self.value_proj.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 968595520,
+        "length": 2359296
+      },
+      {
+        "name": "val_907",
+        "source": "encoder.encoder.layer.6.attention.output.dense.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 970954816,
+        "length": 2359296
+      },
+      {
+        "name": "val_911",
+        "source": "encoder.encoder.layer.6.intermediate.dense.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          3072,
+          768
+        ],
+        "shape": [
+          768,
+          3072
+        ],
+        "offset": 973314112,
+        "length": 9437184
+      },
+      {
+        "name": "val_913",
+        "source": "encoder.encoder.layer.6.output.dense.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          3072
+        ],
+        "shape": [
+          3072,
+          768
+        ],
+        "offset": 982751296,
+        "length": 9437184
+      },
+      {
+        "name": "val_943",
+        "source": "encoder.encoder.layer.7.attention.self.value_proj.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 992188480,
+        "length": 2359296
+      },
+      {
+        "name": "val_1029",
+        "source": "encoder.encoder.layer.7.attention.output.dense.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 994547776,
+        "length": 2359296
+      },
+      {
+        "name": "val_1033",
+        "source": "encoder.encoder.layer.7.intermediate.dense.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          3072,
+          768
+        ],
+        "shape": [
+          768,
+          3072
+        ],
+        "offset": 996907072,
+        "length": 9437184
+      },
+      {
+        "name": "val_1035",
+        "source": "encoder.encoder.layer.7.output.dense.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          3072
+        ],
+        "shape": [
+          3072,
+          768
+        ],
+        "offset": 1006344256,
+        "length": 9437184
+      },
+      {
+        "name": "val_1065",
+        "source": "encoder.encoder.layer.8.attention.self.value_proj.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 1015781440,
+        "length": 2359296
+      },
+      {
+        "name": "val_1151",
+        "source": "encoder.encoder.layer.8.attention.output.dense.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 1018140736,
+        "length": 2359296
+      },
+      {
+        "name": "val_1155",
+        "source": "encoder.encoder.layer.8.intermediate.dense.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          3072,
+          768
+        ],
+        "shape": [
+          768,
+          3072
+        ],
+        "offset": 1020500032,
+        "length": 9437184
+      },
+      {
+        "name": "val_1157",
+        "source": "encoder.encoder.layer.8.output.dense.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          3072
+        ],
+        "shape": [
+          3072,
+          768
+        ],
+        "offset": 1029937216,
+        "length": 9437184
+      },
+      {
+        "name": "val_1187",
+        "source": "encoder.encoder.layer.9.attention.self.value_proj.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 1039374400,
+        "length": 2359296
+      },
+      {
+        "name": "val_1273",
+        "source": "encoder.encoder.layer.9.attention.output.dense.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 1041733696,
+        "length": 2359296
+      },
+      {
+        "name": "val_1277",
+        "source": "encoder.encoder.layer.9.intermediate.dense.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          3072,
+          768
+        ],
+        "shape": [
+          768,
+          3072
+        ],
+        "offset": 1044092992,
+        "length": 9437184
+      },
+      {
+        "name": "val_1279",
+        "source": "encoder.encoder.layer.9.output.dense.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          3072
+        ],
+        "shape": [
+          3072,
+          768
+        ],
+        "offset": 1053530176,
+        "length": 9437184
+      },
+      {
+        "name": "val_1309",
+        "source": "encoder.encoder.layer.10.attention.self.value_proj.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 1062967360,
+        "length": 2359296
+      },
+      {
+        "name": "val_1395",
+        "source": "encoder.encoder.layer.10.attention.output.dense.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 1065326656,
+        "length": 2359296
+      },
+      {
+        "name": "val_1399",
+        "source": "encoder.encoder.layer.10.intermediate.dense.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          3072,
+          768
+        ],
+        "shape": [
+          768,
+          3072
+        ],
+        "offset": 1067685952,
+        "length": 9437184
+      },
+      {
+        "name": "val_1401",
+        "source": "encoder.encoder.layer.10.output.dense.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          3072
+        ],
+        "shape": [
+          3072,
+          768
+        ],
+        "offset": 1077123136,
+        "length": 9437184
+      },
+      {
+        "name": "val_1431",
+        "source": "encoder.encoder.layer.11.attention.self.value_proj.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 1086560320,
+        "length": 2359296
+      },
+      {
+        "name": "val_1517",
+        "source": "encoder.encoder.layer.11.attention.output.dense.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          768
+        ],
+        "shape": [
+          768,
+          768
+        ],
+        "offset": 1088919616,
+        "length": 2359296
+      },
+      {
+        "name": "val_1521",
+        "source": "encoder.encoder.layer.11.intermediate.dense.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          3072,
+          768
+        ],
+        "shape": [
+          768,
+          3072
+        ],
+        "offset": 1091278912,
+        "length": 9437184
+      },
+      {
+        "name": "val_1523",
+        "source": "encoder.encoder.layer.11.output.dense.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          768,
+          3072
+        ],
+        "shape": [
+          3072,
+          768
+        ],
+        "offset": 1100716096,
+        "length": 9437184
+      },
+      {
+        "name": "val_1535",
+        "source": "classifier.0.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1536,
+          768
+        ],
+        "shape": [
+          768,
+          1536
+        ],
+        "offset": 1110153280,
+        "length": 4718592
+      },
+      {
+        "name": "val_1537",
+        "source": "classifier.3.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1,
+          1536
+        ],
+        "shape": [
+          1536,
+          1
+        ],
+        "offset": 1114871872,
+        "length": 6144
+      }
+    ]
+  },
+  "outputs": [
+    {
+      "path": "model.onnx",
+      "size": 2562370,
+      "sha256": "b07af9ca98fa064adde2582ca9ddaae467bc582e565e36e5f6d5e3f598fc920f"
+    },
+    {
+      "path": "model.onnx.data",
+      "size": 1114878016,
+      "sha256": "0b1be2d5c57980320ff3fef2e4cab74e106b098628798f170b6e9db1479b6888"
+    },
+    {
+      "path": "gliner2.json",
+      "size": 2548,
+      "sha256": "f834a77d5e1e2e9c0cdac0d0a1a67d1153c9b030097ff5fe40ea30d9dd299c9a"
+    },
+    {
+      "path": "tokenizer.json",
+      "size": 16035853,
+      "sha256": "c62446df87ae18ec98b133f8f84fc449a07cc89bbf8ef192a4cb5f9c53777a7a"
+    },
+    {
+      "path": "tokenizer_config.json",
+      "size": 646,
+      "sha256": "fd4a31dc2f1f17e31638c5f0e783b81cdb2fbe6bddd116a8d9e5d50d78148cf1"
+    }
+  ]
+}

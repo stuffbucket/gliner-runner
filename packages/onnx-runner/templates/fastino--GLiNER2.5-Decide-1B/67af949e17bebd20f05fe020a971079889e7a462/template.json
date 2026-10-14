@@ -1,0 +1,2748 @@
+{
+  "format_version": 1,
+  "kind": "gliner-runner-onnx-template",
+  "model_id": "decide-1b",
+  "repository": "fastino/GLiNER2.5-Decide-1B",
+  "revision": "67af949e17bebd20f05fe020a971079889e7a462",
+  "source_files": [
+    {
+      "path": "model.safetensors",
+      "size": 4755208228,
+      "sha256": "02c567d791aed26550d300064c7f0c0094fd65291503c65969b45b30786e33b3",
+      "role": "weights"
+    },
+    {
+      "path": "tokenizer.json",
+      "size": 3585055,
+      "sha256": "ddb379b6a4679ee16646bf0b726de9ec538d7c80ea9d4d4e33b069f19c9e1efb",
+      "role": "tokenizer"
+    },
+    {
+      "path": "tokenizer_config.json",
+      "size": 559,
+      "sha256": "8bb8d094c7cde84942866ef98fb5b24f7387245573a7f707c8349729484c27b3",
+      "role": "tokenizer"
+    }
+  ],
+  "template_files": [
+    {
+      "path": "graph.onnx",
+      "size": 3206205,
+      "sha256": "ee6de4e15bb6d0e0dabf17264ba784fa1efad000718752a9694b2209bc04661e",
+      "output": "model.onnx"
+    },
+    {
+      "path": "gliner2.json",
+      "size": 2528,
+      "sha256": "30fd562d39a53f224a8447f4f8982af13b98c49f8adae589aec5f5a9d05214f2",
+      "output": "gliner2.json"
+    },
+    {
+      "path": "manifest.json",
+      "size": 3797,
+      "sha256": "d022d90526d50ff11045d65eb659902889c9acdb925d46f4f025fd3b82a6287e",
+      "output": "manifest.json"
+    }
+  ],
+  "data": {
+    "path": "model.onnx.data",
+    "alignment": 64,
+    "size": 4137993280,
+    "sha256": "89ef00057048e6c45433608886964be3ffdb525536e73aefab923d5ee7cd8716",
+    "tensors": [
+      {
+        "name": "encoder.embeddings.tok_embeddings.weight",
+        "source": "encoder.embeddings.tok_embeddings.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          50378,
+          1792
+        ],
+        "shape": [
+          50378,
+          1792
+        ],
+        "offset": 0,
+        "length": 361109504
+      },
+      {
+        "name": "encoder.embeddings.norm.weight",
+        "source": "encoder.embeddings.norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361109504,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.0.mlp_norm.weight",
+        "source": "encoder.layers.0.mlp_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361116672,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.1.attn_norm.weight",
+        "source": "encoder.layers.1.attn_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361123840,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.1.mlp_norm.weight",
+        "source": "encoder.layers.1.mlp_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361131008,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.2.attn_norm.weight",
+        "source": "encoder.layers.2.attn_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361138176,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.2.mlp_norm.weight",
+        "source": "encoder.layers.2.mlp_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361145344,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.3.attn_norm.weight",
+        "source": "encoder.layers.3.attn_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361152512,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.3.mlp_norm.weight",
+        "source": "encoder.layers.3.mlp_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361159680,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.4.attn_norm.weight",
+        "source": "encoder.layers.4.attn_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361166848,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.4.mlp_norm.weight",
+        "source": "encoder.layers.4.mlp_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361174016,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.5.attn_norm.weight",
+        "source": "encoder.layers.5.attn_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361181184,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.5.mlp_norm.weight",
+        "source": "encoder.layers.5.mlp_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361188352,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.6.attn_norm.weight",
+        "source": "encoder.layers.6.attn_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361195520,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.6.mlp_norm.weight",
+        "source": "encoder.layers.6.mlp_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361202688,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.7.attn_norm.weight",
+        "source": "encoder.layers.7.attn_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361209856,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.7.mlp_norm.weight",
+        "source": "encoder.layers.7.mlp_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361217024,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.8.attn_norm.weight",
+        "source": "encoder.layers.8.attn_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361224192,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.8.mlp_norm.weight",
+        "source": "encoder.layers.8.mlp_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361231360,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.9.attn_norm.weight",
+        "source": "encoder.layers.9.attn_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361238528,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.9.mlp_norm.weight",
+        "source": "encoder.layers.9.mlp_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361245696,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.10.attn_norm.weight",
+        "source": "encoder.layers.10.attn_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361252864,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.10.mlp_norm.weight",
+        "source": "encoder.layers.10.mlp_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361260032,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.11.attn_norm.weight",
+        "source": "encoder.layers.11.attn_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361267200,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.11.mlp_norm.weight",
+        "source": "encoder.layers.11.mlp_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361274368,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.12.attn_norm.weight",
+        "source": "encoder.layers.12.attn_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361281536,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.12.mlp_norm.weight",
+        "source": "encoder.layers.12.mlp_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361288704,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.13.attn_norm.weight",
+        "source": "encoder.layers.13.attn_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361295872,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.13.mlp_norm.weight",
+        "source": "encoder.layers.13.mlp_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361303040,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.14.attn_norm.weight",
+        "source": "encoder.layers.14.attn_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361310208,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.14.mlp_norm.weight",
+        "source": "encoder.layers.14.mlp_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361317376,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.15.attn_norm.weight",
+        "source": "encoder.layers.15.attn_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361324544,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.15.mlp_norm.weight",
+        "source": "encoder.layers.15.mlp_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361331712,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.16.attn_norm.weight",
+        "source": "encoder.layers.16.attn_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361338880,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.16.mlp_norm.weight",
+        "source": "encoder.layers.16.mlp_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361346048,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.17.attn_norm.weight",
+        "source": "encoder.layers.17.attn_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361353216,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.17.mlp_norm.weight",
+        "source": "encoder.layers.17.mlp_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361360384,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.18.attn_norm.weight",
+        "source": "encoder.layers.18.attn_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361367552,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.18.mlp_norm.weight",
+        "source": "encoder.layers.18.mlp_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361374720,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.19.attn_norm.weight",
+        "source": "encoder.layers.19.attn_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361381888,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.19.mlp_norm.weight",
+        "source": "encoder.layers.19.mlp_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361389056,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.20.attn_norm.weight",
+        "source": "encoder.layers.20.attn_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361396224,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.20.mlp_norm.weight",
+        "source": "encoder.layers.20.mlp_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361403392,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.21.attn_norm.weight",
+        "source": "encoder.layers.21.attn_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361410560,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.21.mlp_norm.weight",
+        "source": "encoder.layers.21.mlp_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361417728,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.22.attn_norm.weight",
+        "source": "encoder.layers.22.attn_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361424896,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.22.mlp_norm.weight",
+        "source": "encoder.layers.22.mlp_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361432064,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.23.attn_norm.weight",
+        "source": "encoder.layers.23.attn_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361439232,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.23.mlp_norm.weight",
+        "source": "encoder.layers.23.mlp_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361446400,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.24.attn_norm.weight",
+        "source": "encoder.layers.24.attn_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361453568,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.24.mlp_norm.weight",
+        "source": "encoder.layers.24.mlp_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361460736,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.25.attn_norm.weight",
+        "source": "encoder.layers.25.attn_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361467904,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.25.mlp_norm.weight",
+        "source": "encoder.layers.25.mlp_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361475072,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.26.attn_norm.weight",
+        "source": "encoder.layers.26.attn_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361482240,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.26.mlp_norm.weight",
+        "source": "encoder.layers.26.mlp_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361489408,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.27.attn_norm.weight",
+        "source": "encoder.layers.27.attn_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361496576,
+        "length": 7168
+      },
+      {
+        "name": "encoder.layers.27.mlp_norm.weight",
+        "source": "encoder.layers.27.mlp_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361503744,
+        "length": 7168
+      },
+      {
+        "name": "encoder.final_norm.weight",
+        "source": "encoder.final_norm.weight",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1792
+        ],
+        "shape": [
+          1792
+        ],
+        "offset": 361510912,
+        "length": 7168
+      },
+      {
+        "name": "classifier.0.bias",
+        "source": "classifier.0.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          3584
+        ],
+        "shape": [
+          3584
+        ],
+        "offset": 361518080,
+        "length": 14336
+      },
+      {
+        "name": "classifier.2.bias",
+        "source": "classifier.2.bias",
+        "transform": "identity",
+        "dtype": "float32",
+        "source_shape": [
+          1
+        ],
+        "shape": [
+          1
+        ],
+        "offset": 361532416,
+        "length": 4
+      },
+      {
+        "name": "val_131",
+        "source": "encoder.layers.0.attn.Wqkv.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          5376,
+          1792
+        ],
+        "shape": [
+          1792,
+          5376
+        ],
+        "offset": 361532480,
+        "length": 38535168
+      },
+      {
+        "name": "val_225",
+        "source": "encoder.layers.0.attn.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          1792
+        ],
+        "shape": [
+          1792,
+          1792
+        ],
+        "offset": 400067648,
+        "length": 12845056
+      },
+      {
+        "name": "val_228",
+        "source": "encoder.layers.0.mlp.Wi.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          7680,
+          1792
+        ],
+        "shape": [
+          1792,
+          7680
+        ],
+        "offset": 412912704,
+        "length": 55050240
+      },
+      {
+        "name": "val_231",
+        "source": "encoder.layers.0.mlp.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          3840
+        ],
+        "shape": [
+          3840,
+          1792
+        ],
+        "offset": 467962944,
+        "length": 27525120
+      },
+      {
+        "name": "val_234",
+        "source": "encoder.layers.1.attn.Wqkv.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          5376,
+          1792
+        ],
+        "shape": [
+          1792,
+          5376
+        ],
+        "offset": 495488064,
+        "length": 38535168
+      },
+      {
+        "name": "val_324",
+        "source": "encoder.layers.1.attn.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          1792
+        ],
+        "shape": [
+          1792,
+          1792
+        ],
+        "offset": 534023232,
+        "length": 12845056
+      },
+      {
+        "name": "val_327",
+        "source": "encoder.layers.1.mlp.Wi.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          7680,
+          1792
+        ],
+        "shape": [
+          1792,
+          7680
+        ],
+        "offset": 546868288,
+        "length": 55050240
+      },
+      {
+        "name": "val_328",
+        "source": "encoder.layers.1.mlp.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          3840
+        ],
+        "shape": [
+          3840,
+          1792
+        ],
+        "offset": 601918528,
+        "length": 27525120
+      },
+      {
+        "name": "val_331",
+        "source": "encoder.layers.2.attn.Wqkv.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          5376,
+          1792
+        ],
+        "shape": [
+          1792,
+          5376
+        ],
+        "offset": 629443648,
+        "length": 38535168
+      },
+      {
+        "name": "val_421",
+        "source": "encoder.layers.2.attn.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          1792
+        ],
+        "shape": [
+          1792,
+          1792
+        ],
+        "offset": 667978816,
+        "length": 12845056
+      },
+      {
+        "name": "val_424",
+        "source": "encoder.layers.2.mlp.Wi.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          7680,
+          1792
+        ],
+        "shape": [
+          1792,
+          7680
+        ],
+        "offset": 680823872,
+        "length": 55050240
+      },
+      {
+        "name": "val_425",
+        "source": "encoder.layers.2.mlp.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          3840
+        ],
+        "shape": [
+          3840,
+          1792
+        ],
+        "offset": 735874112,
+        "length": 27525120
+      },
+      {
+        "name": "val_428",
+        "source": "encoder.layers.3.attn.Wqkv.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          5376,
+          1792
+        ],
+        "shape": [
+          1792,
+          5376
+        ],
+        "offset": 763399232,
+        "length": 38535168
+      },
+      {
+        "name": "val_518",
+        "source": "encoder.layers.3.attn.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          1792
+        ],
+        "shape": [
+          1792,
+          1792
+        ],
+        "offset": 801934400,
+        "length": 12845056
+      },
+      {
+        "name": "val_521",
+        "source": "encoder.layers.3.mlp.Wi.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          7680,
+          1792
+        ],
+        "shape": [
+          1792,
+          7680
+        ],
+        "offset": 814779456,
+        "length": 55050240
+      },
+      {
+        "name": "val_522",
+        "source": "encoder.layers.3.mlp.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          3840
+        ],
+        "shape": [
+          3840,
+          1792
+        ],
+        "offset": 869829696,
+        "length": 27525120
+      },
+      {
+        "name": "val_525",
+        "source": "encoder.layers.4.attn.Wqkv.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          5376,
+          1792
+        ],
+        "shape": [
+          1792,
+          5376
+        ],
+        "offset": 897354816,
+        "length": 38535168
+      },
+      {
+        "name": "val_615",
+        "source": "encoder.layers.4.attn.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          1792
+        ],
+        "shape": [
+          1792,
+          1792
+        ],
+        "offset": 935889984,
+        "length": 12845056
+      },
+      {
+        "name": "val_618",
+        "source": "encoder.layers.4.mlp.Wi.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          7680,
+          1792
+        ],
+        "shape": [
+          1792,
+          7680
+        ],
+        "offset": 948735040,
+        "length": 55050240
+      },
+      {
+        "name": "val_619",
+        "source": "encoder.layers.4.mlp.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          3840
+        ],
+        "shape": [
+          3840,
+          1792
+        ],
+        "offset": 1003785280,
+        "length": 27525120
+      },
+      {
+        "name": "val_622",
+        "source": "encoder.layers.5.attn.Wqkv.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          5376,
+          1792
+        ],
+        "shape": [
+          1792,
+          5376
+        ],
+        "offset": 1031310400,
+        "length": 38535168
+      },
+      {
+        "name": "val_712",
+        "source": "encoder.layers.5.attn.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          1792
+        ],
+        "shape": [
+          1792,
+          1792
+        ],
+        "offset": 1069845568,
+        "length": 12845056
+      },
+      {
+        "name": "val_715",
+        "source": "encoder.layers.5.mlp.Wi.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          7680,
+          1792
+        ],
+        "shape": [
+          1792,
+          7680
+        ],
+        "offset": 1082690624,
+        "length": 55050240
+      },
+      {
+        "name": "val_716",
+        "source": "encoder.layers.5.mlp.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          3840
+        ],
+        "shape": [
+          3840,
+          1792
+        ],
+        "offset": 1137740864,
+        "length": 27525120
+      },
+      {
+        "name": "val_719",
+        "source": "encoder.layers.6.attn.Wqkv.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          5376,
+          1792
+        ],
+        "shape": [
+          1792,
+          5376
+        ],
+        "offset": 1165265984,
+        "length": 38535168
+      },
+      {
+        "name": "val_809",
+        "source": "encoder.layers.6.attn.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          1792
+        ],
+        "shape": [
+          1792,
+          1792
+        ],
+        "offset": 1203801152,
+        "length": 12845056
+      },
+      {
+        "name": "val_812",
+        "source": "encoder.layers.6.mlp.Wi.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          7680,
+          1792
+        ],
+        "shape": [
+          1792,
+          7680
+        ],
+        "offset": 1216646208,
+        "length": 55050240
+      },
+      {
+        "name": "val_813",
+        "source": "encoder.layers.6.mlp.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          3840
+        ],
+        "shape": [
+          3840,
+          1792
+        ],
+        "offset": 1271696448,
+        "length": 27525120
+      },
+      {
+        "name": "val_816",
+        "source": "encoder.layers.7.attn.Wqkv.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          5376,
+          1792
+        ],
+        "shape": [
+          1792,
+          5376
+        ],
+        "offset": 1299221568,
+        "length": 38535168
+      },
+      {
+        "name": "val_906",
+        "source": "encoder.layers.7.attn.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          1792
+        ],
+        "shape": [
+          1792,
+          1792
+        ],
+        "offset": 1337756736,
+        "length": 12845056
+      },
+      {
+        "name": "val_909",
+        "source": "encoder.layers.7.mlp.Wi.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          7680,
+          1792
+        ],
+        "shape": [
+          1792,
+          7680
+        ],
+        "offset": 1350601792,
+        "length": 55050240
+      },
+      {
+        "name": "val_910",
+        "source": "encoder.layers.7.mlp.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          3840
+        ],
+        "shape": [
+          3840,
+          1792
+        ],
+        "offset": 1405652032,
+        "length": 27525120
+      },
+      {
+        "name": "val_913",
+        "source": "encoder.layers.8.attn.Wqkv.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          5376,
+          1792
+        ],
+        "shape": [
+          1792,
+          5376
+        ],
+        "offset": 1433177152,
+        "length": 38535168
+      },
+      {
+        "name": "val_1003",
+        "source": "encoder.layers.8.attn.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          1792
+        ],
+        "shape": [
+          1792,
+          1792
+        ],
+        "offset": 1471712320,
+        "length": 12845056
+      },
+      {
+        "name": "val_1006",
+        "source": "encoder.layers.8.mlp.Wi.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          7680,
+          1792
+        ],
+        "shape": [
+          1792,
+          7680
+        ],
+        "offset": 1484557376,
+        "length": 55050240
+      },
+      {
+        "name": "val_1007",
+        "source": "encoder.layers.8.mlp.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          3840
+        ],
+        "shape": [
+          3840,
+          1792
+        ],
+        "offset": 1539607616,
+        "length": 27525120
+      },
+      {
+        "name": "val_1010",
+        "source": "encoder.layers.9.attn.Wqkv.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          5376,
+          1792
+        ],
+        "shape": [
+          1792,
+          5376
+        ],
+        "offset": 1567132736,
+        "length": 38535168
+      },
+      {
+        "name": "val_1100",
+        "source": "encoder.layers.9.attn.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          1792
+        ],
+        "shape": [
+          1792,
+          1792
+        ],
+        "offset": 1605667904,
+        "length": 12845056
+      },
+      {
+        "name": "val_1103",
+        "source": "encoder.layers.9.mlp.Wi.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          7680,
+          1792
+        ],
+        "shape": [
+          1792,
+          7680
+        ],
+        "offset": 1618512960,
+        "length": 55050240
+      },
+      {
+        "name": "val_1104",
+        "source": "encoder.layers.9.mlp.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          3840
+        ],
+        "shape": [
+          3840,
+          1792
+        ],
+        "offset": 1673563200,
+        "length": 27525120
+      },
+      {
+        "name": "val_1107",
+        "source": "encoder.layers.10.attn.Wqkv.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          5376,
+          1792
+        ],
+        "shape": [
+          1792,
+          5376
+        ],
+        "offset": 1701088320,
+        "length": 38535168
+      },
+      {
+        "name": "val_1197",
+        "source": "encoder.layers.10.attn.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          1792
+        ],
+        "shape": [
+          1792,
+          1792
+        ],
+        "offset": 1739623488,
+        "length": 12845056
+      },
+      {
+        "name": "val_1200",
+        "source": "encoder.layers.10.mlp.Wi.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          7680,
+          1792
+        ],
+        "shape": [
+          1792,
+          7680
+        ],
+        "offset": 1752468544,
+        "length": 55050240
+      },
+      {
+        "name": "val_1201",
+        "source": "encoder.layers.10.mlp.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          3840
+        ],
+        "shape": [
+          3840,
+          1792
+        ],
+        "offset": 1807518784,
+        "length": 27525120
+      },
+      {
+        "name": "val_1204",
+        "source": "encoder.layers.11.attn.Wqkv.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          5376,
+          1792
+        ],
+        "shape": [
+          1792,
+          5376
+        ],
+        "offset": 1835043904,
+        "length": 38535168
+      },
+      {
+        "name": "val_1294",
+        "source": "encoder.layers.11.attn.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          1792
+        ],
+        "shape": [
+          1792,
+          1792
+        ],
+        "offset": 1873579072,
+        "length": 12845056
+      },
+      {
+        "name": "val_1297",
+        "source": "encoder.layers.11.mlp.Wi.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          7680,
+          1792
+        ],
+        "shape": [
+          1792,
+          7680
+        ],
+        "offset": 1886424128,
+        "length": 55050240
+      },
+      {
+        "name": "val_1298",
+        "source": "encoder.layers.11.mlp.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          3840
+        ],
+        "shape": [
+          3840,
+          1792
+        ],
+        "offset": 1941474368,
+        "length": 27525120
+      },
+      {
+        "name": "val_1301",
+        "source": "encoder.layers.12.attn.Wqkv.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          5376,
+          1792
+        ],
+        "shape": [
+          1792,
+          5376
+        ],
+        "offset": 1968999488,
+        "length": 38535168
+      },
+      {
+        "name": "val_1391",
+        "source": "encoder.layers.12.attn.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          1792
+        ],
+        "shape": [
+          1792,
+          1792
+        ],
+        "offset": 2007534656,
+        "length": 12845056
+      },
+      {
+        "name": "val_1394",
+        "source": "encoder.layers.12.mlp.Wi.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          7680,
+          1792
+        ],
+        "shape": [
+          1792,
+          7680
+        ],
+        "offset": 2020379712,
+        "length": 55050240
+      },
+      {
+        "name": "val_1395",
+        "source": "encoder.layers.12.mlp.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          3840
+        ],
+        "shape": [
+          3840,
+          1792
+        ],
+        "offset": 2075429952,
+        "length": 27525120
+      },
+      {
+        "name": "val_1398",
+        "source": "encoder.layers.13.attn.Wqkv.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          5376,
+          1792
+        ],
+        "shape": [
+          1792,
+          5376
+        ],
+        "offset": 2102955072,
+        "length": 38535168
+      },
+      {
+        "name": "val_1488",
+        "source": "encoder.layers.13.attn.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          1792
+        ],
+        "shape": [
+          1792,
+          1792
+        ],
+        "offset": 2141490240,
+        "length": 12845056
+      },
+      {
+        "name": "val_1491",
+        "source": "encoder.layers.13.mlp.Wi.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          7680,
+          1792
+        ],
+        "shape": [
+          1792,
+          7680
+        ],
+        "offset": 2154335296,
+        "length": 55050240
+      },
+      {
+        "name": "val_1492",
+        "source": "encoder.layers.13.mlp.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          3840
+        ],
+        "shape": [
+          3840,
+          1792
+        ],
+        "offset": 2209385536,
+        "length": 27525120
+      },
+      {
+        "name": "val_1495",
+        "source": "encoder.layers.14.attn.Wqkv.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          5376,
+          1792
+        ],
+        "shape": [
+          1792,
+          5376
+        ],
+        "offset": 2236910656,
+        "length": 38535168
+      },
+      {
+        "name": "val_1585",
+        "source": "encoder.layers.14.attn.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          1792
+        ],
+        "shape": [
+          1792,
+          1792
+        ],
+        "offset": 2275445824,
+        "length": 12845056
+      },
+      {
+        "name": "val_1588",
+        "source": "encoder.layers.14.mlp.Wi.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          7680,
+          1792
+        ],
+        "shape": [
+          1792,
+          7680
+        ],
+        "offset": 2288290880,
+        "length": 55050240
+      },
+      {
+        "name": "val_1589",
+        "source": "encoder.layers.14.mlp.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          3840
+        ],
+        "shape": [
+          3840,
+          1792
+        ],
+        "offset": 2343341120,
+        "length": 27525120
+      },
+      {
+        "name": "val_1592",
+        "source": "encoder.layers.15.attn.Wqkv.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          5376,
+          1792
+        ],
+        "shape": [
+          1792,
+          5376
+        ],
+        "offset": 2370866240,
+        "length": 38535168
+      },
+      {
+        "name": "val_1682",
+        "source": "encoder.layers.15.attn.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          1792
+        ],
+        "shape": [
+          1792,
+          1792
+        ],
+        "offset": 2409401408,
+        "length": 12845056
+      },
+      {
+        "name": "val_1685",
+        "source": "encoder.layers.15.mlp.Wi.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          7680,
+          1792
+        ],
+        "shape": [
+          1792,
+          7680
+        ],
+        "offset": 2422246464,
+        "length": 55050240
+      },
+      {
+        "name": "val_1686",
+        "source": "encoder.layers.15.mlp.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          3840
+        ],
+        "shape": [
+          3840,
+          1792
+        ],
+        "offset": 2477296704,
+        "length": 27525120
+      },
+      {
+        "name": "val_1689",
+        "source": "encoder.layers.16.attn.Wqkv.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          5376,
+          1792
+        ],
+        "shape": [
+          1792,
+          5376
+        ],
+        "offset": 2504821824,
+        "length": 38535168
+      },
+      {
+        "name": "val_1779",
+        "source": "encoder.layers.16.attn.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          1792
+        ],
+        "shape": [
+          1792,
+          1792
+        ],
+        "offset": 2543356992,
+        "length": 12845056
+      },
+      {
+        "name": "val_1782",
+        "source": "encoder.layers.16.mlp.Wi.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          7680,
+          1792
+        ],
+        "shape": [
+          1792,
+          7680
+        ],
+        "offset": 2556202048,
+        "length": 55050240
+      },
+      {
+        "name": "val_1783",
+        "source": "encoder.layers.16.mlp.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          3840
+        ],
+        "shape": [
+          3840,
+          1792
+        ],
+        "offset": 2611252288,
+        "length": 27525120
+      },
+      {
+        "name": "val_1786",
+        "source": "encoder.layers.17.attn.Wqkv.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          5376,
+          1792
+        ],
+        "shape": [
+          1792,
+          5376
+        ],
+        "offset": 2638777408,
+        "length": 38535168
+      },
+      {
+        "name": "val_1876",
+        "source": "encoder.layers.17.attn.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          1792
+        ],
+        "shape": [
+          1792,
+          1792
+        ],
+        "offset": 2677312576,
+        "length": 12845056
+      },
+      {
+        "name": "val_1879",
+        "source": "encoder.layers.17.mlp.Wi.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          7680,
+          1792
+        ],
+        "shape": [
+          1792,
+          7680
+        ],
+        "offset": 2690157632,
+        "length": 55050240
+      },
+      {
+        "name": "val_1880",
+        "source": "encoder.layers.17.mlp.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          3840
+        ],
+        "shape": [
+          3840,
+          1792
+        ],
+        "offset": 2745207872,
+        "length": 27525120
+      },
+      {
+        "name": "val_1883",
+        "source": "encoder.layers.18.attn.Wqkv.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          5376,
+          1792
+        ],
+        "shape": [
+          1792,
+          5376
+        ],
+        "offset": 2772732992,
+        "length": 38535168
+      },
+      {
+        "name": "val_1973",
+        "source": "encoder.layers.18.attn.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          1792
+        ],
+        "shape": [
+          1792,
+          1792
+        ],
+        "offset": 2811268160,
+        "length": 12845056
+      },
+      {
+        "name": "val_1976",
+        "source": "encoder.layers.18.mlp.Wi.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          7680,
+          1792
+        ],
+        "shape": [
+          1792,
+          7680
+        ],
+        "offset": 2824113216,
+        "length": 55050240
+      },
+      {
+        "name": "val_1977",
+        "source": "encoder.layers.18.mlp.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          3840
+        ],
+        "shape": [
+          3840,
+          1792
+        ],
+        "offset": 2879163456,
+        "length": 27525120
+      },
+      {
+        "name": "val_1980",
+        "source": "encoder.layers.19.attn.Wqkv.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          5376,
+          1792
+        ],
+        "shape": [
+          1792,
+          5376
+        ],
+        "offset": 2906688576,
+        "length": 38535168
+      },
+      {
+        "name": "val_2070",
+        "source": "encoder.layers.19.attn.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          1792
+        ],
+        "shape": [
+          1792,
+          1792
+        ],
+        "offset": 2945223744,
+        "length": 12845056
+      },
+      {
+        "name": "val_2073",
+        "source": "encoder.layers.19.mlp.Wi.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          7680,
+          1792
+        ],
+        "shape": [
+          1792,
+          7680
+        ],
+        "offset": 2958068800,
+        "length": 55050240
+      },
+      {
+        "name": "val_2074",
+        "source": "encoder.layers.19.mlp.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          3840
+        ],
+        "shape": [
+          3840,
+          1792
+        ],
+        "offset": 3013119040,
+        "length": 27525120
+      },
+      {
+        "name": "val_2077",
+        "source": "encoder.layers.20.attn.Wqkv.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          5376,
+          1792
+        ],
+        "shape": [
+          1792,
+          5376
+        ],
+        "offset": 3040644160,
+        "length": 38535168
+      },
+      {
+        "name": "val_2167",
+        "source": "encoder.layers.20.attn.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          1792
+        ],
+        "shape": [
+          1792,
+          1792
+        ],
+        "offset": 3079179328,
+        "length": 12845056
+      },
+      {
+        "name": "val_2170",
+        "source": "encoder.layers.20.mlp.Wi.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          7680,
+          1792
+        ],
+        "shape": [
+          1792,
+          7680
+        ],
+        "offset": 3092024384,
+        "length": 55050240
+      },
+      {
+        "name": "val_2171",
+        "source": "encoder.layers.20.mlp.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          3840
+        ],
+        "shape": [
+          3840,
+          1792
+        ],
+        "offset": 3147074624,
+        "length": 27525120
+      },
+      {
+        "name": "val_2174",
+        "source": "encoder.layers.21.attn.Wqkv.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          5376,
+          1792
+        ],
+        "shape": [
+          1792,
+          5376
+        ],
+        "offset": 3174599744,
+        "length": 38535168
+      },
+      {
+        "name": "val_2264",
+        "source": "encoder.layers.21.attn.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          1792
+        ],
+        "shape": [
+          1792,
+          1792
+        ],
+        "offset": 3213134912,
+        "length": 12845056
+      },
+      {
+        "name": "val_2267",
+        "source": "encoder.layers.21.mlp.Wi.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          7680,
+          1792
+        ],
+        "shape": [
+          1792,
+          7680
+        ],
+        "offset": 3225979968,
+        "length": 55050240
+      },
+      {
+        "name": "val_2268",
+        "source": "encoder.layers.21.mlp.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          3840
+        ],
+        "shape": [
+          3840,
+          1792
+        ],
+        "offset": 3281030208,
+        "length": 27525120
+      },
+      {
+        "name": "val_2271",
+        "source": "encoder.layers.22.attn.Wqkv.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          5376,
+          1792
+        ],
+        "shape": [
+          1792,
+          5376
+        ],
+        "offset": 3308555328,
+        "length": 38535168
+      },
+      {
+        "name": "val_2361",
+        "source": "encoder.layers.22.attn.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          1792
+        ],
+        "shape": [
+          1792,
+          1792
+        ],
+        "offset": 3347090496,
+        "length": 12845056
+      },
+      {
+        "name": "val_2364",
+        "source": "encoder.layers.22.mlp.Wi.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          7680,
+          1792
+        ],
+        "shape": [
+          1792,
+          7680
+        ],
+        "offset": 3359935552,
+        "length": 55050240
+      },
+      {
+        "name": "val_2365",
+        "source": "encoder.layers.22.mlp.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          3840
+        ],
+        "shape": [
+          3840,
+          1792
+        ],
+        "offset": 3414985792,
+        "length": 27525120
+      },
+      {
+        "name": "val_2368",
+        "source": "encoder.layers.23.attn.Wqkv.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          5376,
+          1792
+        ],
+        "shape": [
+          1792,
+          5376
+        ],
+        "offset": 3442510912,
+        "length": 38535168
+      },
+      {
+        "name": "val_2458",
+        "source": "encoder.layers.23.attn.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          1792
+        ],
+        "shape": [
+          1792,
+          1792
+        ],
+        "offset": 3481046080,
+        "length": 12845056
+      },
+      {
+        "name": "val_2461",
+        "source": "encoder.layers.23.mlp.Wi.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          7680,
+          1792
+        ],
+        "shape": [
+          1792,
+          7680
+        ],
+        "offset": 3493891136,
+        "length": 55050240
+      },
+      {
+        "name": "val_2462",
+        "source": "encoder.layers.23.mlp.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          3840
+        ],
+        "shape": [
+          3840,
+          1792
+        ],
+        "offset": 3548941376,
+        "length": 27525120
+      },
+      {
+        "name": "val_2465",
+        "source": "encoder.layers.24.attn.Wqkv.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          5376,
+          1792
+        ],
+        "shape": [
+          1792,
+          5376
+        ],
+        "offset": 3576466496,
+        "length": 38535168
+      },
+      {
+        "name": "val_2555",
+        "source": "encoder.layers.24.attn.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          1792
+        ],
+        "shape": [
+          1792,
+          1792
+        ],
+        "offset": 3615001664,
+        "length": 12845056
+      },
+      {
+        "name": "val_2558",
+        "source": "encoder.layers.24.mlp.Wi.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          7680,
+          1792
+        ],
+        "shape": [
+          1792,
+          7680
+        ],
+        "offset": 3627846720,
+        "length": 55050240
+      },
+      {
+        "name": "val_2559",
+        "source": "encoder.layers.24.mlp.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          3840
+        ],
+        "shape": [
+          3840,
+          1792
+        ],
+        "offset": 3682896960,
+        "length": 27525120
+      },
+      {
+        "name": "val_2562",
+        "source": "encoder.layers.25.attn.Wqkv.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          5376,
+          1792
+        ],
+        "shape": [
+          1792,
+          5376
+        ],
+        "offset": 3710422080,
+        "length": 38535168
+      },
+      {
+        "name": "val_2652",
+        "source": "encoder.layers.25.attn.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          1792
+        ],
+        "shape": [
+          1792,
+          1792
+        ],
+        "offset": 3748957248,
+        "length": 12845056
+      },
+      {
+        "name": "val_2655",
+        "source": "encoder.layers.25.mlp.Wi.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          7680,
+          1792
+        ],
+        "shape": [
+          1792,
+          7680
+        ],
+        "offset": 3761802304,
+        "length": 55050240
+      },
+      {
+        "name": "val_2656",
+        "source": "encoder.layers.25.mlp.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          3840
+        ],
+        "shape": [
+          3840,
+          1792
+        ],
+        "offset": 3816852544,
+        "length": 27525120
+      },
+      {
+        "name": "val_2659",
+        "source": "encoder.layers.26.attn.Wqkv.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          5376,
+          1792
+        ],
+        "shape": [
+          1792,
+          5376
+        ],
+        "offset": 3844377664,
+        "length": 38535168
+      },
+      {
+        "name": "val_2749",
+        "source": "encoder.layers.26.attn.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          1792
+        ],
+        "shape": [
+          1792,
+          1792
+        ],
+        "offset": 3882912832,
+        "length": 12845056
+      },
+      {
+        "name": "val_2752",
+        "source": "encoder.layers.26.mlp.Wi.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          7680,
+          1792
+        ],
+        "shape": [
+          1792,
+          7680
+        ],
+        "offset": 3895757888,
+        "length": 55050240
+      },
+      {
+        "name": "val_2753",
+        "source": "encoder.layers.26.mlp.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          3840
+        ],
+        "shape": [
+          3840,
+          1792
+        ],
+        "offset": 3950808128,
+        "length": 27525120
+      },
+      {
+        "name": "val_2756",
+        "source": "encoder.layers.27.attn.Wqkv.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          5376,
+          1792
+        ],
+        "shape": [
+          1792,
+          5376
+        ],
+        "offset": 3978333248,
+        "length": 38535168
+      },
+      {
+        "name": "val_2846",
+        "source": "encoder.layers.27.attn.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          1792
+        ],
+        "shape": [
+          1792,
+          1792
+        ],
+        "offset": 4016868416,
+        "length": 12845056
+      },
+      {
+        "name": "val_2849",
+        "source": "encoder.layers.27.mlp.Wi.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          7680,
+          1792
+        ],
+        "shape": [
+          1792,
+          7680
+        ],
+        "offset": 4029713472,
+        "length": 55050240
+      },
+      {
+        "name": "val_2850",
+        "source": "encoder.layers.27.mlp.Wo.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1792,
+          3840
+        ],
+        "shape": [
+          3840,
+          1792
+        ],
+        "offset": 4084763712,
+        "length": 27525120
+      },
+      {
+        "name": "val_2861",
+        "source": "classifier.0.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          3584,
+          1792
+        ],
+        "shape": [
+          1792,
+          3584
+        ],
+        "offset": 4112288832,
+        "length": 25690112
+      },
+      {
+        "name": "val_2863",
+        "source": "classifier.2.weight",
+        "transform": "transpose",
+        "dtype": "float32",
+        "source_shape": [
+          1,
+          3584
+        ],
+        "shape": [
+          3584,
+          1
+        ],
+        "offset": 4137978944,
+        "length": 14336
+      }
+    ]
+  },
+  "outputs": [
+    {
+      "path": "model.onnx",
+      "size": 3206205,
+      "sha256": "ee6de4e15bb6d0e0dabf17264ba784fa1efad000718752a9694b2209bc04661e"
+    },
+    {
+      "path": "model.onnx.data",
+      "size": 4137993280,
+      "sha256": "89ef00057048e6c45433608886964be3ffdb525536e73aefab923d5ee7cd8716"
+    },
+    {
+      "path": "gliner2.json",
+      "size": 2528,
+      "sha256": "30fd562d39a53f224a8447f4f8982af13b98c49f8adae589aec5f5a9d05214f2"
+    },
+    {
+      "path": "tokenizer.json",
+      "size": 3585055,
+      "sha256": "ddb379b6a4679ee16646bf0b726de9ec538d7c80ea9d4d4e33b069f19c9e1efb"
+    },
+    {
+      "path": "tokenizer_config.json",
+      "size": 559,
+      "sha256": "8bb8d094c7cde84942866ef98fb5b24f7387245573a7f707c8349729484c27b3"
+    }
+  ]
+}

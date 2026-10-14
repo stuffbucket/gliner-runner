@@ -10,6 +10,10 @@ class UnsupportedCapabilityError(GlinerRunnerError):
     """A backend does not implement the requested operation or precision."""
 
 
+class InvalidSchemaError(GlinerRunnerError):
+    """An inference schema failed backend-specific semantic validation."""
+
+
 class QueueFullError(GlinerRunnerError):
     """The bounded scheduler queue has reached capacity."""
 

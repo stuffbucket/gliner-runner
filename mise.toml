@@ -20,7 +20,7 @@ pnpm install --frozen-lockfile
 
 [tasks.check]
 description = "Run the default offline validation suite"
-depends = ["check:python", "check:client", "check:openapi", "check:registry", "check:licensing", "check:tools", "check:docs"]
+depends = ["check:python", "check:client", "check:openapi", "check:registry", "check:licensing", "check:onnx-receipt", "check:release", "check:tools", "check:docs"]
 
 [tasks."check:python"]
 description = "Lint, type-check, and unit-test the Python implementation when present"
@@ -49,6 +49,53 @@ run = "python scripts/check_registry_policy.py"
 [tasks."check:licensing"]
 description = "Verify third-party notices and release packaging"
 run = "python scripts/check_licensing.py"
+
+[tasks."check:onnx-receipt"]
+description = "Verify the checked-in ONNX evaluation receipt is coherent and not replayed (no models, no network)"
+run = """
+node --test scripts/onnx-receipt.test.mjs
+node scripts/onnx-eval-receipt.mjs check
+"""
+
+[tasks."check:release"]
+description = "Test release tooling that needs no build: Homebrew formula renderer and workflow lint when actionlint is installed"
+run = """
+node --test scripts/render-homebrew-formula.test.mjs
+if command -v actionlint >/dev/null 2>&1; then
+  actionlint
+fi
+"""
+
+[tasks."eval:onnx-receipt"]
+description = "Run the real ONNX parity evaluation locally and write the checked-in evaluation receipt"
+alias = "receipt"
+run = """
+GLINER_RUNNER_ONNX_MODELS_DIR="${GLINER_RUNNER_ONNX_MODELS_DIR:-dist/onnx-models}" \
+  node scripts/onnx-eval-receipt.mjs record
+"""
+
+[tasks.dev]
+description = "Build the ONNX runner and serve it on 127.0.0.1:8080 with models from dist/onnx-models"
+run = """
+pnpm --filter @gliner-runner/onnx-runner run build
+node packages/onnx-runner/dist/src/cli.js serve \
+  --host 127.0.0.1 --port "${GLINER_RUNNER_DEV_PORT:-8080}" \
+  --models-dir "${GLINER_RUNNER_ONNX_MODELS_DIR:-dist/onnx-models}"
+"""
+
+[tasks.models]
+description = "Install the three curated models into dist/onnx-models (downloads about 7 GB unless a verified local snapshot is found)"
+run = """
+pnpm --filter @gliner-runner/onnx-runner run build
+for model in decide-340m decide-multilingual decide-1b; do
+  node packages/onnx-runner/dist/src/cli.js models install "$model" --yes \
+    --models-dir "${GLINER_RUNNER_ONNX_MODELS_DIR:-dist/onnx-models}"
+done
+"""
+
+[tasks."lint:shell"]
+description = "Run shellcheck on install.sh (needs shellcheck on PATH; not part of check)"
+run = "shellcheck -s sh install.sh"
 
 [tasks."check:tools"]
 description = "Verify pinned Node and pnpm versions remain aligned"
@@ -79,22 +126,72 @@ test -f pyproject.toml || { echo 'Python package surface not present.' >&2; exit
 python benchmarks/benchmark_scheduler.py
 """
 
-[tasks."release:build"]
-description = "Build and verify GitHub release assets"
+[tasks."release:stamp"]
+description = "Stamp GLINER_RUNNER_RELEASE_VERSION (X.Y.Z-rc.N) into the working tree; release candidates only, never commit the result"
 run = """
 test -n "${GLINER_RUNNER_RELEASE_VERSION:-}" || {
   echo 'Set GLINER_RUNNER_RELEASE_VERSION to the release version.' >&2
   exit 1
 }
+python scripts/assemble_release.py --stamp-only --version "$GLINER_RUNNER_RELEASE_VERSION"
+"""
+
+[tasks."release:packages"]
+description = "Build the wheel, sdist, and client tarball into dist/release"
+run = """
 rm -rf dist/release
 mkdir -p dist/release
 python -m build --outdir dist/release
 python -m twine check dist/release/gliner_runner-*
 pnpm --dir packages/client pack --pack-destination "$PWD/dist/release"
-python scripts/assemble_release.py \
-  --output-dir dist/release \
-  --version "$GLINER_RUNNER_RELEASE_VERSION"
 """
+
+[tasks."release:onnx-archive"]
+description = "Package and smoke-verify (no models) the ONNX runner archive for this platform into dist/onnx-runtime-build"
+run = """
+rm -rf dist/onnx-runtime-build
+node scripts/package-onnx-runtime.mjs --output-dir dist/onnx-runtime-build
+set -- dist/onnx-runtime-build/gliner-runner-onnx-*-*-*.tar.gz
+test "$#" -eq 1 && test -f "$1" || {
+  echo 'Expected exactly one ONNX runtime archive for this platform.' >&2
+  exit 1
+}
+node scripts/verify-onnx-runtime.mjs --archive "$1"
+"""
+
+[tasks."release:build"]
+description = "Build and verify GitHub release assets, including the host-platform ONNX runtime archive"
+depends = ["release:packages", "release:onnx-archive"]
+run = """
+test -n "${GLINER_RUNNER_RELEASE_VERSION:-}" || {
+  echo 'Set GLINER_RUNNER_RELEASE_VERSION to the release version.' >&2
+  exit 1
+}
+set -- --output-dir dist/release --onnx-runtime-dir dist/onnx-runtime-build \
+  --version "$GLINER_RUNNER_RELEASE_VERSION"
+if [ -f install.sh ]; then
+  set -- "$@" --installer install.sh
+else
+  echo 'warning: install.sh not found; release assets will not include it.' >&2
+fi
+python scripts/assemble_release.py "$@"
+"""
+
+[tasks."release:local"]
+description = "Build and verify the host-platform release assets into dist/release at the current version (no models, no network)"
+depends = ["check:onnx-receipt"]
+run = """
+GLINER_RUNNER_RELEASE_VERSION=$(node -p "require('./package.json').version") mise run release:build
+ls -1 dist/release
+"""
+
+[tasks."package:onnx-runtime"]
+description = "Build the self-contained, Python-free ONNX runner archive for this platform"
+run = "node scripts/package-onnx-runtime.mjs"
+
+[tasks."verify:onnx-runtime"]
+description = "Run the packaged ONNX runner with a sanitized environment (no Python, no repo node_modules)"
+run = "node scripts/verify-onnx-runtime.mjs"
 
 [tasks."benchmark:real"]
 description = "Run the opt-in pinned real-model characterization"
@@ -103,11 +200,27 @@ test -n "${GLINER_RUNNER_BENCHMARK_MODEL:-}" || {
   echo 'Set GLINER_RUNNER_BENCHMARK_MODEL to a local pinned snapshot.' >&2
   exit 1
 }
+test -n "${GLINER_RUNNER_BENCHMARK_REPOSITORY:-}" || {
+  echo 'Set GLINER_RUNNER_BENCHMARK_REPOSITORY to the exact owner/name repository.' >&2
+  exit 1
+}
+test -n "${GLINER_RUNNER_BENCHMARK_REVISION:-}" || {
+  echo 'Set GLINER_RUNNER_BENCHMARK_REVISION to the exact 40-character commit SHA.' >&2
+  exit 1
+}
+test -n "${GLINER_RUNNER_BENCHMARK_GLINER2_VERSION:-}" || {
+  echo 'Set GLINER_RUNNER_BENCHMARK_GLINER2_VERSION to the expected installed version.' >&2
+  exit 1
+}
 set -- \
   --model-path "$GLINER_RUNNER_BENCHMARK_MODEL" \
+  --model-repository "$GLINER_RUNNER_BENCHMARK_REPOSITORY" \
+  --model-revision "$GLINER_RUNNER_BENCHMARK_REVISION" \
+  --expected-gliner2-version "$GLINER_RUNNER_BENCHMARK_GLINER2_VERSION" \
   --output-dir "${GLINER_RUNNER_BENCHMARK_OUTPUT:-benchmark-results/local}" \
   --device "${GLINER_RUNNER_BENCHMARK_DEVICE:-cpu}" \
-  --precision "${GLINER_RUNNER_BENCHMARK_PRECISION:-fp32}"
+  --precision "${GLINER_RUNNER_BENCHMARK_PRECISION:-fp32}" \
+  --workload-suite "${GLINER_RUNNER_BENCHMARK_WORKLOAD:-english-v1}"
 if [ -n "${GLINER_RUNNER_BENCHMARK_BASELINE:-}" ]; then
   set -- "$@" --baseline-result "$GLINER_RUNNER_BENCHMARK_BASELINE"
 fi
@@ -121,10 +234,195 @@ test -n "${GLINER_RUNNER_BENCHMARK_MODEL:-}" || {
   echo 'Set GLINER_RUNNER_BENCHMARK_MODEL to a local pinned snapshot.' >&2
   exit 1
 }
-python benchmarks/characterize_model_card.py \
+test -n "${GLINER_RUNNER_BENCHMARK_REPOSITORY:-}" || {
+  echo 'Set GLINER_RUNNER_BENCHMARK_REPOSITORY to the exact owner/name repository.' >&2
+  exit 1
+}
+test -n "${GLINER_RUNNER_BENCHMARK_REVISION:-}" || {
+  echo 'Set GLINER_RUNNER_BENCHMARK_REVISION to the exact 40-character commit SHA.' >&2
+  exit 1
+}
+test -n "${GLINER_RUNNER_BENCHMARK_GLINER2_VERSION:-}" || {
+  echo 'Set GLINER_RUNNER_BENCHMARK_GLINER2_VERSION to the expected installed version.' >&2
+  exit 1
+}
+set -- \
   --model-path "$GLINER_RUNNER_BENCHMARK_MODEL" \
-  --output-dir "${GLINER_RUNNER_BENCHMARK_OUTPUT:-benchmark-results/local-card}" \
-  --profile cpu/fp32 \
-  --profile mps/fp16 \
-  --profile mps/fp32
+  --model-repository "$GLINER_RUNNER_BENCHMARK_REPOSITORY" \
+  --model-revision "$GLINER_RUNNER_BENCHMARK_REVISION" \
+  --expected-gliner2-version "$GLINER_RUNNER_BENCHMARK_GLINER2_VERSION" \
+  --output-dir "${GLINER_RUNNER_BENCHMARK_OUTPUT:-benchmark-results/local/card}"
+for profile in ${GLINER_RUNNER_BENCHMARK_CARD_PROFILES:-cpu/fp32}; do
+  set -- "$@" --profile "$profile"
+done
+python benchmarks/characterize_model_card.py "$@"
+"""
+
+[tasks."benchmark:compare-behavior"]
+description = "Compare behavior from two characterization artifacts"
+run = """
+test -n "${GLINER_RUNNER_BENCHMARK_BEHAVIOR_BASELINE:-}" || {
+  echo 'Set GLINER_RUNNER_BENCHMARK_BEHAVIOR_BASELINE to a characterization JSON file.' >&2
+  exit 1
+}
+test -n "${GLINER_RUNNER_BENCHMARK_BEHAVIOR_CANDIDATE:-}" || {
+  echo 'Set GLINER_RUNNER_BENCHMARK_BEHAVIOR_CANDIDATE to a characterization JSON file.' >&2
+  exit 1
+}
+set -- \
+  --baseline "$GLINER_RUNNER_BENCHMARK_BEHAVIOR_BASELINE" \
+  --candidate "$GLINER_RUNNER_BENCHMARK_BEHAVIOR_CANDIDATE"
+if [ -n "${GLINER_RUNNER_BENCHMARK_BASELINE_PROFILE:-}" ]; then
+  set -- "$@" --baseline-profile "$GLINER_RUNNER_BENCHMARK_BASELINE_PROFILE"
+fi
+if [ -n "${GLINER_RUNNER_BENCHMARK_CANDIDATE_PROFILE:-}" ]; then
+  set -- "$@" --candidate-profile "$GLINER_RUNNER_BENCHMARK_CANDIDATE_PROFILE"
+fi
+if [ "${GLINER_RUNNER_BENCHMARK_ALLOW_REVISION_CHANGE:-0}" = "1" ]; then
+  set -- "$@" --allow-revision-change
+fi
+if [ -n "${GLINER_RUNNER_BENCHMARK_COMPARISON_OUTPUT:-}" ]; then
+  set -- "$@" --output "$GLINER_RUNNER_BENCHMARK_COMPARISON_OUTPUT"
+fi
+python benchmarks/compare_behavior.py "$@"
+"""
+
+[tasks."benchmark:onnx-export"]
+description = "Export and verify the Small research-only ONNX classification graph"
+run = """
+test -n "${GLINER_RUNNER_ONNX_SMALL_MODEL:-}" || {
+  echo 'Set GLINER_RUNNER_ONNX_SMALL_MODEL to the reviewed local Small snapshot.' >&2
+  exit 1
+}
+set -- \
+  --model-path "$GLINER_RUNNER_ONNX_SMALL_MODEL" \
+  --model-repository fastino/gliner2.5-small-v1 \
+  --model-revision df5910e44bc4ffdb0d95399a83b0ca4516349aa5 \
+  --expected-gliner2-version 2.1.0 \
+  --output-dir "${GLINER_RUNNER_ONNX_OUTPUT:-benchmark-results/local/onnx-small}" \
+  --atol "${GLINER_RUNNER_ONNX_ATOL:-0.0001}"
+if [ -n "${GLINER_RUNNER_ONNX_SYNTHETIC_ZERO_THRESHOLD:-}" ]; then
+  set -- "$@" \
+    --comparison-synthetic-zero-threshold "$GLINER_RUNNER_ONNX_SYNTHETIC_ZERO_THRESHOLD"
+fi
+python benchmarks/export_classification_onnx.py "$@"
+"""
+
+[tasks."benchmark:onnx-export:decide"]
+description = "Export and verify the English Decide research-only ONNX graph"
+run = """
+test -n "${GLINER_RUNNER_ONNX_DECIDE_MODEL:-}" || {
+  echo 'Set GLINER_RUNNER_ONNX_DECIDE_MODEL to the reviewed local English Decide snapshot.' >&2
+  exit 1
+}
+set -- \
+  --model-path "$GLINER_RUNNER_ONNX_DECIDE_MODEL" \
+  --model-repository fastino/GLiNER2.5-Decide \
+  --model-revision 9d1bfb848cd16d93ee56ccbc59cd92bf0f284d90 \
+  --expected-gliner2-version 2.1.0 \
+  --output-dir "${GLINER_RUNNER_ONNX_OUTPUT:-benchmark-results/local/onnx-decide}" \
+  --atol "${GLINER_RUNNER_ONNX_ATOL:-0.0001}"
+if [ -n "${GLINER_RUNNER_ONNX_SYNTHETIC_ZERO_THRESHOLD:-}" ]; then
+  set -- "$@" \
+    --comparison-synthetic-zero-threshold "$GLINER_RUNNER_ONNX_SYNTHETIC_ZERO_THRESHOLD"
+fi
+python benchmarks/export_classification_onnx.py "$@"
+"""
+
+[tasks."benchmark:onnx-export:multilingual"]
+description = "Export and verify the multilingual Decide research-only ONNX graph"
+run = """
+test -n "${GLINER_RUNNER_ONNX_MULTILINGUAL_MODEL:-}" || {
+  echo 'Set GLINER_RUNNER_ONNX_MULTILINGUAL_MODEL to the reviewed local multilingual snapshot.' >&2
+  exit 1
+}
+set -- \
+  --model-path "$GLINER_RUNNER_ONNX_MULTILINGUAL_MODEL" \
+  --model-repository fastino/GLiNER2.5-multi-Decide \
+  --model-revision e173bca1f0c4217d7a55b3b0c705d5ece8a0218d \
+  --expected-gliner2-version 2.1.0 \
+  --output-dir "${GLINER_RUNNER_ONNX_OUTPUT:-benchmark-results/local/onnx-decide-multilingual}" \
+  --atol "${GLINER_RUNNER_ONNX_ATOL:-0.0001}"
+if [ -n "${GLINER_RUNNER_ONNX_SYNTHETIC_ZERO_THRESHOLD:-}" ]; then
+  set -- "$@" \
+    --comparison-synthetic-zero-threshold "$GLINER_RUNNER_ONNX_SYNTHETIC_ZERO_THRESHOLD"
+fi
+python benchmarks/export_classification_onnx.py "$@"
+"""
+
+[tasks."benchmark:onnx-export:1b"]
+description = "Export and verify the 1B Decide research-only ONNX graph"
+run = """
+test -n "${GLINER_RUNNER_ONNX_1B_MODEL:-}" || {
+  echo 'Set GLINER_RUNNER_ONNX_1B_MODEL to the reviewed local 1B snapshot.' >&2
+  exit 1
+}
+set -- \
+  --model-path "$GLINER_RUNNER_ONNX_1B_MODEL" \
+  --model-repository fastino/GLiNER2.5-Decide-1B \
+  --model-revision 67af949e17bebd20f05fe020a971079889e7a462 \
+  --expected-gliner2-version 2.1.0 \
+  --output-dir "${GLINER_RUNNER_ONNX_OUTPUT:-benchmark-results/local/onnx-decide-1b}" \
+  --atol "${GLINER_RUNNER_ONNX_ATOL:-0.0001}"
+if [ -n "${GLINER_RUNNER_ONNX_SYNTHETIC_ZERO_THRESHOLD:-}" ]; then
+  set -- "$@" \
+    --comparison-synthetic-zero-threshold "$GLINER_RUNNER_ONNX_SYNTHETIC_ZERO_THRESHOLD"
+fi
+python benchmarks/export_classification_onnx.py "$@"
+"""
+
+[tasks."prepare:onnx"]
+description = "Build a verified Python-free ONNX artifact from a pinned snapshot (build time only)"
+run = """
+test -n "${GLINER_RUNNER_ONNX_PREPARE_MODEL:-}" || {
+  echo 'Set GLINER_RUNNER_ONNX_PREPARE_MODEL to a curated model id or repository.' >&2
+  exit 1
+}
+test -n "${GLINER_RUNNER_ONNX_PREPARE_SNAPSHOT:-}" || {
+  echo 'Set GLINER_RUNNER_ONNX_PREPARE_SNAPSHOT to the pinned local snapshot.' >&2
+  exit 1
+}
+python -m gliner_runner prepare-onnx \
+  --model "$GLINER_RUNNER_ONNX_PREPARE_MODEL" \
+  --snapshot "$GLINER_RUNNER_ONNX_PREPARE_SNAPSHOT" \
+  --output-dir "${GLINER_RUNNER_ONNX_PREPARE_OUTPUT:-dist/onnx-models}" \
+  --template-dir "${GLINER_RUNNER_ONNX_TEMPLATE_DIR:-packages/onnx-runner/templates}" \
+  --atol "${GLINER_RUNNER_ONNX_ATOL:-0.0001}"
+"""
+
+[tasks."onnx:reference"]
+description = "Emit golden PyTorch outputs for an ONNX parity request corpus"
+run = """
+test -n "${GLINER_RUNNER_ONNX_PREPARE_MODEL:-}" || {
+  echo 'Set GLINER_RUNNER_ONNX_PREPARE_MODEL to a curated model id or repository.' >&2
+  exit 1
+}
+test -n "${GLINER_RUNNER_ONNX_PREPARE_SNAPSHOT:-}" || {
+  echo 'Set GLINER_RUNNER_ONNX_PREPARE_SNAPSHOT to the pinned local snapshot.' >&2
+  exit 1
+}
+test -n "${GLINER_RUNNER_ONNX_REFERENCE_CORPUS:-}" || {
+  echo 'Set GLINER_RUNNER_ONNX_REFERENCE_CORPUS to a corpus JSON file.' >&2
+  exit 1
+}
+test -n "${GLINER_RUNNER_ONNX_REFERENCE_OUTPUT:-}" || {
+  echo 'Set GLINER_RUNNER_ONNX_REFERENCE_OUTPUT to a new output JSON path.' >&2
+  exit 1
+}
+python -m gliner_runner onnx-reference \
+  --model "$GLINER_RUNNER_ONNX_PREPARE_MODEL" \
+  --snapshot "$GLINER_RUNNER_ONNX_PREPARE_SNAPSHOT" \
+  --corpus "$GLINER_RUNNER_ONNX_REFERENCE_CORPUS" \
+  --output "$GLINER_RUNNER_ONNX_REFERENCE_OUTPUT"
+"""
+
+[tasks."site:dev"]
+description = "Serve the documentation site locally (generates model and docs pages first)"
+run = "pnpm --filter @gliner-runner/site run dev"
+
+[tasks."site:build"]
+description = "Test the site generator and build the static documentation site into site/dist"
+run = """
+pnpm --filter @gliner-runner/site run test
+pnpm --filter @gliner-runner/site run build
 """

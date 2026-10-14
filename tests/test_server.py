@@ -1,15 +1,25 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
 from pathlib import Path
 
 from fastapi.testclient import TestClient
 
 from conftest import RecordingBackend
 from gliner_runner.backends.registry import BackendRegistry
-from gliner_runner.contracts import BackendName
+from gliner_runner.contracts import BackendName, BackendResult, InferenceRequest
+from gliner_runner.errors import InvalidSchemaError
 from gliner_runner.runtime import Runtime, RuntimeConfig
 from gliner_runner.server import create_app
 from gliner_runner.settings import Settings
+
+
+class InvalidSchemaBackend(RecordingBackend):
+    async def infer_batch(
+        self,
+        _requests: Sequence[InferenceRequest],
+    ) -> list[BackendResult]:
+        raise InvalidSchemaError("constraint set is infeasible")
 
 
 def test_http_contract_and_openapi(request_factory: object) -> None:
@@ -30,6 +40,31 @@ def test_http_contract_and_openapi(request_factory: object) -> None:
     assert response.json()["usage"] == {"inputTokens": 3, "outputTokens": 0}
     assert "/v1/infer" in openapi.json()["paths"]
     assert "requests_completed_total" in metrics.text
+
+
+def test_invalid_schema_returns_structured_client_error(request_factory: object) -> None:
+    registry = BackendRegistry()
+    registry.register(
+        BackendName.PYTORCH,
+        lambda _model, _precision, _device: InvalidSchemaBackend(),
+    )
+    runtime = Runtime(RuntimeConfig(batch_window_ms=0), registry=registry)
+
+    with TestClient(create_app(runtime=runtime), raise_server_exceptions=False) as client:
+        response = client.post(
+            "/v1/infer",
+            json=request_factory().model_dump(mode="json", by_alias=True),  # type: ignore[operator]
+        )
+
+    assert response.status_code == 422
+    assert response.headers["content-type"].startswith("application/json")
+    assert response.json() == {
+        "detail": {
+            "code": "invalid_schema",
+            "message": "constraint set is infeasible",
+            "retryable": False,
+        }
+    }
 
 
 def test_model_inventory_and_download_required_event(

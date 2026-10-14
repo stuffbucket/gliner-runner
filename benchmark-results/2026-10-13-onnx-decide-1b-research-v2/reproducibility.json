@@ -1,0 +1,243 @@
+{
+  "absolute_tolerance": 0.0001,
+  "artifacts": [
+    {
+      "path": "classifier.onnx",
+      "sha256": "6a3363d18bc0eec6b68d36a0ee68041f45b30fb8b1b7d2d347ceb9a2fe337121",
+      "size": 3099074
+    },
+    {
+      "path": "classifier.onnx.data",
+      "sha256": "9fd80d51728c2e7cfa12740fc773bc6cf7250f589a274108d06b9e5025eb7ace",
+      "size": 4138014720
+    },
+    {
+      "path": "export-report/onnx_export_2026-10-13_15-38-53-301823_success.md",
+      "sha256": "a204e7edd7f97ddc6b4afc2b254cac5f28eaefb43a3a1f5e8b2efe4b75a7289a",
+      "size": 539300
+    }
+  ],
+  "external_data_files": [
+    "classifier.onnx.data"
+  ],
+  "fixture_languages": [
+    "en"
+  ],
+  "fixture_sha256": "a71c4668bb74d781bdff5f17661dd1bfd5483a191d74f2f8b00325e747b54c76",
+  "fixture_shapes": [
+    "B=1/S=52/K=3",
+    "B=2/S=32/K=4"
+  ],
+  "fixture_suite": "classification-logits-english-v1",
+  "fixtures": [
+    {
+      "batch": 1,
+      "comparison": {
+        "max_abs_logit_difference": 4.76837158203125e-07,
+        "rows": [
+          {
+            "max_abs_logit_difference": 4.76837158203125e-07,
+            "onnx_selected_index": 0,
+            "pytorch_selected_index": 0,
+            "selected_index_match": true,
+            "valid_labels": 3
+          }
+        ],
+        "selected_index_matches": 1,
+        "valid_logits_compared": 3
+      },
+      "labels": 3,
+      "official_comparison": {
+        "max_abs_logit_difference": 0.0,
+        "rows": [
+          {
+            "max_abs_logit_difference": 0.0,
+            "onnx_selected_index": 0,
+            "pytorch_selected_index": 0,
+            "selected_index_match": true,
+            "valid_labels": 3
+          }
+        ],
+        "selected_index_matches": 1,
+        "valid_logits_compared": 3
+      },
+      "sequence": 52
+    },
+    {
+      "batch": 2,
+      "comparison": {
+        "max_abs_logit_difference": 5.9604644775390625e-06,
+        "rows": [
+          {
+            "max_abs_logit_difference": 9.5367431640625e-07,
+            "onnx_selected_index": 1,
+            "pytorch_selected_index": 1,
+            "selected_index_match": true,
+            "valid_labels": 2
+          },
+          {
+            "max_abs_logit_difference": 5.9604644775390625e-06,
+            "onnx_selected_index": 3,
+            "pytorch_selected_index": 3,
+            "selected_index_match": true,
+            "valid_labels": 4
+          }
+        ],
+        "selected_index_matches": 2,
+        "valid_logits_compared": 6
+      },
+      "labels": 4,
+      "official_comparison": {
+        "max_abs_logit_difference": 0.0,
+        "rows": [
+          {
+            "max_abs_logit_difference": 0.0,
+            "onnx_selected_index": 1,
+            "pytorch_selected_index": 1,
+            "selected_index_match": true,
+            "valid_labels": 2
+          },
+          {
+            "max_abs_logit_difference": 0.0,
+            "onnx_selected_index": 3,
+            "pytorch_selected_index": 3,
+            "selected_index_match": true,
+            "valid_labels": 4
+          }
+        ],
+        "selected_index_matches": 2,
+        "valid_logits_compared": 6
+      },
+      "sequence": 32
+    }
+  ],
+  "format_version": 2,
+  "graph": {
+    "inputs": [
+      {
+        "name": "input_ids",
+        "shape": [
+          "batch",
+          "sequence"
+        ],
+        "type": "tensor(int64)"
+      },
+      {
+        "name": "attention_mask",
+        "shape": [
+          "batch",
+          "sequence"
+        ],
+        "type": "tensor(int64)"
+      },
+      {
+        "name": "label_positions",
+        "shape": [
+          "batch",
+          "labels"
+        ],
+        "type": "tensor(int64)"
+      },
+      {
+        "name": "label_mask",
+        "shape": [
+          "batch",
+          "labels"
+        ],
+        "type": "tensor(bool)"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "logits",
+        "shape": [
+          "batch",
+          "labels"
+        ],
+        "type": "tensor(float)"
+      }
+    ]
+  },
+  "kind": "classification-logits-research",
+  "model_bytes": 4759465708,
+  "model_content_sha256": "6c183eb70b52b6683a1489a56df3eedb7fea7e12a2c5535c67fe00a1eb515d98",
+  "model_files": 8,
+  "model_repository": "fastino/GLiNER2.5-Decide-1B",
+  "model_revision": "67af949e17bebd20f05fe020a971079889e7a462",
+  "official_parity": {
+    "max_abs_logit_difference": 0.0,
+    "rows": [
+      {
+        "max_abs_logit_difference": 0.0,
+        "onnx_selected_index": 0,
+        "pytorch_selected_index": 0,
+        "selected_index_match": true,
+        "valid_labels": 3
+      },
+      {
+        "max_abs_logit_difference": 0.0,
+        "onnx_selected_index": 1,
+        "pytorch_selected_index": 1,
+        "selected_index_match": true,
+        "valid_labels": 2
+      },
+      {
+        "max_abs_logit_difference": 0.0,
+        "onnx_selected_index": 3,
+        "pytorch_selected_index": 3,
+        "selected_index_match": true,
+        "valid_labels": 4
+      }
+    ],
+    "selected_index_matches": 3,
+    "valid_logits_compared": 9
+  },
+  "official_path": "gliner2.classification.Classifier.batch_score",
+  "opset": 20,
+  "opset_imports": [
+    {
+      "domain": "ai.onnx",
+      "version": 20
+    }
+  ],
+  "parity": {
+    "max_abs_logit_difference": 5.9604644775390625e-06,
+    "rows": [
+      {
+        "max_abs_logit_difference": 4.76837158203125e-07,
+        "onnx_selected_index": 0,
+        "pytorch_selected_index": 0,
+        "selected_index_match": true,
+        "valid_labels": 3
+      },
+      {
+        "max_abs_logit_difference": 9.5367431640625e-07,
+        "onnx_selected_index": 1,
+        "pytorch_selected_index": 1,
+        "selected_index_match": true,
+        "valid_labels": 2
+      },
+      {
+        "max_abs_logit_difference": 5.9604644775390625e-06,
+        "onnx_selected_index": 3,
+        "pytorch_selected_index": 3,
+        "selected_index_match": true,
+        "valid_labels": 4
+      }
+    ],
+    "selected_index_matches": 3,
+    "valid_logits_compared": 9
+  },
+  "provider": "CPUExecutionProvider",
+  "quantization": "none",
+  "target_kind": "decide-1b",
+  "versions": {
+    "gliner2": "2.1.0",
+    "onnx": "1.23.2",
+    "onnxruntime": "1.31.0",
+    "onnxscript": "0.7.2",
+    "python": "3.12.12",
+    "torch": "2.14.0",
+    "transformers": "5.19.0"
+  }
+}

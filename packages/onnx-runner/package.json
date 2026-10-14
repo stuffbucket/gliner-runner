@@ -1,0 +1,30 @@
+{
+  "name": "@gliner-runner/onnx-runner",
+  "version": "0.2.1",
+  "description": "Python-free ONNX runner implementing the GLiNER Runner HTTP protocol",
+  "license": "Apache-2.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "gliner-runner-onnx": "./dist/src/cli.js"
+  },
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "check": "pnpm run build && node --test 'dist/test/**/*.test.js'"
+  },
+  "dependencies": {
+    "@huggingface/tokenizers": "0.2.0",
+    "onnxruntime-node": "1.30.0",
+    "zod": "4.6.5"
+  },
+  "devDependencies": {
+    "@gliner-runner/client": "workspace:*",
+    "@types/node": "26.6.4",
+    "typescript": "7.0.2"
+  },
+  "engines": {
+    "node": ">=24 <25"
+  }
+}

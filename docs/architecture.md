@@ -11,8 +11,13 @@ The system has four deliberate boundaries:
 3. **Worker supervisor** maintains queues and exactly one resident inference
    worker/profile. It drains and closes that owner before switching identities.
 4. **Backend adapter** owns preprocessing, tensor execution, decoding, and
-   backend capability reporting. The initial adapters run in Python because
-   PyTorch and future native MLX execution are Python-native.
+   backend capability reporting. The PyTorch adapter runs in Python because
+   PyTorch and future native MLX execution are Python-native. The ONNX adapter
+   runs in a separate Python-free Node.js process (see
+   [ONNX runtime](onnx-runtime.md)): it implements the same boundaries with its
+   own HTTP adapter, router, scheduler, and worker, and ports tokenization,
+   schema compilation, decoding, and usage accounting to TypeScript, with only
+   the encoder and classification head executing in ONNX Runtime.
 
 The boundaries are language-neutral: HTTP/OpenAPI is the process boundary,
 JSON-compatible Pydantic models are the contract authority, and model
@@ -21,9 +26,13 @@ it does not duplicate tokenization, decoding, or model logic.
 
 ## Control-plane language decision
 
-Rust, Go, Zig, and Zod are valid implementation choices. The initial release keeps
+Rust, Go, Zig, and Zod are valid implementation choices. The Python server keeps
 HTTP, scheduling, and model ownership in one Python process because that is the
-lowest-complexity and highest-reliability design for the current workload:
+lowest-complexity and highest-reliability design for the PyTorch workload. The
+ONNX runner shows the separate-process alternative: it does not host or supervise
+Python, owns its own control plane, and meets the same OpenAPI contract with
+parity evidence rather than by sharing code. The reasoning below applies to the
+PyTorch server:
 
 - device inference dominates HTTP and queue bookkeeping costs;
 - in-process batching avoids copying text and results across IPC twice;
@@ -53,7 +62,10 @@ cross-platform ABI and parity risk without removing the model runtime.
 
 The checked-in [`openapi.json`](../openapi/openapi.json) is generated from the
 Python server and verified in CI. This prevents a future daemon or client
-generator from defining a second public contract.
+generator from defining a second public contract. The Node ONNX runner serves
+the same contract version and is held to it by end-to-end tests and the
+[parity evidence](../benchmark-results/2026-10-14-onnx-runtime-parity-v1/REPORT.md),
+not by a second, independently authored specification.
 
 ## Worker and batching model
 
@@ -70,6 +82,19 @@ never transparently replayed. Run one server process per device; multiple
 processes would each own a separate model copy.
 
 ## Model lifecycle
+
+The Python server's model lifecycle is described here. The ONNX runner uses a
+different on-disk format: artifacts at
+`<models-dir>/onnx/<owner>--<name>/<revision>/` with a strict `manifest.json` that
+the runner verifies (file set, sizes, SHA-256) before every load. The runner
+acquires models itself, without Python: a bundled per-revision template plus the
+pinned Hugging Face safetensors (found in a verified local snapshot, or downloaded
+after approval) are assembled in Node into the byte-identical, parity-verified
+artifact, and each attempt leaves a best-effort processing record beside the
+artifact directory. Python is used only at build time to generate templates. The
+download endpoints, the `model_download_required` event, and the opt-in
+`--auto-download` setting follow the same approval semantics as the Python server.
+See [ONNX runtime](onnx-runtime.md#installing-models).
 
 The operator may install a manifest entry before serving:
 

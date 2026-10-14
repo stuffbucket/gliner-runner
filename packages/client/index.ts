@@ -345,6 +345,59 @@ export class GlinerApiError extends Error {
   }
 }
 
+/** The operator (or the `approve` callback) declined to download a missing model. */
+export class ModelDownloadDeniedError extends Error {
+  readonly modelId: string;
+
+  constructor(modelId: string) {
+    super(`download of model '${modelId}' was not approved`);
+    this.name = "ModelDownloadDeniedError";
+    this.modelId = modelId;
+  }
+}
+
+/** A model download job ended in the `failed` state (or finished without the model becoming available). */
+export class ModelDownloadFailedError extends Error {
+  readonly modelId: string;
+  readonly job: DownloadJob | undefined;
+
+  constructor(modelId: string, message: string, job?: DownloadJob) {
+    super(message);
+    this.name = "ModelDownloadFailedError";
+    this.modelId = modelId;
+    this.job = job;
+  }
+}
+
+export interface EnsureModelOptions {
+  /**
+   * Asked once, only when the model must be downloaded. Return `true` to start the download. The inventory entry
+   * is passed for display (size estimates, destination, revisions).
+   */
+  approve: (model: ModelInventoryItem) => Promise<boolean> | boolean;
+  /** Delay between job status polls (default 1000 ms). */
+  pollIntervalMs?: number;
+  signal?: AbortSignal;
+}
+
+function sleep(milliseconds: number, signal: AbortSignal | undefined): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (signal?.aborted) {
+      reject(signal.reason);
+      return;
+    }
+    const timer = setTimeout(() => {
+      signal?.removeEventListener("abort", onAbort);
+      resolve();
+    }, milliseconds);
+    const onAbort = (): void => {
+      clearTimeout(timer);
+      reject(signal?.reason);
+    };
+    signal?.addEventListener("abort", onAbort, { once: true });
+  });
+}
+
 export class GlinerClient {
   readonly baseUrl: string;
   readonly headers: HeadersInit;
@@ -409,6 +462,69 @@ export class GlinerClient {
       ...(options.signal === undefined ? {} : { signal: options.signal }),
     });
     return DownloadJobSchema.parse(body);
+  }
+
+  /**
+   * Makes sure `modelId` (a model id or repository, optionally `@revision`) is installed. Checks `/v1/models`;
+   * when the model must be downloaded it asks `approve`, starts the download at the destination the runner
+   * reports, polls the job until it succeeds, and resolves with the refreshed inventory entry. Throws
+   * `ModelDownloadDeniedError` when approval is refused and `ModelDownloadFailedError` when the job fails.
+   * Nothing is downloaded without approval.
+   */
+  async ensureModel(modelId: string, options: EnsureModelOptions): Promise<ModelInventoryItem> {
+    const { signal } = options;
+    const requestOptions = signal === undefined ? {} : { signal };
+    const separator = modelId.indexOf("@");
+    const name = separator < 0 ? modelId : modelId.slice(0, separator);
+    const revision = separator < 0 ? undefined : modelId.slice(separator + 1);
+    const find = async (): Promise<ModelInventoryItem> => {
+      const inventory = await this.models(requestOptions);
+      const found = inventory.models.find((item) => item.model_id === name || item.repository === name);
+      if (found === undefined) {
+        throw new Error(`unknown GLiNER2.5 model '${name}'`);
+      }
+      return found;
+    };
+    const missing = (item: ModelInventoryItem): boolean =>
+      revision === undefined ? item.download_required : !item.local_revisions.includes(revision);
+
+    const model = await find();
+    if (!missing(model)) {
+      return model;
+    }
+    if (!(await options.approve(model))) {
+      throw new ModelDownloadDeniedError(model.model_id);
+    }
+    let job = await this.startModelDownload(
+      model.model_id,
+      {
+        approved: true,
+        destination: model.download_destination,
+        ...(revision === undefined ? {} : { revision }),
+      },
+      requestOptions,
+    );
+    const pollIntervalMs = options.pollIntervalMs ?? 1000;
+    while (job.state === "queued" || job.state === "running") {
+      await sleep(pollIntervalMs, signal);
+      job = await this.modelDownload(job.job_id, requestOptions);
+    }
+    if (job.state === "failed") {
+      throw new ModelDownloadFailedError(
+        model.model_id,
+        `download of model '${model.model_id}' failed: ${job.error ?? "unknown error"}`,
+        job,
+      );
+    }
+    const refreshed = await find();
+    if (missing(refreshed)) {
+      throw new ModelDownloadFailedError(
+        model.model_id,
+        `download of model '${model.model_id}' finished but the model is still not installed`,
+        job,
+      );
+    }
+    return refreshed;
   }
 
   async infer(
