@@ -10,8 +10,12 @@ With [Homebrew](https://brew.sh) (macOS on Apple Silicon, and Linux):
 
 ```sh
 brew tap stuffbucket/tap
+brew trust stuffbucket/tap
 brew install gliner-runner
 ```
+
+`brew trust` tells Homebrew 7 and later that it may load formulas from this tap; skip it if your
+Homebrew says the command does not exist.
 
 To update later:
 

@@ -24,7 +24,8 @@ Or directly with brew:
 
 ```bash
 brew tap stuffbucket/tap
-brew install stuffbucket/tap/gliner-runner
+brew trust stuffbucket/tap
+brew install gliner-runner
 ```
 
 ## Quick Start
