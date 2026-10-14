@@ -52,6 +52,8 @@ run = "python scripts/check_licensing.py"
 
 [tasks."check:onnx-receipt"]
 description = "Verify the checked-in ONNX evaluation receipt is coherent and not replayed (no models, no network)"
+# The check rebuilds the runner; never overlap the client/runner test build in `mise run check`.
+wait_for = ["check:client"]
 run = """
 node --test scripts/onnx-receipt.test.mjs
 node scripts/onnx-eval-receipt.mjs check
