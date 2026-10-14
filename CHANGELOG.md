@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.1](https://github.com/stuffbucket/gliner-runner/compare/v0.3.0...v0.3.1) (2026-10-14)
+
+
+### Bug Fixes
+
+* trust the Homebrew tap before installing; drop release-as after 0.3.0 ([6e86464](https://github.com/stuffbucket/gliner-runner/commit/6e864640a8d7eee590dc40eafcb746764c49ced7))
+* trust the Homebrew tap before installing; drop release-as after 0.3.0 ([3013871](https://github.com/stuffbucket/gliner-runner/commit/30138711289f2c9b5e10c07ae47cdba3009fc473))
+
 ## [0.3.0](https://github.com/stuffbucket/gliner-runner/compare/v0.2.1...v0.3.0) (2026-10-14)
 
 
