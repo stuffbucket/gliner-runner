@@ -76,6 +76,8 @@ jobs:
 
   notify-tap:
     name: Notify Homebrew tap
+    # HOMEBREW_TAP_TOKEN is a release-environment secret.
+    environment: release
     needs: [release-please, publish]
     runs-on: ubuntu-24.04
     timeout-minutes: 5
