@@ -325,7 +325,7 @@ async function main() {
   rmSync(`${archive}.sha256`, { force: true });
 
   if (!values["no-build"]) {
-    run("pnpm", ["--filter", PACKAGE_NAME, "run", "build"], { cwd: ROOT });
+    run("pnpm", ["--filter", `${PACKAGE_NAME}...`, "run", "build"], { cwd: ROOT });
   }
   const compiled = join(PACKAGE_DIR, "dist", "src");
   if (!existsSync(join(compiled, "cli.js"))) {

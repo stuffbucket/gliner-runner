@@ -77,7 +77,7 @@ GLINER_RUNNER_ONNX_MODELS_DIR="${GLINER_RUNNER_ONNX_MODELS_DIR:-dist/onnx-models
 [tasks.dev]
 description = "Build the ONNX runner and serve it on 127.0.0.1:8080 with models from dist/onnx-models"
 run = """
-pnpm --filter @gliner-runner/onnx-runner run build
+pnpm --filter "@gliner-runner/onnx-runner..." run build
 node packages/onnx-runner/dist/src/cli.js serve \
   --host 127.0.0.1 --port "${GLINER_RUNNER_DEV_PORT:-8080}" \
   --models-dir "${GLINER_RUNNER_ONNX_MODELS_DIR:-dist/onnx-models}"
@@ -86,7 +86,7 @@ node packages/onnx-runner/dist/src/cli.js serve \
 [tasks.models]
 description = "Install the three curated models into dist/onnx-models (downloads about 7 GB unless a verified local snapshot is found)"
 run = """
-pnpm --filter @gliner-runner/onnx-runner run build
+pnpm --filter "@gliner-runner/onnx-runner..." run build
 for model in decide-340m decide-multilingual decide-1b; do
   node packages/onnx-runner/dist/src/cli.js models install "$model" --yes \
     --models-dir "${GLINER_RUNNER_ONNX_MODELS_DIR:-dist/onnx-models}"

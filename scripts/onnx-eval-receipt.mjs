@@ -47,7 +47,7 @@ function die(message) {
 }
 
 function build() {
-  execFileSync("pnpm", ["--filter", PACKAGE_NAME, "run", "build"], { cwd: ROOT, stdio: "inherit" });
+  execFileSync("pnpm", ["--filter", `${PACKAGE_NAME}...`, "run", "build"], { cwd: ROOT, stdio: "inherit" });
 }
 
 function installedVersion(name) {
