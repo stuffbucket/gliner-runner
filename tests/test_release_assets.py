@@ -17,25 +17,27 @@ from scripts.assemble_release import (
 
 
 @contextmanager
-def stamped_repository() -> Iterator[None]:
-    """Run a test that stamps versions, then restore every release-managed file."""
-    files = [
-        assemble_release.ROOT / path
-        for path in (
-            "pyproject.toml",
-            "package.json",
-            "packages/client/package.json",
-            "packages/onnx-runner/package.json",
-            "src/gliner_runner/__init__.py",
-            "Dockerfile",
-        )
-    ]
-    originals = {path: path.read_bytes() for path in files}
-    try:
-        yield
-    finally:
-        for path, content in originals.items():
-            path.write_bytes(content)
+def stamped_repository(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
+    """Run a test that stamps versions against a private copy of the files assemble_release reads.
+
+    Never stamp the real working tree: other checks running in parallel read these files.
+    """
+    copy = tmp_path / "repository"
+    for path in (
+        "pyproject.toml",
+        "package.json",
+        "packages/client/package.json",
+        "packages/onnx-runner/package.json",
+        "src/gliner_runner/__init__.py",
+        "Dockerfile",
+        assemble_release.RECEIPT_PATH,
+        "openapi/openapi.json",
+    ):
+        target = copy / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes((assemble_release.ROOT / path).read_bytes())
+    monkeypatch.setattr(assemble_release, "ROOT", copy)
+    yield
 
 
 def test_repository_release_versions_are_synchronized() -> None:
@@ -223,13 +225,15 @@ def test_stable_release_writes_latest_json_and_installer(tmp_path: Path) -> None
     assert f"{file_sha256(installer)}  install.sh\n" in sums
 
 
-def test_release_candidate_has_no_latest_json(tmp_path: Path) -> None:
+def test_release_candidate_has_no_latest_json(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     rc = "9.8.7-rc.2"
     release = tmp_path / "release"
     release.mkdir()
     write_package_assets(release, "9.8.7rc2")
     write_onnx_runtime(tmp_path / "onnx", rc, "linux-x64")
-    with stamped_repository():
+    with stamped_repository(tmp_path, monkeypatch):
         stamp_versions(rc)
         assert set(repository_versions().values()) == {rc, "9.8.7rc2"}
         assemble(release, rc, [tmp_path / "onnx"])
@@ -273,7 +277,9 @@ def test_stable_release_attaches_checksummed_homebrew_formula(tmp_path: Path) ->
     assert f"{file_sha256(formula)}  gliner-runner.rb\n" in sums
 
 
-def test_release_candidate_attaches_rc_formula_only(tmp_path: Path) -> None:
+def test_release_candidate_attaches_rc_formula_only(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     rc = "9.8.7-rc.2"
     release = tmp_path / "release"
     release.mkdir()
@@ -282,7 +288,7 @@ def test_release_candidate_attaches_rc_formula_only(tmp_path: Path) -> None:
     archive = tmp_path / "onnx" / onnx_name
     stable_formula = write_formula(tmp_path / "formula", "gliner-runner.rb", rc, archive)
     rc_formula = write_formula(tmp_path / "formula", "gliner-runner-rc.rb", rc, archive)
-    with stamped_repository():
+    with stamped_repository(tmp_path, monkeypatch):
         stamp_versions(rc)
         with pytest.raises(ValueError, match=r"attaches gliner-runner-rc\.rb"):
             assemble(release, rc, [tmp_path / "onnx"], homebrew_formula=stable_formula)
