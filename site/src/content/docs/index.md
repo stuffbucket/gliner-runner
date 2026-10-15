@@ -3,9 +3,82 @@ title: GLiNER Runner
 description: Sort text into labels you choose, on your own computer, with no account and no internet connection after the first download.
 ---
 
-GLiNER Runner reads a piece of text and tells you which of your labels fits it. You give it a
-message and a list of labels such as `billing, support, shipping`, and it answers with the best
-label and a confidence score. It runs on your own computer, and your text never leaves it.
+GLiNER Runner sorts text into labels you choose. It runs on your own computer, and your text
+never leaves it.
+
+## What it does
+
+You give it some text and a list of labels. It picks the label that fits best and says how
+confident it is. Confidence is a number from 0 (not confident) to 1 (very confident).
+
+For example, the text is a sentence about the weather, and the labels are `weather`, `cooking`,
+`sports`, and `money`:
+
+```sh
+gliner-runner classify --labels weather,cooking,sports,money "Heavy rain is expected all weekend, with strong winds along the coast."
+```
+
+```text
+weather (confidence 0.997)
+```
+
+The answer is `weather`, and the program is very sure. The labels can be any short words you
+like. You write them. The program does not make up new ones.
+
+### Texts that fit two labels, or none
+
+Some texts fit one label, some fit two, and some fit none. This example runs each of three texts
+twice. The first run picks one label. The second run adds `--multi`, which lets a text have
+several labels, or none.
+
+```sh
+while IFS= read -r line; do
+  printf '%s\n' "$line"
+  printf '  one label: '
+  gliner-runner classify --labels weather,cooking,sports,money "$line"
+  printf '  --multi:   '
+  gliner-runner classify --multi --labels weather,cooking,sports,money "$line"
+done <<'EOF'
+The home team won the final by two goals.
+I will pay my rent on Friday, and then I will bake bread.
+My grandmother taught me to knit a scarf when I was seven.
+EOF
+```
+
+```text
+The home team won the final by two goals.
+  one label: sports (confidence 0.999)
+  --multi:   sports (0.980)
+I will pay my rent on Friday, and then I will bake bread.
+  one label: money (confidence 0.783)
+  --multi:   cooking (0.640), money (0.866)
+My grandmother taught me to knit a scarf when I was seven.
+  one label: cooking (confidence 0.345)
+  --multi:   no label reached the 0.5 threshold
+```
+
+- **The first text fits one label.** Both runs say `sports`.
+- **The second text fits two labels.** Paying rent is `money` and baking is `cooking`. With one
+  label the program has to choose, and it chose `money`. With `--multi` it returns both.
+- **The third text fits none.** It is about knitting, and no label is about knitting. With one
+  label, the program always picks something. Here it picked `cooking`, but its confidence is only
+  0.345. A low number like that means "none of these". With `--multi`, a label is returned only
+  when its confidence reaches 0.5, so the program returned no label at all.
+
+If you want to stay with one label per text, add a label such as `none of these`. For the knitting
+text, `--labels weather,cooking,sports,money,"none of these"` answers
+`none of these (confidence 0.404)`.
+
+### How much text
+
+It works best on a sentence, up to a few paragraphs (about 500 words). A text of 2,000 words
+still gives a sensible answer, but takes a few seconds. Much longer texts take far too long: 4,000
+words took 8 seconds on the model alone. For a longer document, split it into parts, such as
+paragraphs or sections, and classify each part. The
+[measurements are on the How it works page](/gliner-runner/how-it-works/#how-much-text-it-can-read).
+
+To see what else it can and cannot do, read
+[What it can and can't do](/gliner-runner/how-it-works/#what-it-can-and-cant-do).
 
 ## Install
 
@@ -94,10 +167,10 @@ gliner-runner classify --labels billing,support,shipping "My package never arriv
 
 ## Next
 
-- [How it works](/gliner-runner/how-it-works/): what the program does, how fast it is, and when to
-  use something else.
-- [Examples](/gliner-runner/examples/): copy-and-paste recipes for support tickets, personal
-  information, email, text messages, reviews, other languages, and moderation.
+- [How it works](/gliner-runner/how-it-works/): what the program can and cannot do, how fast it is,
+  and when to use something else.
+- [Examples](/gliner-runner/examples/): jobs you can do with it, such as sorting support tickets,
+  finding what matters in an email, flagging personal information, and reading reviews.
 - [Use it in a React app](/gliner-runner/use-in-react/): a small web page that calls the program.
-- [More ideas](/gliner-runner/more-ideas/): other things to sort.
+- [More ideas](/gliner-runner/more-ideas/): other things to sort, grouped by job.
 - [Reference](/gliner-runner/models/): the models, test results, and technical documents.

@@ -1,8 +1,6 @@
 ---
-title: Other languages
+title: Route messages written in other languages
 description: Route Spanish, French, and German messages with the multilingual model.
-sidebar:
-  order: 6
 ---
 
 ## The situation
@@ -79,6 +77,8 @@ go either way, and a low confidence is the sign.
 
 ## What to try next
 
+- **Find out the language first.** See
+  [Tell which language a message is in](/gliner-runner/examples/which-language/).
 - **Mixed languages.** Put messages in any of the supported languages in the same list. You do not
   have to say which language each one is in.
 - **Check the confidence.** Send anything under 0.5 to a person who reads that language.

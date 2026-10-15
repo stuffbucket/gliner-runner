@@ -1,8 +1,6 @@
 ---
-title: What matters in an email
+title: Find the important lines in an email
 description: Mark each line of an email as a request, a question, a deadline, plain information, or a greeting.
-sidebar:
-  order: 3
 ---
 
 ## The situation

@@ -1,8 +1,6 @@
 ---
-title: Review mood and topic
+title: Read reviews for mood and topics
 description: Read a customer review for its mood and for the topics it mentions.
-sidebar:
-  order: 5
 ---
 
 ## The situation

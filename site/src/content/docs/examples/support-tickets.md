@@ -1,8 +1,6 @@
 ---
-title: Support ticket routing
+title: Send each support ticket to the right team
 description: Send each customer message to the team that should handle it.
-sidebar:
-  order: 1
 ---
 
 ## The situation

@@ -1,23 +1,51 @@
 ---
 title: Examples
-description: Copy-and-paste recipes that sort real kinds of text, with the output we got when we ran them.
+description: Jobs you can do with it, with commands to paste and the output we got when we ran them.
 sidebar:
   label: Overview
-  order: 0
 ---
 
-Each page below takes one everyday job, lists the labels it uses, gives a command to paste into
-Terminal, and shows what we got when we ran it.
+Every example is a job people already do by hand. Each page takes one job, lists the labels it
+uses, gives a command to paste into Terminal, and shows what we got when we ran it. Underneath,
+every job is the same thing: put a piece of text into one or more labels you choose.
 
-| Page | Job | Labels |
-| --- | --- | --- |
-| [Support ticket routing](/gliner-runner/examples/support-tickets/) | Send each ticket to the right team | billing, technical, shipping, account, cancellation |
-| [Spotting personal information](/gliner-runner/examples/personal-information/) | Tell whether a message contains personal details, and which kind | phone number, email address, home address, payment card, none |
-| [What matters in an email](/gliner-runner/examples/email-lines/) | Mark each line of an email | action request, question, deadline, information only, greeting or sign-off |
-| [Text message triage](/gliner-runner/examples/text-messages/) | Sort texts by how fast they need attention | urgent, can wait, spam, personal |
-| [Review mood and topic](/gliner-runner/examples/reviews/) | Read a review for its mood and what it is about | positive, mixed, negative; food, service, price, cleanliness, noise |
-| [Other languages](/gliner-runner/examples/other-languages/) | Route Spanish, French, and German messages | billing, technical, shipping, account |
-| [Content moderation flags](/gliner-runner/examples/moderation/) | Flag posts for a person to look at | harassment, spam, self-promotion, off-topic, ok |
+## Sort incoming messages
+
+| Job | Labels |
+| --- | --- |
+| [Send each support ticket to the right team](/gliner-runner/examples/support-tickets/) | billing, technical, shipping, account, cancellation |
+| [Sort text messages by how fast they need attention](/gliner-runner/examples/text-messages/) | urgent, can wait, spam, personal |
+| [Tell which language a message is in](/gliner-runner/examples/which-language/) | English, Spanish, French, German, Italian |
+| [Route messages written in other languages](/gliner-runner/examples/other-languages/) | billing, technical, shipping, account |
+
+## Find what matters
+
+| Job | Labels |
+| --- | --- |
+| [Find the important lines in an email](/gliner-runner/examples/email-lines/) | action request, question, deadline, information only, greeting or sign-off |
+| [Tell what is urgent and what can wait](/gliner-runner/examples/urgent-or-can-wait/) | urgent, can wait |
+
+## Flag things to check
+
+| Job | Labels |
+| --- | --- |
+| [Check a message for personal information](/gliner-runner/examples/personal-information/) | phone number, email address, home address, payment card, none |
+| [Flag posts that break your rules](/gliner-runner/examples/moderation/) | harassment, spam, self-promotion, off-topic, ok |
+
+## Understand feedback
+
+| Job | Labels |
+| --- | --- |
+| [Read reviews for mood and topics](/gliner-runner/examples/reviews/) | positive, mixed, negative; food, service, price, cleanliness, noise |
+
+## Clean up lists
+
+| Job | Labels |
+| --- | --- |
+| [Decide what to keep and what to throw away](/gliner-runner/examples/keep-or-discard/) | important to keep, safe to throw away |
+
+One job in this group does not work. The program cannot find duplicates, because it reads one
+text at a time and has no way to compare two.
 
 ## Before you start
 

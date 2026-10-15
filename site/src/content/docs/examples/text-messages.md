@@ -1,8 +1,6 @@
 ---
-title: Text message triage
+title: Sort text messages by how fast they need attention
 description: Sort text messages into urgent, can wait, spam, and personal.
-sidebar:
-  order: 4
 ---
 
 ## The situation

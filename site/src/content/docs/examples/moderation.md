@@ -1,8 +1,6 @@
 ---
-title: Content moderation flags
+title: Flag posts that break your rules
 description: "Flag posts for a person to look at: harassment, spam, self-promotion, or off-topic."
-sidebar:
-  order: 7
 ---
 
 ## The situation

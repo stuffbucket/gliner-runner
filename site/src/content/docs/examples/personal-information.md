@@ -1,8 +1,6 @@
 ---
-title: Spotting personal information
+title: Check a message for personal information
 description: Tell whether a message contains personal details, and which kinds. This does not remove them.
-sidebar:
-  order: 2
 ---
 
 ## The situation
