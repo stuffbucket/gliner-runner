@@ -255,9 +255,23 @@ export function createServer(options: ServerOptions): RunnerServer {
       });
     });
     exchanges.add(finished);
+    const origin = request.headers.origin;
+    const cors = origin !== undefined && settings.corsOrigins.includes(origin);
     let reply: Reply;
     try {
-      reply = await dispatch(request, controller.signal);
+      reply =
+        cors && request.method === "OPTIONS"
+          ? {
+              status: 204,
+              body: "",
+              contentType: "text/plain",
+              headers: {
+                "access-control-allow-methods": "GET, POST, OPTIONS",
+                "access-control-allow-headers": "content-type",
+                "access-control-max-age": "600",
+              },
+            }
+          : await dispatch(request, controller.signal);
     } catch (error) {
       if (controller.signal.aborted || error instanceof RequestCancelledError) {
         response.destroy();
@@ -277,6 +291,7 @@ export function createServer(options: ServerOptions): RunnerServer {
       "content-type": reply.contentType,
       "content-length": body.length,
       ...reply.headers,
+      ...(cors ? { "access-control-allow-origin": origin, vary: "Origin" } : {}),
     });
     response.end(body);
   }

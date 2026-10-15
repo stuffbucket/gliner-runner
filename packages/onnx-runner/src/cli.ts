@@ -106,7 +106,8 @@ export const HELP = `gliner-runner classifies text into labels you choose. It ru
 Usage: gliner-runner <command> [options]
 
 Commands:
-  models install <id>   Download and prepare a model, for example decide-340m (one time)
+  models install <id>   Download and prepare a model, for example decide-340m (one time);
+                        several ids or --all install every curated model
   models list           Show installed models and their status (JSON)
   models scan           Look for model files already on this computer
   models prepare <id>   Prepare a model from a local copy of its files, offline

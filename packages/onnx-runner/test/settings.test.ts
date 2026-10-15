@@ -75,7 +75,25 @@ test("accepts every documented flag", () => {
     maxBodyBytes: 4096,
     autoDownload: false,
     templatesDir: undefined,
+    corsOrigins: [],
   });
+});
+
+test("CORS origins come from a repeatable flag or a comma-separated variable; the flag wins", () => {
+  assert.deepEqual(parseServeArguments([], {}).corsOrigins, []);
+  assert.deepEqual(parseServeArguments([], { GLINER_RUNNER_CORS_ORIGINS: "" }).corsOrigins, []);
+  assert.deepEqual(
+    parseServeArguments([], { GLINER_RUNNER_CORS_ORIGINS: " http://localhost:5173 , https://app.example.com,,http://localhost:5173" }).corsOrigins,
+    ["http://localhost:5173", "https://app.example.com"],
+  );
+  assert.deepEqual(
+    parseServeArguments(["--cors-origin", "http://a.test", "--cors-origin=http://b.test:8080"], { GLINER_RUNNER_CORS_ORIGINS: "http://env.test" }).corsOrigins,
+    ["http://a.test", "http://b.test:8080"],
+  );
+  for (const bad of ["*", "null", "localhost:5173", "http://a.test/", "http://a.test/path", "not a url"]) {
+    assert.throws(() => parseServeArguments(["--cors-origin", bad], {}), /--cors-origin must list origins like/, bad);
+    assert.throws(() => parseServeArguments([], { GLINER_RUNNER_CORS_ORIGINS: `http://ok.test,${bad}` }), /GLINER_RUNNER_CORS_ORIGINS must list origins/, bad);
+  }
 });
 
 test("auto-download and the templates directory are opt-in settings", () => {

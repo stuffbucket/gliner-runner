@@ -12,7 +12,7 @@
       "sha256": "b97b2041d4dcc4caf194167bc0aad5d5d3604cd7119a61cef1267f8bcbeaceff"
     }
   ],
-  "created_at": "2026-10-14T22:05:18.179Z",
+  "created_at": "2026-10-15T00:40:12.089Z",
   "format_version": 1,
   "goldens": [
     {
@@ -72,7 +72,7 @@
       "template_sha256": "c29714b48dcc634debb04ad6b7f420745f12c3d423d284a2fcf474650666a52b"
     }
   ],
-  "previous_receipt_sha256": "32bb54b93a0bdb1ba4ca7dbc7ff563e16550fad180574abebf4f53f8e98e0bf7",
+  "previous_receipt_sha256": "d82e7964dd3c1b9ffcfb5f698e2749b5e5f08cbc84a6075b6177773a2a7cc6a8",
   "results": [
     {
       "compared_values": 284,
@@ -135,10 +135,10 @@
       "synthetic_zero_diffs": 280
     }
   ],
-  "run_id": "87efd331-cbf6-450c-b013-d8b2c95146e4",
+  "run_id": "e7dc7bb7-97a8-44f8-9894-def292956091",
   "runner": {
-    "identity_sha256": "a8a1b976e3dae2d7fef35fbb52097c2d4d2f46f4f0fcabdcf88474a146ec495d",
-    "version": "0.2.1"
+    "identity_sha256": "b0fc4ef89c90edef922c6c733834a23e04a8c24e1a2e27622e41388de8ba06ed",
+    "version": "0.3.1"
   },
   "tolerance": 0.0001
 }

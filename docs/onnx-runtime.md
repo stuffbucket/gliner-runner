@@ -157,7 +157,7 @@ goes to stderr. Exit codes: `0` success, `1` failure or download not approved,
 
 | Command | Behavior |
 | --- | --- |
-| `install <model-id> [--yes]` | Reuses a valid installed artifact; else prepares from a verified local snapshot (no network); else downloads the pinned source files and prepares. Prints one JSON line `{"model_id", "path", "revision"}` on stdout. |
+| `install <model-id>... [--all] [--yes]` | Reuses a valid installed artifact; else prepares from a verified local snapshot (no network); else downloads the pinned source files and prepares. Prints one JSON line `{"model_id", "path", "revision"}` per model on stdout. Several ids, or `--all` (every curated model), install one after another; see below. |
 | `prepare <model-id> [--snapshot <dir>]` | Offline only. Builds the artifact from `--snapshot`, or from the first verified snapshot in the standard locations; never downloads. Fails if the artifact directory already exists. |
 | `scan [--model <id>] [--json]` | Lists every snapshot candidate found for the curated models, whether it verified or why it was rejected, and the processing status. Writes nothing into snapshot locations. |
 | `list` | Prints JSON: per model the pinned revision, installed revisions, template availability and download size, and processing state. |
@@ -167,8 +167,25 @@ is missing and no verified local snapshot exists: with a terminal on stdin it
 prints the model, size, source, and destination and prompts `[y/N]`; without a
 terminal it refuses unless `--yes` (`-y`) is given.
 
+With several ids or `--all`, `install` first prints a plan to stderr, one line
+per model, then a total:
+
+```text
+decide-340m: already installed
+decide-multilingual: found on this machine at /path/to/snapshot — no download needed
+decide-1b: will download 4.8 GB (needs about 8.9 GB disk)
+Total: will download 4.8 GB (needs about 8.9 GB disk)
+```
+
+Sizes come from the templates. It then refuses (exit `1`) if the free space in
+the models directory is not enough; asks `Download 4.8 GB now? [y/N]` on a
+terminal (only when something must be downloaded); and without a terminal
+refuses unless `--yes` is given. Installed models are skipped
+(`decide-340m: already installed (<path>)`).
+
 ```sh
 gliner-runner-onnx models install decide-340m --yes          # non-interactive
+gliner-runner-onnx models install --all --yes                # every curated model
 gliner-runner-onnx models scan --model decide-340m           # what is on this machine?
 gliner-runner-onnx models prepare decide-340m --snapshot /path/to/snapshot
 gliner-runner-onnx models list
@@ -186,6 +203,18 @@ cannot be installed (unknown revision, no template) the request returns the
 ordinary `409 model_download_required`; if the job fails, the same `409` is
 returned with `automatic installation failed: <reason>`. Shutdown cancels
 running jobs.
+
+### CORS
+
+By default the server sends no CORS headers, so browsers block pages from other
+origins. `serve --cors-origin http://localhost:5173` (repeatable; or
+`GLINER_RUNNER_CORS_ORIGINS=http://localhost:5173,https://app.example.com`)
+allows a web page from that origin to call the server. A request whose `Origin`
+header exactly equals a configured origin (`scheme://host[:port]`, no `*`, no
+path) gets `Access-Control-Allow-Origin` (the origin) and `Vary: Origin`, and an
+`OPTIONS` preflight is answered `204` with `Access-Control-Allow-Methods: GET,
+POST, OPTIONS`, `Access-Control-Allow-Headers: content-type` and
+`Access-Control-Max-Age: 600`. Other origins get no CORS headers.
 
 ### Offline snapshot discovery
 
@@ -306,6 +335,7 @@ abbreviated and `artifact.files[]` is shortened to two of its six entries):
 | `--models-dir`, `GLINER_RUNNER_MODELS_DIR` | `serve`, `models` | Models root. Default: user cache directory plus `gliner-runner/models` |
 | `--templates-dir`, `GLINER_RUNNER_ONNX_TEMPLATES_DIR` | `serve`, `models` | Template directory; the flag wins, then the variable, then the bundled templates (`app/templates/` in the archive) |
 | `--auto-download`, `GLINER_RUNNER_AUTO_DOWNLOAD` | `serve` | Enable [auto-download](#auto-download); default off |
+| `--cors-origin`, `GLINER_RUNNER_CORS_ORIGINS` | `serve` | Browser origins allowed to call the server; see [CORS](#cors) |
 | `HF_ENDPOINT` | downloads, refresh | Hub base URL, default `https://huggingface.co`. Files are fetched from `{endpoint}/{repository}/resolve/{revision}/{file}` |
 | `HF_TOKEN` | downloads, refresh | Optional bearer token for gated or private repositories. Redirects are followed manually; the token is sent only to the endpoint's own origin and dropped when a redirect (for example to a CDN) leaves it. It is never logged or returned by the API |
 | `GLINER_RUNNER_SNAPSHOT_DIRS` | install, prepare, scan, jobs | Extra snapshot search roots (see [discovery](#offline-snapshot-discovery)) |
@@ -487,6 +517,7 @@ the command-line flag wins, then the environment, then the default.
 | `--max-body-bytes` | `GLINER_RUNNER_MAX_BODY_BYTES` | `16777216` (16 MiB); larger request bodies get `413 request_too_large` |
 | `--auto-download` | `GLINER_RUNNER_AUTO_DOWNLOAD` | off; `1`, `true`, `yes`, or `on` lets inference install a missing curated model (see [auto-download](#auto-download)) |
 | `--templates-dir` | `GLINER_RUNNER_ONNX_TEMPLATES_DIR` | the bundled templates |
+| `--cors-origin` (repeatable) | `GLINER_RUNNER_CORS_ORIGINS` (comma-separated) | none: no CORS headers (see [CORS](#cors)) |
 | n/a | `GLINER_RUNNER_ONNX_INTRA_OP_THREADS` | ONNX Runtime's physical-core default |
 
 Scheduling, schema and model grouping, bounded queue with `429` backpressure,

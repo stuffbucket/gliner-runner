@@ -28,6 +28,11 @@ export interface Settings {
   autoDownload: boolean;
   /** Directory of bundled artifact templates; `undefined` means the package's own `templates/`. */
   templatesDir: string | undefined;
+  /**
+   * Browser origins allowed to call the server (CORS), compared exactly with the request's `Origin` header.
+   * Empty (the default) sends no CORS headers.
+   */
+  corsOrigins: readonly string[];
 }
 
 export const DEFAULT_MAX_BODY_BYTES = 16 * 1024 * 1024;
@@ -65,6 +70,7 @@ export function defaultSettings(): Settings {
     maxBodyBytes: DEFAULT_MAX_BODY_BYTES,
     autoDownload: false,
     templatesDir: undefined,
+    corsOrigins: [],
   };
 }
 
@@ -156,6 +162,28 @@ const OPTIONS = [
 ] as const;
 
 export const AUTO_DOWNLOAD_ENV = "GLINER_RUNNER_AUTO_DOWNLOAD";
+export const CORS_ORIGINS_ENV = "GLINER_RUNNER_CORS_ORIGINS";
+
+/** Validates origins such as `http://localhost:5173`; `*`, paths and trailing slashes are rejected. */
+function corsOrigins(raw: readonly string[], label: string): string[] {
+  const origins: string[] = [];
+  for (const item of raw.map((value) => value.trim()).filter((value) => value.length > 0)) {
+    let origin: string | undefined;
+    try {
+      const url = new URL(item);
+      origin = url.origin === item && url.origin !== "null" ? item : undefined;
+    } catch {
+      origin = undefined;
+    }
+    if (origin === undefined) {
+      throw new SettingsError(`${label} must list origins like http://localhost:5173 (scheme, host, optional port), got '${item}'`);
+    }
+    if (!origins.includes(origin)) {
+      origins.push(origin);
+    }
+  }
+  return origins;
+}
 
 function flag(raw: string, label: string): boolean {
   const normalized = raw.trim().toLowerCase();
@@ -191,6 +219,10 @@ export const SERVE_USAGE = `Usage: gliner-runner serve [options]
                                      never downloads implicitly). Env GLINER_RUNNER_AUTO_DOWNLOAD=1
   --templates-dir <path>             Artifact template directory (default: the bundled templates; env
                                      GLINER_RUNNER_ONNX_TEMPLATES_DIR)
+  --cors-origin <origin>             Let a web page from this origin (for example http://localhost:5173)
+                                     call the server from a browser. Repeatable; env
+                                     GLINER_RUNNER_CORS_ORIGINS, comma-separated. Only an exactly matching
+                                     Origin gets CORS headers and preflight (OPTIONS) answers; default off
 
 Each option may also be set as GLINER_RUNNER_<NAME>; command-line flags win.
 
@@ -201,7 +233,7 @@ HF_ENDPOINT and HF_TOKEN select the Hugging Face endpoint and an optional bearer
 
 /** Parses `serve` arguments with precedence CLI > GLINER_RUNNER_* environment > default. */
 export function parseServeArguments(argv: readonly string[], env: NodeJS.ProcessEnv): Settings {
-  let values: Record<string, string | boolean | undefined>;
+  let values: Record<string, string | boolean | (string | boolean)[] | undefined>;
   let positionals: string[];
   try {
     ({ values, positionals } = parseArgs({
@@ -211,6 +243,7 @@ export function parseServeArguments(argv: readonly string[], env: NodeJS.Process
       options: {
         ...Object.fromEntries(OPTIONS.map(({ flag }) => [flag, { type: "string" as const }])),
         help: { type: "boolean" as const },
+        "cors-origin": { type: "string" as const, multiple: true },
         "auto-download": { type: "boolean" as const },
       },
     }));
@@ -232,6 +265,13 @@ export function parseServeArguments(argv: readonly string[], env: NodeJS.Process
     } else if (envValue !== undefined && envValue !== "") {
       assign(spec, envValue, spec.env);
     }
+  }
+  const originFlags = values["cors-origin"];
+  const originEnv = env[CORS_ORIGINS_ENV];
+  if (Array.isArray(originFlags)) {
+    settings.corsOrigins = corsOrigins(originFlags as string[], "--cors-origin");
+  } else if (originEnv !== undefined && originEnv !== "") {
+    settings.corsOrigins = corsOrigins(originEnv.split(","), CORS_ORIGINS_ENV);
   }
   const autoEnv = env[AUTO_DOWNLOAD_ENV];
   if (values["auto-download"] === true) {
