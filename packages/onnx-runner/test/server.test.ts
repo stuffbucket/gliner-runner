@@ -559,3 +559,55 @@ test("a body of exactly the limit is accepted", async (t) => {
   const tooBig = await serve(t, { settings: { maxBodyBytes: Buffer.byteLength(body) - 1 } });
   assert.equal((await tooBig.post("/v1/infer", body)).status, 413);
 });
+
+test("CORS is off by default: an Origin header gets no CORS headers and no preflight answer", async (t) => {
+  const { base } = await serve(t);
+  const headers = { origin: "http://localhost:5173" };
+  const response = await fetch(`${base}/healthz`, { headers });
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get("access-control-allow-origin"), null);
+  assert.equal(response.headers.get("vary"), null);
+  const preflight = await fetch(`${base}/v1/infer`, { method: "OPTIONS", headers });
+  assert.equal(preflight.status, 405);
+  assert.equal(preflight.headers.get("access-control-allow-origin"), null);
+});
+
+test("CORS: an exactly matching origin is echoed, answers preflight, and other origins get nothing", async (t) => {
+  const { base, post } = await serve(t, { settings: { corsOrigins: ["http://localhost:5173", "https://app.example.com"] } });
+  const allowed = { origin: "https://app.example.com" };
+
+  const health = await fetch(`${base}/healthz`, { headers: allowed });
+  assert.equal(health.status, 200);
+  assert.equal(health.headers.get("access-control-allow-origin"), "https://app.example.com");
+  assert.equal(health.headers.get("vary"), "Origin");
+
+  const missing = await fetch(`${base}/nope`, { headers: allowed });
+  assert.equal(missing.status, 404);
+  assert.equal(missing.headers.get("access-control-allow-origin"), "https://app.example.com");
+
+  const preflight = await fetch(`${base}/v1/infer`, {
+    method: "OPTIONS",
+    headers: { ...allowed, "access-control-request-method": "POST", "access-control-request-headers": "content-type" },
+  });
+  assert.equal(preflight.status, 204);
+  assert.equal(await preflight.text(), "");
+  assert.equal(preflight.headers.get("access-control-allow-origin"), "https://app.example.com");
+  assert.equal(preflight.headers.get("vary"), "Origin");
+  assert.equal(preflight.headers.get("access-control-allow-methods"), "GET, POST, OPTIONS");
+  assert.equal(preflight.headers.get("access-control-allow-headers"), "content-type");
+  assert.equal(preflight.headers.get("access-control-max-age"), "600");
+
+  for (const origin of ["http://localhost:5174", "http://localhost:5173/", "https://app.example.com:443", "HTTPS://APP.EXAMPLE.COM", "null"]) {
+    const other = await fetch(`${base}/healthz`, { headers: { origin } });
+    assert.equal(other.headers.get("access-control-allow-origin"), null, origin);
+    assert.equal(other.headers.get("vary"), null, origin);
+    const denied = await fetch(`${base}/v1/infer`, { method: "OPTIONS", headers: { origin, "access-control-request-method": "POST" } });
+    assert.equal(denied.status, 405, origin);
+    assert.equal(denied.headers.get("access-control-allow-methods"), null, origin);
+  }
+  const noOrigin = await fetch(`${base}/healthz`);
+  assert.equal(noOrigin.headers.get("access-control-allow-origin"), null);
+
+  // Requests without an Origin still work as before.
+  assert.equal((await post("/v1/infer", wireRequest())).status, 200);
+});

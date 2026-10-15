@@ -1,14 +1,15 @@
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
-import { existsSync, mkdtempSync, readFileSync, readdirSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
 
+import { KNOWN_MODELS } from "../../src/index.js";
 import { runModelsCommand, type ModelsIo } from "../../src/models-cli.js";
 import { CLI } from "../helpers.js";
 import { startMockHf, type MockHf } from "./hf-mock.js";
-import { buildTemplateFixture, type TemplateFixture } from "./template-fixture.js";
+import { buildTemplateFixture, writeHfCache, type TemplateFixture } from "./template-fixture.js";
 
 const REPO = "fastino/GLiNER2.5-Decide";
 const PIN = "9d1bfb848cd16d93ee56ccbc59cd92bf0f284d90";
@@ -142,13 +143,19 @@ test("prepare --snapshot builds the artifact offline from a local snapshot", asy
   assert.match(wrong.stderr, /does not match fastino\/GLiNER2\.5-Decide@/);
 });
 
-function fakeIo(options: { interactive: boolean; answer?: boolean; env?: NodeJS.ProcessEnv }): ModelsIo & { out: string[]; err: string[]; questions: string[] } {
+function fakeIo(options: {
+  interactive: boolean;
+  answer?: boolean;
+  env?: NodeJS.ProcessEnv;
+  freeBytes?: ModelsIo["freeBytes"];
+}): ModelsIo & { out: string[]; err: string[]; questions: string[] } {
   const out: string[] = [];
   const err: string[] = [];
   const questions: string[] = [];
   return {
     env: { HOME: mkdtempSync(join(tmpdir(), "gliner-home-")), ...options.env },
     interactive: options.interactive,
+    freeBytes: options.freeBytes,
     stdout: (text) => out.push(text),
     stderr: (text) => err.push(text),
     confirm: async (question) => {
@@ -203,4 +210,171 @@ test("the models directory and templates directory may come from the environment
   });
   assert.equal(result.code, 0, result.stderr);
   assert.equal(JSON.parse(result.stdout.trim()).path, artifactDir(modelsDir));
+});
+
+const [M340, MULTI, M1B] = KNOWN_MODELS;
+const GB = 1e9;
+
+/**
+ * Templates for all three curated models in one directory (synthetic files, the pinned revisions), and a mock
+ * Hugging Face hub serving the decide-340m files. `big` records 2.5 GB of weights in each template so the plan
+ * shows whole GB; those templates only plan, they cannot be downloaded.
+ */
+async function setupAll(t: { after(fn: () => Promise<void>): void }, big = false) {
+  const root = mkdtempSync(join(tmpdir(), "gliner-all-"));
+  const templatesDir = join(root, "templates");
+  const fixtures = KNOWN_MODELS.map((model) =>
+    buildTemplateFixture({
+      model,
+      ...(big ? { mutate: (template: Record<string, any>) => void (template["source_files"][0].size = 2.5 * GB) } : {}),
+    }),
+  );
+  for (const fixture of fixtures) {
+    const target = join(templatesDir, fixture.model.repository.replace("/", "--"), fixture.model.pinnedRevision);
+    mkdirSync(target, { recursive: true });
+    cpSync(fixture.templateDir, target, { recursive: true });
+  }
+  const hub = await startMockHf({ repository: REPO, revision: PIN, files: (fixtures[0] as TemplateFixture).sources });
+  t.after(() => hub.close());
+  const modelsDir = join(root, "models");
+  return { root, fixtures, hub, modelsDir, args: ["--models-dir", modelsDir, "--templates-dir", templatesDir] };
+}
+
+test("install --all plans one line per model (installed, found locally, download), then installs in turn", async (t) => {
+  const { root, fixtures, hub, modelsDir, args } = await setupAll(t);
+  const [first, second, third] = fixtures as [TemplateFixture, TemplateFixture, TemplateFixture];
+  // decide-multilingual is installed already; decide-1b has a verified snapshot in a Hugging Face cache.
+  const prepared = await runModelsCommand(["prepare", "decide-multilingual", "--snapshot", second.snapshotDir, ...args], fakeIo({ interactive: false }));
+  assert.equal(prepared, 0);
+  const hubDir = join(root, "hf-hub");
+  const snapshot = writeHfCache(hubDir, (M1B as { repository: string }).repository, (M1B as { pinnedRevision: string }).pinnedRevision, third.sources);
+  const env = { HF_ENDPOINT: hub.endpoint, HF_HUB_CACHE: hubDir };
+
+  const io = fakeIo({ interactive: false, env });
+  assert.equal(await runModelsCommand(["install", "--all", "--yes", ...args], io), 0);
+  const err = io.err.join("");
+  const multiPath = join(modelsDir, "onnx", "fastino--GLiNER2.5-multi-Decide", (MULTI as { pinnedRevision: string }).pinnedRevision);
+  const plan = err.split("\n").slice(0, 4);
+  assert.match(plan[0] as string, /^decide-340m: will download \d+\.\d GB \(needs about \d+\.\d GB disk\)$/);
+  assert.equal(plan[1], "decide-multilingual: already installed");
+  assert.equal(plan[2], `decide-1b: found on this machine at ${snapshot} \u2014 no download needed`);
+  assert.match(plan[3] as string, /^Total: will download \d+\.\d GB \(needs about \d+\.\d GB disk\)$/);
+  assert.match(err, new RegExp(`^decide-multilingual: already installed \\(${multiPath}\\)$`, "m"));
+  assert.match(err, /decide-340m: downloading 3 files/);
+  assert.match(err, /decide-1b: using the verified local snapshot/);
+  assert.deepEqual(io.questions, []);
+  const printed = io.out.map((text) => JSON.parse(text));
+  assert.deepEqual(printed.map((entry) => entry.model_id), ["decide-340m", "decide-multilingual", "decide-1b"]);
+  assert.equal(printed[1].path, multiPath);
+  assert.ok(readFileSync(join(printed[0].path, "model.onnx")).equals(first.artifact["model.onnx"] as Buffer));
+  assert.ok(existsSync(join(printed[2].path, "manifest.json")));
+  // Only decide-340m touched the network.
+  assert.ok(hub.requests.length > 0);
+  assert.ok(hub.requests.every((request) => request.url.includes("GLiNER2.5-Decide/resolve") || request.url.includes("GLiNER2.5-Decide%2F")));
+
+  // Everything is installed now: nothing to approve, no network, even without a terminal or --yes.
+  const requests = hub.requests.length;
+  const again = fakeIo({ interactive: false, env });
+  assert.equal(await runModelsCommand(["install", "--all", ...args], again), 0);
+  assert.match(again.err.join(""), /^decide-340m: already installed\ndecide-multilingual: already installed\ndecide-1b: already installed\nTotal: nothing to download\n/);
+  assert.match(again.err.join(""), /^decide-340m: already installed \(/m);
+  assert.equal(again.out.length, 3);
+  assert.equal(hub.requests.length, requests);
+});
+
+test("install accepts several ids, installs each once, and rejects bad combinations", async (t) => {
+  const { hub, modelsDir, fixtures, args } = await setupAll(t);
+  const env = { HF_ENDPOINT: hub.endpoint, HF_HUB_CACHE: join(modelsDir, "none") };
+  await runModelsCommand(["prepare", "decide-1b", "--snapshot", (fixtures[2] as TemplateFixture).snapshotDir, ...args], fakeIo({ interactive: false }));
+  const io = fakeIo({ interactive: false, env });
+  assert.equal(await runModelsCommand(["install", "decide-1b", "decide-340m", "decide-1b", "-y", ...args], io), 0);
+  assert.deepEqual(io.out.map((text) => JSON.parse(text).model_id), ["decide-1b", "decide-340m"]);
+  assert.match(io.err.join(""), /^decide-1b: already installed\ndecide-340m: will download /);
+  assert.doesNotMatch(io.err.join(""), /decide-multilingual/);
+
+  for (const argv of [
+    ["install", "--all", "decide-340m", ...args],
+    ["install", "decide-340m", "mystery", ...args],
+    ["install", "decide-340m", "decide-1b", "--revision", PIN, ...args],
+  ]) {
+    const bad = fakeIo({ interactive: false, env });
+    assert.equal(await runModelsCommand(argv, bad), 2, argv.join(" "));
+    assert.deepEqual(bad.out, []);
+  }
+  assert.equal(hub.requests.length > 0, true); // the valid install above downloaded decide-340m only
+});
+
+test("install --all without a terminal and without --yes refuses after the plan, before any download", async (t) => {
+  const { hub, modelsDir, args } = await setupAll(t, true);
+  const io = fakeIo({ interactive: false, env: { HF_ENDPOINT: hub.endpoint, HF_HUB_CACHE: join(modelsDir, "none") } });
+  assert.equal(await runModelsCommand(["install", "--all", ...args], io), 1);
+  // Each template records 2.5 GB of weights; the prepared outputs are a few KB. Downloads are removed one by one,
+  // so the total needs room for the largest download only.
+  assert.match(io.err.join(""), /^decide-340m: will download 2\.5 GB \(needs about 2\.5 GB disk\)\n/);
+  assert.match(io.err.join(""), /\ndecide-1b: will download 2\.5 GB \(needs about 2\.5 GB disk\)\n/);
+  assert.match(io.err.join(""), /\nTotal: will download 7\.5 GB \(needs about 2\.5 GB disk\)\n/);
+  assert.match(io.err.join(""), /error: refusing to download 7\.5 GB without approval; stdin is not a terminal, rerun with --yes\n$/);
+  assert.deepEqual(io.out, []);
+  assert.deepEqual(io.questions, []);
+  assert.equal(hub.requests.length, 0);
+  assert.equal(existsSync(modelsDir), false);
+});
+
+test("install --all asks once in a terminal: no downloads nothing, yes installs", async (t) => {
+  const { hub, modelsDir, args } = await setupAll(t, true);
+  const env = { HF_ENDPOINT: hub.endpoint, HF_HUB_CACHE: join(modelsDir, "none") };
+  const denied = fakeIo({ interactive: true, answer: false, env });
+  assert.equal(await runModelsCommand(["install", "--all", ...args], denied), 1);
+  assert.deepEqual(denied.questions, ["Download 7.5 GB now? [y/N] "]);
+  assert.match(denied.err.join(""), /error: download not approved\n$/);
+  assert.deepEqual(denied.out, []);
+  assert.equal(hub.requests.length, 0);
+  assert.equal(existsSync(modelsDir), false);
+
+  // Answering yes starts the downloads (the scaled-up template cannot verify, so decide-340m fails after approval).
+  const approved = fakeIo({ interactive: true, answer: true, env });
+  assert.equal(await runModelsCommand(["install", "--all", ...args], approved), 1);
+  assert.equal(approved.questions.length, 1);
+  assert.ok(hub.requests.length > 0);
+});
+
+test("install --all with an approved prompt installs every model", async (t) => {
+  const { hub, root, fixtures, args } = await setupAll(t);
+  const hubDir = join(root, "hf-hub");
+  for (const fixture of [fixtures[1], fixtures[2]] as TemplateFixture[]) {
+    writeHfCache(hubDir, fixture.model.repository, fixture.model.pinnedRevision, fixture.sources);
+  }
+  const io = fakeIo({ interactive: true, answer: true, env: { HF_ENDPOINT: hub.endpoint, HF_HUB_CACHE: hubDir } });
+  assert.equal(await runModelsCommand(["install", "--all", ...args], io), 0);
+  assert.equal(io.questions.length, 1);
+  assert.match(io.questions[0] as string, /^Download \d+\.\d GB now\? \[y\/N\] $/);
+  assert.equal(io.out.length, 3);
+});
+
+test("install --all refuses when the free disk space is not enough, before any prompt or download", async (t) => {
+  const { hub, modelsDir, args } = await setupAll(t, true);
+  const env = { HF_ENDPOINT: hub.endpoint, HF_HUB_CACHE: join(modelsDir, "none") };
+  const asked: string[] = [];
+  const io = fakeIo({
+    interactive: true,
+    answer: true,
+    env,
+    freeBytes: async (directory) => {
+      asked.push(directory);
+      return 1 * GB;
+    },
+  });
+  assert.equal(await runModelsCommand(["install", "--all", "--yes", ...args], io), 1);
+  assert.match(io.err.join(""), /error: not enough free disk space in .*: need about 2\.6 GB, 1\.0 GB available\n$/);
+  assert.equal(asked.length, 1);
+  assert.notEqual(asked[0], modelsDir); // the models directory does not exist yet: its nearest existing parent is checked
+  assert.ok(existsSync(asked[0] as string));
+  assert.deepEqual(io.questions, []);
+  assert.deepEqual(io.out, []);
+  assert.equal(hub.requests.length, 0);
+
+  // Enough space: the same plan proceeds to the prompt.
+  const enough = fakeIo({ interactive: true, answer: false, env, freeBytes: async () => 5 * GB });
+  assert.equal(await runModelsCommand(["install", "--all", ...args], enough), 1);
+  assert.equal(enough.questions.length, 1);
 });
