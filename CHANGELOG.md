@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.4.0](https://github.com/stuffbucket/gliner-runner/compare/v0.3.1...v0.4.0) (2026-10-15)
+
+
+### Features
+
+* install all models with a size plan, and optional CORS for local web apps ([082acfe](https://github.com/stuffbucket/gliner-runner/commit/082acfe583da6e2b7216ac62f6ea7a7591d24e7b))
+* install all models with a size plan, and optional CORS for local web apps ([ee9a7d9](https://github.com/stuffbucket/gliner-runner/commit/ee9a7d9eb3891a48158220511d79ac96aa46334f))
+
+
+### Documentation
+
+* plain-language guides, practical examples, and a React example ([3999331](https://github.com/stuffbucket/gliner-runner/commit/39993314a4977aa3a72125356a964adfef68d12b))
+* plain-language guides, practical examples, and a React example ([3177b24](https://github.com/stuffbucket/gliner-runner/commit/3177b2487825b7522d9825ebc9ca0f0f5fa0ad3a))
+
 ## [0.3.1](https://github.com/stuffbucket/gliner-runner/compare/v0.3.0...v0.3.1) (2026-10-14)
 
 
