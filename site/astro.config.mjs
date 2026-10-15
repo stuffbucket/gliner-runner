@@ -1,11 +1,13 @@
 // @ts-check
 import { defineConfig } from "astro/config";
+import react from "@astrojs/react";
 import starlight from "@astrojs/starlight";
 
 export default defineConfig({
   site: "https://stuffbucket.github.io",
   base: "/gliner-runner/",
   integrations: [
+    react(),
     starlight({
       title: "GLiNER Runner",
       description: "Sort text into labels you choose, on your own computer.",
@@ -42,6 +44,7 @@ export default defineConfig({
           ],
         },
         { label: "Use it in a React app", link: "/use-in-react/" },
+        { label: "Try it in your browser", link: "/playground/" },
         { label: "More ideas", link: "/more-ideas/" },
         {
           label: "Reference",

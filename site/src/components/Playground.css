@@ -1,0 +1,108 @@
+.playground {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+  border: 1px solid var(--sl-color-hairline);
+  border-radius: 0.5rem;
+  background: var(--sl-color-bg-nav);
+}
+.playground label {
+  font-weight: 600;
+  color: var(--sl-color-white);
+}
+.playground input:not([type="checkbox"]),
+.playground textarea,
+.playground select {
+  font: inherit;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 0.5rem;
+  border: 1px solid var(--sl-color-gray-5);
+  border-radius: 0.25rem;
+  background: var(--sl-color-bg);
+  color: var(--sl-color-text);
+}
+.playground button {
+  font: inherit;
+  font-weight: 600;
+  justify-self: start;
+  padding: 0.5rem 1rem;
+  border: 0;
+  border-radius: 0.25rem;
+  background: var(--sl-color-accent);
+  color: var(--sl-color-black);
+  cursor: pointer;
+}
+.playground button:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+.playground .row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.5rem;
+}
+.playground .form {
+  display: grid;
+  gap: 0.5rem;
+}
+.playground .form button {
+  margin-top: 0.5rem;
+}
+.playground .check {
+  font-weight: normal;
+  color: var(--sl-color-text);
+}
+.playground .notice {
+  padding: 0.75rem 1rem;
+  border-inline-start: 4px solid var(--sl-color-orange);
+  background: var(--sl-color-orange-low);
+  color: var(--sl-color-white);
+}
+.playground .notice p {
+  margin: 0.25rem 0;
+}
+.playground .command {
+  margin: 0.5rem 0;
+  padding: 0.5rem 0.75rem;
+  overflow-x: auto;
+  background: var(--sl-color-bg-inline-code);
+  border-radius: 0.25rem;
+}
+.playground .error {
+  color: var(--sl-color-red-high);
+}
+.playground .result {
+  margin-top: 0.5rem;
+}
+.playground .answer {
+  margin: 0 0 0.5rem;
+  font-size: var(--sl-text-2xl);
+  font-weight: 600;
+  color: var(--sl-color-white);
+}
+.playground .result ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.25rem;
+}
+.playground .result li {
+  display: grid;
+  grid-template-columns: minmax(6rem, auto) 1fr 3.5rem;
+  align-items: center;
+  gap: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+.playground meter {
+  width: 100%;
+}
+@media (max-width: 40rem) {
+  .playground .row {
+    grid-template-columns: 1fr;
+  }
+}

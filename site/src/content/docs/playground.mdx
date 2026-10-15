@@ -1,0 +1,54 @@
+---
+title: Try it in your browser
+description: Classify text on this page with the runner on your own computer.
+---
+
+import Playground from "../../components/Playground.jsx";
+
+This page talks to the runner on your own computer. Your text goes from this page straight to
+`127.0.0.1` on your machine. It is not sent to GitHub or anywhere else.
+
+## 1. Install the runner and a model
+
+Follow [Install and Get the models](/gliner-runner/#install) on the home page. You need at least
+`decide-340m`.
+
+## 2. Let this page call the runner
+
+A web page may only call the runner if the runner allows the page's address. Run this once. The
+runner saves it, so you don't need to repeat it:
+
+```sh
+gliner-runner cors add https://stuffbucket.github.io
+```
+
+```text
+Added [ 7] https://stuffbucket.github.io
+Restart 'gliner-runner serve' to apply.
+```
+
+`gliner-runner cors list` shows every allowed address. `gliner-runner cors delete 7` removes this
+one again.
+
+## 3. Start the runner
+
+```sh
+gliner-runner serve
+```
+
+Leave the window open.
+
+## 4. Connect
+
+Click **Connect**. Chrome may ask whether this site can reach devices on your local network.
+Allow it, because that is how the page reaches the runner on your computer. When it connects,
+type a text and some labels and click **Classify**.
+
+<Playground client:only="react" />
+
+## How it works
+
+The page is the same idea as the [React app](/gliner-runner/use-in-react/), but it calls
+`http://127.0.0.1:8090/v1/infer` directly instead of going through a development proxy. The
+runner answers only the addresses on its list, so other websites cannot use your runner. If you
+run the runner on another port, change the address next to **Connect**.

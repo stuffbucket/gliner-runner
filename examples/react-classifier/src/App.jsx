@@ -1,5 +1,8 @@
 import { useState } from "react";
 
+// Empty means "this page's own address", which Vite forwards to the runner (see vite.config.js).
+const RUNNER = import.meta.env.VITE_RUNNER_URL ?? "";
+
 export default function App() {
   const [text, setText] = useState("I was charged twice for my last order.");
   const [labels, setLabels] = useState("billing, support, shipping");
@@ -12,7 +15,7 @@ export default function App() {
     setResult(null);
     const list = labels.split(",").map((s) => s.trim()).filter(Boolean);
     const task = { labels: list, ...(several ? { min_labels: 0, max_labels: null } : {}) };
-    const reply = await fetch("/v1/infer", {
+    const reply = await fetch(`${RUNNER}/v1/infer`, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
@@ -20,7 +23,7 @@ export default function App() {
         text, schema: { kind: "classification", tasks: { category: task } },
       }),
     }).catch(() => null);
-    if (!reply) return setError("Could not reach the runner. Is `gliner-runner serve` running?");
+    if (!reply) return setError("Could not reach the runner. Is `gliner-runner serve` running, and does `gliner-runner cors list` include this page's address?");
     const data = await reply.json();
     if (!reply.ok) return setError(data.detail?.message ?? "The runner rejected the request.");
     setResult(data.output.category);

@@ -172,5 +172,7 @@ gliner-runner classify --labels billing,support,shipping "My package never arriv
 - [Examples](/gliner-runner/examples/): jobs you can do with it, such as sorting support tickets,
   finding what matters in an email, flagging personal information, and reading reviews.
 - [Use it in a React app](/gliner-runner/use-in-react/): a small web page that calls the program.
+- [Try it in your browser](/gliner-runner/playground/): classify text on this site with the runner
+  on your computer.
 - [More ideas](/gliner-runner/more-ideas/): other things to sort, grouped by job.
 - [Reference](/gliner-runner/models/): the models, test results, and technical documents.

@@ -59,6 +59,9 @@ The component is one file, `src/App.jsx`:
 ```jsx
 import { useState } from "react";
 
+// Empty means "this page's own address", which Vite forwards to the runner (see vite.config.js).
+const RUNNER = import.meta.env.VITE_RUNNER_URL ?? "";
+
 export default function App() {
   const [text, setText] = useState("I was charged twice for my last order.");
   const [labels, setLabels] = useState("billing, support, shipping");
@@ -71,7 +74,7 @@ export default function App() {
     setResult(null);
     const list = labels.split(",").map((s) => s.trim()).filter(Boolean);
     const task = { labels: list, ...(several ? { min_labels: 0, max_labels: null } : {}) };
-    const reply = await fetch("/v1/infer", {
+    const reply = await fetch(`${RUNNER}/v1/infer`, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
@@ -79,7 +82,7 @@ export default function App() {
         text, schema: { kind: "classification", tasks: { category: task } },
       }),
     }).catch(() => null);
-    if (!reply) return setError("Could not reach the runner. Is `gliner-runner serve` running?");
+    if (!reply) return setError("Could not reach the runner. Is `gliner-runner serve` running, and does `gliner-runner cors list` include this page's address?");
     const data = await reply.json();
     if (!reply.ok) return setError(data.detail?.message ?? "The runner rejected the request.");
     setResult(data.output.category);
@@ -154,23 +157,37 @@ curl -s http://localhost:5173/v1/infer -H 'content-type: application/json' -d '{
 
 ### If the page is served some other way
 
-The proxy only exists while `npm run dev` runs. If you serve the built page from another address
-(for example with `npm run preview`, or from another web server), the browser blocks the call
-unless the runner allows that address. Start the runner with the page's address:
+The proxy exists while `npm run dev` runs, and also for `npm run preview` (which serves the built
+page at <http://localhost:4173>). Any other web server, such as GitHub Pages, nginx, or
+`python3 -m http.server`, has no proxy. There the page has to call the runner directly, and the
+runner has to allow the page's address.
 
-```sh
-gliner-runner serve --cors-origin http://localhost:5173
-```
+1. Build the page with the runner's address. `VITE_RUNNER_URL` replaces the empty `RUNNER` at the
+   top of `App.jsx`:
 
-Use the exact address of your page, with the port and no trailing slash. Add the option again to
-allow more than one address. Then call the runner directly, by changing the request in
-`App.jsx` to:
+   ```sh
+   VITE_RUNNER_URL=http://127.0.0.1:8090 npm run build
+   ```
 
-```js
-fetch("http://127.0.0.1:8090/v1/infer", {
-```
+2. Allow the address the page is served from. Use the exact address, with the port and no
+   trailing slash:
 
-Addresses you do not list stay blocked.
+   ```sh
+   gliner-runner cors add https://you.github.io
+   ```
+
+   The runner saves the list and reads it each time `gliner-runner serve` starts, so restart it
+   after a change. Common local development addresses such as `http://localhost:5173` and
+   `http://localhost:4173` are allowed from the start. `gliner-runner cors list` shows the list
+   with a number for each address, and `gliner-runner cors delete <number>` removes one.
+   Addresses that are not on the list stay blocked.
+
+3. If the page lives in a folder of a site, such as `https://you.github.io/classifier/`, set
+   `base: "/classifier/"` in `vite.config.js` so the page finds its script and styles.
+
+Chrome asks once whether a public site may reach devices on your local network. Allow it, because
+the runner on `127.0.0.1` counts as one. The [playground](/gliner-runner/playground/) on this site
+works this way.
 
 ## Make it yours
 
@@ -179,4 +196,5 @@ Addresses you do not list stay blocked.
   `label_descriptions: { billing: "Charges, invoices, or refunds" }`. Descriptions can improve the
   answers (see [how it works](/gliner-runner/how-it-works/#descriptions-help)).
 - Change `model` to `decide-multilingual` to classify other languages.
-- Build a static copy with `npm run build`. The result is in `dist/`.
+- Build a static copy with `npm run build`. The result is in `dist/`. To put it on a web server,
+  see [If the page is served some other way](#if-the-page-is-served-some-other-way).
