@@ -1,8 +1,8 @@
 # GLiNER Runner
 
-GLiNER Runner sorts a piece of text into labels you choose: give it a message and a list of
-labels such as `billing, support, shipping`, and it tells you which one fits, with a confidence
-score. It runs on your own computer with no Python, and your text never leaves your machine.
+GLiNER Runner reads a piece of text and tells you which of your labels fits it. You give it a
+message and a list of labels such as `billing, support, shipping`, and it answers with the best
+label and a confidence score. It runs on your own computer, and your text never leaves it.
 
 ## Install
 
@@ -14,18 +14,8 @@ brew trust stuffbucket/tap
 brew install gliner-runner
 ```
 
-`brew trust` tells Homebrew 7 and later that it may load formulas from this tap; skip it if your
-Homebrew says the command does not exist.
-
-To update later:
-
-```sh
-brew update && brew upgrade gliner-runner
-```
-
-To test a release candidate instead, run `brew uninstall gliner-runner` and then
-`brew install gliner-runner-rc`. The release candidate conflicts with the stable package, so
-install only one of them.
+`brew trust` is needed on Homebrew 7 and later. If your Homebrew says the command does not exist,
+skip that line.
 
 Without Homebrew, this installs the same program into `~/.local`:
 
@@ -39,35 +29,45 @@ Check that it works:
 gliner-runner --version
 ```
 
-If an older Python `gliner-runner` (from `pip`) is also on your `PATH`, it can shadow this one.
-`which gliner-runner` shows which program runs; the version output above starts with
-`gliner-runner-onnx` for the right one.
+The first line of the answer should start with `gliner-runner-onnx`. If it does not, an older
+program with the same name is running instead. `which gliner-runner` shows which one.
 
-## Download a model
+## Get the models
 
-The program does not include a model. Download one once (this asks you to confirm, then
-downloads from Hugging Face and prepares it):
+The program does not include a model. A model is a large file that you download once.
+
+| Model | Download | Use it for |
+| --- | --- | --- |
+| `decide-340m` | about 2.0 GB | English text. The default. |
+| `decide-multilingual` | about 1.2 GB | Spanish, French, German, and other languages |
+| `decide-1b` | about 4.8 GB | English text, when you want the most accurate answers |
+
+To get one model, name it:
 
 ```sh
 gliner-runner models install decide-340m
 ```
 
-| Model | Download | Use it for |
-| --- | --- | --- |
-| `decide-340m` | about 1.8 GiB | English text; the default |
-| `decide-multilingual` | about 1.1 GiB | Spanish, French, German and other languages |
-| `decide-1b` | about 4.4 GiB | English text, larger model |
+To get all three:
 
-Models are stored in your user cache (`~/Library/Caches/gliner-runner/models` on macOS,
-`~/.cache/gliner-runner/models` on Linux). Add `--yes` to skip the confirmation question.
+```sh
+gliner-runner models install --all
+```
+
+`--all` first prints how much it will download and how much disk space you need, then asks before
+it downloads anything. It tells you when a model is already installed, or when it found a copy
+already on your computer. Add `--yes` to skip the question.
+
+The models are stored in your user cache folder (`~/Library/Caches/gliner-runner/models` on macOS,
+`~/.cache/gliner-runner/models` on Linux).
 
 ## Try it
-
-Run a few built-in examples:
 
 ```sh
 gliner-runner demo
 ```
+
+The demo classifies six sample texts. The first two:
 
 ```text
 gliner-runner demo (model: decide-340m)
@@ -81,109 +81,22 @@ gliner-runner demo (model: decide-340m)
    Text:    My package has been in transit for two weeks and the tracking page has not changed.
    Labels:  billing, support, shipping
    Result:  shipping (confidence 0.921)
-
-3. Several topics in one message (multi-label)
-   Text:    The battery is weak and the delivery was slow.
-   Labels:  battery, screen, price, delivery  (several allowed)
-   Result:  battery (0.948), delivery (0.919)
-
-4. Labels with descriptions
-   Text:    Can I swap the blue jacket I bought for the same one in a larger size?
-   Labels:  refund, exchange, question
-            refund: The customer wants their money back
-            exchange: The customer wants a different item or size
-            question: The customer asks for information only
-   Result:  exchange (confidence 0.833)
-
-5. Sentiment
-   Text:    The checkout was quick and the staff were friendly and helpful.
-   Labels:  positive, neutral, negative
-   Result:  positive (confidence 0.944)
-
-6. Priority
-   Text:    Our payment system is down and customers cannot check out. We need help right now.
-   Labels:  urgent, normal, low
-   Result:  urgent (confidence 0.855)
-
-Classified 6 texts in 1.5 s.
-Try your own: gliner-runner classify --labels billing,support,shipping "your text"
 ```
 
-Then classify your own text. Pick the labels yourself.
-
-**Route a support ticket** (one label):
+Then use your own text and your own labels:
 
 ```sh
-gliner-runner classify --labels billing,support,shipping "My package never arrived and the tracking page has not updated in two weeks."
+gliner-runner classify --labels billing,support,shipping "My package never arrived."
 ```
 
-```text
-shipping (confidence 0.942)
-```
+## Guides
 
-**Allow several labels** with `--multi`:
-
-```sh
-gliner-runner classify --labels battery,screen,price,delivery --multi "The battery is weak and the delivery was slow."
-```
-
-```text
-battery (0.948), delivery (0.919)
-```
-
-**Describe the labels** when their names are not enough, with `--describe label=text`:
-
-```sh
-gliner-runner classify --labels refund,exchange,question \
-  --describe "refund=The customer wants their money back" \
-  --describe "exchange=The customer wants a different item or size" \
-  --describe "question=The customer only asks for information" \
-  "Can I swap the blue jacket for a larger size?"
-```
-
-```text
-exchange (confidence 0.826)
-```
-
-**Other languages** need the multilingual model (`gliner-runner models install decide-multilingual`):
-
-```sh
-gliner-runner classify --model decide-multilingual --labels billing,support,shipping "Me cobraron dos veces el mismo pedido."
-```
-
-```text
-billing (confidence 0.779)
-```
-
-```sh
-gliner-runner classify --model decide-multilingual --labels billing,support,shipping "Mon colis n'est toujours pas arrivé après deux semaines."
-```
-
-```text
-shipping (confidence 0.514)
-```
-
-Text can also come from a pipe, and `--json` prints the full result for scripts:
-
-```sh
-echo "The checkout was quick and the staff were friendly." | gliner-runner classify --labels positive,neutral,negative
-```
-
-```text
-positive (confidence 0.935)
-```
-
-```sh
-gliner-runner classify --labels urgent,normal,low --json "Our payment system is down and customers cannot check out."
-```
-
-```json
-{"category":{"value":"urgent","confidence":0.6183409935537204,"probabilities":{"urgent":0.6183409935537204,"normal":0.18731622346263635,"low":0.19434278298364327}},"_meta":{"feasible":true,"decoder":"independent","exact":true,"objective":0.13862642645835876,"violations":[]}}
-```
-
-Confidence scores depend on the model and the wording; they are not percentages of accuracy.
-If a model is not installed, the command prints the exact `gliner-runner models install` command to
-run. `gliner-runner --help` lists every command.
+- [How it works](https://stuffbucket.github.io/gliner-runner/how-it-works/): what the program does, how fast it is, and when to use something else.
+- [Examples](https://stuffbucket.github.io/gliner-runner/examples/): support tickets, personal information, email, text messages, reviews,
+  other languages, and moderation, each with commands to paste and the output we got.
+- [Use it in a React app](https://stuffbucket.github.io/gliner-runner/use-in-react/): a small web page that calls the program. The code is
+  in [`examples/react-classifier`](examples/react-classifier).
+- [More ideas](https://stuffbucket.github.io/gliner-runner/more-ideas/): other things to sort.
 
 ## Run it as a local service
 
@@ -210,7 +123,9 @@ curl -s http://127.0.0.1:8090/v1/infer -H 'content-type: application/json' -d '{
 ```
 
 The answer is JSON; the result is under `output.category.value` (here `"billing"`). Use
-`--port` to change the port; see [ONNX runtime](docs/onnx-runtime.md) for every option and the
+`--port` to change the port. To call it from a web page, see
+[Use it in a React app](https://stuffbucket.github.io/gliner-runner/use-in-react/) (the option
+`--cors-origin http://localhost:5173` lets a page at that address call the runner directly). See [ONNX runtime](docs/onnx-runtime.md) for every option and the
 [protocol](docs/protocol.md) for the request and response shapes.
 
 ## Check for updates
@@ -219,8 +134,11 @@ With Homebrew, `brew update && brew upgrade gliner-runner` installs the newest r
 tells you whether a newer stable release exists and which command installs it; it never installs
 anything.
 
-More: [project site](https://stuffbucket.github.io/gliner-runner/),
-[ONNX runtime](docs/onnx-runtime.md), [development](docs/development.md),
+To test a release candidate instead, run `brew uninstall gliner-runner` and then
+`brew install gliner-runner-rc`. The release candidate conflicts with the stable package, so
+install only one of them.
+
+Technical documents: [ONNX runtime](docs/onnx-runtime.md), [development](docs/development.md),
 [releases](docs/releases.md). Technical details follow.
 
 ## Overview

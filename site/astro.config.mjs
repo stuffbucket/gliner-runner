@@ -8,17 +8,26 @@ export default defineConfig({
   integrations: [
     starlight({
       title: "GLiNER Runner",
-      description: "Local, reproducible GLiNER inference: curated models, parity evidence, and operations.",
+      description: "Sort text into labels you choose, on your own computer.",
       social: [
         { icon: "github", label: "GitHub", href: "https://github.com/stuffbucket/gliner-runner" },
       ],
       editLink: { baseUrl: "https://github.com/stuffbucket/gliner-runner/edit/main/site/" },
       sidebar: [
         { label: "Home", link: "/" },
-        { label: "Models", items: [{ autogenerate: { directory: "models" } }] },
-        { label: "Evaluation", link: "/evaluation/" },
-        { label: "Docs", items: [{ autogenerate: { directory: "docs" } }] },
-        { label: "Releases", link: "/releases/" },
+        { label: "How it works", link: "/how-it-works/" },
+        { label: "Examples", items: [{ autogenerate: { directory: "examples" } }] },
+        { label: "Use it in a React app", link: "/use-in-react/" },
+        { label: "More ideas", link: "/more-ideas/" },
+        {
+          label: "Reference",
+          items: [
+            { label: "Models", items: [{ autogenerate: { directory: "models" } }] },
+            { label: "Evaluation", link: "/evaluation/" },
+            { label: "Docs", items: [{ autogenerate: { directory: "docs" } }] },
+            { label: "Releases", link: "/releases/" },
+          ],
+        },
       ],
     }),
   ],
