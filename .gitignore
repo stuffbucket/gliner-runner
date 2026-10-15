@@ -22,3 +22,7 @@ pip.ini
 packages/client/LICENSE
 packages/client/NOTICE
 packages/client/THIRD_PARTY_NOTICES.md
+
+# Example apps install their own dependencies
+examples/*/node_modules/
+examples/*/dist/
