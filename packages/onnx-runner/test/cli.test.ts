@@ -1,12 +1,16 @@
 import assert from "node:assert/strict";
 import { spawn, spawnSync, type ChildProcess } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { createServer } from "node:net";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { setTimeout as sleep } from "node:timers/promises";
 import test from "node:test";
 
 import { BUILD_INFO } from "../src/build-info.js";
 import { CLI, freePort } from "./helpers.js";
+
+const scratchConfig = (): string => mkdtempSync(join(tmpdir(), "gliner-config-"));
 
 const PACKAGE_VERSION = (
   JSON.parse(readFileSync(new URL("../../package.json", import.meta.url), "utf8")) as { version: string }
@@ -28,7 +32,8 @@ interface Running {
 
 function run(args: string[], env: NodeJS.ProcessEnv = {}): Running {
   const child = spawn(process.execPath, [CLI, ...args], {
-    env: { PATH: process.env["PATH"] ?? "", ...env },
+    // A scratch XDG_CONFIG_HOME so the user's real settings.json is never read.
+    env: { PATH: process.env["PATH"] ?? "", XDG_CONFIG_HOME: scratchConfig(), ...env },
     stdio: ["ignore", "pipe", "pipe"],
   });
   let stderr = "";
@@ -131,6 +136,57 @@ test("precedence is flag over environment over default", async () => {
   assert.equal(flagModels.device, "flag-device");
   fromFlag.child.kill("SIGTERM");
   await fromFlag.exit;
+});
+
+async function allowedOrigin(port: number, origin: string): Promise<string | null> {
+  const response = await fetch(`http://127.0.0.1:${port}/healthz`, { headers: { origin } });
+  return response.headers.get("access-control-allow-origin");
+}
+
+test("serve allows the default localhost origins until settings.json says otherwise", async () => {
+  const port = await freePort();
+  const running = run(["serve", "--port", String(port)]);
+  await waitForHealth(port, running);
+  assert.equal(await allowedOrigin(port, "http://localhost:5173"), "http://localhost:5173");
+  assert.equal(await allowedOrigin(port, "https://stuffbucket.github.io"), null);
+  assert.match(running.stderr(), /Browser origins allowed \(CORS\): http:\/\/localhost:3000, /);
+  running.child.kill("SIGTERM");
+  await running.exit;
+});
+
+test("serve reads saved origins from settings.json; --cors-origin replaces them for one run", async () => {
+  const config = scratchConfig();
+  mkdirSync(join(config, "gliner-runner"));
+  writeFileSync(
+    join(config, "gliner-runner", "settings.json"),
+    JSON.stringify({ cors_origins: ["https://stuffbucket.github.io"] }),
+  );
+  const savedPort = await freePort();
+  const saved = run(["serve", "--port", String(savedPort)], { XDG_CONFIG_HOME: config });
+  await waitForHealth(savedPort, saved);
+  assert.equal(await allowedOrigin(savedPort, "https://stuffbucket.github.io"), "https://stuffbucket.github.io");
+  assert.equal(await allowedOrigin(savedPort, "http://localhost:5173"), null);
+  saved.child.kill("SIGTERM");
+  await saved.exit;
+
+  const flagPort = await freePort();
+  const flagged = run(["serve", "--port", String(flagPort), "--cors-origin", "http://localhost:9999"], {
+    XDG_CONFIG_HOME: config,
+  });
+  await waitForHealth(flagPort, flagged);
+  assert.equal(await allowedOrigin(flagPort, "http://localhost:9999"), "http://localhost:9999");
+  assert.equal(await allowedOrigin(flagPort, "https://stuffbucket.github.io"), null);
+  flagged.child.kill("SIGTERM");
+  await flagged.exit;
+});
+
+test("serve refuses to start with a malformed settings.json and names the file", async () => {
+  const config = scratchConfig();
+  mkdirSync(join(config, "gliner-runner"));
+  writeFileSync(join(config, "gliner-runner", "settings.json"), JSON.stringify({ cors_origins: ["http://x.test/"] }));
+  const running = run(["serve"], { XDG_CONFIG_HOME: config });
+  assert.equal((await running.exit).code, 2);
+  assert.match(running.stderr(), /settings\.json: cors_origins must list origins like/);
 });
 
 for (const flag of ["--version", "-v", "--v"]) {

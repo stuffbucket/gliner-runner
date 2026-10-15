@@ -165,7 +165,7 @@ export const AUTO_DOWNLOAD_ENV = "GLINER_RUNNER_AUTO_DOWNLOAD";
 export const CORS_ORIGINS_ENV = "GLINER_RUNNER_CORS_ORIGINS";
 
 /** Validates origins such as `http://localhost:5173`; `*`, paths and trailing slashes are rejected. */
-function corsOrigins(raw: readonly string[], label: string): string[] {
+export function parseCorsOrigins(raw: readonly string[], label: string): string[] {
   const origins: string[] = [];
   for (const item of raw.map((value) => value.trim()).filter((value) => value.length > 0)) {
     let origin: string | undefined;
@@ -222,7 +222,9 @@ export const SERVE_USAGE = `Usage: gliner-runner serve [options]
   --cors-origin <origin>             Let a web page from this origin (for example http://localhost:5173)
                                      call the server from a browser. Repeatable; env
                                      GLINER_RUNNER_CORS_ORIGINS, comma-separated. Only an exactly matching
-                                     Origin gets CORS headers and preflight (OPTIONS) answers; default off
+                                     Origin gets CORS headers and preflight (OPTIONS) answers. Either one
+                                     replaces, for this run, the origins saved with 'gliner-runner cors'
+                                     (default: common localhost development ports; see: cors --help)
 
 Each option may also be set as GLINER_RUNNER_<NAME>; command-line flags win.
 
@@ -231,8 +233,15 @@ gliner-runner --version [--json] prints the version, runner identity and evaluat
 HF_ENDPOINT and HF_TOKEN select the Hugging Face endpoint and an optional bearer token.
 `;
 
-/** Parses `serve` arguments with precedence CLI > GLINER_RUNNER_* environment > default. */
-export function parseServeArguments(argv: readonly string[], env: NodeJS.ProcessEnv): Settings {
+/**
+ * Parses `serve` arguments with precedence CLI > GLINER_RUNNER_* environment > default. CORS origins fall back to
+ * `savedCorsOrigins` (the settings.json list, see `gliner-runner cors`) when neither flag nor environment sets them.
+ */
+export function parseServeArguments(
+  argv: readonly string[],
+  env: NodeJS.ProcessEnv,
+  savedCorsOrigins: readonly string[] = [],
+): Settings {
   let values: Record<string, string | boolean | (string | boolean)[] | undefined>;
   let positionals: string[];
   try {
@@ -269,9 +278,11 @@ export function parseServeArguments(argv: readonly string[], env: NodeJS.Process
   const originFlags = values["cors-origin"];
   const originEnv = env[CORS_ORIGINS_ENV];
   if (Array.isArray(originFlags)) {
-    settings.corsOrigins = corsOrigins(originFlags as string[], "--cors-origin");
+    settings.corsOrigins = parseCorsOrigins(originFlags as string[], "--cors-origin");
   } else if (originEnv !== undefined && originEnv !== "") {
-    settings.corsOrigins = corsOrigins(originEnv.split(","), CORS_ORIGINS_ENV);
+    settings.corsOrigins = parseCorsOrigins(originEnv.split(","), CORS_ORIGINS_ENV);
+  } else {
+    settings.corsOrigins = [...savedCorsOrigins];
   }
   const autoEnv = env[AUTO_DOWNLOAD_ENV];
   if (values["auto-download"] === true) {

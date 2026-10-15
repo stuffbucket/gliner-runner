@@ -196,9 +196,12 @@ curl -s http://127.0.0.1:8090/v1/infer -H 'content-type: application/json' -d '{
 ```
 
 The answer is JSON; the result is under `output.category.value` (here `"billing"`). Use
-`--port` to change the port. To call it from a web page, see
-[Use it in a React app](https://stuffbucket.github.io/gliner-runner/use-in-react/) (the option
-`--cors-origin http://localhost:5173` lets a page at that address call the runner directly). See [ONNX runtime](docs/onnx-runtime.md) for every option and the
+`--port` to change the port. Web pages on the usual local development addresses (such as
+`http://localhost:5173`) may call the runner directly; `gliner-runner cors list` shows them and
+`gliner-runner cors add <origin>` allows another, for example the
+[playground](https://stuffbucket.github.io/gliner-runner/playground/). See
+[Use it in a React app](https://stuffbucket.github.io/gliner-runner/use-in-react/),
+[ONNX runtime](docs/onnx-runtime.md) for every option and the
 [protocol](docs/protocol.md) for the request and response shapes.
 
 ## Check for updates
