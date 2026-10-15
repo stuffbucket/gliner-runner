@@ -206,15 +206,39 @@ running jobs.
 
 ### CORS
 
-By default the server sends no CORS headers, so browsers block pages from other
-origins. `serve --cors-origin http://localhost:5173` (repeatable; or
-`GLINER_RUNNER_CORS_ORIGINS=http://localhost:5173,https://app.example.com`)
-allows a web page from that origin to call the server. A request whose `Origin`
-header exactly equals a configured origin (`scheme://host[:port]`, no `*`, no
-path) gets `Access-Control-Allow-Origin` (the origin) and `Vary: Origin`, and an
-`OPTIONS` preflight is answered `204` with `Access-Control-Allow-Methods: GET,
-POST, OPTIONS`, `Access-Control-Allow-Headers: content-type` and
-`Access-Control-Max-Age: 600`. Other origins get no CORS headers.
+The server answers a browser only for origins on its allow-list; pages from
+other origins are blocked by the browser. A request whose `Origin` header
+exactly equals an allowed origin (`scheme://host[:port]`, no `*`, no path) gets
+`Access-Control-Allow-Origin` (the origin) and `Vary: Origin`, and an `OPTIONS`
+preflight is answered `204` with `Access-Control-Allow-Methods: GET, POST,
+OPTIONS`, `Access-Control-Allow-Headers: content-type` and
+`Access-Control-Max-Age: 600`. Other origins get no CORS headers. `serve` logs
+the allowed origins at startup.
+
+The allow-list is saved in `$XDG_CONFIG_HOME/gliner-runner/settings.json`
+(default `~/.config/gliner-runner/settings.json`, also on macOS;
+`%APPDATA%\gliner-runner\settings.json` on Windows) under `cors_origins`. Until
+that key exists the defaults apply: the usual local development servers
+`http://localhost:3000`, `:4173` (Vite preview), `:4200`, `:4321` (Astro),
+`:5173` (Vite) and `:8080`. Manage the list with `gliner-runner cors`; origins
+are numbered from 1, like `ufw status numbered`:
+
+```sh
+gliner-runner cors list                               # numbered list and the file path (--json for JSON)
+gliner-runner cors add https://stuffbucket.github.io  # allow the hosted playground
+gliner-runner cors show 7                             # print origin number 7
+gliner-runner cors set 7 https://app.example.com      # replace number 7
+gliner-runner cors delete 7                           # remove by number (or by exact origin)
+gliner-runner cors reset                              # back to the defaults
+```
+
+The first change writes the file with the defaults plus the change; other keys
+in the file are kept. An empty list stays empty (no browser access). Changes
+apply the next time `serve` starts.
+
+`serve --cors-origin http://localhost:5173` (repeatable) or
+`GLINER_RUNNER_CORS_ORIGINS=http://localhost:5173,https://app.example.com`
+replaces the saved list for that run; the flag wins over the variable.
 
 ### Offline snapshot discovery
 
@@ -335,7 +359,8 @@ abbreviated and `artifact.files[]` is shortened to two of its six entries):
 | `--models-dir`, `GLINER_RUNNER_MODELS_DIR` | `serve`, `models` | Models root. Default: user cache directory plus `gliner-runner/models` |
 | `--templates-dir`, `GLINER_RUNNER_ONNX_TEMPLATES_DIR` | `serve`, `models` | Template directory; the flag wins, then the variable, then the bundled templates (`app/templates/` in the archive) |
 | `--auto-download`, `GLINER_RUNNER_AUTO_DOWNLOAD` | `serve` | Enable [auto-download](#auto-download); default off |
-| `--cors-origin`, `GLINER_RUNNER_CORS_ORIGINS` | `serve` | Browser origins allowed to call the server; see [CORS](#cors) |
+| `--cors-origin`, `GLINER_RUNNER_CORS_ORIGINS` | `serve` | Browser origins allowed to call the server, replacing the list saved with `gliner-runner cors`; see [CORS](#cors) |
+| `XDG_CONFIG_HOME` (`APPDATA` on Windows) | `serve`, `cors` | Directory holding `gliner-runner/settings.json`; default `~/.config` |
 | `HF_ENDPOINT` | downloads, refresh | Hub base URL, default `https://huggingface.co`. Files are fetched from `{endpoint}/{repository}/resolve/{revision}/{file}` |
 | `HF_TOKEN` | downloads, refresh | Optional bearer token for gated or private repositories. Redirects are followed manually; the token is sent only to the endpoint's own origin and dropped when a redirect (for example to a CDN) leaves it. It is never logged or returned by the API |
 | `GLINER_RUNNER_SNAPSHOT_DIRS` | install, prepare, scan, jobs | Extra snapshot search roots (see [discovery](#offline-snapshot-discovery)) |
@@ -517,7 +542,7 @@ the command-line flag wins, then the environment, then the default.
 | `--max-body-bytes` | `GLINER_RUNNER_MAX_BODY_BYTES` | `16777216` (16 MiB); larger request bodies get `413 request_too_large` |
 | `--auto-download` | `GLINER_RUNNER_AUTO_DOWNLOAD` | off; `1`, `true`, `yes`, or `on` lets inference install a missing curated model (see [auto-download](#auto-download)) |
 | `--templates-dir` | `GLINER_RUNNER_ONNX_TEMPLATES_DIR` | the bundled templates |
-| `--cors-origin` (repeatable) | `GLINER_RUNNER_CORS_ORIGINS` (comma-separated) | none: no CORS headers (see [CORS](#cors)) |
+| `--cors-origin` (repeatable) | `GLINER_RUNNER_CORS_ORIGINS` (comma-separated) | the list in `settings.json`, else common localhost development origins (see [CORS](#cors)) |
 | n/a | `GLINER_RUNNER_ONNX_INTRA_OP_THREADS` | ONNX Runtime's physical-core default |
 
 Scheduling, schema and model grouping, bounded queue with `429` backpressure,

@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 
 import { runClassifyCommand, runDemoCommand, type ClassifyIo } from "./classify-cli.js";
 import { loadComponents } from "./components.js";
+import { runCorsCommand } from "./cors-cli.js";
 import { runModelsCommand } from "./models-cli.js";
 import { createServer } from "./server.js";
 import {
@@ -14,6 +15,7 @@ import {
   type Settings,
 } from "./settings.js";
 import { runUpdateCommand } from "./update.js";
+import { readUserSettings, userSettingsPath } from "./user-settings.js";
 import { VERSION_FLAGS, formatVersion, readVersionInfo } from "./version.js";
 
 const log = (message: string): void => {
@@ -28,7 +30,8 @@ function usageError(message: string): number {
 async function serve(argv: readonly string[]): Promise<number> {
   let settings: Settings;
   try {
-    settings = parseServeArguments(argv, process.env);
+    const saved = await readUserSettings(userSettingsPath(process.env));
+    settings = parseServeArguments(argv, process.env, saved.corsOrigins);
   } catch (error) {
     if (error instanceof SettingsError) {
       return usageError(error.message);
@@ -40,6 +43,7 @@ async function serve(argv: readonly string[]): Promise<number> {
     const address = await server.listen();
     log("Application startup complete.");
     log(`Listening on http://${settings.host}:${address.port}`);
+    log(`Browser origins allowed (CORS): ${settings.corsOrigins.join(", ") || "none"}`);
   } catch (error) {
     log(`failed to listen on ${settings.host}:${settings.port}: ${(error as Error).message}`);
     await server.close();
@@ -114,6 +118,8 @@ Commands:
   classify              Classify one text into labels you choose
   demo                  Run a few example classifications
   serve                 Run a local web service for applications (http://127.0.0.1:8090)
+  cors list             Show the web page origins allowed to call the service; also
+                        cors add <origin>, show <n>, set <n> <origin>, delete <n>, reset
   update check          Check whether a newer release is available
   --version             Print the version
 
@@ -169,6 +175,13 @@ async function main(argv: readonly string[]): Promise<number> {
   }
   if (command === "models") {
     return models(rest);
+  }
+  if (command === "cors") {
+    return runCorsCommand(rest, {
+      env: process.env,
+      stdout: (text) => void process.stdout.write(text),
+      stderr: (text) => void process.stderr.write(text),
+    });
   }
   if (command === "classify") {
     return classification(runClassifyCommand, rest);

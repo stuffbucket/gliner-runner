@@ -96,6 +96,14 @@ test("CORS origins come from a repeatable flag or a comma-separated variable; th
   }
 });
 
+test("saved CORS origins apply only when neither the flag nor the variable sets them", () => {
+  const saved = ["http://saved.test"];
+  assert.deepEqual(parseServeArguments([], {}, saved).corsOrigins, saved);
+  assert.deepEqual(parseServeArguments([], { GLINER_RUNNER_CORS_ORIGINS: "" }, saved).corsOrigins, saved);
+  assert.deepEqual(parseServeArguments([], { GLINER_RUNNER_CORS_ORIGINS: "http://env.test" }, saved).corsOrigins, ["http://env.test"]);
+  assert.deepEqual(parseServeArguments(["--cors-origin", "http://a.test"], {}, saved).corsOrigins, ["http://a.test"]);
+});
+
 test("auto-download and the templates directory are opt-in settings", () => {
   assert.equal(parseServeArguments([], {}).autoDownload, false);
   assert.equal(parseServeArguments(["--auto-download"], {}).autoDownload, true);
