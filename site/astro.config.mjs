@@ -16,7 +16,31 @@ export default defineConfig({
       sidebar: [
         { label: "Home", link: "/" },
         { label: "How it works", link: "/how-it-works/" },
-        { label: "Examples", items: [{ autogenerate: { directory: "examples" } }] },
+        {
+          label: "Examples",
+          items: [
+            { label: "Overview", slug: "examples" },
+            {
+              label: "Sort incoming messages",
+              items: [
+                "examples/support-tickets",
+                "examples/text-messages",
+                "examples/which-language",
+                "examples/other-languages",
+              ],
+            },
+            {
+              label: "Find what matters",
+              items: ["examples/email-lines", "examples/urgent-or-can-wait"],
+            },
+            {
+              label: "Flag things to check",
+              items: ["examples/personal-information", "examples/moderation"],
+            },
+            { label: "Understand feedback", items: ["examples/reviews"] },
+            { label: "Clean up lists", items: ["examples/keep-or-discard"] },
+          ],
+        },
         { label: "Use it in a React app", link: "/use-in-react/" },
         { label: "More ideas", link: "/more-ideas/" },
         {
