@@ -112,14 +112,19 @@
 }
 .pg-stack-cards {
   bottom: 0;
+  overflow: hidden;
+}
+/* The whole column slides, so the cards move together and never cross. */
+.pg-stack-track {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  overflow: hidden;
+  transition: transform var(--duration-move) var(--ease-out);
 }
 .pg-answer {
   flex: none;
-  transition: opacity var(--duration-move) var(--ease-in-out);
+  transition: opacity var(--duration-move) var(--ease-out);
 }
 
 /* Steps back and forth through the answers, right-aligned just above the stack. */

@@ -117,9 +117,6 @@ const STACK_LIMIT = 50;
 /** Each step down the stack keeps this much of a card's opacity. */
 const FADE_PER_STEP = 0.65;
 
-const motion = (name, fallback) =>
-  getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
-
 /**
  * The answer as a standalone card: the question it answered (in a game), what was sent, which labels fit, every
  * score, and how it ran. A verdict card closes a game.
@@ -129,8 +126,8 @@ function Answer({ answer, depth }) {
   const common = {
     className: `answer-card pg-answer${answer.kind === "verdict" ? " pg-verdict" : ""}`,
     "data-id": answer.id,
-    style: { opacity: FADE_PER_STEP ** depth },
-    "aria-hidden": depth > 0 ? "true" : undefined,
+    style: { opacity: depth < 0 ? 0 : FADE_PER_STEP ** depth },
+    "aria-hidden": depth !== 0 ? "true" : undefined,
   };
   if (answer.kind === "verdict") {
     return (
@@ -186,30 +183,50 @@ function Answer({ answer, depth }) {
 }
 
 /**
- * The answers from the card being looked at down to the oldest. When the cards change, the ones that stay slide to
- * their new places (measured before and after the update and animated between, so the move follows the shared
- * easing) and fade by a step, and a card that appears (a new answer, or a newer one shown again) eases in at the top.
+ * Every answer, newest first, in one column that slides so the card being looked at (`shown`) sits at the top of
+ * the stack; newer cards slide up out of view and fade, older ones fade a step per card below. Stepping through
+ * the history is just the slide (a CSS transition, so a quick second click carries on from wherever it is). When a
+ * card arrives the column first holds still, with the card being looked at where it was, then slides only if that
+ * card changed: on the newest, the new card comes down from above the stack; further back, nothing moves.
  */
-function AnswerStack({ answers, game }) {
-  const list = useRef(null);
-  const tops = useRef(new Map());
+function AnswerStack({ answers, shown, game }) {
+  const track = useRef(null);
+  const before = useRef({ ids: "", focus: undefined });
   useLayoutEffect(() => {
-    const duration = parseFloat(motion("--duration-move", "420ms"));
-    const easing = motion("--ease-out", "ease-out");
-    const seen = new Map();
-    for (const node of list.current?.children ?? []) {
-      const id = node.dataset.id;
-      const top = node.offsetTop;
-      const before = tops.current.get(id);
-      if (duration > 0 && before === undefined) {
-        node.animate([{ opacity: 0, transform: "translateY(-0.75rem) scale(0.985)" }], { duration, easing });
-      } else if (duration > 0 && before !== top) {
-        node.animate([{ transform: `translateY(${before - top}px)` }, { transform: "none" }], { duration, easing });
-      }
-      seen.set(id, top);
+    const column = track.current;
+    if (!column) {
+      before.current = { ids: "", focus: undefined };
+      return;
     }
-    tops.current = seen;
-  }, [answers]);
+    const nodes = [...column.children];
+    const ids = answers.map((answer) => answer.id).join();
+    const focus = answers[shown]?.id;
+    const offset = (id) => nodes.find((node) => node.dataset.id === id)?.offsetTop;
+    const slide = (top, animate) => {
+      if (!animate) column.style.transition = "none";
+      column.style.transform = `translateY(${-top}px)`;
+      if (!animate) {
+        void column.offsetHeight;
+        column.style.transition = "";
+      }
+    };
+    if (ids !== before.current.ids) {
+      // Hold the view where it was: the card that was on top stays on top for now.
+      slide(offset(before.current.focus) ?? offset(focus) ?? 0, false);
+      // A card that is new here starts invisible, so it can fade in as it comes into view.
+      const known = new Set(before.current.ids.split(","));
+      for (const node of nodes.filter((node) => !known.has(node.dataset.id))) {
+        const target = node.style.opacity;
+        node.style.transition = "none";
+        node.style.opacity = "0";
+        void node.offsetHeight;
+        node.style.transition = "";
+        node.style.opacity = target;
+      }
+    }
+    slide(offset(focus) ?? 0, true);
+    before.current = { ids, focus };
+  }, [answers, shown]);
 
   if (answers.length === 0) {
     return (
@@ -220,8 +237,10 @@ function AnswerStack({ answers, game }) {
     );
   }
   return (
-    <div className="pg-stack-cards" ref={list}>
-      {answers.map((answer, depth) => <Answer key={answer.id} answer={answer} depth={depth} />)}
+    <div className="pg-stack-cards">
+      <div className="pg-stack-track" ref={track}>
+        {answers.map((answer, index) => <Answer key={answer.id} answer={answer} depth={index - shown} />)}
+      </div>
     </div>
   );
 }
@@ -514,7 +533,7 @@ function Workspace({ transport, models, onWarm }) {
         </div>
       )}
       <section className="pg-stack" aria-live="polite" aria-label="Answers">
-        <AnswerStack answers={answers.slice(shown)} game={game !== null} />
+        <AnswerStack answers={answers} shown={shown} game={game !== null} />
       </section>
     </div>
   );
