@@ -282,3 +282,37 @@
     z-index: 30;
   }
 }
+
+/* 20 questions */
+.pg-question {
+  color: var(--muted);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+.pg-verdict {
+  border-color: var(--accent);
+}
+.pg-verdict-text {
+  color: var(--text);
+  font-size: var(--text-xl);
+  font-weight: 600;
+  line-height: var(--leading-snug);
+}
+.pg-readonly {
+  display: flex;
+  align-items: center;
+  height: auto;
+  min-height: var(--control-h);
+  padding-block: 0.55rem;
+  background: var(--surface);
+  color: var(--text);
+}
+.pg-guess {
+  color: var(--text);
+  font-size: var(--text-lg);
+  font-weight: 600;
+}
+.pg-active {
+  border-color: var(--accent);
+  color: var(--accent);
+}
