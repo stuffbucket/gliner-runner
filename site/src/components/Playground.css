@@ -1,241 +1,116 @@
-/* The playground app (see Playground.jsx); colours come from src/styles/brand.css. */
+/* Layout of the playground (see Playground.jsx); type, controls and the answer card come from styles/brand.css. */
 .pg-app {
-  --pg-border: 1px solid var(--border);
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 1.5rem;
+  gap: 2rem;
   min-height: calc(100dvh - 3.5rem - 3.25rem);
   color: var(--text);
 }
 .pg-app.pg-with-about {
-  grid-template-columns: minmax(0, 1fr) 19rem;
+  grid-template-columns: minmax(0, 1fr) 20rem;
 }
 .pg-main {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.5rem;
   min-width: 0;
 }
 .pg-app h1,
 .pg-app h2 {
   margin: 0;
   color: var(--text);
-  line-height: 1.2;
+  letter-spacing: -0.015em;
 }
 .pg-app p {
   margin: 0;
 }
 
-/* Header bar */
+/* Title row: the pill is as tall as the title's capitals and centred on them. */
 .pg-bar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.5rem 0.875rem;
+  gap: 0.75rem 1rem;
 }
 .pg-bar h1 {
-  font-size: 1.5rem;
-}
-.pg-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.15rem 0.6rem;
-  border: var(--pg-border);
-  border-radius: 999px;
-  font-size: 0.75rem;
-  color: var(--muted);
-}
-.pg-status::before {
-  content: "";
-  width: 0.5rem;
-  height: 0.5rem;
-  border-radius: 50%;
-  background: var(--faint);
-}
-.pg-ok::before {
-  background: var(--good);
-}
-.pg-busy::before {
-  background: var(--busy);
-}
-.pg-warn::before {
-  background: var(--bad);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  line-height: 1;
 }
 .pg-about-toggle {
   margin-inline-start: auto;
 }
 
-/* Buttons */
-.pg-app button {
-  font: inherit;
-  cursor: pointer;
-}
-.pg-primary {
-  justify-self: start;
-  padding: 0.55rem 1.25rem;
-  border: 0;
-  border-radius: var(--radius);
-  background: var(--accent);
-  color: var(--accent-text);
-  font-weight: 600;
-}
-.pg-primary:disabled {
-  opacity: 0.55;
-  cursor: default;
-}
-.pg-quiet {
-  padding: 0.3rem 0.75rem;
-  border: var(--pg-border);
-  border-radius: var(--radius);
-  background: transparent;
-  color: var(--text);
-  font-size: 0.875rem;
-}
-.pg-link {
-  padding: 0;
-  border: 0;
-  background: none;
-  color: var(--accent);
-  text-decoration: underline;
-  text-underline-offset: 0.15em;
-}
-.pg-chip {
-  padding: 0.2rem 0.75rem;
-  border: var(--pg-border);
-  border-radius: 999px;
-  background: var(--surface);
-  color: var(--muted);
-  font-size: 0.875rem;
-}
-.pg-chip:hover {
-  color: var(--text);
-  border-color: var(--faint);
-}
-
-/* Inputs */
-.pg-app textarea,
-.pg-app input:not([type="checkbox"]),
-.pg-app select {
-  width: 100%;
-  min-width: 0;
-  box-sizing: border-box;
-  padding: 0.6rem 0.75rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--bg);
-  color: var(--text);
-  font: inherit;
-}
-.pg-app select {
-  width: auto;
-}
-
-/* Workspace: input on the left, answer on the right */
+/* Workspace: the input on the left, the answer card on the right. */
 .pg-workspace {
   flex: 1;
   display: grid;
-  grid-template-columns: minmax(0, 3fr) minmax(15rem, 2fr);
-  gap: 1.25rem;
+  grid-template-columns: minmax(0, 3fr) minmax(18rem, 2fr);
+  align-items: start;
+  gap: 2rem;
 }
 .pg-input {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 1.25rem;
   min-width: 0;
 }
 .pg-examples {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
+  align-items: center;
+  gap: 0.5rem;
 }
-.pg-input textarea {
-  flex: 1;
-  min-height: 12rem;
-  resize: vertical;
-  font-size: 1.125rem;
+.pg-examples .field-label {
+  margin-inline-end: 0.25rem;
 }
-.pg-field {
-  display: grid;
-  gap: 0.3rem;
-}
-.pg-field span {
-  font-size: 0.875rem;
-  color: var(--muted);
+.pg-text textarea {
+  min-height: 14rem;
 }
 .pg-actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.75rem 1.25rem;
 }
-.pg-actions .pg-primary {
+.pg-classify {
   margin-inline-start: auto;
 }
-.pg-check {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-size: 0.875rem;
-}
 .pg-output {
-  display: flex;
-  flex-direction: column;
+  display: grid;
   gap: 1rem;
-  padding: 1.25rem;
-  border: var(--pg-border);
-  border-radius: var(--radius);
-  background: var(--surface);
+  position: sticky;
+  top: 4.5rem;
 }
 .pg-answer {
-  font-size: 1.875rem;
-  font-weight: 600;
-  color: var(--text);
-  line-height: 1.15;
+  min-height: 16rem;
 }
-.pg-scores {
-  display: grid;
-  gap: 0.5rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.pg-scores li {
-  display: grid;
-  grid-template-columns: minmax(5rem, auto) 1fr 2.75rem;
+.pg-placeholder {
+  min-height: 16rem;
   align-items: center;
-  gap: 0.75rem;
+  justify-content: center;
+  gap: 0.5rem;
+  border-style: dashed;
+  background: transparent;
+  color: var(--faint);
+  text-align: center;
+}
+.pg-none {
   color: var(--muted);
-  font-variant-numeric: tabular-nums;
-}
-.pg-scores li.picked {
-  color: var(--text);
-  font-weight: 600;
-}
-.pg-meter {
-  height: 0.5rem;
-  border-radius: 999px;
-  background: var(--surface-2);
-  overflow: hidden;
-}
-.pg-meter span {
-  display: block;
-  height: 100%;
-  border-radius: 999px;
-  background: var(--faint);
-}
-.pg-scores li.picked .pg-meter span {
-  background: var(--accent);
+  font-size: var(--text-sm);
 }
 
 /* Messages */
-.pg-hint {
-  color: var(--faint);
+.pg-muted {
+  color: var(--muted);
 }
 .pg-small,
 .pg-footer {
-  font-size: 0.875rem;
   color: var(--faint);
+  font-size: var(--text-sm);
+}
+.pg-footer .btn-link {
+  font-size: inherit;
 }
 .pg-error {
   color: var(--bad);
@@ -245,30 +120,34 @@
   display: inline-block;
   width: 0.5rem;
   height: 0.5rem;
-  margin-inline-end: 0.5rem;
+  margin-inline-end: 0.6rem;
   border-radius: 50%;
   background: var(--busy);
-  animation: pg-pulse 1.4s ease-in-out infinite;
-}
-@keyframes pg-pulse {
-  50% {
-    opacity: 0.25;
-  }
+  animation: pulse 1.4s ease-in-out infinite;
 }
 
-/* Cards for setup states */
+/* Cards for the steps before classifying */
 .pg-card {
   display: grid;
-  gap: 0.9rem;
+  gap: 1rem;
   width: min(100%, 36rem);
   margin: clamp(1rem, 8vh, 5rem) auto 0;
-  padding: 1.75rem;
-  border: var(--pg-border);
-  border-radius: var(--radius);
+  padding: 2rem;
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) * 1.5);
   background: var(--surface);
+  font-size: var(--text-md);
+  line-height: var(--leading-body);
 }
 .pg-card h2 {
-  font-size: 1.25rem;
+  font-size: var(--text-xl);
+  line-height: var(--leading-tight);
+}
+.pg-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
 }
 .pg-card progress {
   width: 100%;
@@ -282,34 +161,36 @@
   gap: 0.5rem;
 }
 .pg-command code {
-  padding: 0.6rem 0.75rem;
+  padding: 0.65rem 0.85rem;
   border-radius: var(--radius);
   background: var(--code);
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
+  line-height: 1.5;
   word-break: break-all;
 }
 .pg-advanced summary {
   cursor: pointer;
-  font-size: 0.875rem;
-  color: var(--faint);
+  color: var(--muted);
+  font-size: var(--text-sm);
 }
-.pg-advanced input {
-  margin-top: 0.5rem;
+.pg-advanced .input {
+  margin-top: 0.6rem;
 }
 
 /* About panel */
 .pg-about {
   display: flex;
   flex-direction: column;
-  gap: 0.9rem;
+  gap: 1rem;
   align-self: start;
   position: sticky;
-  top: calc(3.5rem + 1rem);
-  padding: 1.25rem;
-  border: var(--pg-border);
-  border-radius: var(--radius);
+  top: 4.5rem;
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) * 1.5);
   background: var(--surface);
-  font-size: 0.875rem;
+  font-size: var(--text-md);
+  line-height: var(--leading-body);
 }
 .pg-about-head {
   display: flex;
@@ -317,11 +198,11 @@
   justify-content: space-between;
 }
 .pg-about h2 {
-  font-size: 1.125rem;
+  font-size: var(--text-xl);
 }
 .pg-about ul {
   display: grid;
-  gap: 0.3rem;
+  gap: 0.35rem;
   margin: 0;
   padding-inline-start: 1.1rem;
 }
@@ -329,6 +210,9 @@
 @media (max-width: 60rem) {
   .pg-workspace {
     grid-template-columns: minmax(0, 1fr);
+  }
+  .pg-output {
+    position: static;
   }
   /* On narrow screens the panel slides over the playground instead of squeezing it. */
   .pg-app.pg-with-about {
@@ -341,6 +225,6 @@
     border-radius: 0;
     overflow-y: auto;
     box-shadow: 0 10px 30px rgb(0 0 0 / 0.25);
-    z-index: 10;
+    z-index: 30;
   }
 }

@@ -24,7 +24,7 @@ const slides = (gallery.entries as Entry[]).map((entry) => ({
 }));
 ---
 
-<figure class="gallery" aria-roledescription="carousel" aria-label="Examples of real answers">
+<figure class="gallery answer-card" aria-roledescription="carousel" aria-label="Examples of real answers">
   <div class="slides">
     {
       slides.map((slide, index) => (
@@ -35,13 +35,13 @@ const slides = (gallery.entries as Entry[]).map((entry) => ({
           aria-roledescription="slide"
           aria-label={`${index + 1} of ${slides.length}`}
         >
-          <p class="text">“{slide.text}”</p>
-          <p class="labels">
+          <p class="answer-quote">“{slide.text}”</p>
+          <p class="answer-labels">
             {slide.labels.map((label) => (
-              <span>{label}</span>
+              <span class={slide.picked.includes(label) ? "picked" : undefined}>{label}</span>
             ))}
           </p>
-          <ul>
+          <ul class="answer-scores">
             {slide.ranked.map(([label, score]) => (
               <li class={slide.picked.includes(label) ? "picked" : ""}>
                 <span>{label}</span>
@@ -52,8 +52,8 @@ const slides = (gallery.entries as Entry[]).map((entry) => ({
               </li>
             ))}
           </ul>
-          <p class="meta">
-            <span class="model">{slide.model}</span>
+          <p class="answer-meta">
+            <span class="model-badge">{slide.model}</span>
             {slide.multi && <span>several labels allowed</span>}
             <a href={`${base}examples/${slide.example}/`} tabindex={index === 0 ? undefined : "-1"}>
               {slide.title} →
@@ -111,10 +111,7 @@ const slides = (gallery.entries as Entry[]).map((entry) => ({
 <style>
   .gallery {
     margin: 0;
-    padding: 1.5rem 1.5rem 1rem;
-    border: 1px solid var(--border);
-    border-radius: calc(var(--radius) * 1.5);
-    background: var(--surface);
+    padding-bottom: 1rem;
   }
   /* Every slide sits in the same cell, so the card is as tall as the tallest one and never jumps. */
   .slides {
@@ -124,6 +121,7 @@ const slides = (gallery.entries as Entry[]).map((entry) => ({
     grid-area: 1 / 1;
     display: flex;
     flex-direction: column;
+    gap: 1.1rem;
     opacity: 0;
     visibility: hidden;
     transition:
@@ -141,73 +139,7 @@ const slides = (gallery.entries as Entry[]).map((entry) => ({
       transition: none;
     }
   }
-  .text {
-    margin: 0 0 0.9rem;
-    font-size: 1.1rem;
-  }
-  .labels {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-    margin: 0 0 1.1rem;
-  }
-  .labels span {
-    padding: 0.1rem 0.6rem;
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    color: var(--muted);
-    font-size: 0.85rem;
-  }
-  /* One grid for all rows, so the bars line up whatever the label lengths. */
-  ul {
-    display: grid;
-    grid-template-columns: max-content 1fr auto;
-    align-items: center;
-    gap: 0.45rem 0.75rem;
-    margin: 0 0 1rem;
-    padding: 0;
-    list-style: none;
-    font-variant-numeric: tabular-nums;
-  }
-  li {
-    display: contents;
-    color: var(--muted);
-  }
-  li.picked {
-    color: var(--text);
-    font-weight: 600;
-  }
-  .meter {
-    height: 0.5rem;
-    border-radius: 999px;
-    background: var(--surface-2);
-    overflow: hidden;
-  }
-  .meter span {
-    display: block;
-    height: 100%;
-    background: var(--faint);
-  }
-  .picked .meter span {
-    background: var(--accent);
-  }
-  .meta {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.4rem 0.75rem;
-    margin: auto 0 0;
-    color: var(--faint);
-    font-size: 0.8rem;
-  }
-  .model {
-    padding: 0.05rem 0.5rem;
-    border-radius: 0.3rem;
-    background: var(--accent-soft);
-    color: var(--accent);
-    font-family: var(--mono);
-  }
-  .meta a {
+  .answer-meta a {
     margin-inline-start: auto;
     color: var(--muted);
   }
@@ -216,13 +148,12 @@ const slides = (gallery.entries as Entry[]).map((entry) => ({
     align-items: center;
     justify-content: center;
     gap: 0.75rem;
-    margin-top: 0.75rem;
-    padding-top: 0.75rem;
+    padding-top: 0.85rem;
     border-top: 1px solid var(--border);
   }
   .controls button {
-    width: 1.9rem;
-    height: 1.9rem;
+    width: 2rem;
+    height: 2rem;
     border: 1px solid var(--border);
     border-radius: 50%;
     background: transparent;
@@ -233,6 +164,10 @@ const slides = (gallery.entries as Entry[]).map((entry) => ({
   }
   .controls button:hover {
     color: var(--text);
+  }
+  .controls button:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
   }
   .dots {
     display: flex;

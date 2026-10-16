@@ -12,6 +12,7 @@ const KEYS = {
 };
 const SETUP_COMMAND =
   "curl -fsSL https://github.com/stuffbucket/gliner-runner/releases/latest/download/install.sh | sh -s -- --playground --yes --no-open";
+const MAC = /Mac|iPhone|iPad/.test(navigator.userAgentData?.platform ?? navigator.platform ?? navigator.userAgent);
 
 const EXAMPLES = [
   { name: "Support ticket", text: "I was charged twice for my last order.", labels: "billing, support, shipping" },
@@ -44,6 +45,10 @@ const parse = (reply) => {
 };
 const message = (data, fallback) =>
   typeof data.detail === "string" ? data.detail : (data.detail?.message ?? fallback);
+const request = (model, text, labels, several) => ({
+  model, backend: "onnx", precision: "fp32", operation: "classify", text,
+  schema: { kind: "classification", tasks: { category: { labels, ...(several ? { min_labels: 0, max_labels: null } : {}) } } },
+});
 
 /** Downloads a model through the runner's own download API and waits for the job. */
 async function install(transport, entry, setJob) {
@@ -66,6 +71,10 @@ async function install(transport, entry, setJob) {
   }
 }
 
+function Shortcut() {
+  return <span className="kbd" aria-hidden="true">{MAC ? "⌘" : "Ctrl"} ↵</span>;
+}
+
 function Command({ children }) {
   const [copied, setCopied] = useState(false);
   const copy = () =>
@@ -76,7 +85,7 @@ function Command({ children }) {
   return (
     <div className="pg-command">
       <code>{children}</code>
-      <button type="button" className="pg-quiet" onClick={copy}>{copied ? "Copied" : "Copy"}</button>
+      <button type="button" className="btn btn-sm" onClick={copy}>{copied ? "Copied" : "Copy"}</button>
     </div>
   );
 }
@@ -91,40 +100,85 @@ function Card({ title, children }) {
   );
 }
 
-/** Text, labels and the answer; the same for both runners. */
-function Workspace({ transport, models, firstRunNote }) {
+/** The answer as a standalone card: what was sent, which labels fit, every score, and what ran it. */
+function Answer({ answer }) {
+  const ranked = Object.entries(answer.scores).sort((a, b) => b[1] - a[1]);
+  return (
+    <article className="answer-card pg-answer" aria-label="Answer">
+      <p className="answer-quote">“{answer.text}”</p>
+      <p className="answer-labels">
+        {answer.labels.map((label) => (
+          <span key={label} className={answer.picked.includes(label) ? "picked" : ""}>{label}</span>
+        ))}
+      </p>
+      {answer.picked.length === 0 && <p className="pg-none">No label fits well enough.</p>}
+      <ul className="answer-scores">
+        {ranked.map(([label, score]) => (
+          <li key={label} className={answer.picked.includes(label) ? "picked" : ""}>
+            <span>{label}</span>
+            <span className="meter"><span style={{ width: `${Math.max(2, Math.round(score * 100))}%` }} /></span>
+            <span>{score.toFixed(2)}</span>
+          </li>
+        ))}
+      </ul>
+      <p className="answer-meta">
+        <span className="model-badge">{answer.model}</span>
+        {answer.several && <span>several labels allowed</span>}
+        {answer.ms !== undefined && <span>{answer.ms < 10 ? answer.ms.toFixed(1) : Math.round(answer.ms)} ms</span>}
+      </p>
+    </article>
+  );
+}
+
+/**
+ * Text, labels and the answer; the same for both runners. The model is loaded in the background as soon as the
+ * workspace appears (and whenever another model is chosen), so the first Classify is as fast as the rest.
+ */
+function Workspace({ transport, models, onWarm }) {
   const [model, setModel] = useState(models.includes(IN_TAB_MODEL) ? IN_TAB_MODEL : models[0]);
   const [text, setText] = useState(EXAMPLES[0].text);
   const [labels, setLabels] = useState(EXAMPLES[0].labels);
   const [several, setSeveral] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [result, setResult] = useState(null);
+  const [answer, setAnswer] = useState(null);
   const [error, setError] = useState("");
-  const [warm, setWarm] = useState(false);
+
+  useEffect(() => {
+    let current = true;
+    onWarm("loading", model);
+    transport.request("POST", "/v1/infer", request(model, "Hello.", ["greeting", "question"], false)).then(
+      (reply) => current && onWarm(reply.status === 200 ? "ready" : "failed", model),
+      () => current && onWarm("failed", model),
+    );
+    return () => {
+      current = false;
+    };
+  }, [model]);
 
   const pick = (example) => {
     setText(example.text);
     setLabels(example.labels);
     setSeveral(example.several ?? false);
-    setResult(null);
   };
 
   async function classify() {
+    const list = labels.split(",").map((s) => s.trim()).filter(Boolean);
+    if (busy || !text.trim() || list.length === 0) return;
     setError("");
     setBusy(true);
-    const list = labels.split(",").map((s) => s.trim()).filter(Boolean);
-    const task = { labels: list, ...(several ? { min_labels: 0, max_labels: null } : {}) };
     try {
-      const reply = await transport.request("POST", "/v1/infer", {
-        model, backend: "onnx", precision: "fp32", operation: "classify",
-        text, schema: { kind: "classification", tasks: { category: task } },
-      });
+      const reply = await transport.request("POST", "/v1/infer", request(model, text, list, several));
       const data = parse(reply);
       if (reply.status !== 200) {
         setError(message(data, "The runner rejected the request."));
       } else {
-        setWarm(true);
-        setResult(data.output.category);
+        const { value, probabilities } = data.output.category;
+        setAnswer({
+          text, labels: list, several, model,
+          picked: [value].flat().filter(Boolean),
+          scores: probabilities,
+          ms: data.timing?.inference_ms,
+        });
       }
     } catch {
       setError("Lost the connection to the runner.");
@@ -133,59 +187,61 @@ function Workspace({ transport, models, firstRunNote }) {
     }
   }
 
-  const picked = result ? [result.value].flat().filter(Boolean) : [];
-  const ranked = result ? Object.entries(result.probabilities).sort((a, b) => b[1] - a[1]) : [];
-  const loading = busy && !warm && firstRunNote !== undefined;
+  const onKeyDown = (event) => {
+    if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
+      event.preventDefault();
+      classify();
+    }
+  };
   return (
     <div className="pg-workspace">
-      <section className="pg-input">
-        <div className="pg-examples" aria-label="Examples">
+      <section className="pg-input" onKeyDown={onKeyDown}>
+        <div className="pg-examples">
+          <span className="field-label">Try</span>
           {EXAMPLES.map((example) => (
-            <button type="button" key={example.name} className="pg-chip" onClick={() => pick(example)}>
-              {example.name}
-            </button>
+            <button type="button" key={example.name} className="chip" onClick={() => pick(example)}>{example.name}</button>
           ))}
         </div>
-        <textarea
-          aria-label="Text to classify"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="Paste or type some text"
-        />
-        <label className="pg-field">
-          <span>Labels</span>
-          <input value={labels} onChange={(e) => setLabels(e.target.value)} placeholder="billing, support, shipping" />
+        <label className="field pg-text">
+          <span className="field-label">Text</span>
+          <textarea className="input" value={text} onChange={(e) => setText(e.target.value)} placeholder="Paste or type some text" />
+        </label>
+        <label className="field">
+          <span className="field-label">Labels</span>
+          <input className="input" value={labels} onChange={(e) => setLabels(e.target.value)} placeholder="billing, support, shipping" />
+          <span className="field-hint">Separate labels with commas.</span>
         </label>
         <div className="pg-actions">
-          <label className="pg-check">
-            <input type="checkbox" checked={several} onChange={(e) => setSeveral(e.target.checked)} /> Several labels can fit
+          <label className="switch">
+            <input type="checkbox" role="switch" checked={several} onChange={(e) => setSeveral(e.target.checked)} />
+            <span className="switch-track" aria-hidden="true" />
+            Several labels can fit
           </label>
           {models.length > 1 && (
-            <select aria-label="Model" value={model} onChange={(e) => setModel(e.target.value)}>
+            <select className="input" aria-label="Model" value={model} onChange={(e) => setModel(e.target.value)}>
               {models.map((id) => <option key={id} value={id}>{id}</option>)}
             </select>
           )}
-          <button type="button" className="pg-primary" onClick={classify} disabled={busy || !text.trim()}>
-            {loading ? "Loading the model…" : busy ? "Classifying…" : "Classify"}
+          <button
+            type="button"
+            className="btn btn-primary pg-classify"
+            onClick={classify}
+            disabled={busy || !text.trim()}
+            aria-keyshortcuts={MAC ? "Meta+Enter" : "Control+Enter"}
+          >
+            {busy ? "Classifying…" : "Classify"} <Shortcut />
           </button>
         </div>
       </section>
       <section className="pg-output" aria-live="polite">
         {error && <p className="pg-error">{error}</p>}
-        {!result && !error && <p className="pg-hint">{loading ? firstRunNote : "The answer appears here."}</p>}
-        {result && (
-          <>
-            <p className="pg-answer">{picked.length ? picked.join(", ") : "No label fits"}</p>
-            <ul className="pg-scores">
-              {ranked.map(([name, p]) => (
-                <li key={name} className={picked.includes(name) ? "picked" : ""}>
-                  <span>{name}</span>
-                  <span className="pg-meter"><span style={{ width: `${Math.round(p * 100)}%` }} /></span>
-                  <span>{p.toFixed(2)}</span>
-                </li>
-              ))}
-            </ul>
-          </>
+        {answer ? (
+          <Answer answer={answer} />
+        ) : (
+          <div className="answer-card pg-placeholder">
+            <p>The answer appears here.</p>
+            <p className="pg-small">Press Classify or <Shortcut /></p>
+          </div>
         )}
       </section>
     </div>
@@ -202,12 +258,18 @@ const STAGES = {
   finalize: "Finishing",
 };
 
+const ENGINE = {
+  webgpu: { short: "GPU", title: "Running on your graphics card (GPU) through WebGPU" },
+  wasm: { short: "CPU", title: "Running on your processor (CPU) through WebAssembly" },
+};
+
 function InTab({ params, setStatus, useMachine }) {
   const [transport, setTransport] = useState(null);
   const [host, setHost] = useState({ state: "starting" });
   const [entry, setEntry] = useState(null);
   const [progress, setProgress] = useState(null);
   const [provider, setProvider] = useState(null);
+  const [warm, setWarm] = useState("loading");
   const [job, setJob] = useState(null);
   const [error, setError] = useState("");
   const [generation, setGeneration] = useState(0);
@@ -241,19 +303,23 @@ function InTab({ params, setStatus, useMachine }) {
 
   const blocked = host.state === "unsupported" || host.state === "failed";
   useEffect(() => {
-    const engine = provider ? (provider.provider === "webgpu" ? "graphics card" : "processor") : null;
+    const engine = provider ? ENGINE[provider.provider] : undefined;
     setStatus(
       blocked
         ? { tone: "warn", text: "Not available in this window" }
         : job
           ? { tone: "busy", text: "Getting the model" }
           : entry?.available_locally
-            ? { tone: "ok", text: engine ? `Ready · ${engine}` : "Ready" }
+            ? warm === "ready"
+              ? { tone: "ok", text: engine ? `Ready · ${engine.short}` : "Ready", title: engine?.title }
+              : warm === "failed"
+                ? { tone: "warn", text: "The model could not load" }
+                : { tone: "busy", text: "Loading the model" }
             : entry === null
               ? { tone: "idle", text: "Starting" }
               : { tone: "idle", text: "Model not downloaded" },
     );
-  }, [blocked, entry, job, provider]);
+  }, [blocked, entry, job, provider, warm]);
 
   async function download() {
     setError("");
@@ -283,21 +349,22 @@ function InTab({ params, setStatus, useMachine }) {
   async function remove() {
     setEntry(null);
     setProvider(null);
+    setWarm("loading");
     await transport.deleteModel();
     await refresh();
   }
 
-  const elsewhere = <button type="button" className="pg-link" onClick={useMachine}>Run it on my computer instead</button>;
+  const elsewhere = <button type="button" className="btn btn-link" onClick={useMachine}>Run it on my computer instead</button>;
   if (blocked) {
     return (
       <Card title="This window can't keep the model">
         <p>{host.reason} Open the page in a normal (not private) window, or run the model on your computer.</p>
-        <button type="button" className="pg-primary" onClick={useMachine}>Run it on my computer</button>
+        <button type="button" className="btn btn-primary" onClick={useMachine}>Run it on my computer</button>
       </Card>
     );
   }
   if (host.state === "starting" || !transport || entry === null) {
-    return <Card><p className="pg-hint">Starting…</p></Card>;
+    return <Card><p className="pg-muted">Starting…</p></Card>;
   }
   if (!entry.available_locally) {
     const free = host.storage.quota - host.storage.usage;
@@ -309,9 +376,11 @@ function InTab({ params, setStatus, useMachine }) {
           <>
             <p>One time, 1.95 GB. It stays in this browser, and your text never leaves it.</p>
             {!enough && <p className="pg-error">Not enough space: this browser allows the site {gb(Math.max(free, 0))}.</p>}
-            <button type="button" className="pg-primary" onClick={download} disabled={!enough}>Download</button>
+            <div className="pg-card-actions">
+              <button type="button" className="btn btn-primary" onClick={download} disabled={!enough}>Download</button>
+              {elsewhere}
+            </div>
             {error && <p className="pg-error">{error}</p>}
-            <p className="pg-small">{elsewhere}</p>
           </>
         ) : (
           <>
@@ -319,7 +388,9 @@ function InTab({ params, setStatus, useMachine }) {
             <p className="pg-small">
               {progress ? `${STAGES[progress.stage] ?? "Working"} · ${gb(progress.done)} of ${gb(progress.total)}` : "Starting…"}
             </p>
-            <button type="button" className="pg-quiet" onClick={cancel}>Cancel</button>
+            <div className="pg-card-actions">
+              <button type="button" className="btn btn-sm" onClick={cancel}>Cancel</button>
+            </div>
           </>
         )}
       </Card>
@@ -327,10 +398,10 @@ function InTab({ params, setStatus, useMachine }) {
   }
   return (
     <>
-      <Workspace transport={transport} models={[IN_TAB_MODEL]} firstRunNote="Loading the model takes a few seconds the first time." />
+      <Workspace transport={transport} models={[IN_TAB_MODEL]} onWarm={(state) => setWarm(state)} />
       <p className="pg-footer">
-        Runs in this browser{provider ? ` on your ${provider.provider === "webgpu" ? "graphics card" : "processor"}` : ""}.{" "}
-        <button type="button" className="pg-link" onClick={remove}>Remove the model</button> · {elsewhere}
+        Runs in this browser{provider ? ` on your ${provider.provider === "webgpu" ? "graphics card (GPU)" : "processor (CPU)"}` : ""}.{" "}
+        <button type="button" className="btn btn-link" onClick={remove}>Remove the model</button> · {elsewhere}
       </p>
     </>
   );
@@ -339,14 +410,16 @@ function InTab({ params, setStatus, useMachine }) {
 function OnMyMachine({ params, setStatus, useBrowser }) {
   const [address, setAddress] = useState(() => params.get("runner") ?? stored(KEYS.address, DEFAULT_ADDRESS));
   const [state, setState] = useState({ kind: "probing" });
+  const [warm, setWarm] = useState({ state: "loading", model: "" });
   const [job, setJob] = useState(null);
   const [error, setError] = useState("");
   const base = address.trim().replace(/\/+$/, "");
-  const transport = new HttpTransport(base);
+  const transport = useRef(null);
+  if (transport.current?.base !== base) transport.current = new HttpTransport(base);
 
   async function probe() {
     try {
-      const data = parse(await transport.request("GET", "/v1/models"));
+      const data = parse(await transport.current.request("GET", "/v1/models"));
       store(KEYS.address, base);
       setState({ kind: "connected", models: data.models ?? [] });
       return true;
@@ -372,18 +445,25 @@ function OnMyMachine({ params, setStatus, useBrowser }) {
     };
   }, [base]);
 
+  const installed = state.kind === "connected" ? state.models.filter((m) => m.available_locally).map((m) => m.model_id) : [];
   useEffect(() => {
     setStatus(
-      state.kind === "connected"
-        ? { tone: "ok", text: "Connected to your computer" }
-        : { tone: "busy", text: "Waiting for your computer" },
+      state.kind !== "connected"
+        ? { tone: "busy", text: "Waiting for your computer" }
+        : installed.length === 0
+          ? { tone: "idle", text: "Connected · no model yet" }
+          : warm.state === "ready"
+            ? { tone: "ok", text: "Ready · your computer", title: `${warm.model} is loaded in the runner at ${base}` }
+            : warm.state === "failed"
+              ? { tone: "warn", text: "The model could not load" }
+              : { tone: "busy", text: `Loading ${warm.model}` },
     );
-  }, [state.kind]);
+  }, [state.kind, installed.length, warm]);
 
   async function download(entry) {
     setError("");
     try {
-      await install(transport, entry, setJob);
+      await install(transport.current, entry, setJob);
       await probe();
     } catch (failure) {
       setError(failure.message);
@@ -392,41 +472,42 @@ function OnMyMachine({ params, setStatus, useBrowser }) {
     }
   }
 
-  const back = <button type="button" className="pg-link" onClick={useBrowser}>Back to this browser</button>;
+  const back = <button type="button" className="btn btn-link" onClick={useBrowser}>Back to this browser</button>;
   if (state.kind !== "connected") {
     return (
       <Card title="Run it on your computer">
         <p>Paste this into a terminal. It sets up the runner and connects this page.</p>
         <Command>{state.kind === "blocked" ? "gliner-runner playground --yes --no-open" : SETUP_COMMAND}</Command>
-        <p className="pg-hint pg-waiting">{state.kind === "probing" ? "Looking for the runner…" : "Waiting for the runner…"}</p>
+        <p className="pg-muted pg-waiting">{state.kind === "probing" ? "Looking for the runner…" : "Waiting for the runner…"}</p>
         <details className="pg-advanced">
           <summary>Runner address</summary>
-          <input aria-label="Runner address" value={address} onChange={(e) => setAddress(e.target.value)} spellCheck={false} />
+          <input className="input" aria-label="Runner address" value={address} onChange={(e) => setAddress(e.target.value)} spellCheck={false} />
         </details>
-        <p className="pg-small">{back}</p>
+        <div className="pg-card-actions">{back}</div>
       </Card>
     );
   }
-  const installed = state.models.filter((model) => model.available_locally).map((model) => model.model_id);
   const missing = state.models.find((model) => model.model_id === IN_TAB_MODEL && !model.available_locally);
   if (installed.length === 0) {
     return (
       <Card title="Connected, but no model yet">
         {job === null ? (
-          <button type="button" className="pg-primary" onClick={() => download(missing)} disabled={!missing}>
-            Download {IN_TAB_MODEL} to your computer
-          </button>
+          <div className="pg-card-actions">
+            <button type="button" className="btn btn-primary" onClick={() => download(missing)} disabled={!missing}>
+              Download {IN_TAB_MODEL} to your computer
+            </button>
+          </div>
         ) : (
-          <p className="pg-hint">Downloading and preparing on your computer… a few minutes.</p>
+          <p className="pg-muted pg-waiting">Downloading and preparing on your computer… a few minutes.</p>
         )}
         {error && <p className="pg-error">{error}</p>}
-        <p className="pg-small">{back}</p>
+        <div className="pg-card-actions">{back}</div>
       </Card>
     );
   }
   return (
     <>
-      <Workspace transport={transport} models={installed} />
+      <Workspace transport={transport.current} models={installed} onWarm={(state, model) => setWarm({ state, model })} />
       <p className="pg-footer">Runs on your computer ({base}). {back}</p>
     </>
   );
@@ -437,10 +518,10 @@ function About({ onClose }) {
     <aside className="pg-about" aria-label="About the playground">
       <div className="pg-about-head">
         <h2>About</h2>
-        <button type="button" className="pg-quiet" onClick={onClose} aria-label="Close">✕</button>
+        <button type="button" className="btn btn-sm" onClick={onClose} aria-label="Close">✕</button>
       </div>
       <p>Type some text and the labels you care about. GLiNER Runner picks the label that fits best and scores each one from 0 to 1.</p>
-      <p>Tick <strong>Several labels can fit</strong> when a text can have more than one label, or none.</p>
+      <p>Turn on <strong>Several labels can fit</strong> when a text can have more than one label, or none.</p>
       <p>Your text stays on your device: the model runs in this browser, or on your own computer.</p>
       <ul>
         <li><a href={`${BASE}/how-it-works/`}>How it works</a></li>
@@ -475,8 +556,8 @@ export default function Playground() {
       <div className="pg-main">
         <header className="pg-bar">
           <h1>Playground</h1>
-          <span className={`pg-status pg-${status.tone}`}>{status.text}</span>
-          <button type="button" className="pg-quiet pg-about-toggle" aria-expanded={about} onClick={() => toggleAbout(!about)}>
+          <span className={`pill pill-${status.tone}`} title={status.title} role="status">{status.text}</span>
+          <button type="button" className="btn btn-sm pg-about-toggle" aria-expanded={about} onClick={() => toggleAbout(!about)}>
             {about ? "Hide about" : "About"}
           </button>
         </header>

@@ -27,8 +27,8 @@ const docs = [
           leaves your device.
         </p>
         <div class="cta">
-          <a class="button primary" href={`${base}playground/`}>Try it in your browser</a>
-          <a class="button" href={`${base}start/`}>Get started</a>
+          <a class="btn btn-primary" href={`${base}playground/`}>Try it in your browser</a>
+          <a class="btn" href={`${base}start/`}>Get started</a>
         </div>
       </div>
       <Gallery />
@@ -100,14 +100,14 @@ const docs = [
     padding: clamp(2.5rem, 8vw, 6rem) 0 clamp(2rem, 6vw, 4rem);
   }
   h1 {
-    margin: 0 0 1rem;
-    font-size: clamp(2.2rem, 5vw, 3.4rem);
+    margin: 0 0 1.25rem;
+    font-size: var(--text-3xl);
   }
   .lead {
     margin: 0;
     max-width: 36rem;
     color: var(--muted);
-    font-size: 1.15rem;
+    font-size: var(--text-lg);
   }
   .cta {
     display: flex;
@@ -115,20 +115,6 @@ const docs = [
     gap: 0.75rem;
     margin-top: 2rem;
   }
-  .button {
-    padding: 0.7rem 1.3rem;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    color: var(--text);
-    font-weight: 600;
-    text-decoration: none;
-  }
-  .button.primary {
-    border-color: var(--accent);
-    background: var(--accent);
-    color: var(--accent-text);
-  }
-
   .points {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -138,7 +124,7 @@ const docs = [
   }
   .points h2 {
     margin: 0 0 0.4rem;
-    font-size: 1.1rem;
+    font-size: var(--text-lg);
   }
   .points p {
     margin: 0;
@@ -153,7 +139,7 @@ const docs = [
   .install h2,
   .docs h2 {
     margin: 0 0 1rem;
-    font-size: 1.5rem;
+    font-size: var(--text-xl);
   }
   .install p {
     margin: 0 0 0.75rem;
@@ -166,7 +152,7 @@ const docs = [
     border: 1px solid var(--border);
     border-radius: var(--radius);
     background: var(--code);
-    font-size: 0.875rem;
+    font-size: var(--text-sm);
     line-height: 1.7;
   }
   .prompt {
@@ -196,7 +182,7 @@ const docs = [
   }
   .doc span {
     color: var(--muted);
-    font-size: 0.925rem;
+    font-size: var(--text-sm);
   }
 
   footer {
@@ -208,7 +194,7 @@ const docs = [
     padding: 2rem 0 3rem;
     border-top: 1px solid var(--border);
     color: var(--faint);
-    font-size: 0.875rem;
+    font-size: var(--text-sm);
   }
   footer a {
     color: var(--muted);
