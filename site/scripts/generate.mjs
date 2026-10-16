@@ -10,7 +10,7 @@
 //   docs/*.md                                                    copied with links rewritten
 
 import { createHash } from "node:crypto";
-import { existsSync, readdirSync, readFileSync, rmSync, mkdirSync, statSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, readdirSync, readFileSync, rmSync, mkdirSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, posix, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -635,9 +635,32 @@ export function generate(root, outDir) {
   return { models: catalog.length, docs: docs.length };
 }
 
+/** The model the in-browser playground runs; its artifact template is served with the site. */
+export const IN_TAB_REPOSITORY = "fastino/GLiNER2.5-Decide";
+
+/**
+ * Copies the in-tab model's artifact template (graph, manifest, preprocessing, template.json; about 5 MB) into
+ * `outDir/<owner>--<name>/<revision>/`, where the playground's worker fetches it. The worker's runner verifies
+ * every file's SHA-256 against template.json before using it.
+ */
+export function copyRunnerTemplates(root, outDir, repository = IN_TAB_REPOSITORY) {
+  const slug = repository.replace("/", "--");
+  const source = join(root, "packages/onnx-runner/templates", slug);
+  rmSync(outDir, { recursive: true, force: true });
+  const revisions = readdirSync(source).filter((name) => /^[0-9a-f]{40}$/.test(name));
+  for (const revision of revisions) {
+    mkdirSync(join(outDir, slug, revision), { recursive: true });
+    for (const name of readdirSync(join(source, revision))) {
+      copyFileSync(join(source, revision, name), join(outDir, slug, revision, name));
+    }
+  }
+  return revisions.length;
+}
+
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const here = dirname(fileURLToPath(import.meta.url));
   const root = resolve(here, "../..");
   const result = generate(root, resolve(here, "../src/content/docs"));
   console.log(`generated ${result.models} model pages, the evaluation page, and ${result.docs} docs pages`);
+  copyRunnerTemplates(root, resolve(here, "../public/runner-templates"));
 }
