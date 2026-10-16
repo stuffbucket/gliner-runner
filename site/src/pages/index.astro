@@ -1,4 +1,5 @@
 ---
+import Gallery from "../components/Gallery.astro";
 import Plain from "../layouts/Plain.astro";
 
 const base = import.meta.env.BASE_URL.replace(/\/?$/, "/");
@@ -10,11 +11,6 @@ const docs = [
   { href: "models/", title: "Models", text: "The three models, their sizes, languages and test results." },
   { href: "docs/onnx-runtime/", title: "Reference", text: "Every command, option and API request." },
 ];
-const scores = [
-  ["billing", 0.89],
-  ["shipping", 0.06],
-  ["support", 0.05],
-] as const;
 ---
 
 <Plain
@@ -35,23 +31,7 @@ const scores = [
           <a class="button" href={`${base}start/`}>Get started</a>
         </div>
       </div>
-      <figure class="demo" aria-label="Example">
-        <p class="demo-text">“I was charged twice for my last order.”</p>
-        <p class="demo-labels">
-          <span>billing</span><span>support</span><span>shipping</span>
-        </p>
-        <ul>
-          {
-            scores.map(([label, score], index) => (
-              <li class={index === 0 ? "top" : ""}>
-                <span>{label}</span>
-                <span class="meter"><span style={`width: ${Math.round(score * 100)}%`} /></span>
-                <span>{score.toFixed(2)}</span>
-              </li>
-            ))
-          }
-        </ul>
-      </figure>
+      <Gallery />
     </section>
 
     <section class="points">
@@ -147,63 +127,6 @@ const scores = [
     border-color: var(--accent);
     background: var(--accent);
     color: var(--accent-text);
-  }
-
-  .demo {
-    margin: 0;
-    padding: 1.5rem;
-    border: 1px solid var(--border);
-    border-radius: calc(var(--radius) * 1.5);
-    background: var(--surface);
-  }
-  .demo-text {
-    margin: 0 0 0.9rem;
-    font-size: 1.1rem;
-  }
-  .demo-labels {
-    display: flex;
-    gap: 0.4rem;
-    margin: 0 0 1.25rem;
-  }
-  .demo-labels span {
-    padding: 0.1rem 0.6rem;
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    color: var(--muted);
-    font-size: 0.85rem;
-  }
-  .demo ul {
-    display: grid;
-    gap: 0.5rem;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-  .demo li {
-    display: grid;
-    grid-template-columns: 4.5rem 1fr 2.5rem;
-    align-items: center;
-    gap: 0.75rem;
-    color: var(--muted);
-    font-variant-numeric: tabular-nums;
-  }
-  .demo li.top {
-    color: var(--text);
-    font-weight: 600;
-  }
-  .meter {
-    height: 0.5rem;
-    border-radius: 999px;
-    background: var(--surface-2);
-    overflow: hidden;
-  }
-  .meter span {
-    display: block;
-    height: 100%;
-    background: var(--faint);
-  }
-  .top .meter span {
-    background: var(--accent);
   }
 
   .points {

@@ -1,0 +1,250 @@
+---
+// A rotating card of real answers from the examples, precomputed with the models by scripts/gallery.mjs (no model
+// runs on the page). Every slide is in the HTML; the script only moves between them.
+import { getCollection } from "astro:content";
+
+import gallery from "../data/gallery.json";
+
+interface Entry {
+  example: string;
+  model: string;
+  text: string;
+  labels: string[];
+  multi: boolean;
+  picked: string[];
+  scores: Record<string, number>;
+}
+
+const base = import.meta.env.BASE_URL.replace(/\/?$/, "/");
+const titles = new Map((await getCollection("docs")).map((page) => [page.id, page.data.title]));
+const slides = (gallery.entries as Entry[]).map((entry) => ({
+  ...entry,
+  title: titles.get(`examples/${entry.example}`) ?? "Examples",
+  ranked: Object.entries(entry.scores).sort((a, b) => b[1] - a[1]),
+}));
+---
+
+<figure class="gallery" aria-roledescription="carousel" aria-label="Examples of real answers">
+  <div class="slides">
+    {
+      slides.map((slide, index) => (
+        <div
+          class="slide"
+          data-active={index === 0 ? "" : undefined}
+          aria-hidden={index === 0 ? undefined : "true"}
+          aria-roledescription="slide"
+          aria-label={`${index + 1} of ${slides.length}`}
+        >
+          <p class="text">“{slide.text}”</p>
+          <p class="labels">
+            {slide.labels.map((label) => (
+              <span>{label}</span>
+            ))}
+          </p>
+          <ul>
+            {slide.ranked.map(([label, score]) => (
+              <li class={slide.picked.includes(label) ? "picked" : ""}>
+                <span>{label}</span>
+                <span class="meter">
+                  <span style={`width: ${Math.max(2, Math.round(score * 100))}%`} />
+                </span>
+                <span>{score.toFixed(2)}</span>
+              </li>
+            ))}
+          </ul>
+          <p class="meta">
+            <span class="model">{slide.model}</span>
+            {slide.multi && <span>several labels allowed</span>}
+            <a href={`${base}examples/${slide.example}/`} tabindex={index === 0 ? undefined : "-1"}>
+              {slide.title} →
+            </a>
+          </p>
+        </div>
+      ))
+    }
+  </div>
+  <div class="controls">
+    <button type="button" data-step="-1" aria-label="Previous example">‹</button>
+    <span class="dots" aria-hidden="true">
+      {slides.map((_, index) => <span data-dot={index} data-active={index === 0 ? "" : undefined} />)}
+    </span>
+    <button type="button" data-step="1" aria-label="Next example">›</button>
+  </div>
+</figure>
+
+<script>
+  const gallery = document.querySelector<HTMLElement>(".gallery");
+  if (gallery) {
+    const slides = [...gallery.querySelectorAll<HTMLElement>(".slide")];
+    const dots = [...gallery.querySelectorAll<HTMLElement>("[data-dot]")];
+    let current = 0;
+    const show = (next: number) => {
+      current = (next + slides.length) % slides.length;
+      slides.forEach((slide, index) => {
+        const active = index === current;
+        slide.toggleAttribute("data-active", active);
+        slide.toggleAttribute("aria-hidden", !active);
+        slide.querySelector("a")?.setAttribute("tabindex", active ? "0" : "-1");
+        dots[index]?.toggleAttribute("data-active", active);
+      });
+    };
+    for (const button of gallery.querySelectorAll<HTMLButtonElement>("[data-step]")) {
+      button.addEventListener("click", () => show(current + Number(button.dataset.step)));
+    }
+
+    // Rotates by itself unless the visitor prefers less motion, and pauses while pointed at, focused or hidden.
+    const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let paused = false;
+    const pause = (value: boolean) => () => (paused = value);
+    gallery.addEventListener("pointerenter", pause(true));
+    gallery.addEventListener("pointerleave", pause(false));
+    gallery.addEventListener("focusin", pause(true));
+    gallery.addEventListener("focusout", pause(false));
+    if (!still) {
+      setInterval(() => {
+        if (!paused && !document.hidden) show(current + 1);
+      }, 5000);
+    }
+  }
+</script>
+
+<style>
+  .gallery {
+    margin: 0;
+    padding: 1.5rem 1.5rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: calc(var(--radius) * 1.5);
+    background: var(--surface);
+  }
+  /* Every slide sits in the same cell, so the card is as tall as the tallest one and never jumps. */
+  .slides {
+    display: grid;
+  }
+  .slide {
+    grid-area: 1 / 1;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 0.45s ease,
+      visibility 0s linear 0.45s;
+  }
+  .slide[data-active] {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.45s ease;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .slide,
+    .slide[data-active] {
+      transition: none;
+    }
+  }
+  .text {
+    margin: 0 0 0.9rem;
+    font-size: 1.1rem;
+  }
+  .labels {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0 0 1.1rem;
+  }
+  .labels span {
+    padding: 0.1rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+  /* One grid for all rows, so the bars line up whatever the label lengths. */
+  ul {
+    display: grid;
+    grid-template-columns: max-content 1fr auto;
+    align-items: center;
+    gap: 0.45rem 0.75rem;
+    margin: 0 0 1rem;
+    padding: 0;
+    list-style: none;
+    font-variant-numeric: tabular-nums;
+  }
+  li {
+    display: contents;
+    color: var(--muted);
+  }
+  li.picked {
+    color: var(--text);
+    font-weight: 600;
+  }
+  .meter {
+    height: 0.5rem;
+    border-radius: 999px;
+    background: var(--surface-2);
+    overflow: hidden;
+  }
+  .meter span {
+    display: block;
+    height: 100%;
+    background: var(--faint);
+  }
+  .picked .meter span {
+    background: var(--accent);
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem 0.75rem;
+    margin: auto 0 0;
+    color: var(--faint);
+    font-size: 0.8rem;
+  }
+  .model {
+    padding: 0.05rem 0.5rem;
+    border-radius: 0.3rem;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-family: var(--mono);
+  }
+  .meta a {
+    margin-inline-start: auto;
+    color: var(--muted);
+  }
+  .controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+  }
+  .controls button {
+    width: 1.9rem;
+    height: 1.9rem;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--muted);
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .controls button:hover {
+    color: var(--text);
+  }
+  .dots {
+    display: flex;
+    gap: 0.35rem;
+  }
+  .dots span {
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 50%;
+    background: var(--border);
+  }
+  .dots span[data-active] {
+    background: var(--accent);
+  }
+</style>

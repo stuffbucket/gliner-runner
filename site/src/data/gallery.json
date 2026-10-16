@@ -1,0 +1,400 @@
+{
+  "generated_by": "site/scripts/gallery.mjs",
+  "entries": [
+    {
+      "example": "support-tickets",
+      "model": "decide-340m",
+      "text": "I was charged twice for my March order.",
+      "labels": [
+        "billing",
+        "technical",
+        "shipping",
+        "account",
+        "cancellation"
+      ],
+      "descriptions": {
+        "billing": "Charges, invoices, refunds, or payment problems",
+        "technical": "Something does not work, crashes, or shows an error",
+        "shipping": "Delivery, tracking, or a damaged or missing package",
+        "account": "Logging in, passwords, or changing account details",
+        "cancellation": "The customer wants to stop or cancel the service"
+      },
+      "multi": false,
+      "threshold": 0.5,
+      "picked": [
+        "billing"
+      ],
+      "scores": {
+        "billing": 0.764,
+        "technical": 0.049,
+        "shipping": 0.05,
+        "account": 0.065,
+        "cancellation": 0.072
+      },
+      "revision": "9d1bfb848cd16d93ee56ccbc59cd92bf0f284d90"
+    },
+    {
+      "example": "text-messages",
+      "model": "decide-340m",
+      "text": "The basement is flooding. Can you call me right now?",
+      "labels": [
+        "urgent",
+        "can wait",
+        "spam",
+        "personal"
+      ],
+      "descriptions": {
+        "urgent": "Needs a reply or action within the hour",
+        "can wait": "Useful, but nothing is needed today",
+        "spam": "Unwanted advertising, prizes, or scam attempts",
+        "personal": "A friendly message from family or a friend"
+      },
+      "multi": false,
+      "threshold": 0.5,
+      "picked": [
+        "urgent"
+      ],
+      "scores": {
+        "urgent": 0.663,
+        "can wait": 0.128,
+        "spam": 0.075,
+        "personal": 0.135
+      },
+      "revision": "9d1bfb848cd16d93ee56ccbc59cd92bf0f284d90"
+    },
+    {
+      "example": "text-messages",
+      "model": "decide-340m",
+      "text": "Congratulations! You won a $500 gift card. Tap the link to claim it now.",
+      "labels": [
+        "urgent",
+        "can wait",
+        "spam",
+        "personal"
+      ],
+      "descriptions": {
+        "urgent": "Needs a reply or action within the hour",
+        "can wait": "Useful, but nothing is needed today",
+        "spam": "Unwanted advertising, prizes, or scam attempts",
+        "personal": "A friendly message from family or a friend"
+      },
+      "multi": false,
+      "threshold": 0.5,
+      "picked": [
+        "spam"
+      ],
+      "scores": {
+        "urgent": 0.099,
+        "can wait": 0.153,
+        "spam": 0.694,
+        "personal": 0.054
+      },
+      "revision": "9d1bfb848cd16d93ee56ccbc59cd92bf0f284d90"
+    },
+    {
+      "example": "urgent-or-can-wait",
+      "model": "decide-340m",
+      "text": "The fire alarm in building B is going off. Please leave the building now.",
+      "labels": [
+        "urgent",
+        "can wait"
+      ],
+      "descriptions": {
+        "urgent": "Needs a reply or action today",
+        "can wait": "Nothing is needed today; it can be read later this week"
+      },
+      "multi": false,
+      "threshold": 0.5,
+      "picked": [
+        "urgent"
+      ],
+      "scores": {
+        "urgent": 0.789,
+        "can wait": 0.211
+      },
+      "revision": "9d1bfb848cd16d93ee56ccbc59cd92bf0f284d90"
+    },
+    {
+      "example": "reviews",
+      "model": "decide-340m",
+      "text": "The pasta was excellent and the waiter was very kind, but it was far too expensive.",
+      "labels": [
+        "positive",
+        "mixed",
+        "negative"
+      ],
+      "multi": false,
+      "threshold": 0.5,
+      "picked": [
+        "mixed"
+      ],
+      "scores": {
+        "positive": 0.082,
+        "mixed": 0.835,
+        "negative": 0.083
+      },
+      "revision": "9d1bfb848cd16d93ee56ccbc59cd92bf0f284d90"
+    },
+    {
+      "example": "reviews",
+      "model": "decide-340m",
+      "text": "Too loud to talk, and the soup was cold.",
+      "labels": [
+        "food",
+        "service",
+        "price",
+        "cleanliness",
+        "noise"
+      ],
+      "multi": true,
+      "threshold": 0.3,
+      "picked": [
+        "food",
+        "noise"
+      ],
+      "scores": {
+        "food": 0.319,
+        "service": 0.028,
+        "price": 0.003,
+        "cleanliness": 0.007,
+        "noise": 0.945
+      },
+      "revision": "9d1bfb848cd16d93ee56ccbc59cd92bf0f284d90"
+    },
+    {
+      "example": "moderation",
+      "model": "decide-340m",
+      "text": "BUY CHEAP WATCHES NOW!!! Click http://example.com/deal for 90% off.",
+      "labels": [
+        "harassment",
+        "spam",
+        "self-promotion",
+        "off-topic",
+        "ok"
+      ],
+      "descriptions": {
+        "harassment": "Insults or attacks aimed at a person",
+        "spam": "Repeated or unwanted ads, scam links, or junk",
+        "self-promotion": "Promotes the poster's own product, channel, or business",
+        "off-topic": "About sports, phones, politics, or anything other than cooking",
+        "ok": "A normal post about cooking that follows the rules"
+      },
+      "multi": true,
+      "threshold": 0.4,
+      "picked": [
+        "spam"
+      ],
+      "scores": {
+        "harassment": 0.074,
+        "spam": 0.726,
+        "self-promotion": 0.214,
+        "off-topic": 0.146,
+        "ok": 0.108
+      },
+      "revision": "9d1bfb848cd16d93ee56ccbc59cd92bf0f284d90"
+    },
+    {
+      "example": "personal-information",
+      "model": "decide-340m",
+      "text": "Reach me at jordan.lee@example.com or on 415-555-0132.",
+      "labels": [
+        "phone number",
+        "email address",
+        "home address",
+        "payment card",
+        "none"
+      ],
+      "descriptions": {
+        "phone number": "A telephone number",
+        "email address": "An email address",
+        "home address": "A street address where someone lives or receives mail",
+        "payment card": "A credit or debit card number, expiry date, or security code",
+        "none": "The message contains no personal information"
+      },
+      "multi": true,
+      "threshold": 0.4,
+      "picked": [
+        "phone number",
+        "email address"
+      ],
+      "scores": {
+        "phone number": 0.622,
+        "email address": 0.467,
+        "home address": 0.122,
+        "payment card": 0.049,
+        "none": 0.238
+      },
+      "revision": "9d1bfb848cd16d93ee56ccbc59cd92bf0f284d90"
+    },
+    {
+      "example": "support-tickets",
+      "model": "decide-1b",
+      "text": "Please cancel my subscription before the next renewal.",
+      "labels": [
+        "billing",
+        "technical",
+        "shipping",
+        "account",
+        "cancellation"
+      ],
+      "descriptions": {
+        "billing": "Charges, invoices, refunds, or payment problems",
+        "technical": "Something does not work, crashes, or shows an error",
+        "shipping": "Delivery, tracking, or a damaged or missing package",
+        "account": "Logging in, passwords, or changing account details",
+        "cancellation": "The customer wants to stop or cancel the service"
+      },
+      "multi": false,
+      "threshold": 0.5,
+      "picked": [
+        "cancellation"
+      ],
+      "scores": {
+        "billing": 0.039,
+        "technical": 0.024,
+        "shipping": 0.02,
+        "account": 0.104,
+        "cancellation": 0.814
+      },
+      "revision": "67af949e17bebd20f05fe020a971079889e7a462"
+    },
+    {
+      "example": "other-languages",
+      "model": "decide-multilingual",
+      "text": "Ich kann mich nicht mehr einloggen, das Passwort wird nicht akzeptiert.",
+      "labels": [
+        "billing",
+        "technical",
+        "shipping",
+        "account"
+      ],
+      "descriptions": {
+        "billing": "Charges, invoices, refunds, or payment problems",
+        "technical": "Something does not work or shows an error",
+        "shipping": "Delivery, tracking, or a missing package",
+        "account": "Logging in, passwords, or account details"
+      },
+      "multi": false,
+      "threshold": 0.5,
+      "picked": [
+        "account"
+      ],
+      "scores": {
+        "billing": 0.083,
+        "technical": 0.38,
+        "shipping": 0.045,
+        "account": 0.492
+      },
+      "revision": "e173bca1f0c4217d7a55b3b0c705d5ece8a0218d"
+    },
+    {
+      "example": "other-languages",
+      "model": "decide-multilingual",
+      "text": "Me cobraron dos veces el mismo pedido y quiero que me devuelvan el dinero.",
+      "labels": [
+        "billing",
+        "technical",
+        "shipping",
+        "account"
+      ],
+      "descriptions": {
+        "billing": "Charges, invoices, refunds, or payment problems",
+        "technical": "Something does not work or shows an error",
+        "shipping": "Delivery, tracking, or a missing package",
+        "account": "Logging in, passwords, or account details"
+      },
+      "multi": false,
+      "threshold": 0.5,
+      "picked": [
+        "billing"
+      ],
+      "scores": {
+        "billing": 0.724,
+        "technical": 0.058,
+        "shipping": 0.068,
+        "account": 0.151
+      },
+      "revision": "e173bca1f0c4217d7a55b3b0c705d5ece8a0218d"
+    },
+    {
+      "example": "which-language",
+      "model": "decide-340m",
+      "text": "¿Dónde está la estación de tren más cercana?",
+      "labels": [
+        "English",
+        "Spanish",
+        "French",
+        "German",
+        "Italian"
+      ],
+      "multi": false,
+      "threshold": 0.5,
+      "picked": [
+        "Spanish"
+      ],
+      "scores": {
+        "English": 0.005,
+        "Spanish": 0.986,
+        "French": 0.003,
+        "German": 0.003,
+        "Italian": 0.003
+      },
+      "revision": "9d1bfb848cd16d93ee56ccbc59cd92bf0f284d90"
+    },
+    {
+      "example": "keep-or-discard",
+      "model": "decide-340m",
+      "text": "Signed lease agreement for the apartment, valid until 2028.",
+      "labels": [
+        "important to keep",
+        "safe to throw away"
+      ],
+      "descriptions": {
+        "important to keep": "A legal, tax, money, or warranty record that I may need later",
+        "safe to throw away": "Advertising, expired offers, or things that are over"
+      },
+      "multi": false,
+      "threshold": 0.5,
+      "picked": [
+        "important to keep"
+      ],
+      "scores": {
+        "important to keep": 0.647,
+        "safe to throw away": 0.353
+      },
+      "revision": "9d1bfb848cd16d93ee56ccbc59cd92bf0f284d90"
+    },
+    {
+      "example": "email-lines",
+      "model": "decide-340m",
+      "text": "Could you send me the updated budget numbers?",
+      "labels": [
+        "action request",
+        "question",
+        "deadline",
+        "information only",
+        "greeting or sign-off"
+      ],
+      "descriptions": {
+        "action request": "Asks the reader to do something",
+        "question": "Asks something the reader should answer",
+        "deadline": "Says something must happen by a certain date or time",
+        "information only": "Shares a fact and asks for nothing",
+        "greeting or sign-off": "A hello, thanks, or closing line"
+      },
+      "multi": false,
+      "threshold": 0.5,
+      "picked": [
+        "action request"
+      ],
+      "scores": {
+        "action request": 0.387,
+        "question": 0.199,
+        "deadline": 0.036,
+        "information only": 0.287,
+        "greeting or sign-off": 0.091
+      },
+      "revision": "9d1bfb848cd16d93ee56ccbc59cd92bf0f284d90"
+    }
+  ]
+}

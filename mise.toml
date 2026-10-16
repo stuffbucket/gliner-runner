@@ -422,6 +422,13 @@ python -m gliner_runner onnx-reference \
 description = "Serve the documentation site locally (generates model and docs pages first)"
 run = "pnpm --filter @gliner-runner/site run dev"
 
+[tasks."site:gallery"]
+description = "Recompute the landing page's example gallery with the real models (needs them in GLINER_RUNNER_MODELS_DIR)"
+run = """
+pnpm --filter "@gliner-runner/onnx-runner..." run build
+node site/scripts/gallery.mjs
+"""
+
 [tasks."site:build"]
 description = "Test the site generator and build the static documentation site into site/dist"
 run = """
