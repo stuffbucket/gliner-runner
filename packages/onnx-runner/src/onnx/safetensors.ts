@@ -1,5 +1,6 @@
-import { constants } from "node:fs";
-import { open, type FileHandle } from "node:fs/promises";
+import { platform } from "#platform";
+
+import type { PlatformFile } from "../platform/port.js";
 
 /**
  * Streaming reader for the safetensors container format: an 8-byte little-endian header length, a JSON header
@@ -165,10 +166,10 @@ export function parseSafetensorsHeader(headerText: string, headerBytes: number, 
 /** An open safetensors file. Always `close()` it. */
 export class SafetensorsFile {
   readonly header: SafetensorsHeader;
-  readonly #handle: FileHandle;
+  readonly #handle: PlatformFile;
   #closed = false;
 
-  private constructor(handle: FileHandle, header: SafetensorsHeader) {
+  private constructor(handle: PlatformFile, header: SafetensorsHeader) {
     this.#handle = handle;
     this.header = header;
   }
@@ -176,7 +177,7 @@ export class SafetensorsFile {
   static async open(path: string): Promise<SafetensorsFile> {
     // Snapshot directories legitimately contain symlinks into a blob store, so links are followed; the
     // content is verified by hash before (or while) it is used.
-    const handle = await open(path, constants.O_RDONLY);
+    const handle = await platform.fs.open(path, "read");
     try {
       const status = await handle.stat();
       if (!status.isFile()) {
@@ -185,9 +186,9 @@ export class SafetensorsFile {
       if (status.size < 8) {
         throw new SafetensorsError("safetensors file is shorter than its 8-byte length prefix");
       }
-      const prefix = Buffer.alloc(8);
+      const prefix = new Uint8Array(8);
       await readFully(handle, prefix, 0, 0, 8);
-      const declared = prefix.readBigUInt64LE(0);
+      const declared = new DataView(prefix.buffer).getBigUint64(0, true);
       if (declared > BigInt(MAX_SAFETENSORS_HEADER_BYTES)) {
         throw new SafetensorsError(`safetensors header of ${declared} bytes exceeds the ${MAX_SAFETENSORS_HEADER_BYTES} byte limit`);
       }
@@ -195,7 +196,7 @@ export class SafetensorsFile {
       if (8 + headerBytes > status.size) {
         throw new SafetensorsError("safetensors header extends past the end of the file");
       }
-      const text = Buffer.alloc(headerBytes);
+      const text = new Uint8Array(headerBytes);
       await readFully(handle, text, 0, 8, headerBytes);
       if (text[0] !== 0x7b) {
         throw new SafetensorsError("safetensors header must start with '{'");
@@ -229,7 +230,7 @@ export class SafetensorsFile {
     name: string,
     offset: number,
     length: number,
-    target: Buffer,
+    target: Uint8Array,
     targetOffset = 0,
   ): Promise<void> {
     const tensor = this.tensor(name);
@@ -257,8 +258,8 @@ export class SafetensorsFile {
 
 /** `FileHandle.read` may return short; a short read before EOF is retried and EOF is an error. */
 async function readFully(
-  handle: FileHandle,
-  target: Buffer,
+  handle: PlatformFile,
+  target: Uint8Array,
   targetOffset: number,
   position: number,
   length: number,

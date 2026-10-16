@@ -1,10 +1,10 @@
-import { setTimeout as sleep } from "node:timers/promises";
 
 import type { InferenceBackend, BackendResult } from "./backend.js";
 import type { InferenceRequest, InferenceResponse } from "./contracts.js";
 import { QueueFullError, RequestCancelledError, RunnerClosedError } from "./errors.js";
 import { Metrics } from "./metrics.js";
 import { taskOrderOf } from "./task-order.js";
+import { delay } from "./timers.js";
 
 export interface WorkerOptions {
   queueCapacity?: number;
@@ -229,7 +229,7 @@ export class ModelWorker {
   async #collect(batch: Work[]): Promise<void> {
     const key = batchKey((batch[0] as Work).request);
     if (this.#batchWindowMs > 0) {
-      await sleep(this.#batchWindowMs);
+      await delay(this.#batchWindowMs);
     }
     const waiting = this.#backlog.splice(0);
     for (const work of waiting) {

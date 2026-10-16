@@ -10,6 +10,13 @@
   },
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
+  "imports": {
+    "#platform": {
+      "types": "./src/platform/node.ts",
+      "browser": "./src/platform/slot.ts",
+      "default": "./dist/src/platform/node.js"
+    }
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "check": "pnpm run build && node --test 'dist/test/**/*.test.js'"

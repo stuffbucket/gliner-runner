@@ -1,7 +1,4 @@
-import { createHash } from "node:crypto";
-import { constants } from "node:fs";
-import { lstat, open, readdir } from "node:fs/promises";
-import { join } from "node:path";
+import { platform } from "#platform";
 
 import {
   KNOWN_MODELS,
@@ -17,11 +14,15 @@ import {
 } from "../catalog.js";
 import type { PrecisionProfile } from "../contracts.js";
 import { ModelDownloadRequiredError, ModelIntegrityError } from "../errors.js";
-import { CatalogCache, type CatalogRemote } from "./catalog-cache.js";
+import { hashHandle, readHandleText } from "../platform/files.js";
+import type { CatalogCacheLike } from "../platform/port.js";
+import type { CatalogRemote } from "./catalog-cache.js";
 import { MANIFEST_NAME, parseManifest, type OnnxManifest } from "./manifest.js";
 
 const MAX_MANIFEST_BYTES = 1024 * 1024;
 const HASH_CHUNK_BYTES = 4 * 1024 * 1024;
+
+const join = (...parts: string[]): string => platform.join(...parts);
 
 /** `<owner>/<name>` -> `<owner>--<name>`. */
 export function repositoryDirectoryName(repository: string): string {
@@ -44,13 +45,12 @@ interface Inspection {
   fingerprint: string;
 }
 
-/**
- * Artifact files are checked with `lstat` and read with `O_NOFOLLOW`, so a symlink (or any other non-regular
- * entry) is never accepted in place of a listed file. This is a point-in-time check: a file replaced between the
- * check and a later read by the ONNX Runtime or tokenizer loader (which open by path) is not detected; the
- * artifact directory must not be writable by untrusted users.
+/*
+ * Artifact files are checked with `lstat` and read with `O_NOFOLLOW` (the platform's `read-nofollow`), so a
+ * symlink (or any other non-regular entry) is never accepted in place of a listed file. This is a point-in-time
+ * check: a file replaced between the check and a later read by the ONNX Runtime or tokenizer loader (which open
+ * by path) is not detected; the artifact directory must not be writable by untrusted users.
  */
-const O_NOFOLLOW = constants.O_NOFOLLOW ?? 0;
 
 function isMissing(error: unknown): boolean {
   const code = (error as { code?: unknown } | null)?.code;
@@ -74,7 +74,7 @@ export async function inspectArtifact(
     new ModelIntegrityError(`ONNX artifact for '${model.modelId}' at ${revision} is invalid: ${detail}`);
 
   try {
-    const directoryStatus = await lstat(directory);
+    const directoryStatus = await platform.fs.lstat(directory);
     if (!directoryStatus.isDirectory()) {
       throw invalid("the artifact directory is not a regular directory (symbolic links are refused)");
     }
@@ -89,7 +89,7 @@ export async function inspectArtifact(
   let manifestStat: FileStat;
   let text: string;
   try {
-    const status = await lstat(manifestPath);
+    const status = await platform.fs.lstat(manifestPath);
     if (!status.isFile()) {
       throw invalid("manifest.json is not a regular file");
     }
@@ -97,9 +97,9 @@ export async function inspectArtifact(
       throw invalid("manifest.json is implausibly large");
     }
     manifestStat = { size: status.size, mtimeMs: status.mtimeMs };
-    const handle = await open(manifestPath, constants.O_RDONLY | O_NOFOLLOW);
+    const handle = await platform.fs.open(manifestPath, "read-nofollow");
     try {
-      text = await handle.readFile("utf8");
+      text = await readHandleText(handle);
     } finally {
       await handle.close();
     }
@@ -120,7 +120,7 @@ export async function inspectArtifact(
   }
   const manifest = parseManifest(raw, model, revision);
 
-  const present = new Set(await readdir(directory));
+  const present = new Set(await platform.fs.readdir(directory));
   present.delete(MANIFEST_NAME);
   const listed = new Set(manifest.files.map((file) => file.path));
   const unlisted = [...present].filter((name) => !listed.has(name)).sort();
@@ -131,7 +131,7 @@ export async function inspectArtifact(
   for (const file of manifest.files) {
     let status;
     try {
-      status = await lstat(join(directory, file.path));
+      status = await platform.fs.lstat(join(directory, file.path));
     } catch (error) {
       if (isMissing(error)) {
         throw invalid(`listed file ${file.path} is missing`);
@@ -156,19 +156,13 @@ function isSymlinkRefusal(error: unknown): boolean {
 }
 
 async function sha256OfFile(path: string): Promise<{ digest: string; bytes: number }> {
-  const handle = await open(path, constants.O_RDONLY | O_NOFOLLOW);
+  const handle = await platform.fs.open(path, "read-nofollow");
   try {
     if (!(await handle.stat()).isFile()) {
       throw new NotRegularFileError();
     }
-    const hash = createHash("sha256");
-    let bytes = 0;
-    for await (const chunk of handle.createReadStream({ highWaterMark: HASH_CHUNK_BYTES, autoClose: false })) {
-      const buffer = chunk as Buffer;
-      hash.update(buffer);
-      bytes += buffer.length;
-    }
-    return { digest: hash.digest("hex"), bytes };
+    const { bytes, sha256 } = await hashHandle(handle, HASH_CHUNK_BYTES);
+    return { digest: sha256, bytes };
   } finally {
     await handle.close();
   }
@@ -239,12 +233,12 @@ export class OnnxArtifactCatalog implements ArtifactCatalog {
   readonly #inFlight = new Map<string, Promise<Verification>>();
   readonly #evidence = new Map<string, OnnxManifest>();
   readonly #installed = new Set<string>();
-  readonly #cache: CatalogCache;
+  readonly #cache: CatalogCacheLike;
   readonly #remote: CatalogRemote | undefined;
 
   constructor(modelsDir: string, options: OnnxArtifactCatalogOptions = {}) {
     this.#modelsDir = modelsDir;
-    this.#cache = new CatalogCache(modelsDir);
+    this.#cache = platform.catalogCache(modelsDir);
     this.#remote = options.remote;
     this.#models = options.models ?? KNOWN_MODELS;
     for (const model of this.#models) {
@@ -281,7 +275,7 @@ export class OnnxArtifactCatalog implements ArtifactCatalog {
     const parent = join(this.#modelsDir, "onnx", repositoryDirectoryName(model.repository));
     let names: string[];
     try {
-      names = await readdir(parent);
+      names = await platform.fs.readdir(parent);
     } catch (error) {
       if (isMissing(error)) {
         return [];

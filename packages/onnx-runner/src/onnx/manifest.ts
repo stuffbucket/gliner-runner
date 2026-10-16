@@ -1,5 +1,3 @@
-import { posix } from "node:path";
-
 import type { KnownModel } from "../catalog.js";
 import { ModelIntegrityError } from "../errors.js";
 
@@ -134,7 +132,7 @@ export function parseManifest(raw: unknown, model: KnownModel, revision: string)
       typeof path !== "string" ||
       path.length === 0 ||
       path === MANIFEST_NAME ||
-      posix.basename(path) !== path ||
+      path.includes("/") || // a plain file name (posix.basename(path) === path for a non-empty path)
       path === "." ||
       path === ".." ||
       path.includes("\\") ||

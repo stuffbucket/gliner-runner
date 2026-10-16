@@ -1,5 +1,4 @@
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
+import { platform } from "#platform";
 
 import { SPECIAL_TOKENS, type SpecialTokenIds } from "../gliner2/index.js";
 import { ModelIntegrityError } from "../errors.js";
@@ -63,7 +62,7 @@ export async function readPreprocessingConfig(
   };
   let raw: unknown;
   try {
-    raw = JSON.parse(await readFile(join(directory, PREPROCESSING_NAME), "utf8"));
+    raw = JSON.parse(await platform.fs.readFile(platform.join(directory, PREPROCESSING_NAME)));
   } catch {
     return fail("is not readable JSON");
   }
