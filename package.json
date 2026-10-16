@@ -15,5 +15,10 @@
     "site:build": "pnpm --filter @gliner-runner/site run build",
     "package:onnx-runtime": "node scripts/package-onnx-runtime.mjs",
     "verify:onnx-runtime": "node scripts/verify-onnx-runtime.mjs"
+  },
+  "pnpm": {
+    "overrides": {
+      "postcss-nested@<7": "7.0.2"
+    }
   }
 }
