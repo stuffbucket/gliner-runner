@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { HttpTransport, INSTALL_PEAK_BYTES, WorkerTransport } from "@gliner-runner/onnx-runner-web/client";
 import "./Playground.css";
 
@@ -100,11 +100,25 @@ function Card({ title, children }) {
   );
 }
 
-/** The answer as a standalone card: what was sent, which labels fit, every score, and what ran it. */
-function Answer({ answer }) {
+/** How many answers the stack keeps; older ones are dropped. */
+const STACK_LIMIT = 50;
+/** Each step down the stack keeps this much of a card's opacity. */
+const FADE_PER_STEP = 0.75;
+
+const motion = (name, fallback) =>
+  getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
+
+/** The answer as a standalone card: what was sent, which labels fit, every score, and how it ran. */
+function Answer({ answer, depth }) {
   const ranked = Object.entries(answer.scores).sort((a, b) => b[1] - a[1]);
+  const ms = (value) => (value < 10 ? value.toFixed(1) : Math.round(value));
   return (
-    <article className="answer-card pg-answer" aria-label="Answer">
+    <article
+      className={`answer-card pg-answer${depth === 0 && answer.fresh ? " pg-enter" : ""}`}
+      data-id={answer.id}
+      style={{ opacity: FADE_PER_STEP ** depth }}
+      aria-hidden={depth > 0 ? "true" : undefined}
+    >
       <p className="answer-quote">“{answer.text}”</p>
       <p className="answer-labels">
         {answer.labels.map((label) => (
@@ -124,14 +138,55 @@ function Answer({ answer }) {
       <p className="answer-meta">
         <span className="model-badge">{answer.model}</span>
         {answer.several && <span>several labels allowed</span>}
-        {answer.ms !== undefined && <span>{answer.ms < 10 ? answer.ms.toFixed(1) : Math.round(answer.ms)} ms</span>}
+        <span
+          className="pg-elapsed"
+          title={answer.modelMs === undefined ? undefined : `${ms(answer.modelMs)} ms of it in the model`}
+        >
+          Answered in {ms(answer.elapsed)} ms
+        </span>
       </p>
     </article>
   );
 }
 
 /**
- * Text, labels and the answer; the same for both runners. The model is loaded in the background as soon as the
+ * Newest answer on top. When a card arrives the others slide down to their new places (measured before and after
+ * the update and animated between, so the move follows the shared easing) and fade by one step.
+ */
+function AnswerStack({ answers }) {
+  const list = useRef(null);
+  const tops = useRef(new Map());
+  useLayoutEffect(() => {
+    const duration = parseFloat(motion("--duration-move", "420ms"));
+    const easing = motion("--ease-out", "ease-out");
+    for (const node of list.current?.children ?? []) {
+      const id = node.dataset.id;
+      const top = node.offsetTop;
+      const before = tops.current.get(id);
+      if (before !== undefined && before !== top && duration > 0) {
+        node.animate([{ transform: `translateY(${before - top}px)` }, { transform: "none" }], { duration, easing });
+      }
+      tops.current.set(id, top);
+    }
+  }, [answers]);
+
+  if (answers.length === 0) {
+    return (
+      <div className="answer-card pg-placeholder">
+        <p>The answer appears here.</p>
+        <p className="pg-small">Press Classify or <Shortcut /></p>
+      </div>
+    );
+  }
+  return (
+    <div className="pg-stack-cards" ref={list}>
+      {answers.map((answer, depth) => <Answer key={answer.id} answer={answer} depth={depth} />)}
+    </div>
+  );
+}
+
+/**
+ * Text, labels and the answers; the same for both runners. The model is loaded in the background as soon as the
  * workspace appears (and whenever another model is chosen), so the first Classify is as fast as the rest.
  */
 function Workspace({ transport, models, onWarm }) {
@@ -140,8 +195,9 @@ function Workspace({ transport, models, onWarm }) {
   const [labels, setLabels] = useState(EXAMPLES[0].labels);
   const [several, setSeveral] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [answer, setAnswer] = useState(null);
+  const [answers, setAnswers] = useState([]);
   const [error, setError] = useState("");
+  const next = useRef(1);
 
   useEffect(() => {
     let current = true;
@@ -166,6 +222,7 @@ function Workspace({ transport, models, onWarm }) {
     if (busy || !text.trim() || list.length === 0) return;
     setError("");
     setBusy(true);
+    const started = performance.now();
     try {
       const reply = await transport.request("POST", "/v1/infer", request(model, text, list, several));
       const data = parse(reply);
@@ -173,12 +230,16 @@ function Workspace({ transport, models, onWarm }) {
         setError(message(data, "The runner rejected the request."));
       } else {
         const { value, probabilities } = data.output.category;
-        setAnswer({
+        const answer = {
+          id: String(next.current++),
+          fresh: true,
           text, labels: list, several, model,
           picked: [value].flat().filter(Boolean),
           scores: probabilities,
-          ms: data.timing?.inference_ms,
-        });
+          elapsed: performance.now() - started,
+          modelMs: data.timing?.inference_ms,
+        };
+        setAnswers((previous) => [answer, ...previous.map((old) => ({ ...old, fresh: false }))].slice(0, STACK_LIMIT));
       }
     } catch {
       setError("Lost the connection to the runner.");
@@ -194,55 +255,44 @@ function Workspace({ transport, models, onWarm }) {
     }
   };
   return (
-    <div className="pg-workspace">
-      <section className="pg-input" onKeyDown={onKeyDown}>
-        <div className="pg-examples">
-          <span className="field-label">Try</span>
-          {EXAMPLES.map((example) => (
-            <button type="button" key={example.name} className="chip" onClick={() => pick(example)}>{example.name}</button>
-          ))}
-        </div>
-        <label className="field pg-text">
-          <span className="field-label">Text</span>
-          <textarea className="input" value={text} onChange={(e) => setText(e.target.value)} placeholder="Paste or type some text" />
+    <div className="pg-workspace" onKeyDown={onKeyDown}>
+      <div className="pg-examples">
+        <span className="field-label">Example</span>
+        {EXAMPLES.map((example) => (
+          <button type="button" key={example.name} className="btn btn-sm" onClick={() => pick(example)}>{example.name}</button>
+        ))}
+      </div>
+      <label className="field-label pg-text-label" htmlFor="pg-text">Text</label>
+      <textarea id="pg-text" className="input pg-text" value={text} onChange={(e) => setText(e.target.value)} placeholder="Paste or type some text" />
+      <label className="field pg-labels">
+        <span className="field-label">Labels</span>
+        <input className="input" value={labels} onChange={(e) => setLabels(e.target.value)} placeholder="billing, support, shipping" />
+        <span className="field-hint">Separate labels with commas.</span>
+      </label>
+      <div className="pg-actions">
+        <label className="switch">
+          <input type="checkbox" role="switch" checked={several} onChange={(e) => setSeveral(e.target.checked)} />
+          <span className="switch-track" aria-hidden="true" />
+          Several labels can fit
         </label>
-        <label className="field">
-          <span className="field-label">Labels</span>
-          <input className="input" value={labels} onChange={(e) => setLabels(e.target.value)} placeholder="billing, support, shipping" />
-          <span className="field-hint">Separate labels with commas.</span>
-        </label>
-        <div className="pg-actions">
-          <label className="switch">
-            <input type="checkbox" role="switch" checked={several} onChange={(e) => setSeveral(e.target.checked)} />
-            <span className="switch-track" aria-hidden="true" />
-            Several labels can fit
-          </label>
-          {models.length > 1 && (
-            <select className="input" aria-label="Model" value={model} onChange={(e) => setModel(e.target.value)}>
-              {models.map((id) => <option key={id} value={id}>{id}</option>)}
-            </select>
-          )}
-          <button
-            type="button"
-            className="btn btn-primary pg-classify"
-            onClick={classify}
-            disabled={busy || !text.trim()}
-            aria-keyshortcuts={MAC ? "Meta+Enter" : "Control+Enter"}
-          >
-            {busy ? "Classifying…" : "Classify"} <Shortcut />
-          </button>
-        </div>
-      </section>
-      <section className="pg-output" aria-live="polite">
-        {error && <p className="pg-error">{error}</p>}
-        {answer ? (
-          <Answer answer={answer} />
-        ) : (
-          <div className="answer-card pg-placeholder">
-            <p>The answer appears here.</p>
-            <p className="pg-small">Press Classify or <Shortcut /></p>
-          </div>
+        {models.length > 1 && (
+          <select className="input" aria-label="Model" value={model} onChange={(e) => setModel(e.target.value)}>
+            {models.map((id) => <option key={id} value={id}>{id}</option>)}
+          </select>
         )}
+        <button
+          type="button"
+          className="btn btn-primary pg-classify"
+          onClick={classify}
+          disabled={busy || !text.trim()}
+          aria-keyshortcuts={MAC ? "Meta+Enter" : "Control+Enter"}
+        >
+          {busy ? "Classifying…" : "Classify"} <Shortcut />
+        </button>
+      </div>
+      {error && <p className="pg-error pg-message">{error}</p>}
+      <section className="pg-stack" aria-live="polite" aria-label="Answers">
+        <AnswerStack answers={answers} />
       </section>
     </div>
   );

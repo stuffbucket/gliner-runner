@@ -418,3 +418,18 @@ select.input {
   color: var(--accent);
   font: 500 0.8125rem / 1.4 var(--mono);
 }
+
+/* ---------------------------------------------------------------- motion */
+:root {
+  /* Things arriving or settling decelerate; things moving in place ease in and out. */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --duration-quick: 160ms;
+  --duration-move: 420ms;
+}
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-quick: 0ms;
+    --duration-move: 0ms;
+  }
+}
