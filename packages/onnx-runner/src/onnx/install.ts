@@ -32,6 +32,18 @@ export interface OnnxProvisionerOptions {
   home?: string | undefined;
   /** Test seam for the free-space check. */
   freeBytes?: ((directory: string) => Promise<number | undefined>) | undefined;
+  /** Structured progress of downloads and preparation (for a progress bar); the log gets the same, throttled. */
+  onProgress?: ((progress: InstallProgress) => void) | undefined;
+}
+
+export interface InstallProgress {
+  modelId: string;
+  /** `download`, or the preparation stage (`verify-source`, `graph`, `weights`, `copy`, `verify-output`, `finalize`). */
+  stage: "download" | Progress["stage"];
+  file?: string | undefined;
+  /** Bytes (or steps) done and total within the stage. */
+  done: number;
+  total: number;
 }
 
 export interface ScanReport {
@@ -93,6 +105,7 @@ export class OnnxModelProvisioner implements ModelProvisioner {
   readonly #models: readonly KnownModel[];
   readonly #hf: HuggingFaceClient;
   readonly #freeBytes: OnnxProvisionerOptions["freeBytes"];
+  readonly #onProgress: OnnxProvisionerOptions["onProgress"];
   readonly #env: Readonly<Record<string, string | undefined>>;
   readonly #platform: NodeJS.Platform | undefined;
   readonly #home: string | undefined;
@@ -103,6 +116,7 @@ export class OnnxModelProvisioner implements ModelProvisioner {
     this.#models = options.models ?? KNOWN_MODELS;
     this.#hf = options.huggingface ?? new HuggingFaceClient();
     this.#freeBytes = options.freeBytes;
+    this.#onProgress = options.onProgress;
     this.#env = options.env ?? platform.env();
     this.#platform = options.platform;
     this.#home = options.home;
@@ -278,12 +292,14 @@ export class OnnxModelProvisioner implements ModelProvisioner {
         verifySources: false, // size and SHA-256 were verified by discovery or while downloading
         signal: context.signal,
         freeBytes: this.#freeBytes,
-        onProgress: (progress: Progress) =>
+        onProgress: (progress: Progress) => {
+          this.#onProgress?.({ modelId: model.modelId, ...progress });
           log(
             `${model.modelId}: ${progress.stage}${progress.file === undefined ? "" : ` ${progress.file}`} ` +
               `${(progress.done / MIB).toFixed(1)}/${(progress.total / MIB).toFixed(1)} MiB`,
             progress.done === progress.total,
-          ),
+          );
+        },
       });
       await this.#record(
         context.log,
@@ -358,12 +374,20 @@ export class OnnxModelProvisioner implements ModelProvisioner {
       );
       await this.#hf.downloadAll(model.repository, revision, template.sourceFiles, workDirectory, {
         signal: context.signal,
-        onProgress: (progress: DownloadProgress) =>
+        onProgress: (progress: DownloadProgress) => {
+          this.#onProgress?.({
+            modelId: model.modelId,
+            stage: "download",
+            file: progress.file,
+            done: progress.bytes,
+            total: progress.total,
+          });
           log(
             `${model.modelId}: downloading ${progress.file} ${(progress.bytes / MIB).toFixed(1)}/` +
               `${(progress.total / MIB).toFixed(1)} MiB`,
             progress.fileBytes === progress.fileTotal,
-          ),
+          );
+        },
       });
     } catch (error) {
       await platform.fs.rm(workDirectory, { recursive: true, force: true });
