@@ -277,7 +277,10 @@ function Workspace({ transport, models, onWarm }) {
     };
   }, [model]);
 
-  /** Puts a card on top of the stack; returns its id. Someone looking back through older cards stays on the same one. */
+  /**
+   * Puts a card on top of the stack; returns its id. Someone looking back through older cards stays on the same one
+   * (Classify, Start and answering a guess go back to the newest first: those cards are the ones being asked for).
+   */
   const push = (card) => {
     const id = String(next.current++);
     setAnswers((previous) => [{ id, ...card }, ...previous].slice(0, STACK_LIMIT));
@@ -334,6 +337,7 @@ function Workspace({ transport, models, onWarm }) {
   function classify() {
     const list = labels.split(",").map((s) => s.trim()).filter(Boolean);
     if (busy || !text.trim() || list.length === 0) return;
+    setBack(0);
     run({ text, labels: list, several });
   }
 
@@ -387,6 +391,7 @@ function Workspace({ transport, models, onWarm }) {
 
   function start() {
     if (!game?.clues.trim()) return;
+    setBack(0);
     setPlaying(true);
   }
 
@@ -400,6 +405,7 @@ function Workspace({ transport, models, onWarm }) {
   /** The player's answer to a guess. */
   function reply(yes) {
     if (game?.phase !== "guessing") return;
+    setBack(0);
     const card = guessCard.current;
     setAnswers((previous) => previous.map((old) => (old.id === card ? { ...old, reply: yes ? "yes" : "no" } : old)));
     let state = afterReply(game, yes);
