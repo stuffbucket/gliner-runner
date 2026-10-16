@@ -1,173 +1,346 @@
-.playground {
+/* The playground app (see Playground.jsx); colours come from src/styles/brand.css. */
+.pg-app {
+  --pg-border: 1px solid var(--border);
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.5rem;
+  min-height: calc(100dvh - 3.5rem - 3.25rem);
+  color: var(--text);
+}
+.pg-app.pg-with-about {
+  grid-template-columns: minmax(0, 1fr) 19rem;
+}
+.pg-main {
+  display: flex;
+  flex-direction: column;
   gap: 1rem;
-  margin-top: 1.5rem;
-  padding: 1.25rem;
-  border: 1px solid var(--sl-color-hairline);
-  border-radius: 0.5rem;
-  background: var(--sl-color-bg-nav);
+  min-width: 0;
 }
-.playground label {
-  font-weight: 600;
-  color: var(--sl-color-white);
+.pg-app h1,
+.pg-app h2 {
+  margin: 0;
+  color: var(--text);
+  line-height: 1.2;
 }
-.playground input:not([type="checkbox"]),
-.playground textarea,
-.playground select {
+.pg-app p {
+  margin: 0;
+}
+
+/* Header bar */
+.pg-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.875rem;
+}
+.pg-bar h1 {
+  font-size: 1.5rem;
+}
+.pg-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.15rem 0.6rem;
+  border: var(--pg-border);
+  border-radius: 999px;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+.pg-status::before {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--faint);
+}
+.pg-ok::before {
+  background: var(--good);
+}
+.pg-busy::before {
+  background: var(--busy);
+}
+.pg-warn::before {
+  background: var(--bad);
+}
+.pg-about-toggle {
+  margin-inline-start: auto;
+}
+
+/* Buttons */
+.pg-app button {
   font: inherit;
+  cursor: pointer;
+}
+.pg-primary {
+  justify-self: start;
+  padding: 0.55rem 1.25rem;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: var(--accent-text);
+  font-weight: 600;
+}
+.pg-primary:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.pg-quiet {
+  padding: 0.3rem 0.75rem;
+  border: var(--pg-border);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--text);
+  font-size: 0.875rem;
+}
+.pg-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+.pg-chip {
+  padding: 0.2rem 0.75rem;
+  border: var(--pg-border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+.pg-chip:hover {
+  color: var(--text);
+  border-color: var(--faint);
+}
+
+/* Inputs */
+.pg-app textarea,
+.pg-app input:not([type="checkbox"]),
+.pg-app select {
   width: 100%;
   min-width: 0;
   box-sizing: border-box;
-  padding: 0.5rem;
-  border: 1px solid var(--sl-color-gray-5);
-  border-radius: 0.25rem;
-  background: var(--sl-color-bg);
-  color: var(--sl-color-text);
-}
-.playground button {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--text);
   font: inherit;
-  font-weight: 600;
-  justify-self: start;
-  padding: 0.5rem 1rem;
-  border: 0;
-  border-radius: 0.25rem;
-  background: var(--sl-color-accent);
-  color: var(--sl-color-black);
-  cursor: pointer;
 }
-.playground button:disabled {
-  opacity: 0.6;
-  cursor: progress;
+.pg-app select {
+  width: auto;
 }
-.playground .form {
+
+/* Workspace: input on the left, answer on the right */
+.pg-workspace {
+  flex: 1;
   display: grid;
-  gap: 0.5rem;
+  grid-template-columns: minmax(0, 3fr) minmax(15rem, 2fr);
+  gap: 1.25rem;
 }
-.playground .form button {
-  margin-top: 0.5rem;
+.pg-input {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
 }
-.playground .check {
-  font-weight: normal;
-  color: var(--sl-color-text);
+.pg-examples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
 }
-.playground .notice {
-  padding: 0.75rem 1rem;
-  border-inline-start: 4px solid var(--sl-color-orange);
-  background: var(--sl-color-orange-low);
-  color: var(--sl-color-white);
+.pg-input textarea {
+  flex: 1;
+  min-height: 12rem;
+  resize: vertical;
+  font-size: 1.125rem;
 }
-.playground .notice p {
-  margin: 0.25rem 0;
-}
-.playground .error {
-  color: var(--sl-color-red-high);
-}
-.playground .result {
-  margin-top: 0.5rem;
-}
-.playground .answer {
-  margin: 0 0 0.5rem;
-  font-size: var(--sl-text-2xl);
-  font-weight: 600;
-  color: var(--sl-color-white);
-}
-.playground .result ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+.pg-field {
   display: grid;
-  gap: 0.25rem;
+  gap: 0.3rem;
 }
-.playground .result li {
-  display: grid;
-  grid-template-columns: minmax(6rem, auto) 1fr 3.5rem;
+.pg-field span {
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+.pg-actions {
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.75rem;
-  font-variant-numeric: tabular-nums;
 }
-.playground meter {
-  width: 100%;
+.pg-actions .pg-primary {
+  margin-inline-start: auto;
 }
-.playground .modes {
+.pg-check {
   display: inline-flex;
-  justify-self: start;
-  border: 1px solid var(--sl-color-gray-5);
-  border-radius: 0.375rem;
-  overflow: hidden;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.875rem;
 }
-.playground .modes button {
-  border-radius: 0;
-  background: transparent;
-  color: var(--sl-color-text);
-  font-weight: 500;
+.pg-output {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.25rem;
+  border: var(--pg-border);
+  border-radius: var(--radius);
+  background: var(--surface);
 }
-.playground .modes button[aria-selected="true"] {
-  background: var(--sl-color-accent);
-  color: var(--sl-color-black);
+.pg-answer {
+  font-size: 1.875rem;
   font-weight: 600;
+  color: var(--text);
+  line-height: 1.15;
 }
-.playground .setup {
+.pg-scores {
   display: grid;
-  gap: 0.75rem;
-}
-.playground .setup p {
-  margin: 0;
-}
-.playground .progress {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 0.375rem;
-}
-.playground .progress progress {
-  width: 100%;
-  height: 0.75rem;
-}
-.playground .progress button {
-  justify-self: start;
-}
-.playground .command {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: start;
   gap: 0.5rem;
   margin: 0;
   padding: 0;
-  background: none;
+  list-style: none;
 }
-.playground .command pre {
-  margin: 0;
-  padding: 0.5rem 0.75rem;
-  overflow-x: auto;
-  white-space: pre-wrap;
+.pg-scores li {
+  display: grid;
+  grid-template-columns: minmax(5rem, auto) 1fr 2.75rem;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.pg-scores li.picked {
+  color: var(--text);
+  font-weight: 600;
+}
+.pg-meter {
+  height: 0.5rem;
+  border-radius: 999px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+.pg-meter span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--faint);
+}
+.pg-scores li.picked .pg-meter span {
+  background: var(--accent);
+}
+
+/* Messages */
+.pg-hint {
+  color: var(--faint);
+}
+.pg-small,
+.pg-footer {
+  font-size: 0.875rem;
+  color: var(--faint);
+}
+.pg-error {
+  color: var(--bad);
+}
+.pg-waiting::before {
+  content: "";
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  margin-inline-end: 0.5rem;
+  border-radius: 50%;
+  background: var(--busy);
+  animation: pg-pulse 1.4s ease-in-out infinite;
+}
+@keyframes pg-pulse {
+  50% {
+    opacity: 0.25;
+  }
+}
+
+/* Cards for setup states */
+.pg-card {
+  display: grid;
+  gap: 0.9rem;
+  width: min(100%, 36rem);
+  margin: clamp(1rem, 8vh, 5rem) auto 0;
+  padding: 1.75rem;
+  border: var(--pg-border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.pg-card h2 {
+  font-size: 1.25rem;
+}
+.pg-card progress {
+  width: 100%;
+  height: 0.6rem;
+  accent-color: var(--accent);
+}
+.pg-command {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 0.5rem;
+}
+.pg-command code {
+  padding: 0.6rem 0.75rem;
+  border-radius: var(--radius);
+  background: var(--code);
+  font-size: 0.875rem;
   word-break: break-all;
-  background: var(--sl-color-bg-inline-code);
-  border-radius: 0.25rem;
 }
-.playground button.secondary {
-  background: transparent;
-  color: var(--sl-color-text-accent);
-  border: 1px solid var(--sl-color-gray-5);
-  font-weight: 500;
-}
-.playground button.link {
-  padding: 0;
-  background: none;
-  color: var(--sl-color-text-accent);
-  font-weight: normal;
-  text-decoration: underline;
-}
-.playground .muted {
-  margin: 0;
-  color: var(--sl-color-gray-2);
-}
-.playground .small {
-  font-size: var(--sl-text-sm);
-}
-.playground details.advanced summary {
+.pg-advanced summary {
   cursor: pointer;
-  color: var(--sl-color-gray-2);
-  font-size: var(--sl-text-sm);
+  font-size: 0.875rem;
+  color: var(--faint);
 }
-.playground details.advanced input {
+.pg-advanced input {
   margin-top: 0.5rem;
+}
+
+/* About panel */
+.pg-about {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  align-self: start;
+  position: sticky;
+  top: calc(3.5rem + 1rem);
+  padding: 1.25rem;
+  border: var(--pg-border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  font-size: 0.875rem;
+}
+.pg-about-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.pg-about h2 {
+  font-size: 1.125rem;
+}
+.pg-about ul {
+  display: grid;
+  gap: 0.3rem;
+  margin: 0;
+  padding-inline-start: 1.1rem;
+}
+
+@media (max-width: 60rem) {
+  .pg-workspace {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  /* On narrow screens the panel slides over the playground instead of squeezing it. */
+  .pg-app.pg-with-about {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .pg-about {
+    position: fixed;
+    inset: 3.5rem 0 0 auto;
+    width: min(85vw, 20rem);
+    border-radius: 0;
+    overflow-y: auto;
+    box-shadow: 0 10px 30px rgb(0 0 0 / 0.25);
+    z-index: 10;
+  }
 }

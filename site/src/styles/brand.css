@@ -1,0 +1,110 @@
+/* Shared look of the landing page and the playground (the docs use Starlight's theme). */
+:root {
+  color-scheme: light;
+  --bg: #ffffff;
+  --surface: #f6f7f9;
+  --surface-2: #eceef2;
+  --text: #1c1f26;
+  --muted: #5b6270;
+  --faint: #8a90a0;
+  --border: #dde1e8;
+  --accent: #4b52d6;
+  --accent-text: #ffffff;
+  --accent-soft: #e8e9fb;
+  --good: #1f9254;
+  --busy: #c27a10;
+  --bad: #c43d3d;
+  --code: #f1f3f6;
+  --radius: 0.625rem;
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #14161b;
+    --surface: #1c1f26;
+    --surface-2: #252932;
+    --text: #e8eaee;
+    --muted: #a6adbb;
+    --faint: #7c8394;
+    --border: #2f343e;
+    --accent: #8f97ff;
+    --accent-text: #11131a;
+    --accent-soft: #262a4a;
+    --good: #4cc489;
+    --busy: #e2a44a;
+    --bad: #ef7676;
+    --code: #20232b;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #14161b;
+  --surface: #1c1f26;
+  --surface-2: #252932;
+  --text: #e8eaee;
+  --muted: #a6adbb;
+  --faint: #7c8394;
+  --border: #2f343e;
+  --accent: #8f97ff;
+  --accent-text: #11131a;
+  --accent-soft: #262a4a;
+  --good: #4cc489;
+  --busy: #e2a44a;
+  --bad: #ef7676;
+  --code: #20232b;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 1rem/1.55 var(--font);
+  -webkit-font-smoothing: antialiased;
+}
+a {
+  color: var(--accent);
+}
+code,
+pre {
+  font-family: var(--mono);
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  height: 3.5rem;
+  padding: 0 clamp(1rem, 4vw, 2.5rem);
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  backdrop-filter: blur(8px);
+}
+.site-header .brand {
+  color: var(--text);
+  font-weight: 700;
+  text-decoration: none;
+}
+.site-header nav {
+  display: flex;
+  gap: 1.25rem;
+  margin-inline-start: auto;
+}
+.site-header nav a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+.site-header nav a:hover,
+.site-header nav a[aria-current="page"] {
+  color: var(--text);
+}

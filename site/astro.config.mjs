@@ -22,8 +22,9 @@ export default defineConfig({
       ],
       editLink: { baseUrl: "https://github.com/stuffbucket/gliner-runner/edit/main/site/" },
       sidebar: [
-        { label: "Home", link: "/" },
+        { label: "Get started", link: "/start/" },
         { label: "How it works", link: "/how-it-works/" },
+        { label: "Try it in your browser", link: "/playground/" },
         {
           label: "Examples",
           items: [
@@ -50,7 +51,6 @@ export default defineConfig({
           ],
         },
         { label: "Use it in a React app", link: "/use-in-react/" },
-        { label: "Try it in your browser", link: "/playground/" },
         { label: "More ideas", link: "/more-ideas/" },
         {
           label: "Reference",
