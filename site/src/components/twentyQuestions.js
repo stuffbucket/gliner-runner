@@ -56,6 +56,13 @@ export function question(options) {
   return `Is it ${phrases.length > 1 ? `${phrases.slice(0, -1).join(", ")} or ${phrases.at(-1)}` : phrases[0]}?`;
 }
 
+/** The question a classification answers: the options themselves at the top, then "What kind of animal is it?" and
+ * "Which zoo animal is it?" (the options are on the card already). */
+function levelQuestion(path, options) {
+  if (path.length === 0) return question(options);
+  return path.length === 1 ? `What kind of ${path[0]} is it?` : `Which ${path.at(-1)} is it?`;
+}
+
 /** "Is it a zebra?" */
 export const guessQuestion = (label) => `Is it ${phrase(label)}?`;
 
@@ -110,7 +117,7 @@ export function nextStep(game, tuning = TUNING) {
     number,
     labels: options.map((option) => option.label),
     descriptions: described.length > 0 ? Object.fromEntries(described.map((o) => [o.label, o.description])) : undefined,
-    text: `Question ${number} of ${MAX_QUESTIONS} · ${question(options)}`,
+    text: `Question ${number} of ${MAX_QUESTIONS} · ${levelQuestion(path, options)}`,
   };
 }
 

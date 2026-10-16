@@ -189,7 +189,7 @@ function Answer({ answer, depth }) {
  * Newest answer on top. When a card arrives the others slide down to their new places (measured before and after
  * the update and animated between, so the move follows the shared easing) and fade by one step.
  */
-function AnswerStack({ answers }) {
+function AnswerStack({ answers, game }) {
   const list = useRef(null);
   const tops = useRef(new Map());
   useLayoutEffect(() => {
@@ -209,8 +209,8 @@ function AnswerStack({ answers }) {
   if (answers.length === 0) {
     return (
       <div className="answer-card pg-placeholder">
-        <p>The answer appears here.</p>
-        <p className="pg-small">Press Classify or <Shortcut /></p>
+        <p>{game ? "The model's questions and guesses appear here." : "The answer appears here."}</p>
+        <p className="pg-small">Press {game ? "Start" : "Classify"} or <Shortcut /></p>
       </div>
     );
   }
@@ -262,10 +262,13 @@ function Workspace({ transport, models, onWarm }) {
 
   const pick = (example) => {
     if (example.game) {
+      clues.current = twenty.sample;
       setGame(newGame(twenty.tree, twenty.sample));
+      setPlaying(false);
       return;
     }
     setGame(null);
+    setPlaying(false);
     setText(example.text);
     setLabels(example.labels);
     setSeveral(example.several ?? false);
@@ -309,7 +312,17 @@ function Workspace({ transport, models, onWarm }) {
     run({ text, labels: list, several });
   }
 
+  // 20 questions: the player only writes clues and answers guesses. Once started, the game classifies on its own
+  // until it has a guess to check, or runs out of questions.
+  const [playing, setPlaying] = useState(false);
+  const clues = useRef("");
   const guessCard = useRef(undefined);
+  const cluesBox = useRef(null);
+
+  const setClues = (value) => {
+    clues.current = value;
+    setGame((current) => ({ ...current, clues: value }));
+  };
 
   /** If the game's next move is a guess, puts it on the stack and asks it (a guess counts as a question). */
   function advance(state) {
@@ -329,11 +342,34 @@ function Workspace({ transport, models, onWarm }) {
       return;
     }
     const answer = await run({ text: game.clues, labels: step.labels, descriptions: step.descriptions, question: step.text });
-    if (answer === undefined) return;
-    let state = afterClassification(game, step, answer.scores);
+    if (answer === undefined) {
+      setPlaying(false);
+      return;
+    }
+    // Clues typed while the model was thinking are kept for the next question.
+    let state = { ...afterClassification(game, step, answer.scores), clues: clues.current };
     if (state.phase === "lost") push({ kind: "verdict", message: verdict(state), model });
     else state = advance(state);
     setGame(state);
+  }
+
+  useEffect(() => {
+    if (!playing || game?.phase !== "asking" || busy || !game.clues.trim()) return undefined;
+    // A short pause between questions, so each card can be read as it arrives.
+    const timer = setTimeout(ask, 350);
+    return () => clearTimeout(timer);
+  }, [playing, game, busy]);
+
+  function start() {
+    if (!game?.clues.trim()) return;
+    setPlaying(true);
+  }
+
+  function playAgain() {
+    clues.current = "";
+    setGame(newGame(twenty.tree, ""));
+    setPlaying(false);
+    cluesBox.current?.focus();
   }
 
   /** The player's answer to a guess. */
@@ -350,12 +386,11 @@ function Workspace({ transport, models, onWarm }) {
   const onKeyDown = (event) => {
     if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
       event.preventDefault();
-      if (game) ask();
-      else classify();
+      if (!game) classify();
+      else if (!playing && game.phase === "asking") start();
     }
   };
   const shortcut = MAC ? "Meta+Enter" : "Control+Enter";
-  const upcoming = game?.phase === "asking" ? nextStep(game)?.labels ?? [] : [];
 
   return (
     <div className="pg-workspace" onKeyDown={onKeyDown}>
@@ -379,41 +414,51 @@ function Workspace({ transport, models, onWarm }) {
           </label>
           <textarea
             id="pg-text"
+            ref={cluesBox}
             className="input pg-text"
             value={game.clues}
-            onChange={(e) => setGame({ ...game, clues: e.target.value })}
+            onChange={(e) => setClues(e.target.value)}
             placeholder="It is small, round and red, and grows on trees."
           />
-          <div className="field pg-labels">
-            <span className="field-label">
-              {game.phase === "asking" ? `Question ${game.asked + 1} of ${MAX_QUESTIONS}` : `${game.asked} of ${MAX_QUESTIONS} questions asked`}
-            </span>
-            <p className="input pg-readonly" aria-live="polite">
-              {game.phase === "guessing"
-                ? guessQuestion(game.guess)
-                : game.phase === "asking"
-                  ? upcoming.join(", ")
-                  : game.phase === "won"
-                    ? "Got it!"
-                    : "Out of questions."}
-            </p>
-            <span className="field-hint">{game.note || "Add more clues at any time; the next question uses them."}</span>
+          <div className="field pg-labels pg-turn" aria-live="polite">
+            {game.phase === "guessing" ? (
+              <>
+                <span className="field-label">Question {game.asked} of {MAX_QUESTIONS} · your turn</span>
+                <p className="pg-turn-guess">{guessQuestion(game.guess)}</p>
+                <span className="field-hint">Not quite? You can add a clue above before you answer.</span>
+              </>
+            ) : game.phase === "won" || game.phase === "lost" ? (
+              <p className="pg-turn-guess">{verdict(game)}</p>
+            ) : playing ? (
+              <>
+                <span className="field-label">Question {game.asked + 1} of {MAX_QUESTIONS}</span>
+                <p className="pg-turn-status">{busy ? "Thinking…" : "Choosing the next question…"}</p>
+                <span className="field-hint">It works out what to ask from your clues and stops to check each guess with you.</span>
+              </>
+            ) : (
+              <span className="field-hint">
+                {game.asked === 0
+                  ? game.clues === twenty.sample
+                    ? "This example describes a zebra; write your own, or start with it. The model then asks itself up to 20 questions and stops to check each guess with you."
+                    : "Then press Start. The model asks itself up to 20 questions and stops to check each guess with you."
+                  : "Stopped. Change the clues if you like, then carry on."}
+              </span>
+            )}
           </div>
           <div className="pg-actions">
-            {game.phase === "asking" && (
-              <button type="button" className="btn btn-primary pg-classify" onClick={ask} disabled={busy || !game.clues.trim()} aria-keyshortcuts={shortcut}>
-                {busy ? "Thinking…" : `Ask question ${game.asked + 1}`} <Shortcut />
+            {game.phase === "asking" && !playing && (
+              <button type="button" className="btn btn-primary pg-classify" onClick={start} disabled={!game.clues.trim()} aria-keyshortcuts={shortcut}>
+                {game.asked === 0 ? "Start" : "Carry on"} <Shortcut />
               </button>
             )}
             {game.phase === "guessing" && (
               <>
-                <span className="pg-guess">{guessQuestion(game.guess)}</span>
-                <button type="button" className="btn" onClick={() => reply(false)}>No</button>
                 <button type="button" className="btn btn-primary" onClick={() => reply(true)}>Yes, that's it</button>
+                <button type="button" className="btn" onClick={() => reply(false)}>No</button>
               </>
             )}
             {(game.phase === "won" || game.phase === "lost") && (
-              <button type="button" className="btn btn-primary" onClick={() => setGame(newGame(twenty.tree, game.clues))}>Play again</button>
+              <button type="button" className="btn btn-primary" onClick={playAgain}>Play again</button>
             )}
             <button type="button" className="btn btn-link" onClick={() => pick(EXAMPLES[0])}>Leave the game</button>
           </div>
@@ -452,7 +497,7 @@ function Workspace({ transport, models, onWarm }) {
       )}
       {error && <p className="pg-error pg-message">{error}</p>}
       <section className="pg-stack" aria-live="polite" aria-label="Answers">
-        <AnswerStack answers={answers} />
+        <AnswerStack answers={answers} game={game !== null} />
       </section>
     </div>
   );
@@ -732,6 +777,7 @@ function About({ onClose }) {
       </div>
       <p>Type some text and the labels you care about. GLiNER Runner picks the label that fits best and scores each one from 0 to 1.</p>
       <p>Turn on <strong>Several labels can fit</strong> when a text can have more than one label, or none.</p>
+      <p>In <strong>20 questions</strong> you describe something without naming it. The model works out what it is by classifying your clues, and you only answer its guesses.</p>
       <p>Your text stays on your device: the model runs in this browser, or on your own computer.</p>
       <ul>
         <li><a href={`${BASE}/how-it-works/`}>How it works</a></li>

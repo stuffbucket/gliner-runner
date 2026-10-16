@@ -298,19 +298,19 @@
   font-weight: 600;
   line-height: var(--leading-snug);
 }
-.pg-readonly {
-  display: flex;
-  align-items: center;
-  height: auto;
-  min-height: var(--control-h);
-  padding-block: 0.55rem;
-  background: var(--surface);
-  color: var(--text);
+/* The turn line under the clues: whose move it is, and the guess to answer. */
+.pg-turn {
+  gap: 0.35rem;
 }
-.pg-guess {
+.pg-turn-guess {
   color: var(--text);
-  font-size: var(--text-lg);
+  font-size: var(--text-xl);
   font-weight: 600;
+  line-height: var(--leading-snug);
+}
+.pg-turn-status {
+  color: var(--muted);
+  font-size: var(--text-lg);
 }
 .pg-active {
   border-color: var(--accent);
