@@ -1,4 +1,4 @@
-import { join } from "node:path";
+import { platform } from "#platform";
 
 import type { BackendCapabilities, BackendFactory, BackendResult, InferenceBackend } from "../backend.js";
 import type { ResolvedModel } from "../catalog.js";
@@ -12,24 +12,13 @@ import {
   decode,
   isGliner2SchemaError,
 } from "../gliner2/index.js";
-import type {
-  CompiledSchema,
-  Gliner2Row,
-  Gliner2Tokenizer,
-  RunnerClassificationSchema,
-} from "../gliner2/index.js";
+import type { CompiledSchema, Gliner2Row, RunnerClassificationSchema } from "../gliner2/index.js";
 import { batchKey } from "../scheduler.js";
 import { orderedTaskEntries } from "../task-order.js";
-import { GRAPH_INPUTS, GRAPH_NAME, GRAPH_OUTPUTS } from "./manifest.js";
+import { GRAPH_INPUTS, GRAPH_OUTPUTS } from "./manifest.js";
 import { readPreprocessingConfig } from "./preprocessing.js";
 
 import type * as Ort from "onnxruntime-node";
-
-// `@huggingface/tokenizers@0.2.0` ships declarations that NodeNext rejects without `skipLibCheck`, and both it
-// and onnxruntime-node are only needed once a model is actually loaded, so they are imported lazily and typed here.
-const TOKENIZERS_SPECIFIER = "@huggingface/tokenizers";
-const ORT_SPECIFIER = "onnxruntime-node";
-type TokenizerConstructor = new (tokenizerJson: object, tokenizerConfig: object) => Gliner2Tokenizer;
 
 export const ONNX_BACKEND_CAPABILITIES = {
   backend: "onnx",
@@ -54,7 +43,7 @@ const DEFAULT_MAX_PADDED_TOKENS = 32_768;
 const COMPILE_CACHE_SIZE = 64;
 
 function threadsFromEnvironment(): number | undefined {
-  const raw = process.env["GLINER_RUNNER_ONNX_INTRA_OP_THREADS"];
+  const raw = platform.env()["GLINER_RUNNER_ONNX_INTRA_OP_THREADS"];
   const value = raw === undefined || raw === "" ? Number.NaN : Number(raw);
   return Number.isInteger(value) && value > 0 ? value : undefined;
 }
@@ -93,11 +82,10 @@ export class OnnxBackend implements InferenceBackend {
     const identity = { modelId: model.modelId, repository: model.repository, revision: model.revision };
     const config = await readPreprocessingConfig(model.path, identity);
 
-    const { readFile } = await import("node:fs/promises");
-    const tokenizerModule = (await import(TOKENIZERS_SPECIFIER)) as { Tokenizer: TokenizerConstructor };
+    const Tokenizer = await platform.importTokenizers();
     const readJson = async (name: string): Promise<object> =>
-      JSON.parse(await readFile(join(model.path, name), "utf8")) as object;
-    const tokenizer = new tokenizerModule.Tokenizer(
+      JSON.parse(await platform.fs.readFile(platform.join(model.path, name))) as object;
+    const tokenizer = new Tokenizer(
       await readJson("tokenizer.json"),
       await readJson("tokenizer_config.json"),
     );
@@ -116,16 +104,8 @@ export class OnnxBackend implements InferenceBackend {
       );
     }
 
-    const ort = (await import(ORT_SPECIFIER)) as typeof Ort;
     const threads = this.#options.intraOpThreads ?? threadsFromEnvironment();
-    const session = await ort.InferenceSession.create(join(model.path, GRAPH_NAME), {
-      executionProviders: ["cpu"],
-      graphOptimizationLevel: "all",
-      executionMode: "sequential",
-      enableMemPattern: false,
-      interOpNumThreads: 1,
-      ...(threads === undefined ? {} : { intraOpNumThreads: threads }),
-    });
+    const { ort, session } = await platform.createSession(model.path, { intraOpThreads: threads });
     try {
       const expectedInputs = GRAPH_INPUTS.map((input) => input.name);
       const expectedOutputs = GRAPH_OUTPUTS.map((output) => output.name);

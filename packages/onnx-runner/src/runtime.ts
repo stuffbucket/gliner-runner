@@ -288,7 +288,8 @@ export class Runtime {
     this.#cancelIdle();
     const generation = this.#generation;
     this.#idleTimer = setTimeout(() => void this.#evict(generation), ttl * 1000);
-    this.#idleTimer.unref();
+    // Node keeps the process alive for a pending timer; a browser has no `unref`.
+    (this.#idleTimer as { unref?: () => void }).unref?.();
   }
 
   async #evict(generation: number): Promise<void> {

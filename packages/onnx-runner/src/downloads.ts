@@ -1,7 +1,4 @@
-import { realpath } from "node:fs/promises";
-import { homedir } from "node:os";
-import { randomUUID } from "node:crypto";
-import { resolve } from "node:path";
+import { platform } from "#platform";
 
 import { isCommitSha, parseModelReference, type ArtifactCatalog } from "./catalog.js";
 import type { DownloadJob, DownloadRequest } from "./contracts.js";
@@ -42,14 +39,8 @@ interface JobRecord {
 const ACTIVE = new Set<DownloadJob["state"]>(["queued", "running"]);
 
 /** `~` expansion plus symlink resolution, the way Python's `Path.expanduser().resolve()` normalises a path. */
-async function resolvedPath(path: string): Promise<string> {
-  const expanded = path === "~" ? homedir() : path.startsWith("~/") ? resolve(homedir(), path.slice(2)) : path;
-  const absolute = resolve(expanded);
-  try {
-    return await realpath(absolute);
-  } catch {
-    return absolute;
-  }
+function resolvedPath(path: string): Promise<string> {
+  return platform.resolvePath(path);
 }
 
 /**
@@ -127,7 +118,7 @@ export class DownloadJobManager {
       throw new RunnerClosedError("the runner is shutting down");
     }
     const job: DownloadJob = {
-      job_id: randomUUID(),
+      job_id: globalThis.crypto.randomUUID(),
       model_id: modelId,
       revision,
       destination,

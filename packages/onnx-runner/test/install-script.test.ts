@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { execFile, spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readlinkSync, rmSync, writeFileSync } from "node:fs";
+import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, readlinkSync, rmSync, writeFileSync } from "node:fs";
 import { createServer, type Server } from "node:http";
 import type { AddressInfo } from "node:net";
 import { tmpdir } from "node:os";
@@ -19,7 +19,7 @@ interface Fixture {
   home: string;
   binDir: string;
   close(): Promise<void>;
-  install(extra?: Record<string, string>): Promise<{ status: number; stdout: string; stderr: string }>;
+  install(extra?: Record<string, string>, args?: string[]): Promise<{ status: number; stdout: string; stderr: string }>;
 }
 
 function makeArchive(root: string, version: string, platform: string): Buffer {
@@ -29,7 +29,7 @@ function makeArchive(root: string, version: string, platform: string): Buffer {
   mkdirSync(join(dir, "runtime"), { recursive: true });
   for (const command of ["gliner-runner", "gliner-runner-onnx"]) {
     const launcher = join(dir, "bin", command);
-    writeFileSync(launcher, `#!/bin/sh\necho "fake gliner-runner-onnx ${version}"\n`);
+    writeFileSync(launcher, `#!/bin/sh\necho "fake gliner-runner-onnx ${version}"\n[ $# -eq 0 ] || echo "args: $*"\n`);
     chmodSync(launcher, 0o755);
   }
   writeFileSync(join(dir, "runtime", "node"), "not really node\n");
@@ -120,9 +120,9 @@ async function fixture(
       await new Promise<void>((resolve) => server.close(() => resolve()));
       rmSync(root, { recursive: true, force: true });
     },
-    install: (extra = {}) =>
+    install: (extra = {}, args = []) =>
       new Promise((resolve) => {
-        execFile("/bin/sh", [INSTALL_SH], { env: { ...env, ...extra }, encoding: "utf8" }, (error, stdout, stderr) => {
+        execFile("/bin/sh", [INSTALL_SH, ...args], { env: { ...env, ...extra }, encoding: "utf8" }, (error, stdout, stderr) => {
           const code = (error as { code?: unknown } | null)?.code;
           resolve({ status: error === null ? 0 : typeof code === "number" ? code : -1, stdout, stderr });
         });
@@ -162,6 +162,66 @@ test("installs the latest stable release, links the launcher and is idempotent",
     assert.doesNotMatch(second.stdout, /Add .* to your PATH/);
     assert.equal(f.requests.filter((url) => url.endsWith(".tar.gz")).length, downloads);
     assert.equal(runLinked(f), "fake gliner-runner-onnx 1.2.3");
+  } finally {
+    await f.close();
+  }
+});
+
+test("--playground installs, then hands over to gliner-runner playground with the remaining options", async () => {
+  const f = await fixture([{ version: "1.2.3" }], "1.2.3");
+  try {
+    const scratch = join(f.root, "tmp");
+    mkdirSync(scratch);
+    const result = await f.install({ TMPDIR: scratch }, ["--playground", "--yes", "--no-open"]);
+    assert.equal(result.status, 0, result.stderr);
+    assert.match(result.stdout, /Installed gliner-runner 1\.2\.3/);
+    assert.match(result.stdout, /fake gliner-runner-onnx 1\.2\.3\nargs: playground --yes --no-open$/m);
+    assert.match(result.stdout, /add .* to your PATH/);
+    assert.doesNotMatch(result.stdout, /Next steps/);
+    assert.deepEqual(readdirSync(scratch), [], "the temporary directory is removed before handing over");
+  } finally {
+    await f.close();
+  }
+});
+
+test("--playground reuses a gliner-runner on PATH that has the command, without downloading", async () => {
+  const f = await fixture([{ version: "1.2.3" }], "1.2.3");
+  try {
+    const existing = join(f.root, "existing");
+    mkdirSync(existing);
+    writeFileSync(
+      join(existing, "gliner-runner"),
+      `#!/bin/sh
+case "$1" in
+  --version) echo "gliner-runner-onnx 9.9.9" ;;
+  playground) [ "$2" = --help ] && exit 0; echo "existing playground $*" ;;
+esac
+`,
+    );
+    chmodSync(join(existing, "gliner-runner"), 0o755);
+    const result = await f.install({ PATH: `${existing}:${f.env["PATH"]}` }, ["--playground", "--yes"]);
+    assert.equal(result.status, 0, result.stderr);
+    assert.match(result.stdout, /Using the installed gliner-runner/);
+    assert.match(result.stdout, /existing playground playground --yes/);
+    assert.deepEqual(f.requests, []);
+
+    // An older runner without the command is not reused: the latest release is installed instead.
+    writeFileSync(join(existing, "gliner-runner"), `#!/bin/sh\necho "gliner-runner-onnx 0.4.0"\n[ "$1" = playground ] && exit 2\nexit 0\n`);
+    const upgraded = await f.install({ PATH: `${existing}:${f.env["PATH"]}` }, ["--playground"]);
+    assert.equal(upgraded.status, 0, upgraded.stderr);
+    assert.match(upgraded.stdout, /args: playground$/m);
+  } finally {
+    await f.close();
+  }
+});
+
+test("unknown options are refused before anything is downloaded", async () => {
+  const f = await fixture([{ version: "1.2.3" }], "1.2.3");
+  try {
+    const result = await f.install({}, ["--bogus"]);
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /unknown option: --bogus/);
+    assert.deepEqual(f.requests, []);
   } finally {
     await f.close();
   }

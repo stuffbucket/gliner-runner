@@ -6,6 +6,12 @@ import starlight from "@astrojs/starlight";
 export default defineConfig({
   site: "https://stuffbucket.github.io",
   base: "/gliner-runner/",
+  vite: {
+    // The playground's runner worker is an ES module (it imports onnxruntime-web, which ships its own
+    // WebAssembly loader and must not be pre-bundled).
+    worker: { format: "es" },
+    optimizeDeps: { exclude: ["onnxruntime-web"] },
+  },
   integrations: [
     react(),
     starlight({

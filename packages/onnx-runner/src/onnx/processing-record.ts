@@ -1,10 +1,7 @@
-import { randomBytes } from "node:crypto";
-import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
-import { join } from "node:path";
-import { fileURLToPath } from "node:url";
-import { readFileSync } from "node:fs";
+import { platform } from "#platform";
 
 import type { KnownModel } from "../catalog.js";
+import { randomHex } from "../timers.js";
 import { repositoryDirectoryName } from "./artifacts.js";
 import type { OnnxTemplate } from "./templates.js";
 
@@ -45,19 +42,11 @@ export interface ProcessingRecord {
   rejected_candidates?: { location: string; reason: string }[];
 }
 
-let version: string | undefined;
+const join = (...parts: string[]): string => platform.join(...parts);
 
 /** The runner's version, from the package's `package.json` (also present in packaged releases). */
 export function runnerVersion(): string {
-  if (version === undefined) {
-    try {
-      const raw = JSON.parse(readFileSync(fileURLToPath(new URL("../../../package.json", import.meta.url)), "utf8")) as { version?: unknown };
-      version = typeof raw.version === "string" ? raw.version : "unknown";
-    } catch {
-      version = "unknown";
-    }
-  }
-  return version;
+  return platform.runnerVersion();
 }
 
 /** Sibling of the artifact directory: `<modelsDir>/onnx/<owner>--<name>/<revision>.gliner-runner.json`. */
@@ -72,7 +61,7 @@ export async function readProcessingRecord(
   revision: string,
 ): Promise<ProcessingRecord | undefined> {
   try {
-    const value = JSON.parse(await readFile(recordPath(modelsDir, model.repository, revision), "utf8")) as Partial<ProcessingRecord> | null;
+    const value = JSON.parse(await platform.fs.readFile(recordPath(modelsDir, model.repository, revision))) as Partial<ProcessingRecord> | null;
     return value !== null && typeof value === "object" && value.kind === RECORD_KIND && value.format_version === RECORD_FORMAT_VERSION
       ? (value as ProcessingRecord)
       : undefined;
@@ -84,13 +73,13 @@ export async function readProcessingRecord(
 /** Writes a record atomically (temporary sibling, then rename). Never touches the artifact directory. */
 export async function writeProcessingRecord(modelsDir: string, record: ProcessingRecord): Promise<string> {
   const path = recordPath(modelsDir, record.repository, record.revision);
-  await mkdir(join(modelsDir, "onnx", repositoryDirectoryName(record.repository)), { recursive: true });
-  const temporary = `${path}.tmp-${randomBytes(4).toString("hex")}`;
+  await platform.fs.mkdir(join(modelsDir, "onnx", repositoryDirectoryName(record.repository)), { recursive: true });
+  const temporary = `${path}.tmp-${randomHex(4)}`;
   try {
-    await writeFile(temporary, `${JSON.stringify(record, null, 2)}\n`);
-    await rename(temporary, path);
+    await platform.fs.writeFile(temporary, `${JSON.stringify(record, null, 2)}\n`);
+    await platform.fs.rename(temporary, path);
   } catch (error) {
-    await rm(temporary, { force: true });
+    await platform.fs.rm(temporary, { force: true });
     throw error;
   }
   return path;

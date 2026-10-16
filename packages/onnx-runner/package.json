@@ -10,6 +10,25 @@
   },
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "default": "./dist/src/index.js"
+    },
+    "./portable": {
+      "types": "./dist/src/portable.d.ts",
+      "browser": "./src/portable.ts",
+      "default": "./dist/src/portable.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "imports": {
+    "#platform": {
+      "types": "./src/platform/node.ts",
+      "browser": "./src/platform/slot.ts",
+      "default": "./dist/src/platform/node.js"
+    }
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "check": "pnpm run build && node --test 'dist/test/**/*.test.js'"

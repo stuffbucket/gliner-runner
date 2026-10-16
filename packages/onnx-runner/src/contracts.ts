@@ -1,4 +1,3 @@
-import { randomUUID } from "node:crypto";
 
 import { z } from "zod";
 
@@ -213,7 +212,7 @@ export const InferenceRequestSchema = z
     request_id: z
       .guid()
       .transform((value) => value.toLowerCase())
-      .default(() => randomUUID()),
+      .default(() => globalThis.crypto.randomUUID()),
     model: nonBlankString,
     backend: BackendNameSchema,
     precision: PrecisionSchema,

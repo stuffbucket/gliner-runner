@@ -1,10 +1,9 @@
-import { createHash, randomBytes } from "node:crypto";
-import { constants } from "node:fs";
-import { copyFile, lstat, mkdir, open, readdir, rename, rm, statfs, type FileHandle } from "node:fs/promises";
-import { endianness } from "node:os";
-import { join } from "node:path";
+import { platform } from "#platform";
 
 import { ModelIntegrityError, RequestCancelledError } from "../errors.js";
+import { hashHandle } from "../platform/files.js";
+import type { PlatformFile } from "../platform/port.js";
+import { randomHex } from "../timers.js";
 import { artifactDirectory } from "./artifacts.js";
 import { MANIFEST_NAME } from "./manifest.js";
 import { SafetensorsError, SafetensorsFile } from "./safetensors.js";
@@ -58,14 +57,14 @@ interface Limits {
   transposeBandBytes: number;
 }
 
-export async function freeBytesOf(directory: string): Promise<number | undefined> {
-  try {
-    const status = await statfs(directory);
-    return Number(status.bavail) * Number(status.bsize);
-  } catch {
-    return undefined;
-  }
+export function freeBytesOf(directory: string): Promise<number | undefined> {
+  return platform.freeBytes(directory);
 }
+
+const join = (...parts: string[]): string => platform.join(...parts);
+
+/** Whether typed arrays use little-endian byte order on this host. */
+const littleEndian = (): boolean => new Uint8Array(new Uint16Array([1]).buffer)[0] === 1;
 
 /** Sum of the bytes the artifact's outputs occupy (the manifest adds a few KiB, covered by the margin). */
 export const outputBytes = (template: OnnxTemplate): number =>
@@ -92,7 +91,7 @@ function throwIfAborted(signal: AbortSignal | undefined): void {
   }
 }
 
-async function writeFully(handle: FileHandle, buffer: Uint8Array, position: number): Promise<void> {
+async function writeFully(handle: PlatformFile, buffer: Uint8Array, position: number): Promise<void> {
   let done = 0;
   while (done < buffer.length) {
     const { bytesWritten } = await handle.write(buffer, done, buffer.length - done, position + done);
@@ -107,24 +106,12 @@ export async function sha256OfFile(
   path: string,
   signal?: AbortSignal,
 ): Promise<{ bytes: number; sha256: string }> {
-  const handle = await open(path, constants.O_RDONLY);
+  const handle = await platform.fs.open(path, "read");
   try {
     if (!(await handle.stat()).isFile()) {
       throw new AssembleError(`${path} is not a regular file`);
     }
-    const hash = createHash("sha256");
-    const block = Buffer.allocUnsafe(HASH_BLOCK_BYTES);
-    let bytes = 0;
-    for (;;) {
-      throwIfAborted(signal);
-      const { bytesRead } = await handle.read(block, 0, block.length, bytes);
-      if (bytesRead === 0) {
-        break;
-      }
-      hash.update(block.subarray(0, bytesRead));
-      bytes += bytesRead;
-    }
-    return { bytes, sha256: hash.digest("hex") };
+    return await hashHandle(handle, HASH_BLOCK_BYTES, () => throwIfAborted(signal));
   } finally {
     await handle.close();
   }
@@ -153,8 +140,8 @@ export function transposeWords(source: Uint32Array, target: Uint32Array, rows: n
 async function writeTensor(
   weights: SafetensorsFile,
   tensor: TemplateTensor,
-  output: FileHandle,
-  scratch: Buffer,
+  output: PlatformFile,
+  scratch: Uint8Array,
   bandBytes: number,
   signal: AbortSignal | undefined,
   advance: (bytes: number) => void,
@@ -179,8 +166,8 @@ async function writeTensor(
   const rowsPerBand = Math.max(1, Math.min(rows, Math.floor(bandBytes / (cols * 4))));
   const sourceBuffer = new ArrayBuffer(rowsPerBand * cols * 4);
   const targetBuffer = new ArrayBuffer(rowsPerBand * cols * 4);
-  const sourceBytes = Buffer.from(sourceBuffer);
-  const targetBytes = Buffer.from(targetBuffer);
+  const sourceBytes = new Uint8Array(sourceBuffer);
+  const targetBytes = new Uint8Array(targetBuffer);
   for (let firstRow = 0; firstRow < rows; firstRow += rowsPerBand) {
     throwIfAborted(signal);
     const bandRows = Math.min(rowsPerBand, rows - firstRow);
@@ -212,9 +199,9 @@ async function writeData(
   signal: AbortSignal | undefined,
   progress: (done: number) => void,
 ): Promise<void> {
-  const output = await open(path, constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL, 0o644);
+  const output = await platform.fs.open(path, "write-exclusive");
   try {
-    const scratch = Buffer.allocUnsafe(limits.copyBlockBytes);
+    const scratch = new Uint8Array(limits.copyBlockBytes);
     let position = 0;
     let written = 0;
     for (const tensor of template.data.tensors) {
@@ -223,7 +210,7 @@ async function writeData(
         throw new AssembleError(`tensor ${tensor.name} overlaps the previous tensor`);
       }
       for (let gap = tensor.offset - position; gap > 0; ) {
-        const zeros = Buffer.alloc(Math.min(gap, 4096));
+        const zeros = new Uint8Array(Math.min(gap, 4096));
         await writeFully(output, zeros, tensor.offset - gap);
         gap -= zeros.length;
       }
@@ -291,14 +278,14 @@ async function verifySource(template: OnnxTemplate, snapshotDir: string, options
  */
 export async function assembleArtifact(options: AssembleOptions): Promise<string> {
   const { template, snapshotDir, modelsDir, signal } = options;
-  if (endianness() !== "LE") {
+  if (!littleEndian()) {
     throw new AssembleError("ONNX artifact preparation requires a little-endian host");
   }
   const destination = artifactDirectory(modelsDir, template.model.repository, template.revision);
   const parent = join(modelsDir, "onnx", template.model.repository.replace("/", "--"));
   const exists = async (): Promise<boolean> => {
     try {
-      await lstat(destination);
+      await platform.fs.lstat(destination);
       return true;
     } catch (error) {
       if ((error as { code?: unknown }).code === "ENOENT") {
@@ -311,7 +298,7 @@ export async function assembleArtifact(options: AssembleOptions): Promise<string
     throw new ArtifactExistsError(destination);
   }
   throwIfAborted(signal);
-  await mkdir(parent, { recursive: true });
+  await platform.fs.mkdir(parent, { recursive: true });
   await ensureFreeSpace(parent, outputBytes(template), "the prepared artifact", options.freeBytes);
 
   if (options.verifySources ?? true) {
@@ -330,10 +317,10 @@ export async function assembleArtifact(options: AssembleOptions): Promise<string
     copyBlockBytes: options.limits?.copyBlockBytes ?? COPY_BLOCK_BYTES,
     transposeBandBytes: options.limits?.transposeBandBytes ?? TRANSPOSE_BAND_BYTES,
   };
-  const staging = join(parent, `.staging-${template.revision.slice(0, 12)}-${randomBytes(4).toString("hex")}`);
+  const staging = join(parent, `.staging-${template.revision.slice(0, 12)}-${randomHex(4)}`);
   try {
     assertWeightsMatch(template, weights);
-    await mkdir(staging, { mode: 0o755 });
+    await platform.fs.mkdir(staging, { mode: 0o755 });
 
     const dataSize = template.data.size;
     for (const file of template.templateFiles) {
@@ -341,7 +328,7 @@ export async function assembleArtifact(options: AssembleOptions): Promise<string
       if (file.output === MANIFEST_NAME) {
         continue; // written last
       }
-      await copyFile(join(template.directory, file.path), join(staging, file.output), constants.COPYFILE_EXCL);
+      await platform.fs.copyFile(join(template.directory, file.path), join(staging, file.output));
       options.onProgress?.({ stage: "graph", file: file.output, done: file.size, total: file.size });
     }
     await writeData(template, weights, join(staging, template.data.path), limits, signal, (done) =>
@@ -353,7 +340,7 @@ export async function assembleArtifact(options: AssembleOptions): Promise<string
         continue;
       }
       throwIfAborted(signal);
-      await copyFile(join(snapshotDir, output.path), join(staging, output.path), constants.COPYFILE_EXCL);
+      await platform.fs.copyFile(join(snapshotDir, output.path), join(staging, output.path));
       options.onProgress?.({ stage: "copy", file: output.path, done: output.size, total: output.size });
     }
     await weights.close();
@@ -377,13 +364,13 @@ export async function assembleArtifact(options: AssembleOptions): Promise<string
     if (manifest === undefined) {
       throw new AssembleError("template does not provide manifest.json");
     }
-    await copyFile(join(template.directory, manifest.path), join(staging, MANIFEST_NAME), constants.COPYFILE_EXCL);
+    await platform.fs.copyFile(join(template.directory, manifest.path), join(staging, MANIFEST_NAME));
     const written = await sha256OfFile(join(staging, MANIFEST_NAME), signal);
     if (written.bytes !== manifest.size || written.sha256 !== manifest.sha256) {
       throw new AssembleError("prepared manifest.json does not match the template");
     }
     const expected = new Set([...template.outputs.map((output) => output.path), MANIFEST_NAME]);
-    const present = await readdir(staging);
+    const present = await platform.fs.readdir(staging);
     if (present.length !== expected.size || present.some((name) => !expected.has(name))) {
       throw new AssembleError(`staging directory holds unexpected files: ${present.sort().join(", ")}`);
     }
@@ -392,12 +379,12 @@ export async function assembleArtifact(options: AssembleOptions): Promise<string
     if (await exists()) {
       throw new ArtifactExistsError(destination);
     }
-    await rename(staging, destination);
+    await platform.fs.rename(staging, destination);
     options.onProgress?.({ stage: "finalize", done: 1, total: 1 });
     return destination;
   } catch (error) {
     await weights.close().catch(() => undefined);
-    await rm(staging, { recursive: true, force: true });
+    await platform.fs.rm(staging, { recursive: true, force: true });
     throw error;
   }
 }

@@ -6,6 +6,7 @@ import { runClassifyCommand, runDemoCommand, type ClassifyIo } from "./classify-
 import { loadComponents } from "./components.js";
 import { runCorsCommand } from "./cors-cli.js";
 import { runModelsCommand } from "./models-cli.js";
+import { openInBrowser, runPlaygroundCommand } from "./playground-cli.js";
 import { createServer } from "./server.js";
 import {
   SERVE_USAGE,
@@ -78,6 +79,31 @@ async function serve(argv: readonly string[]): Promise<number> {
   });
 }
 
+async function confirmOnTerminal(question: string): Promise<boolean> {
+  const reader = createInterface({ input: process.stdin, output: process.stderr });
+  try {
+    return /^\s*y(es)?\s*$/i.test(await reader.question(question));
+  } finally {
+    reader.close();
+  }
+}
+
+function playground(argv: readonly string[]): Promise<number> {
+  return runPlaygroundCommand(argv, {
+    env: process.env,
+    interactive: process.stdin.isTTY === true,
+    stdout: (text) => void process.stdout.write(text),
+    stderr: (text) => void process.stderr.write(text),
+    confirm: confirmOnTerminal,
+    openUrl: openInBrowser,
+    waitForStop: () =>
+      new Promise<void>((resolve) => {
+        process.once("SIGINT", () => resolve());
+        process.once("SIGTERM", () => resolve());
+      }),
+  });
+}
+
 async function models(argv: readonly string[]): Promise<number> {
   const controller = new AbortController();
   const interrupt = (): void => controller.abort();
@@ -89,14 +115,7 @@ async function models(argv: readonly string[]): Promise<number> {
       interactive: process.stdin.isTTY === true,
       stdout: (text) => void process.stdout.write(text),
       stderr: (text) => void process.stderr.write(text),
-      confirm: async (question) => {
-        const reader = createInterface({ input: process.stdin, output: process.stderr });
-        try {
-          return /^\s*y(es)?\s*$/i.test(await reader.question(question));
-        } finally {
-          reader.close();
-        }
-      },
+      confirm: confirmOnTerminal,
       signal: controller.signal,
     });
   } finally {
@@ -118,6 +137,8 @@ Commands:
   classify              Classify one text into labels you choose
   demo                  Run a few example classifications
   serve                 Run a local web service for applications (http://127.0.0.1:8090)
+  playground            Open the browser playground connected to this computer, setting up
+                        the runner and the model if needed
   cors list             Show the web page origins allowed to call the service; also
                         cors add <origin>, show <n>, set <n> <origin>, delete <n>, reset
   update check          Check whether a newer release is available
@@ -175,6 +196,9 @@ async function main(argv: readonly string[]): Promise<number> {
   }
   if (command === "models") {
     return models(rest);
+  }
+  if (command === "playground") {
+    return playground(rest);
   }
   if (command === "cors") {
     return runCorsCommand(rest, {

@@ -1,11 +1,8 @@
-import { createHash } from "node:crypto";
-import { constants } from "node:fs";
-import { open, readFile, readdir } from "node:fs/promises";
-import { join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { platform } from "#platform";
 
 import { KNOWN_MODELS, isCommitSha, type KnownModel } from "../catalog.js";
 import { ModelIntegrityError } from "../errors.js";
+import { hashHandle, sha256OfText } from "../platform/files.js";
 import { repositoryDirectoryName } from "./artifacts.js";
 import { GRAPH_NAME, MANIFEST_NAME, PREPROCESSING_NAME, parseManifest, type OnnxManifest } from "./manifest.js";
 
@@ -79,13 +76,18 @@ export interface OnnxTemplate extends ParsedTemplate {
 
 export class TemplateError extends ModelIntegrityError {}
 
-/** Bundled templates: `<package>/templates`, resolved relative to this compiled module (`dist/src/onnx`). */
+const join = (...parts: string[]): string => platform.join(...parts);
+
+/** Bundled templates: `<package>/templates` under Node; whatever the browser platform provides otherwise. */
 export function defaultTemplatesDir(): string {
-  return fileURLToPath(new URL("../../../templates", import.meta.url));
+  return platform.defaultTemplatesDir();
 }
 
 /** `--templates-dir` wins over `GLINER_RUNNER_ONNX_TEMPLATES_DIR`, which wins over the bundled directory. */
-export function resolveTemplatesDir(explicit?: string, env: NodeJS.ProcessEnv = process.env): string {
+export function resolveTemplatesDir(
+  explicit?: string,
+  env: Readonly<Record<string, string | undefined>> = platform.env(),
+): string {
   if (explicit !== undefined && explicit !== "") {
     return explicit;
   }
@@ -102,7 +104,6 @@ type Json = Record<string, unknown>;
 const isRecord = (value: unknown): value is Json =>
   typeof value === "object" && value !== null && !Array.isArray(value);
 const SHA256 = /^[a-f0-9]{64}$/;
-const O_NOFOLLOW = constants.O_NOFOLLOW ?? 0;
 
 function plainName(name: unknown): name is string {
   return (
@@ -338,7 +339,7 @@ export function parseTemplate(raw: unknown, model: KnownModel, revision: string)
 async function hashFile(path: string): Promise<{ bytes: number; sha256: string } | undefined> {
   let handle;
   try {
-    handle = await open(path, constants.O_RDONLY | O_NOFOLLOW);
+    handle = await platform.fs.open(path, "read-nofollow");
   } catch (error) {
     const code = (error as { code?: unknown }).code;
     if (code === "ENOENT" || code === "ELOOP" || code === "EMLINK") {
@@ -350,13 +351,7 @@ async function hashFile(path: string): Promise<{ bytes: number; sha256: string }
     if (!(await handle.stat()).isFile()) {
       return undefined;
     }
-    const hash = createHash("sha256");
-    let bytes = 0;
-    for await (const chunk of handle.createReadStream({ autoClose: false })) {
-      hash.update(chunk as Buffer);
-      bytes += (chunk as Buffer).length;
-    }
-    return { bytes, sha256: hash.digest("hex") };
+    return await hashHandle(handle, 64 * 1024);
   } finally {
     await handle.close();
   }
@@ -381,7 +376,7 @@ export async function loadTemplate(
   const directory = templateDirectory(templatesDir, model, revision);
   let text: string;
   try {
-    text = await readFile(join(directory, TEMPLATE_NAME), "utf8");
+    text = await platform.fs.readFile(join(directory, TEMPLATE_NAME));
   } catch (error) {
     const code = (error as { code?: unknown }).code;
     if (code === "ENOENT" || code === "ENOTDIR") {
@@ -389,7 +384,7 @@ export async function loadTemplate(
     }
     throw error;
   }
-  const key = `${directory}\n${createHash("sha256").update(text).digest("hex")}`;
+  const key = `${directory}\n${await sha256OfText(text)}`;
   let pending = loaded.get(key);
   if (pending === undefined) {
     pending = verifyTemplate(directory, text, model, revision);
@@ -426,7 +421,7 @@ async function verifyTemplate(
   const manifestFile = parsed.templateFiles.find((file) => file.output === MANIFEST_NAME) as TemplateFile;
   let manifestRaw: unknown;
   try {
-    manifestRaw = JSON.parse(await readFile(join(directory, manifestFile.path), "utf8"));
+    manifestRaw = JSON.parse(await platform.fs.readFile(join(directory, manifestFile.path)));
   } catch {
     return fail("the manifest template is not valid JSON");
   }
@@ -446,7 +441,7 @@ async function verifyTemplate(
     ...parsed,
     directory,
     manifest,
-    templateSha256: createHash("sha256").update(text).digest("hex"),
+    templateSha256: await sha256OfText(text),
     templateFormatVersion: TEMPLATE_FORMAT_VERSION,
   };
 }
@@ -460,7 +455,7 @@ export async function listTemplates(
   const found: OnnxTemplate[] = [];
   let present: string[];
   try {
-    present = await readdir(templatesDir);
+    present = await platform.fs.readdir(templatesDir);
   } catch {
     return found;
   }

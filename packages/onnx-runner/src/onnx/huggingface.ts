@@ -1,10 +1,7 @@
-import { constants } from "node:fs";
-import { open, rename, rm } from "node:fs/promises";
-import { createHash } from "node:crypto";
-import { join } from "node:path";
-import { setTimeout as sleepFor } from "node:timers/promises";
+import { platform } from "#platform";
 
 import { RequestCancelledError } from "../errors.js";
+import { delay } from "../timers.js";
 import type { TemplateSourceFile } from "./templates.js";
 
 export const DEFAULT_HF_ENDPOINT = "https://huggingface.co";
@@ -37,10 +34,18 @@ export interface HuggingFaceOptions {
   retryMaxMs?: number | undefined;
   /** A transfer that delivers no bytes for this long is aborted and retried (default 60000). */
   idleTimeoutMs?: number | undefined;
+  /**
+   * `manual` (the default) follows redirects itself so the bearer token never leaves the endpoint's origin.
+   * Browsers hide redirect targets from scripts, so the browser build uses `follow`, which refuses a token and
+   * treats `content-length` only as a hint (size and SHA-256 are still verified).
+   */
+  redirect?: "manual" | "follow" | undefined;
 }
 
 /** Endpoint and token from the standard Hugging Face environment variables. */
-export function huggingFaceOptionsFromEnv(env: NodeJS.ProcessEnv = process.env): HuggingFaceOptions {
+export function huggingFaceOptionsFromEnv(
+  env: Readonly<Record<string, string | undefined>> = platform.env(),
+): HuggingFaceOptions {
   const endpoint = env["HF_ENDPOINT"];
   const token = env["HF_TOKEN"];
   return {
@@ -79,12 +84,18 @@ export class HuggingFaceClient {
   readonly #retryBaseMs: number;
   readonly #retryMaxMs: number;
   readonly #idleTimeoutMs: number;
+  readonly #redirect: "manual" | "follow";
 
   constructor(options: HuggingFaceOptions = {}) {
     const fromEnv = huggingFaceOptionsFromEnv();
     this.endpoint = (options.endpoint ?? fromEnv.endpoint ?? DEFAULT_HF_ENDPOINT).replace(/\/+$/, "");
     this.#token = "token" in options ? options.token : fromEnv.token;
-    this.#fetch = options.fetch ?? globalThis.fetch;
+    this.#redirect = options.redirect ?? "manual";
+    if (this.#redirect === "follow" && this.#token !== undefined) {
+      throw new Error("a Hugging Face token cannot be used when redirects are followed automatically");
+    }
+    // Wrapped, not stored as is: browsers throw "Illegal invocation" for a `fetch` called without its global.
+    this.#fetch = options.fetch ?? ((input, init) => globalThis.fetch(input, init));
     this.#maxAttempts = options.maxAttempts ?? 5;
     this.#retryBaseMs = options.retryBaseMs ?? 500;
     this.#retryMaxMs = options.retryMaxMs ?? 8000;
@@ -101,6 +112,9 @@ export class HuggingFaceClient {
    * dropped as soon as a redirect leaves it (CDN URLs are pre-signed).
    */
   async #get(url: string, signal: AbortSignal, accept: string): Promise<Response> {
+    if (this.#redirect === "follow") {
+      return this.#fetch(url, { headers: { accept }, redirect: "follow", signal });
+    }
     const origin = new URL(this.endpoint).origin;
     let current = url;
     for (let hop = 0; hop <= MAX_REDIRECTS; hop += 1) {
@@ -156,7 +170,7 @@ export class HuggingFaceClient {
         return;
       } catch (error) {
         lastError = error;
-        await rm(`${destination}.partial`, { force: true });
+        await platform.fs.rm(`${destination}.partial`, { force: true });
         if (context.signal?.aborted) {
           throw cancelled();
         }
@@ -164,9 +178,9 @@ export class HuggingFaceClient {
         if (!retryable || attempt === this.#maxAttempts) {
           break;
         }
-        const delay = Math.min(this.#retryMaxMs, this.#retryBaseMs * 2 ** (attempt - 1));
+        const wait = Math.min(this.#retryMaxMs, this.#retryBaseMs * 2 ** (attempt - 1));
         try {
-          await sleepFor(delay * (0.75 + Math.random() * 0.5), undefined, context.signal === undefined ? {} : { signal: context.signal });
+          await delay(wait * (0.75 + Math.random() * 0.5), context.signal);
         } catch {
           throw cancelled();
         }
@@ -191,7 +205,7 @@ export class HuggingFaceClient {
     const onAbort = (): void => controller.abort();
     context.signal?.addEventListener("abort", onAbort, { once: true });
     let stalled = false;
-    let timer: NodeJS.Timeout | undefined;
+    let timer: ReturnType<typeof setTimeout> | undefined;
     const touch = (): void => {
       clearTimeout(timer);
       timer = setTimeout(() => {
@@ -207,7 +221,9 @@ export class HuggingFaceClient {
         await response.body?.cancel().catch(() => undefined);
         throw this.#statusError(response, url);
       }
-      const declared = response.headers.get("content-length");
+      // With `follow` (a browser) a transparently decoded body may hide its content-encoding, so the declared
+      // length is only trusted under `manual`.
+      const declared = this.#redirect === "manual" ? response.headers.get("content-length") : null;
       if (declared !== null && !response.headers.has("content-encoding") && Number(declared) !== file.size) {
         await response.body?.cancel().catch(() => undefined);
         throw new HuggingFaceError(
@@ -218,12 +234,19 @@ export class HuggingFaceClient {
       if (response.body === null) {
         throw new HuggingFaceError(`empty response body for ${url}`, { retryable: true });
       }
-      const hash = createHash("sha256");
+      const hash = await platform.createSha256();
       let received = 0;
-      const output = await open(partial, constants.O_WRONLY | constants.O_CREAT | constants.O_TRUNC, 0o644);
+      const output = await platform.fs.open(partial, "write-truncate");
+      // A reader loop rather than `for await`: Safari's response streams are not async iterable.
+      const reader = response.body.getReader();
       try {
-        for await (const chunk of response.body as unknown as AsyncIterable<Uint8Array>) {
+        for (;;) {
+          const { done, value: chunk } = await reader.read();
+          if (done) {
+            break;
+          }
           touch();
+          const position = received;
           received += chunk.length;
           if (received > file.size) {
             throw new HuggingFaceError(`${file.path} exceeds the pinned size of ${file.size} bytes`, { retryable: false });
@@ -231,7 +254,7 @@ export class HuggingFaceClient {
           hash.update(chunk);
           let written = 0;
           while (written < chunk.length) {
-            written += (await output.write(chunk, written, chunk.length - written)).bytesWritten;
+            written += (await output.write(chunk, written, chunk.length - written, position + written)).bytesWritten;
           }
           context.onProgress?.({
             file: file.path,
@@ -243,6 +266,8 @@ export class HuggingFaceClient {
         }
         await output.sync();
       } finally {
+        // Releases the connection when the loop stopped early (as leaving a `for await` loop does).
+        await reader.cancel().catch(() => undefined);
         await output.close();
       }
       if (received !== file.size) {
@@ -250,14 +275,14 @@ export class HuggingFaceClient {
           retryable: false,
         });
       }
-      const digest = hash.digest("hex");
+      const digest = hash.digest();
       if (digest !== file.sha256) {
         throw new HuggingFaceError(
           `${file.path} failed verification: sha256 ${digest} does not match the pinned ${file.sha256}`,
           { retryable: false },
         );
       }
-      await rename(partial, destination);
+      await platform.fs.rename(partial, destination);
     } catch (error) {
       if (stalled && !context.signal?.aborted) {
         throw new HuggingFaceError(`no data received for ${this.#idleTimeoutMs} ms fetching ${url}`, { retryable: true });
@@ -280,7 +305,7 @@ export class HuggingFaceClient {
     const total = files.reduce((sum, file) => sum + file.size, 0);
     let base = 0;
     for (const file of files) {
-      await this.downloadFile(repository, revision, file, join(directory, file.path), {
+      await this.downloadFile(repository, revision, file, platform.join(directory, file.path), {
         ...context,
         baseBytes: base,
         totalBytes: total,

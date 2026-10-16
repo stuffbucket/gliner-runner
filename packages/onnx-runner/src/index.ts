@@ -9,6 +9,14 @@ export { API_VERSION } from "./openapi.js";
 export { minimumMemoryBytes } from "./resources.js";
 export { MAX_MODEL_IDLE_TTL_SECONDS, Runtime, type LoadedState, type RuntimeConfig, type RuntimeOptions } from "./runtime.js";
 export { ModelWorker, batchKey, type WorkerOptions } from "./scheduler.js";
+export {
+  createRunnerHandler,
+  type HandlerSettings,
+  type RunnerHandler,
+  type RunnerHandlerOptions,
+  type RunnerReply,
+  type RunnerRequest,
+} from "./handler.js";
 export { createServer, type RunnerServer, type ServerOptions } from "./server.js";
 export { defaultSettings, resolveSettings, type Settings } from "./settings.js";
 export { stringifyWire } from "./wire.js";

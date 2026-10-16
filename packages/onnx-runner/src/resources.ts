@@ -1,15 +1,15 @@
-import { totalmem } from "node:os";
+import { platform } from "#platform";
 
 import type { Precision } from "./contracts.js";
 
 export const MIN_MEMORY_LIMIT_BYTES = 512 * 1024 ** 2;
 
 export function physicalMemoryBytes(): number {
-  return totalmem();
+  return platform.physicalMemoryBytes();
 }
 
 export function processRssBytes(): number {
-  return process.memoryUsage.rss();
+  return platform.processRssBytes();
 }
 
 export function defaultMemoryLimitBytes(totalBytes: number = physicalMemoryBytes()): number {

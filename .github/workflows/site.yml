@@ -11,8 +11,10 @@ on:
       - docs/**
       - benchmark-results/**
       - release/**
-      - packages/onnx-runner/src/catalog.ts
+      - packages/onnx-runner/src/**
+      - packages/onnx-runner/package.json
       - packages/onnx-runner/templates/**
+      - packages/onnx-runner-web/**
       - src/gliner_runner/model_inventory.py
       - pnpm-lock.yaml
       - .github/workflows/site.yml

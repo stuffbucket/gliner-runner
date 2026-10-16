@@ -240,6 +240,35 @@ apply the next time `serve` starts.
 `GLINER_RUNNER_CORS_ORIGINS=http://localhost:5173,https://app.example.com`
 replaces the saved list for that run; the flag wins over the variable.
 
+### Browser playground
+
+`gliner-runner playground [--port 8090] [--model decide-340m] [--yes] [--no-open] [--site <url>]`
+connects the [hosted playground](https://stuffbucket.github.io/gliner-runner/playground/)
+to this computer in one step:
+
+1. it adds the playground's origin to the saved CORS list (as `cors add` does);
+2. it reuses a runner already serving on `--port` that allows that origin (a
+   `GET /healthz` with an `Origin` header), or starts one in this process: on
+   `--port`, or on the next free port when that port is taken by another
+   program or by a runner started before the origin was allowed;
+3. if the model is not installed, it asks (or takes `--yes`) and installs it
+   through that runner's `POST /v1/models/{id}/downloads`, so a reused runner's
+   own models directory is used;
+4. it prints `<site>?mode=local&runner=http://127.0.0.1:<port>` on stdout and
+   opens it with `open`, `xdg-open` or `start` (`--no-open` only prints it).
+
+A runner started this way serves until Ctrl+C; when an existing one was reused
+the command exits. Without a terminal and without `--yes` it refuses to download
+and exits 1. `install.sh --playground [options]` runs it after installing, or
+right away with a `gliner-runner` already on `PATH` that has the command.
+
+The playground can also run the runner inside the page: the browser build
+(`packages/onnx-runner-web`) hosts the same request handler, catalog, installer
+and ONNX backend in a Web Worker, with the origin private file system for
+storage and onnxruntime-web (WebGPU, else WASM) for inference. It offers
+`decide-340m` only and downloads its pinned files from Hugging Face with
+redirects followed by the browser (no token).
+
 ### Offline snapshot discovery
 
 Before downloading, `install`, download jobs, and auto-download look for a local
