@@ -127,7 +127,7 @@ const motion = (name, fallback) =>
 function Answer({ answer, depth }) {
   const ms = (value) => (value < 10 ? value.toFixed(1) : Math.round(value));
   const common = {
-    className: `answer-card pg-answer${answer.kind === "verdict" ? " pg-verdict" : ""}${depth === 0 && answer.fresh ? " pg-enter" : ""}`,
+    className: `answer-card pg-answer${answer.kind === "verdict" ? " pg-verdict" : ""}`,
     "data-id": answer.id,
     style: { opacity: FADE_PER_STEP ** depth },
     "aria-hidden": depth > 0 ? "true" : undefined,
@@ -186,8 +186,9 @@ function Answer({ answer, depth }) {
 }
 
 /**
- * Newest answer on top. When a card arrives the others slide down to their new places (measured before and after
- * the update and animated between, so the move follows the shared easing) and fade by one step.
+ * The answers from the card being looked at down to the oldest. When the cards change, the ones that stay slide to
+ * their new places (measured before and after the update and animated between, so the move follows the shared
+ * easing) and fade by a step, and a card that appears (a new answer, or a newer one shown again) eases in at the top.
  */
 function AnswerStack({ answers, game }) {
   const list = useRef(null);
@@ -195,15 +196,19 @@ function AnswerStack({ answers, game }) {
   useLayoutEffect(() => {
     const duration = parseFloat(motion("--duration-move", "420ms"));
     const easing = motion("--ease-out", "ease-out");
+    const seen = new Map();
     for (const node of list.current?.children ?? []) {
       const id = node.dataset.id;
       const top = node.offsetTop;
       const before = tops.current.get(id);
-      if (before !== undefined && before !== top && duration > 0) {
+      if (duration > 0 && before === undefined) {
+        node.animate([{ opacity: 0, transform: "translateY(-0.75rem) scale(0.985)" }], { duration, easing });
+      } else if (duration > 0 && before !== top) {
         node.animate([{ transform: `translateY(${before - top}px)` }, { transform: "none" }], { duration, easing });
       }
-      tops.current.set(id, top);
+      seen.set(id, top);
     }
+    tops.current = seen;
   }, [answers]);
 
   if (answers.length === 0) {
@@ -234,6 +239,8 @@ function Workspace({ transport, models, onWarm }) {
   const [answers, setAnswers] = useState([]);
   const [error, setError] = useState("");
   const [game, setGame] = useState(null);
+  /** How many newer cards sit above the one being looked at (0: the newest). */
+  const [back, setBack] = useState(0);
   const next = useRef(1);
   /** Settles once the background load of the current model has finished (whatever its outcome). */
   const loaded = useRef(Promise.resolve());
@@ -251,12 +258,11 @@ function Workspace({ transport, models, onWarm }) {
     };
   }, [model]);
 
-  /** Puts a card on top of the stack; returns its id. */
+  /** Puts a card on top of the stack; returns its id. Someone looking back through older cards stays on the same one. */
   const push = (card) => {
     const id = String(next.current++);
-    setAnswers((previous) =>
-      [{ id, fresh: true, ...card }, ...previous.map((old) => ({ ...old, fresh: false }))].slice(0, STACK_LIMIT),
-    );
+    setAnswers((previous) => [{ id, ...card }, ...previous].slice(0, STACK_LIMIT));
+    setBack((newer) => (newer > 0 ? newer + 1 : 0));
     return id;
   };
 
@@ -391,6 +397,8 @@ function Workspace({ transport, models, onWarm }) {
     }
   };
   const shortcut = MAC ? "Meta+Enter" : "Control+Enter";
+  // The card on top of the stack (it stays put when cards beyond the limit are dropped).
+  const shown = Math.min(back, Math.max(answers.length - 1, 0));
 
   return (
     <div className="pg-workspace" onKeyDown={onKeyDown}>
@@ -496,8 +504,17 @@ function Workspace({ transport, models, onWarm }) {
         </>
       )}
       {error && <p className="pg-error pg-message">{error}</p>}
+      {answers.length > 0 && (
+        <div className="pg-history" role="group" aria-label="Answer history">
+          <button type="button" className="btn btn-sm pg-history-step" aria-label="Older answer" title="Older"
+            disabled={shown >= answers.length - 1} onClick={() => setBack(shown + 1)}>‹</button>
+          <span className="pg-history-count">{answers.length - shown} of {answers.length}</span>
+          <button type="button" className="btn btn-sm pg-history-step" aria-label="Newer answer" title="Newer"
+            disabled={shown === 0} onClick={() => setBack(shown - 1)}>›</button>
+        </div>
+      )}
       <section className="pg-stack" aria-live="polite" aria-label="Answers">
-        <AnswerStack answers={answers} game={game !== null} />
+        <AnswerStack answers={answers.slice(shown)} game={game !== null} />
       </section>
     </div>
   );
