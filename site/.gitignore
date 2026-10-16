@@ -6,3 +6,4 @@ src/content/docs/models/
 src/content/docs/docs/
 src/content/docs/evaluation/
 public/runner-templates/
+src/data/twenty-questions.json

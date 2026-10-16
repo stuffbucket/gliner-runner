@@ -1,17 +1,8 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { HttpTransport, INSTALL_PEAK_BYTES, WorkerTransport } from "@gliner-runner/onnx-runner-web/client";
 import "./Playground.css";
-import {
-  MAX_QUESTIONS,
-  WRONG_GUESSES_PER_GROUP,
-  guessQuestion,
-  isGuess,
-  key,
-  newGame,
-  openOptions,
-  phrase,
-  question,
-} from "./twentyQuestions.js";
+import twenty from "../data/twenty-questions.json";
+import { MAX_QUESTIONS, afterClassification, afterReply, guessQuestion, newGame, nextStep, startGuess, verdict } from "./twentyQuestions.js";
 
 const BASE = "/gliner-runner";
 const DEFAULT_ADDRESS = "http://127.0.0.1:8090";
@@ -149,6 +140,17 @@ function Answer({ answer, depth }) {
       </article>
     );
   }
+  if (answer.kind === "guess") {
+    return (
+      <article {...common}>
+        <p className="pg-question">{answer.question}</p>
+        <p className="pg-guess-text">
+          {guessQuestion(answer.label)}
+          {answer.reply && <span className={`pg-reply pg-reply-${answer.reply}`}>{answer.reply === "yes" ? "Yes" : "No"}</span>}
+        </p>
+      </article>
+    );
+  }
   const ranked = Object.entries(answer.scores).sort((a, b) => b[1] - a[1]);
   return (
     <article {...common}>
@@ -219,9 +221,6 @@ function AnswerStack({ answers }) {
   );
 }
 
-/** A copy of a game that can be changed without touching React state. */
-const copyGame = (game) => ({ ...game, excluded: new Set(game.excluded), wrong: new Map(game.wrong) });
-
 /**
  * Text, labels and the answers; the same for both runners. The model is loaded in the background as soon as the
  * workspace appears (and whenever another model is chosen), so the first Classify is as fast as the rest.
@@ -236,27 +235,34 @@ function Workspace({ transport, models, onWarm }) {
   const [error, setError] = useState("");
   const [game, setGame] = useState(null);
   const next = useRef(1);
+  /** Settles once the background load of the current model has finished (whatever its outcome). */
+  const loaded = useRef(Promise.resolve());
 
   useEffect(() => {
     let current = true;
     onWarm("loading", model);
-    transport.request("POST", "/v1/infer", request(model, "Hello.", ["greeting", "question"], false)).then(
+    const warm = transport.request("POST", "/v1/infer", request(model, "Hello.", ["greeting", "question"], false)).then(
       (reply) => current && onWarm(reply.status === 200 ? "ready" : "failed", model),
       () => current && onWarm("failed", model),
     );
+    loaded.current = warm;
     return () => {
       current = false;
     };
   }, [model]);
 
-  const push = (card) =>
+  /** Puts a card on top of the stack; returns its id. */
+  const push = (card) => {
+    const id = String(next.current++);
     setAnswers((previous) =>
-      [{ id: String(next.current++), fresh: true, ...card }, ...previous.map((old) => ({ ...old, fresh: false }))].slice(0, STACK_LIMIT),
+      [{ id, fresh: true, ...card }, ...previous.map((old) => ({ ...old, fresh: false }))].slice(0, STACK_LIMIT),
     );
+    return id;
+  };
 
   const pick = (example) => {
     if (example.game) {
-      setGame(newGame());
+      setGame(newGame(twenty.tree, twenty.sample));
       return;
     }
     setGame(null);
@@ -269,6 +275,8 @@ function Workspace({ transport, models, onWarm }) {
   async function run({ text, labels: list, several, descriptions, question }) {
     setError("");
     setBusy(true);
+    // A request sent while the model is still loading waits for it; that wait is not the classification's time.
+    await loaded.current;
     const started = performance.now();
     try {
       const reply = await transport.request("POST", "/v1/infer", request(model, text, list, several, descriptions));
@@ -301,66 +309,41 @@ function Workspace({ transport, models, onWarm }) {
     run({ text, labels: list, several });
   }
 
-  /** One question of 20 questions: classify the clues against the options still open at this point. */
+  const guessCard = useRef(undefined);
+
+  /** If the game's next move is a guess, puts it on the stack and asks it (a guess counts as a question). */
+  function advance(state) {
+    if (state.phase !== "asking") return state;
+    const step = nextStep(state);
+    if (step?.kind !== "guess") return state;
+    guessCard.current = push({ kind: "guess", question: `Question ${step.number} of ${MAX_QUESTIONS}`, label: step.label, model });
+    return startGuess(state, step);
+  }
+
+  /** One question of 20 questions: classify the clues at the most likely unexplored level (see twentyQuestions.js). */
   async function ask() {
     if (busy || game?.phase !== "asking" || !game.clues.trim()) return;
-    const state = copyGame(game);
-    const { path, options } = openOptions(state);
-    const number = state.asked + 1;
-    const descriptions = Object.fromEntries(options.filter((o) => o.description).map((o) => [o.label, o.description]));
-    const answer = await run({
-      text: state.clues,
-      labels: options.map((o) => o.label),
-      descriptions: Object.keys(descriptions).length > 0 ? descriptions : undefined,
-      question: `Question ${number} of ${MAX_QUESTIONS} · ${question(options)}`,
-    });
-    if (answer === undefined) return;
-    state.asked = number;
-    state.path = path;
-    const chosen = options.find((option) => option.label === answer.picked[0]) ?? options[0];
-    if (isGuess(chosen)) {
-      state.phase = "guessing";
-      state.guess = chosen.label;
-      state.note = "";
-    } else {
-      state.path = [...path, chosen.label];
-      state.note = `Narrowed down to ${chosen.label}.`;
-      if (state.asked >= MAX_QUESTIONS) finish(state, false);
+    const step = nextStep(game);
+    if (step.kind === "guess") {
+      setGame(advance(game));
+      return;
     }
+    const answer = await run({ text: game.clues, labels: step.labels, descriptions: step.descriptions, question: step.text });
+    if (answer === undefined) return;
+    let state = afterClassification(game, step, answer.scores);
+    if (state.phase === "lost") push({ kind: "verdict", message: verdict(state), model });
+    else state = advance(state);
     setGame(state);
   }
 
-  function finish(state, won) {
-    state.phase = won ? "won" : "lost";
-    const message = won
-      ? `Got it in ${state.asked} question${state.asked === 1 ? "" : "s"}: it's ${phrase(state.guess)}!`
-      : `You win: ${MAX_QUESTIONS} questions and it still doesn't know. What was it?`;
-    push({ kind: "verdict", message, model });
-  }
-
-  /** The visitor's answer to a guess. */
+  /** The player's answer to a guess. */
   function reply(yes) {
     if (game?.phase !== "guessing") return;
-    const state = copyGame(game);
-    if (yes) {
-      finish(state, true);
-      setGame(state);
-      return;
-    }
-    state.excluded.add(key([...state.path, state.guess]));
-    const group = key(state.path);
-    const wrong = (state.wrong.get(group) ?? 0) + 1;
-    state.wrong.set(group, wrong);
-    state.note = `Not ${phrase(state.guess)}.`;
-    if (wrong >= WRONG_GUESSES_PER_GROUP && state.path.length > 0) {
-      // Two misses in one group: the group itself was probably the wrong turn.
-      state.excluded.add(group);
-      state.note = `Maybe it isn't a kind of ${state.path.at(-1)} after all.`;
-      state.path = state.path.slice(0, -1);
-    }
-    state.phase = "asking";
-    state.guess = undefined;
-    if (state.asked >= MAX_QUESTIONS) finish(state, false);
+    const card = guessCard.current;
+    setAnswers((previous) => previous.map((old) => (old.id === card ? { ...old, reply: yes ? "yes" : "no" } : old)));
+    let state = afterReply(game, yes);
+    if (state.phase === "won" || state.phase === "lost") push({ kind: "verdict", message: verdict(state), model });
+    else state = advance(state);
     setGame(state);
   }
 
@@ -372,7 +355,7 @@ function Workspace({ transport, models, onWarm }) {
     }
   };
   const shortcut = MAC ? "Meta+Enter" : "Control+Enter";
-  const upcoming = game ? openOptions(copyGame(game)).options.map((o) => o.label) : [];
+  const upcoming = game?.phase === "asking" ? nextStep(game)?.labels ?? [] : [];
 
   return (
     <div className="pg-workspace" onKeyDown={onKeyDown}>
@@ -430,7 +413,7 @@ function Workspace({ transport, models, onWarm }) {
               </>
             )}
             {(game.phase === "won" || game.phase === "lost") && (
-              <button type="button" className="btn btn-primary" onClick={() => setGame(newGame(game.clues))}>Play again</button>
+              <button type="button" className="btn btn-primary" onClick={() => setGame(newGame(twenty.tree, game.clues))}>Play again</button>
             )}
             <button type="button" className="btn btn-link" onClick={() => pick(EXAMPLES[0])}>Leave the game</button>
           </div>

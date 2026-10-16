@@ -6,15 +6,13 @@
 // It starts the built runner (packages/onnx-runner/dist), classifies every entry exactly as the matching
 // `gliner-runner classify` command on its example page does, and writes site/src/data/gallery.json.
 
-import { spawn } from "node:child_process";
-import { mkdtempSync, writeFileSync } from "node:fs";
-import { createServer } from "node:net";
-import { tmpdir } from "node:os";
+import { writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { classify, startRunner } from "./runner.mjs";
+
 const here = dirname(fileURLToPath(import.meta.url));
-const root = resolve(here, "../..");
 const OUTPUT = join(here, "../src/data/gallery.json");
 
 const SUPPORT = {
@@ -97,48 +95,21 @@ export const ENTRIES = [
   },
 ];
 
-const freePort = () =>
-  new Promise((done) => {
-    const probe = createServer();
-    probe.listen(0, "127.0.0.1", () => {
-      const { port } = probe.address();
-      probe.close(() => done(port));
-    });
-  });
-
 async function main() {
-  const port = await freePort();
-  const runner = spawn(process.execPath, [join(root, "packages/onnx-runner/dist/src/cli.js"), "serve", "--port", String(port)], {
-    env: { ...process.env, XDG_CONFIG_HOME: mkdtempSync(join(tmpdir(), "gallery-config-")) },
-    stdio: ["ignore", "ignore", "inherit"],
-  });
-  const base = `http://127.0.0.1:${port}`;
+  const runner = await startRunner();
   try {
-    for (let tries = 0; !(await fetch(`${base}/healthz`).then((r) => r.ok, () => false)); tries += 1) {
-      if (tries > 200) throw new Error("the runner did not start");
-      await new Promise((r) => setTimeout(r, 50));
-    }
-    const versions = new Map((await (await fetch(`${base}/v1/models`)).json()).models.map((m) => [m.model_id, m.pinned_revision]));
+    const versions = new Map((await (await fetch(`${runner.base}/v1/models`)).json()).models.map((m) => [m.model_id, m.pinned_revision]));
     const entries = [];
     for (const entry of ENTRIES) {
       const threshold = entry.threshold ?? 0.5;
-      const task = {
+      const { value, probabilities } = await classify(runner.base, {
+        model: entry.model,
+        text: entry.text,
         labels: entry.labels,
-        ...(entry.descriptions === undefined ? {} : { label_descriptions: entry.descriptions }),
-        ...(entry.multi ? { min_labels: 0, max_labels: null } : {}),
+        descriptions: entry.descriptions,
+        several: entry.multi === true,
         threshold,
-      };
-      const reply = await fetch(`${base}/v1/infer`, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          model: entry.model, backend: "onnx", precision: "fp32", operation: "classify",
-          text: entry.text, schema: { kind: "classification", tasks: { category: task } }, options: { threshold },
-        }),
       });
-      const body = await reply.json();
-      if (!reply.ok) throw new Error(`${entry.example}: ${JSON.stringify(body.detail)}`);
-      const { value, probabilities } = body.output.category;
       entries.push({
         ...entry,
         multi: entry.multi === true,
@@ -152,7 +123,7 @@ async function main() {
     writeFileSync(OUTPUT, `${JSON.stringify({ generated_by: "site/scripts/gallery.mjs", entries }, null, 2)}\n`);
     console.log(`wrote ${entries.length} entries to ${OUTPUT}`);
   } finally {
-    runner.kill("SIGTERM");
+    runner.stop();
   }
 }
 

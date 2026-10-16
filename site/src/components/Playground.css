@@ -316,3 +316,26 @@
   border-color: var(--accent);
   color: var(--accent);
 }
+.pg-guess-text {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--text);
+  font-size: var(--text-xl);
+  font-weight: 600;
+  line-height: var(--leading-snug);
+}
+.pg-reply {
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: var(--text-sm);
+}
+.pg-reply-yes {
+  background: color-mix(in srgb, var(--good) 18%, transparent);
+  color: var(--good);
+}
+.pg-reply-no {
+  background: var(--surface-2);
+  color: var(--muted);
+}

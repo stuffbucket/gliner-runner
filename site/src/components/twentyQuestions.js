@@ -1,65 +1,54 @@
-// "20 questions" for a classifier: the visitor describes something without naming it, and each question is one
-// classification of those clues. The labels start with the classic "animal, vegetable or mineral?" and narrow down
-// this tree until the last level, where every label is a guess.
+// "20 questions" for a classifier: the player describes something without naming it. The game asks two kinds of
+// question, each counting toward the 20:
+//   - a classification of the clues against the options at one level of the tree in
+//     site/src/data/twenty-questions.json ("Is it an animal, a vegetable or a mineral?", then a group, then the
+//     things in that group), which tells it how likely each option is;
+//   - a guess ("Is it a zebra?"), answered yes or no by the player.
+// It plays best-first: every option it has scored carries the probability of the whole path to it
+// (P(animal) x P(mammal | animal) x P(zebra | mammal)), and each turn it either guesses the most likely thing or
+// opens up the most likely group it has not looked inside yet. A wrong guess only removes that one thing, so the
+// game moves on to another group as soon as that group is more likely than what is left of the current one.
+// The functions are pure, so the playground and the simulator (site/scripts/twenty-questions/simulate.mjs) play
+// exactly the same game.
 
 export const MAX_QUESTIONS = 20;
-/** After this many wrong guesses in one group, the game decides the group itself was wrong and goes back up. */
-export const WRONG_GUESSES_PER_GROUP = 2;
-export const SAMPLE_CLUES = "It is black and white with stripes, and it lives in herds on the African grassland.";
 
-const group = (label, description, things) => ({ label, description, children: things.map((thing) => ({ label: thing })) });
-
-export const TREE = {
-  label: "anything",
-  children: [
-    {
-      label: "animal",
-      description: "A living creature",
-      children: [
-        group("mammal", "A furry animal that feeds its young milk", ["dog", "cat", "horse", "cow", "elephant", "lion", "zebra", "giraffe", "whale", "bat", "rabbit", "mouse", "bear", "monkey"]),
-        group("bird", "An animal with feathers and wings", ["eagle", "penguin", "parrot", "owl", "chicken", "duck", "flamingo"]),
-        group("fish", "An animal that lives and breathes in water", ["shark", "goldfish", "salmon", "clownfish"]),
-        group("reptile or amphibian", "A scaly or slimy animal such as a snake, lizard or frog", ["snake", "turtle", "crocodile", "frog", "lizard"]),
-        group("insect or bug", "A small creature with six or eight legs", ["bee", "butterfly", "ant", "spider", "ladybug", "mosquito"]),
-      ],
-    },
-    {
-      label: "vegetable",
-      description: "A plant, or something that grows on a plant or is made from one",
-      children: [
-        group("fruit", "A sweet part of a plant that people eat", ["apple", "banana", "orange", "strawberry", "grape", "watermelon", "lemon", "pineapple"]),
-        group("vegetable to eat", "A savoury plant food such as a root or a leaf", ["carrot", "potato", "tomato", "onion", "broccoli", "pumpkin", "lettuce"]),
-        group("tree or flower", "A plant that grows in the ground", ["oak tree", "rose", "sunflower", "cactus", "palm tree", "tulip"]),
-        group("grain, nut or bean", "Seeds that people eat or drink", ["rice", "wheat", "peanut", "coffee", "chocolate", "popcorn"]),
-      ],
-    },
-    {
-      label: "mineral",
-      description: "Something that is not alive: an object, a material, a machine or a place",
-      children: [
-        group("vehicle", "Something that carries people or things", ["car", "bicycle", "airplane", "train", "boat", "rocket", "bus"]),
-        group("tool or household object", "Something people use at home or at work", ["hammer", "scissors", "chair", "table", "lamp", "key", "umbrella", "clock"]),
-        group("electronic device", "A machine that runs on electricity", ["phone", "computer", "television", "camera", "headphones", "robot"]),
-        group("musical instrument", "Something people play to make music", ["piano", "guitar", "drum", "violin", "trumpet"]),
-        group("clothing", "Something people wear", ["shirt", "shoe", "hat", "sock", "jacket"]),
-        group("natural material or place", "Something found in nature that is not alive", ["rock", "diamond", "gold", "sand", "volcano", "mountain", "ocean", "moon"]),
-      ],
-    },
-  ],
-};
+/**
+ * Search settings, tuned with site/scripts/twenty-questions/tune.mjs:
+ * - `discount`: an unexplored group is worth its probability times this when compared with a guess, because
+ *   opening it costs a question and still leaves a guess to make;
+ * - `temperature`: each classification's probabilities are raised to 1/temperature and renormalised (above 1
+ *   trusts the classifier's first choice less).
+ */
+export const TUNING = { discount: 1, temperature: 1 };
 
 /** Things that read better without "a" ("Is it gold?"). */
-const MASS = new Set(["gold", "sand", "rice", "wheat", "coffee", "chocolate", "popcorn", "lettuce", "broccoli"]);
-const article = (label) => (MASS.has(label) ? "" : /^[aeiou]/.test(label) ? "an " : "a ");
-/** "a zebra", "an owl", "gold". */
+const MASS = new Set([
+  "gold", "silver", "iron", "copper", "sand", "rice", "wheat", "coffee", "tea", "chocolate", "popcorn", "lettuce",
+  "broccoli", "spinach", "garlic", "ginger", "cinnamon", "pepper", "corn", "bread", "pasta", "sugar", "cotton",
+  "paper", "wood", "grass", "moss", "seaweed", "glass", "plastic", "water", "ice", "snow", "rain", "lightning",
+  "fire", "oil", "rubber", "salt", "chalk", "clay", "steel", "honey", "cereal", "oatmeal", "flour", "mint", "basil",
+  "lava", "fog", "thunder", "wind", "money", "jewelry", "lego", "bamboo", "celery", "cabbage", "cauliflower",
+  "asparagus", "parsley", "oregano", "thyme", "rosemary", "cilantro", "dill", "nutmeg", "vanilla", "saffron",
+  "paprika", "turmeric", "maple syrup", "soy sauce", "ketchup", "peanut butter", "jam", "tofu", "oatmeal", "quinoa",
+  "barley", "oats", "lumber", "cork", "linen", "hemp", "cardboard", "rope", "orange juice", "lemonade", "cider",
+  "wine", "beer", "cocoa", "hay", "straw", "ivy", "clover", "lavender", "aluminum", "marble", "granite", "concrete",
+]);
+const PLURAL = /(fries|scissors|jeans|glasses|pants|headphones|shorts|sunglasses|binoculars|tongs|oats|beans|peas|lentils|chips|noodles|grapes|leaves)$/;
+const article = (label) => (MASS.has(label) || PLURAL.test(label) ? "" : /^[aeiou]/.test(label) ? "an " : "a ");
+
+/** "a zebra", "an owl", "gold", "french fries". */
 export const phrase = (label) => `${article(label)}${label}`;
 
-export function nodeAt(path) {
-  return path.reduce((node, label) => node.children.find((child) => child.label === label), TREE);
+const SEPARATOR = " › ";
+export const key = (path) => path.join(SEPARATOR);
+const pathOf = (nodeKey) => (nodeKey === "" ? [] : nodeKey.split(SEPARATOR));
+
+export function nodeAt(tree, path) {
+  return path.reduce((node, label) => node?.children?.find((child) => child.label === label), tree);
 }
 
 export const isGuess = (node) => node.children === undefined;
-export const key = (path) => path.join(" › ");
 
 /** "Is it an animal, a vegetable or a mineral?" */
 export function question(options) {
@@ -71,29 +60,104 @@ export function question(options) {
 export const guessQuestion = (label) => `Is it ${phrase(label)}?`;
 
 /**
- * A new game. `path` is where the next question is asked; `excluded` holds the keys of options ruled out (wrong
- * guesses and abandoned groups); `wrong` counts wrong guesses per group.
+ * A new game. `scores` holds, for every node scored so far, the probability of the path to it ("" is the root);
+ * `opened` the nodes whose children have been classified; `ruledOut` the wrong guesses.
  */
-export const newGame = (clues = SAMPLE_CLUES) => ({
+export const newGame = (tree, clues) => ({
+  tree,
   clues,
-  path: [],
-  excluded: new Set(),
-  wrong: new Map(),
+  scores: new Map([["", 1]]),
+  opened: new Set(),
+  ruledOut: new Set(),
   asked: 0,
   phase: "asking", // asking | guessing | won | lost
   guess: undefined,
   note: "",
 });
 
-/** The options still open at `path`, backing up past levels whose options are all ruled out. */
-export function openOptions(game) {
-  let path = game.path;
-  for (;;) {
-    const options = nodeAt(path).children.filter((child) => !game.excluded.has(key([...path, child.label])));
-    if (options.length > 0 || path.length === 0) {
-      return { path, options };
-    }
-    game.excluded.add(key(path));
-    path = path.slice(0, -1);
+const copy = (game) => ({
+  ...game,
+  scores: new Map(game.scores),
+  opened: new Set(game.opened),
+  ruledOut: new Set(game.ruledOut),
+});
+
+/**
+ * What to do next: `{ kind: "guess", label, nodeKey, text }` for the most likely thing, or
+ * `{ kind: "classify", path, options, labels, descriptions, text }` to open the most likely unexplored group.
+ */
+export function nextStep(game, tuning = TUNING) {
+  let best;
+  for (const [nodeKey, score] of game.scores) {
+    if (game.opened.has(nodeKey) || game.ruledOut.has(nodeKey)) continue;
+    const value = isGuess(nodeAt(game.tree, pathOf(nodeKey))) ? score : score * tuning.discount;
+    if (best === undefined || value > best.value) best = { nodeKey, value };
   }
+  if (best === undefined) return undefined;
+  const path = pathOf(best.nodeKey);
+  const node = nodeAt(game.tree, path);
+  const number = game.asked + 1;
+  if (isGuess(node)) {
+    return { kind: "guess", nodeKey: best.nodeKey, label: node.label, number, text: `Question ${number} of ${MAX_QUESTIONS} · ${guessQuestion(node.label)}` };
+  }
+  const options = node.children;
+  const described = options.filter((option) => option.description);
+  return {
+    kind: "classify",
+    path,
+    nodeKey: best.nodeKey,
+    options,
+    number,
+    labels: options.map((option) => option.label),
+    descriptions: described.length > 0 ? Object.fromEntries(described.map((o) => [o.label, o.description])) : undefined,
+    text: `Question ${number} of ${MAX_QUESTIONS} · ${question(options)}`,
+  };
+}
+
+/** The game after a classification: each option gets the probability of the path to it. */
+export function afterClassification(game, step, probabilities, tuning = TUNING) {
+  const state = copy(game);
+  state.asked = step.number;
+  state.opened.add(step.nodeKey);
+  const parent = game.scores.get(step.nodeKey) ?? 0;
+  const tempered = step.options.map((option) => (probabilities[option.label] ?? 0) ** (1 / tuning.temperature));
+  const total = tempered.reduce((sum, value) => sum + value, 0) || 1;
+  step.options.forEach((option, index) => {
+    state.scores.set(key([...step.path, option.label]), (parent * (tempered[index] ?? 0)) / total);
+  });
+  const top = [...step.options].sort((a, b) => (probabilities[b.label] ?? 0) - (probabilities[a.label] ?? 0))[0];
+  state.note = top === undefined ? "" : isGuess(top) ? "" : `Most likely ${phrase(top.label)}.`;
+  if (state.asked >= MAX_QUESTIONS) state.phase = "lost";
+  return state;
+}
+
+/** The game while it asks the guess `step` (the guess counts as a question). */
+export function startGuess(game, step) {
+  const state = copy(game);
+  state.asked = step.number;
+  state.phase = "guessing";
+  state.guess = step.label;
+  state.guessKey = step.nodeKey;
+  return state;
+}
+
+/** The game after the player answered the current guess. */
+export function afterReply(game, yes) {
+  const state = copy(game);
+  if (yes) {
+    state.phase = "won";
+    return state;
+  }
+  state.ruledOut.add(game.guessKey);
+  state.note = `Not ${phrase(game.guess)}.`;
+  state.guess = undefined;
+  state.guessKey = undefined;
+  state.phase = state.asked >= MAX_QUESTIONS || nextStep(state, TUNING) === undefined ? "lost" : "asking";
+  return state;
+}
+
+export function verdict(game) {
+  return game.phase === "won"
+    ? `Got it in ${game.asked} question${game.asked === 1 ? "" : "s"}: it's ${phrase(game.guess)}!`
+    : `You win: ${MAX_QUESTIONS} questions and it still doesn't know. What was it?`;
 }
