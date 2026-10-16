@@ -1,6 +1,17 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { HttpTransport, INSTALL_PEAK_BYTES, WorkerTransport } from "@gliner-runner/onnx-runner-web/client";
 import "./Playground.css";
+import {
+  MAX_QUESTIONS,
+  WRONG_GUESSES_PER_GROUP,
+  guessQuestion,
+  isGuess,
+  key,
+  newGame,
+  openOptions,
+  phrase,
+  question,
+} from "./twentyQuestions.js";
 
 const BASE = "/gliner-runner";
 const DEFAULT_ADDRESS = "http://127.0.0.1:8090";
@@ -19,6 +30,7 @@ const EXAMPLES = [
   { name: "Review", text: "The battery lasts all day, but the screen scratches far too easily.", labels: "positive, negative, mixed" },
   { name: "Topics", text: "I will pay my rent on Friday, and then I will bake bread.", labels: "weather, cooking, sports, money", several: true },
   { name: "Urgency", text: "The production database is down and customers cannot log in.", labels: "urgent, can wait" },
+  { name: "20 questions", game: true },
 ];
 
 const stored = (key, fallback) => {
@@ -45,9 +57,18 @@ const parse = (reply) => {
 };
 const message = (data, fallback) =>
   typeof data.detail === "string" ? data.detail : (data.detail?.message ?? fallback);
-const request = (model, text, labels, several) => ({
+const request = (model, text, labels, several, descriptions) => ({
   model, backend: "onnx", precision: "fp32", operation: "classify", text,
-  schema: { kind: "classification", tasks: { category: { labels, ...(several ? { min_labels: 0, max_labels: null } : {}) } } },
+  schema: {
+    kind: "classification",
+    tasks: {
+      category: {
+        labels,
+        ...(descriptions ? { label_descriptions: descriptions } : {}),
+        ...(several ? { min_labels: 0, max_labels: null } : {}),
+      },
+    },
+  },
 });
 
 /** Downloads a model through the runner's own download API and waits for the job. */
@@ -103,22 +124,35 @@ function Card({ title, children }) {
 /** How many answers the stack keeps; older ones are dropped. */
 const STACK_LIMIT = 50;
 /** Each step down the stack keeps this much of a card's opacity. */
-const FADE_PER_STEP = 0.75;
+const FADE_PER_STEP = 0.65;
 
 const motion = (name, fallback) =>
   getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
 
-/** The answer as a standalone card: what was sent, which labels fit, every score, and how it ran. */
+/**
+ * The answer as a standalone card: the question it answered (in a game), what was sent, which labels fit, every
+ * score, and how it ran. A verdict card closes a game.
+ */
 function Answer({ answer, depth }) {
-  const ranked = Object.entries(answer.scores).sort((a, b) => b[1] - a[1]);
   const ms = (value) => (value < 10 ? value.toFixed(1) : Math.round(value));
+  const common = {
+    className: `answer-card pg-answer${answer.kind === "verdict" ? " pg-verdict" : ""}${depth === 0 && answer.fresh ? " pg-enter" : ""}`,
+    "data-id": answer.id,
+    style: { opacity: FADE_PER_STEP ** depth },
+    "aria-hidden": depth > 0 ? "true" : undefined,
+  };
+  if (answer.kind === "verdict") {
+    return (
+      <article {...common}>
+        <p className="pg-question">20 questions</p>
+        <p className="pg-verdict-text">{answer.message}</p>
+      </article>
+    );
+  }
+  const ranked = Object.entries(answer.scores).sort((a, b) => b[1] - a[1]);
   return (
-    <article
-      className={`answer-card pg-answer${depth === 0 && answer.fresh ? " pg-enter" : ""}`}
-      data-id={answer.id}
-      style={{ opacity: FADE_PER_STEP ** depth }}
-      aria-hidden={depth > 0 ? "true" : undefined}
-    >
+    <article {...common}>
+      {answer.question && <p className="pg-question">{answer.question}</p>}
       <p className="answer-quote">“{answer.text}”</p>
       <p className="answer-labels">
         {answer.labels.map((label) => (
@@ -185,6 +219,9 @@ function AnswerStack({ answers }) {
   );
 }
 
+/** A copy of a game that can be changed without touching React state. */
+const copyGame = (game) => ({ ...game, excluded: new Set(game.excluded), wrong: new Map(game.wrong) });
+
 /**
  * Text, labels and the answers; the same for both runners. The model is loaded in the background as soon as the
  * workspace appears (and whenever another model is chosen), so the first Classify is as fast as the rest.
@@ -197,6 +234,7 @@ function Workspace({ transport, models, onWarm }) {
   const [busy, setBusy] = useState(false);
   const [answers, setAnswers] = useState([]);
   const [error, setError] = useState("");
+  const [game, setGame] = useState(null);
   const next = useRef(1);
 
   useEffect(() => {
@@ -211,85 +249,224 @@ function Workspace({ transport, models, onWarm }) {
     };
   }, [model]);
 
+  const push = (card) =>
+    setAnswers((previous) =>
+      [{ id: String(next.current++), fresh: true, ...card }, ...previous.map((old) => ({ ...old, fresh: false }))].slice(0, STACK_LIMIT),
+    );
+
   const pick = (example) => {
+    if (example.game) {
+      setGame(newGame());
+      return;
+    }
+    setGame(null);
     setText(example.text);
     setLabels(example.labels);
     setSeveral(example.several ?? false);
   };
 
-  async function classify() {
-    const list = labels.split(",").map((s) => s.trim()).filter(Boolean);
-    if (busy || !text.trim() || list.length === 0) return;
+  /** Classifies once and puts the answer on the stack; resolves with the answer, or nothing after an error. */
+  async function run({ text, labels: list, several, descriptions, question }) {
     setError("");
     setBusy(true);
     const started = performance.now();
     try {
-      const reply = await transport.request("POST", "/v1/infer", request(model, text, list, several));
+      const reply = await transport.request("POST", "/v1/infer", request(model, text, list, several, descriptions));
       const data = parse(reply);
       if (reply.status !== 200) {
         setError(message(data, "The runner rejected the request."));
-      } else {
-        const { value, probabilities } = data.output.category;
-        const answer = {
-          id: String(next.current++),
-          fresh: true,
-          text, labels: list, several, model,
-          picked: [value].flat().filter(Boolean),
-          scores: probabilities,
-          elapsed: performance.now() - started,
-          modelMs: data.timing?.inference_ms,
-        };
-        setAnswers((previous) => [answer, ...previous.map((old) => ({ ...old, fresh: false }))].slice(0, STACK_LIMIT));
+        return undefined;
       }
+      const { value, probabilities } = data.output.category;
+      const answer = {
+        question, text, labels: list, several, model,
+        picked: [value].flat().filter(Boolean),
+        scores: probabilities,
+        elapsed: performance.now() - started,
+        modelMs: data.timing?.inference_ms,
+      };
+      push(answer);
+      return answer;
     } catch {
       setError("Lost the connection to the runner.");
+      return undefined;
     } finally {
       setBusy(false);
     }
   }
 
+  function classify() {
+    const list = labels.split(",").map((s) => s.trim()).filter(Boolean);
+    if (busy || !text.trim() || list.length === 0) return;
+    run({ text, labels: list, several });
+  }
+
+  /** One question of 20 questions: classify the clues against the options still open at this point. */
+  async function ask() {
+    if (busy || game?.phase !== "asking" || !game.clues.trim()) return;
+    const state = copyGame(game);
+    const { path, options } = openOptions(state);
+    const number = state.asked + 1;
+    const descriptions = Object.fromEntries(options.filter((o) => o.description).map((o) => [o.label, o.description]));
+    const answer = await run({
+      text: state.clues,
+      labels: options.map((o) => o.label),
+      descriptions: Object.keys(descriptions).length > 0 ? descriptions : undefined,
+      question: `Question ${number} of ${MAX_QUESTIONS} · ${question(options)}`,
+    });
+    if (answer === undefined) return;
+    state.asked = number;
+    state.path = path;
+    const chosen = options.find((option) => option.label === answer.picked[0]) ?? options[0];
+    if (isGuess(chosen)) {
+      state.phase = "guessing";
+      state.guess = chosen.label;
+      state.note = "";
+    } else {
+      state.path = [...path, chosen.label];
+      state.note = `Narrowed down to ${chosen.label}.`;
+      if (state.asked >= MAX_QUESTIONS) finish(state, false);
+    }
+    setGame(state);
+  }
+
+  function finish(state, won) {
+    state.phase = won ? "won" : "lost";
+    const message = won
+      ? `Got it in ${state.asked} question${state.asked === 1 ? "" : "s"}: it's ${phrase(state.guess)}!`
+      : `You win: ${MAX_QUESTIONS} questions and it still doesn't know. What was it?`;
+    push({ kind: "verdict", message, model });
+  }
+
+  /** The visitor's answer to a guess. */
+  function reply(yes) {
+    if (game?.phase !== "guessing") return;
+    const state = copyGame(game);
+    if (yes) {
+      finish(state, true);
+      setGame(state);
+      return;
+    }
+    state.excluded.add(key([...state.path, state.guess]));
+    const group = key(state.path);
+    const wrong = (state.wrong.get(group) ?? 0) + 1;
+    state.wrong.set(group, wrong);
+    state.note = `Not ${phrase(state.guess)}.`;
+    if (wrong >= WRONG_GUESSES_PER_GROUP && state.path.length > 0) {
+      // Two misses in one group: the group itself was probably the wrong turn.
+      state.excluded.add(group);
+      state.note = `Maybe it isn't a kind of ${state.path.at(-1)} after all.`;
+      state.path = state.path.slice(0, -1);
+    }
+    state.phase = "asking";
+    state.guess = undefined;
+    if (state.asked >= MAX_QUESTIONS) finish(state, false);
+    setGame(state);
+  }
+
   const onKeyDown = (event) => {
     if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
       event.preventDefault();
-      classify();
+      if (game) ask();
+      else classify();
     }
   };
+  const shortcut = MAC ? "Meta+Enter" : "Control+Enter";
+  const upcoming = game ? openOptions(copyGame(game)).options.map((o) => o.label) : [];
+
   return (
     <div className="pg-workspace" onKeyDown={onKeyDown}>
       <div className="pg-examples">
         <span className="field-label">Example</span>
         {EXAMPLES.map((example) => (
-          <button type="button" key={example.name} className="btn btn-sm" onClick={() => pick(example)}>{example.name}</button>
+          <button
+            type="button"
+            key={example.name}
+            className={`btn btn-sm${example.game && game ? " pg-active" : ""}`}
+            onClick={() => pick(example)}
+          >
+            {example.name}
+          </button>
         ))}
       </div>
-      <label className="field-label pg-text-label" htmlFor="pg-text">Text</label>
-      <textarea id="pg-text" className="input pg-text" value={text} onChange={(e) => setText(e.target.value)} placeholder="Paste or type some text" />
-      <label className="field pg-labels">
-        <span className="field-label">Labels</span>
-        <input className="input" value={labels} onChange={(e) => setLabels(e.target.value)} placeholder="billing, support, shipping" />
-        <span className="field-hint">Separate labels with commas.</span>
-      </label>
-      <div className="pg-actions">
-        <label className="switch">
-          <input type="checkbox" role="switch" checked={several} onChange={(e) => setSeveral(e.target.checked)} />
-          <span className="switch-track" aria-hidden="true" />
-          Several labels can fit
-        </label>
-        {models.length > 1 && (
-          <select className="input" aria-label="Model" value={model} onChange={(e) => setModel(e.target.value)}>
-            {models.map((id) => <option key={id} value={id}>{id}</option>)}
-          </select>
-        )}
-        <button
-          type="button"
-          className="btn btn-primary pg-classify"
-          onClick={classify}
-          disabled={busy || !text.trim()}
-          aria-keyshortcuts={MAC ? "Meta+Enter" : "Control+Enter"}
-        >
-          {busy ? "Classifying…" : "Classify"} <Shortcut />
-        </button>
-      </div>
+      {game ? (
+        <>
+          <label className="field-label pg-text-label" htmlFor="pg-text">
+            Think of an animal, a plant or a thing, and describe it without naming it
+          </label>
+          <textarea
+            id="pg-text"
+            className="input pg-text"
+            value={game.clues}
+            onChange={(e) => setGame({ ...game, clues: e.target.value })}
+            placeholder="It is small, round and red, and grows on trees."
+          />
+          <div className="field pg-labels">
+            <span className="field-label">
+              {game.phase === "asking" ? `Question ${game.asked + 1} of ${MAX_QUESTIONS}` : `${game.asked} of ${MAX_QUESTIONS} questions asked`}
+            </span>
+            <p className="input pg-readonly" aria-live="polite">
+              {game.phase === "guessing"
+                ? guessQuestion(game.guess)
+                : game.phase === "asking"
+                  ? upcoming.join(", ")
+                  : game.phase === "won"
+                    ? "Got it!"
+                    : "Out of questions."}
+            </p>
+            <span className="field-hint">{game.note || "Add more clues at any time; the next question uses them."}</span>
+          </div>
+          <div className="pg-actions">
+            {game.phase === "asking" && (
+              <button type="button" className="btn btn-primary pg-classify" onClick={ask} disabled={busy || !game.clues.trim()} aria-keyshortcuts={shortcut}>
+                {busy ? "Thinking…" : `Ask question ${game.asked + 1}`} <Shortcut />
+              </button>
+            )}
+            {game.phase === "guessing" && (
+              <>
+                <span className="pg-guess">{guessQuestion(game.guess)}</span>
+                <button type="button" className="btn" onClick={() => reply(false)}>No</button>
+                <button type="button" className="btn btn-primary" onClick={() => reply(true)}>Yes, that's it</button>
+              </>
+            )}
+            {(game.phase === "won" || game.phase === "lost") && (
+              <button type="button" className="btn btn-primary" onClick={() => setGame(newGame(game.clues))}>Play again</button>
+            )}
+            <button type="button" className="btn btn-link" onClick={() => pick(EXAMPLES[0])}>Leave the game</button>
+          </div>
+        </>
+      ) : (
+        <>
+          <label className="field-label pg-text-label" htmlFor="pg-text">Text</label>
+          <textarea id="pg-text" className="input pg-text" value={text} onChange={(e) => setText(e.target.value)} placeholder="Paste or type some text" />
+          <label className="field pg-labels">
+            <span className="field-label">Labels</span>
+            <input className="input" value={labels} onChange={(e) => setLabels(e.target.value)} placeholder="billing, support, shipping" />
+            <span className="field-hint">Separate labels with commas.</span>
+          </label>
+          <div className="pg-actions">
+            <label className="switch">
+              <input type="checkbox" role="switch" checked={several} onChange={(e) => setSeveral(e.target.checked)} />
+              <span className="switch-track" aria-hidden="true" />
+              Several labels can fit
+            </label>
+            {models.length > 1 && (
+              <select className="input" aria-label="Model" value={model} onChange={(e) => setModel(e.target.value)}>
+                {models.map((id) => <option key={id} value={id}>{id}</option>)}
+              </select>
+            )}
+            <button
+              type="button"
+              className="btn btn-primary pg-classify"
+              onClick={classify}
+              disabled={busy || !text.trim()}
+              aria-keyshortcuts={shortcut}
+            >
+              {busy ? "Classifying…" : "Classify"} <Shortcut />
+            </button>
+          </div>
+        </>
+      )}
       {error && <p className="pg-error pg-message">{error}</p>}
       <section className="pg-stack" aria-live="polite" aria-label="Answers">
         <AnswerStack answers={answers} />
