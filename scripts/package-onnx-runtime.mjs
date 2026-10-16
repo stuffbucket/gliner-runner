@@ -359,6 +359,8 @@ async function main() {
         private: true,
         type: "module",
         license: appPackage.license,
+        // The runner reaches its host through `#platform`; a release is always the Node.js build.
+        imports: { "#platform": appPackage.imports["#platform"].default },
         dependencies: appPackage.dependencies,
       },
       null,
