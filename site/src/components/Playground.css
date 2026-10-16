@@ -52,7 +52,7 @@
   grid-template-rows: auto auto auto auto auto auto 1fr;
   grid-template-areas:
     "examples ."
-    "textlabel ."
+    "textlabel history"
     "text stack"
     "labels stack"
     "actions stack"
@@ -73,6 +73,7 @@
 }
 .pg-text-label {
   grid-area: textlabel;
+  align-self: end;
   margin-bottom: 0.45rem;
 }
 .pg-text {
@@ -111,23 +112,46 @@
 }
 .pg-stack-cards {
   bottom: 0;
+  overflow: hidden;
+}
+/* The whole column slides, so the cards move together and never cross. */
+.pg-stack-track {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  overflow: hidden;
+  transition: transform var(--duration-move) var(--ease-out);
 }
 .pg-answer {
   flex: none;
-  transition: opacity var(--duration-move) var(--ease-in-out);
+  transition: opacity var(--duration-move) var(--ease-out);
 }
-.pg-enter {
-  animation: pg-enter var(--duration-move) var(--ease-out) both;
+
+/* Steps back and forth through the answers, right-aligned just above the stack. */
+.pg-history {
+  grid-area: history;
+  justify-self: end;
+  align-self: end;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  /* Taller than the text label beside it, so it reaches up into the space under the examples instead of pushing
+     the text box down. */
+  margin-top: -0.9rem;
+  margin-bottom: 0.45rem;
 }
-@keyframes pg-enter {
-  from {
-    opacity: 0;
-    transform: translateY(-0.75rem) scale(0.985);
-  }
+.pg-history-step {
+  width: var(--control-h-sm);
+  padding: 0;
+  font-size: var(--text-lg);
+  line-height: 1;
+}
+.pg-history-count {
+  min-width: 4.5rem;
+  color: var(--muted);
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
 }
 .pg-elapsed {
   margin-inline-start: auto;
@@ -259,7 +283,7 @@
   .pg-workspace {
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: none;
-    grid-template-areas: "examples" "textlabel" "text" "labels" "actions" "message" "stack";
+    grid-template-areas: "examples" "textlabel" "text" "labels" "actions" "message" "history" "stack";
   }
   .pg-text {
     min-height: 10rem;
@@ -267,6 +291,12 @@
   .pg-stack {
     height: 32rem;
     margin-top: 1.5rem;
+  }
+  .pg-history {
+    margin-top: 1.5rem;
+  }
+  .pg-history + .pg-stack {
+    margin-top: 0;
   }
   /* On narrow screens the panel slides over the playground instead of squeezing it. */
   .pg-app.pg-with-about {
@@ -281,4 +311,61 @@
     box-shadow: 0 10px 30px rgb(0 0 0 / 0.25);
     z-index: 30;
   }
+}
+
+/* 20 questions */
+.pg-question {
+  color: var(--muted);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+.pg-verdict {
+  border-color: var(--accent);
+}
+.pg-verdict-text {
+  color: var(--text);
+  font-size: var(--text-xl);
+  font-weight: 600;
+  line-height: var(--leading-snug);
+}
+/* The turn line under the clues: whose move it is, and the guess to answer. */
+.pg-turn {
+  gap: 0.35rem;
+}
+.pg-turn-guess {
+  color: var(--text);
+  font-size: var(--text-xl);
+  font-weight: 600;
+  line-height: var(--leading-snug);
+}
+.pg-turn-status {
+  color: var(--muted);
+  font-size: var(--text-lg);
+}
+.pg-active {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.pg-guess-text {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--text);
+  font-size: var(--text-xl);
+  font-weight: 600;
+  line-height: var(--leading-snug);
+}
+.pg-reply {
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: var(--text-sm);
+}
+.pg-reply-yes {
+  background: color-mix(in srgb, var(--good) 18%, transparent);
+  color: var(--good);
+}
+.pg-reply-no {
+  background: var(--surface-2);
+  color: var(--muted);
 }

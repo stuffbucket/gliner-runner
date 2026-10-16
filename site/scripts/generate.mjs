@@ -14,6 +14,8 @@ import { copyFileSync, existsSync, readdirSync, readFileSync, rmSync, mkdirSync,
 import { dirname, join, posix, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { buildTree, loadAnswers } from "./twenty-questions/tree.mjs";
+
 export const REPO_URL = "https://github.com/stuffbucket/gliner-runner";
 export const BASE = "/gliner-runner";
 const PARITY_DIR = "benchmark-results/2026-10-14-onnx-runtime-parity-v1";
@@ -663,4 +665,5 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   const result = generate(root, resolve(here, "../src/content/docs"));
   console.log(`generated ${result.models} model pages, the evaluation page, and ${result.docs} docs pages`);
   copyRunnerTemplates(root, resolve(here, "../public/runner-templates"));
+  writeFileSync(resolve(here, "../src/data/twenty-questions.json"), `${JSON.stringify(buildTree(loadAnswers()))}\n`);
 }

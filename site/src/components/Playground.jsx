@@ -1,6 +1,8 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { HttpTransport, INSTALL_PEAK_BYTES, WorkerTransport } from "@gliner-runner/onnx-runner-web/client";
 import "./Playground.css";
+import twenty from "../data/twenty-questions.json";
+import { MAX_QUESTIONS, afterClassification, afterReply, guessQuestion, newGame, nextStep, startGuess, verdict } from "./twentyQuestions.js";
 
 const BASE = "/gliner-runner";
 const DEFAULT_ADDRESS = "http://127.0.0.1:8090";
@@ -19,6 +21,7 @@ const EXAMPLES = [
   { name: "Review", text: "The battery lasts all day, but the screen scratches far too easily.", labels: "positive, negative, mixed" },
   { name: "Topics", text: "I will pay my rent on Friday, and then I will bake bread.", labels: "weather, cooking, sports, money", several: true },
   { name: "Urgency", text: "The production database is down and customers cannot log in.", labels: "urgent, can wait" },
+  { name: "20 questions", game: true },
 ];
 
 const stored = (key, fallback) => {
@@ -45,9 +48,18 @@ const parse = (reply) => {
 };
 const message = (data, fallback) =>
   typeof data.detail === "string" ? data.detail : (data.detail?.message ?? fallback);
-const request = (model, text, labels, several) => ({
+const request = (model, text, labels, several, descriptions) => ({
   model, backend: "onnx", precision: "fp32", operation: "classify", text,
-  schema: { kind: "classification", tasks: { category: { labels, ...(several ? { min_labels: 0, max_labels: null } : {}) } } },
+  schema: {
+    kind: "classification",
+    tasks: {
+      category: {
+        labels,
+        ...(descriptions ? { label_descriptions: descriptions } : {}),
+        ...(several ? { min_labels: 0, max_labels: null } : {}),
+      },
+    },
+  },
 });
 
 /** Downloads a model through the runner's own download API and waits for the job. */
@@ -103,22 +115,43 @@ function Card({ title, children }) {
 /** How many answers the stack keeps; older ones are dropped. */
 const STACK_LIMIT = 50;
 /** Each step down the stack keeps this much of a card's opacity. */
-const FADE_PER_STEP = 0.75;
+const FADE_PER_STEP = 0.65;
 
-const motion = (name, fallback) =>
-  getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
-
-/** The answer as a standalone card: what was sent, which labels fit, every score, and how it ran. */
+/**
+ * The answer as a standalone card: the question it answered (in a game), what was sent, which labels fit, every
+ * score, and how it ran. A verdict card closes a game.
+ */
 function Answer({ answer, depth }) {
-  const ranked = Object.entries(answer.scores).sort((a, b) => b[1] - a[1]);
   const ms = (value) => (value < 10 ? value.toFixed(1) : Math.round(value));
+  const common = {
+    className: `answer-card pg-answer${answer.kind === "verdict" ? " pg-verdict" : ""}`,
+    "data-id": answer.id,
+    style: { opacity: depth < 0 ? 0 : FADE_PER_STEP ** depth },
+    "aria-hidden": depth !== 0 ? "true" : undefined,
+  };
+  if (answer.kind === "verdict") {
+    return (
+      <article {...common}>
+        <p className="pg-question">20 questions</p>
+        <p className="pg-verdict-text">{answer.message}</p>
+      </article>
+    );
+  }
+  if (answer.kind === "guess") {
+    return (
+      <article {...common}>
+        <p className="pg-question">{answer.question}</p>
+        <p className="pg-guess-text">
+          {guessQuestion(answer.label)}
+          {answer.reply && <span className={`pg-reply pg-reply-${answer.reply}`}>{answer.reply === "yes" ? "Yes" : "No"}</span>}
+        </p>
+      </article>
+    );
+  }
+  const ranked = Object.entries(answer.scores).sort((a, b) => b[1] - a[1]);
   return (
-    <article
-      className={`answer-card pg-answer${depth === 0 && answer.fresh ? " pg-enter" : ""}`}
-      data-id={answer.id}
-      style={{ opacity: FADE_PER_STEP ** depth }}
-      aria-hidden={depth > 0 ? "true" : undefined}
-    >
+    <article {...common}>
+      {answer.question && <p className="pg-question">{answer.question}</p>}
       <p className="answer-quote">“{answer.text}”</p>
       <p className="answer-labels">
         {answer.labels.map((label) => (
@@ -150,37 +183,64 @@ function Answer({ answer, depth }) {
 }
 
 /**
- * Newest answer on top. When a card arrives the others slide down to their new places (measured before and after
- * the update and animated between, so the move follows the shared easing) and fade by one step.
+ * Every answer, newest first, in one column that slides so the card being looked at (`shown`) sits at the top of
+ * the stack; newer cards slide up out of view and fade, older ones fade a step per card below. Stepping through
+ * the history is just the slide (a CSS transition, so a quick second click carries on from wherever it is). When a
+ * card arrives the column first holds still, with the card being looked at where it was, then slides only if that
+ * card changed: on the newest, the new card comes down from above the stack; further back, nothing moves.
  */
-function AnswerStack({ answers }) {
-  const list = useRef(null);
-  const tops = useRef(new Map());
+function AnswerStack({ answers, shown, game }) {
+  const track = useRef(null);
+  const before = useRef({ ids: "", focus: undefined });
   useLayoutEffect(() => {
-    const duration = parseFloat(motion("--duration-move", "420ms"));
-    const easing = motion("--ease-out", "ease-out");
-    for (const node of list.current?.children ?? []) {
-      const id = node.dataset.id;
-      const top = node.offsetTop;
-      const before = tops.current.get(id);
-      if (before !== undefined && before !== top && duration > 0) {
-        node.animate([{ transform: `translateY(${before - top}px)` }, { transform: "none" }], { duration, easing });
-      }
-      tops.current.set(id, top);
+    const column = track.current;
+    if (!column) {
+      before.current = { ids: "", focus: undefined };
+      return;
     }
-  }, [answers]);
+    const nodes = [...column.children];
+    const ids = answers.map((answer) => answer.id).join();
+    const focus = answers[shown]?.id;
+    const offset = (id) => nodes.find((node) => node.dataset.id === id)?.offsetTop;
+    const slide = (top, animate) => {
+      if (!animate) column.style.transition = "none";
+      column.style.transform = `translateY(${-top}px)`;
+      if (!animate) {
+        void column.offsetHeight;
+        column.style.transition = "";
+      }
+    };
+    if (ids !== before.current.ids) {
+      // Hold the view where it was: the card that was on top stays on top for now.
+      slide(offset(before.current.focus) ?? offset(focus) ?? 0, false);
+      // A card that is new here starts invisible, so it can fade in as it comes into view.
+      const known = new Set(before.current.ids.split(","));
+      for (const node of nodes.filter((node) => !known.has(node.dataset.id))) {
+        const target = node.style.opacity;
+        node.style.transition = "none";
+        node.style.opacity = "0";
+        void node.offsetHeight;
+        node.style.transition = "";
+        node.style.opacity = target;
+      }
+    }
+    slide(offset(focus) ?? 0, true);
+    before.current = { ids, focus };
+  }, [answers, shown]);
 
   if (answers.length === 0) {
     return (
       <div className="answer-card pg-placeholder">
-        <p>The answer appears here.</p>
-        <p className="pg-small">Press Classify or <Shortcut /></p>
+        <p>{game ? "The model's questions and guesses appear here." : "The answer appears here."}</p>
+        <p className="pg-small">Press {game ? "Start" : "Classify"} or <Shortcut /></p>
       </div>
     );
   }
   return (
-    <div className="pg-stack-cards" ref={list}>
-      {answers.map((answer, depth) => <Answer key={answer.id} answer={answer} depth={depth} />)}
+    <div className="pg-stack-cards">
+      <div className="pg-stack-track" ref={track}>
+        {answers.map((answer, index) => <Answer key={answer.id} answer={answer} depth={index - shown} />)}
+      </div>
     </div>
   );
 }
@@ -197,102 +257,283 @@ function Workspace({ transport, models, onWarm }) {
   const [busy, setBusy] = useState(false);
   const [answers, setAnswers] = useState([]);
   const [error, setError] = useState("");
+  const [game, setGame] = useState(null);
+  /** How many newer cards sit above the one being looked at (0: the newest). */
+  const [back, setBack] = useState(0);
   const next = useRef(1);
+  /** Settles once the background load of the current model has finished (whatever its outcome). */
+  const loaded = useRef(Promise.resolve());
 
   useEffect(() => {
     let current = true;
     onWarm("loading", model);
-    transport.request("POST", "/v1/infer", request(model, "Hello.", ["greeting", "question"], false)).then(
+    const warm = transport.request("POST", "/v1/infer", request(model, "Hello.", ["greeting", "question"], false)).then(
       (reply) => current && onWarm(reply.status === 200 ? "ready" : "failed", model),
       () => current && onWarm("failed", model),
     );
+    loaded.current = warm;
     return () => {
       current = false;
     };
   }, [model]);
 
+  /** Puts a card on top of the stack; returns its id. Someone looking back through older cards stays on the same one. */
+  const push = (card) => {
+    const id = String(next.current++);
+    setAnswers((previous) => [{ id, ...card }, ...previous].slice(0, STACK_LIMIT));
+    setBack((newer) => (newer > 0 ? newer + 1 : 0));
+    return id;
+  };
+
   const pick = (example) => {
+    if (example.game) {
+      clues.current = twenty.sample;
+      setGame(newGame(twenty.tree, twenty.sample));
+      setPlaying(false);
+      return;
+    }
+    setGame(null);
+    setPlaying(false);
     setText(example.text);
     setLabels(example.labels);
     setSeveral(example.several ?? false);
   };
 
-  async function classify() {
-    const list = labels.split(",").map((s) => s.trim()).filter(Boolean);
-    if (busy || !text.trim() || list.length === 0) return;
+  /** Classifies once and puts the answer on the stack; resolves with the answer, or nothing after an error. */
+  async function run({ text, labels: list, several, descriptions, question }) {
     setError("");
     setBusy(true);
+    // A request sent while the model is still loading waits for it; that wait is not the classification's time.
+    await loaded.current;
     const started = performance.now();
     try {
-      const reply = await transport.request("POST", "/v1/infer", request(model, text, list, several));
+      const reply = await transport.request("POST", "/v1/infer", request(model, text, list, several, descriptions));
       const data = parse(reply);
       if (reply.status !== 200) {
         setError(message(data, "The runner rejected the request."));
-      } else {
-        const { value, probabilities } = data.output.category;
-        const answer = {
-          id: String(next.current++),
-          fresh: true,
-          text, labels: list, several, model,
-          picked: [value].flat().filter(Boolean),
-          scores: probabilities,
-          elapsed: performance.now() - started,
-          modelMs: data.timing?.inference_ms,
-        };
-        setAnswers((previous) => [answer, ...previous.map((old) => ({ ...old, fresh: false }))].slice(0, STACK_LIMIT));
+        return undefined;
       }
+      const { value, probabilities } = data.output.category;
+      const answer = {
+        question, text, labels: list, several, model,
+        picked: [value].flat().filter(Boolean),
+        scores: probabilities,
+        elapsed: performance.now() - started,
+        modelMs: data.timing?.inference_ms,
+      };
+      push(answer);
+      return answer;
     } catch {
       setError("Lost the connection to the runner.");
+      return undefined;
     } finally {
       setBusy(false);
     }
   }
 
+  function classify() {
+    const list = labels.split(",").map((s) => s.trim()).filter(Boolean);
+    if (busy || !text.trim() || list.length === 0) return;
+    run({ text, labels: list, several });
+  }
+
+  // 20 questions: the player only writes clues and answers guesses. Once started, the game classifies on its own
+  // until it has a guess to check, or runs out of questions.
+  const [playing, setPlaying] = useState(false);
+  const clues = useRef("");
+  const guessCard = useRef(undefined);
+  const cluesBox = useRef(null);
+
+  const setClues = (value) => {
+    clues.current = value;
+    setGame((current) => ({ ...current, clues: value }));
+  };
+
+  /** If the game's next move is a guess, puts it on the stack and asks it (a guess counts as a question). */
+  function advance(state) {
+    if (state.phase !== "asking") return state;
+    const step = nextStep(state);
+    if (step?.kind !== "guess") return state;
+    guessCard.current = push({ kind: "guess", question: `Question ${step.number} of ${MAX_QUESTIONS}`, label: step.label, model });
+    return startGuess(state, step);
+  }
+
+  /** One question of 20 questions: classify the clues at the most likely unexplored level (see twentyQuestions.js). */
+  async function ask() {
+    if (busy || game?.phase !== "asking" || !game.clues.trim()) return;
+    const step = nextStep(game);
+    if (step.kind === "guess") {
+      setGame(advance(game));
+      return;
+    }
+    const answer = await run({ text: game.clues, labels: step.labels, descriptions: step.descriptions, question: step.text });
+    if (answer === undefined) {
+      setPlaying(false);
+      return;
+    }
+    // Clues typed while the model was thinking are kept for the next question.
+    let state = { ...afterClassification(game, step, answer.scores), clues: clues.current };
+    if (state.phase === "lost") push({ kind: "verdict", message: verdict(state), model });
+    else state = advance(state);
+    setGame(state);
+  }
+
+  useEffect(() => {
+    if (!playing || game?.phase !== "asking" || busy || !game.clues.trim()) return undefined;
+    // A short pause between questions, so each card can be read as it arrives.
+    const timer = setTimeout(ask, 350);
+    return () => clearTimeout(timer);
+  }, [playing, game, busy]);
+
+  function start() {
+    if (!game?.clues.trim()) return;
+    setPlaying(true);
+  }
+
+  function playAgain() {
+    clues.current = "";
+    setGame(newGame(twenty.tree, ""));
+    setPlaying(false);
+    cluesBox.current?.focus();
+  }
+
+  /** The player's answer to a guess. */
+  function reply(yes) {
+    if (game?.phase !== "guessing") return;
+    const card = guessCard.current;
+    setAnswers((previous) => previous.map((old) => (old.id === card ? { ...old, reply: yes ? "yes" : "no" } : old)));
+    let state = afterReply(game, yes);
+    if (state.phase === "won" || state.phase === "lost") push({ kind: "verdict", message: verdict(state), model });
+    else state = advance(state);
+    setGame(state);
+  }
+
   const onKeyDown = (event) => {
     if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
       event.preventDefault();
-      classify();
+      if (!game) classify();
+      else if (!playing && game.phase === "asking") start();
     }
   };
+  const shortcut = MAC ? "Meta+Enter" : "Control+Enter";
+  // The card on top of the stack (it stays put when cards beyond the limit are dropped).
+  const shown = Math.min(back, Math.max(answers.length - 1, 0));
+
   return (
     <div className="pg-workspace" onKeyDown={onKeyDown}>
       <div className="pg-examples">
         <span className="field-label">Example</span>
         {EXAMPLES.map((example) => (
-          <button type="button" key={example.name} className="btn btn-sm" onClick={() => pick(example)}>{example.name}</button>
+          <button
+            type="button"
+            key={example.name}
+            className={`btn btn-sm${example.game && game ? " pg-active" : ""}`}
+            onClick={() => pick(example)}
+          >
+            {example.name}
+          </button>
         ))}
       </div>
-      <label className="field-label pg-text-label" htmlFor="pg-text">Text</label>
-      <textarea id="pg-text" className="input pg-text" value={text} onChange={(e) => setText(e.target.value)} placeholder="Paste or type some text" />
-      <label className="field pg-labels">
-        <span className="field-label">Labels</span>
-        <input className="input" value={labels} onChange={(e) => setLabels(e.target.value)} placeholder="billing, support, shipping" />
-        <span className="field-hint">Separate labels with commas.</span>
-      </label>
-      <div className="pg-actions">
-        <label className="switch">
-          <input type="checkbox" role="switch" checked={several} onChange={(e) => setSeveral(e.target.checked)} />
-          <span className="switch-track" aria-hidden="true" />
-          Several labels can fit
-        </label>
-        {models.length > 1 && (
-          <select className="input" aria-label="Model" value={model} onChange={(e) => setModel(e.target.value)}>
-            {models.map((id) => <option key={id} value={id}>{id}</option>)}
-          </select>
-        )}
-        <button
-          type="button"
-          className="btn btn-primary pg-classify"
-          onClick={classify}
-          disabled={busy || !text.trim()}
-          aria-keyshortcuts={MAC ? "Meta+Enter" : "Control+Enter"}
-        >
-          {busy ? "Classifying…" : "Classify"} <Shortcut />
-        </button>
-      </div>
+      {game ? (
+        <>
+          <label className="field-label pg-text-label" htmlFor="pg-text">
+            Think of an animal, a plant or a thing, and describe it without naming it
+          </label>
+          <textarea
+            id="pg-text"
+            ref={cluesBox}
+            className="input pg-text"
+            value={game.clues}
+            onChange={(e) => setClues(e.target.value)}
+            placeholder="It is small, round and red, and grows on trees."
+          />
+          <div className="field pg-labels pg-turn" aria-live="polite">
+            {game.phase === "guessing" ? (
+              <>
+                <span className="field-label">Question {game.asked} of {MAX_QUESTIONS} · your turn</span>
+                <p className="pg-turn-guess">{guessQuestion(game.guess)}</p>
+                <span className="field-hint">Not quite? You can add a clue above before you answer.</span>
+              </>
+            ) : game.phase === "won" || game.phase === "lost" ? (
+              <p className="pg-turn-guess">{verdict(game)}</p>
+            ) : playing ? (
+              <>
+                <span className="field-label">Question {game.asked + 1} of {MAX_QUESTIONS}</span>
+                <p className="pg-turn-status">{busy ? "Thinking…" : "Choosing the next question…"}</p>
+                <span className="field-hint">It works out what to ask from your clues and stops to check each guess with you.</span>
+              </>
+            ) : (
+              <span className="field-hint">
+                {game.asked === 0
+                  ? game.clues === twenty.sample
+                    ? "This example describes a zebra; write your own, or start with it. The model then asks itself up to 20 questions and stops to check each guess with you."
+                    : "Then press Start. The model asks itself up to 20 questions and stops to check each guess with you."
+                  : "Stopped. Change the clues if you like, then carry on."}
+              </span>
+            )}
+          </div>
+          <div className="pg-actions">
+            {game.phase === "asking" && !playing && (
+              <button type="button" className="btn btn-primary pg-classify" onClick={start} disabled={!game.clues.trim()} aria-keyshortcuts={shortcut}>
+                {game.asked === 0 ? "Start" : "Carry on"} <Shortcut />
+              </button>
+            )}
+            {game.phase === "guessing" && (
+              <>
+                <button type="button" className="btn btn-primary" onClick={() => reply(true)}>Yes, that's it</button>
+                <button type="button" className="btn" onClick={() => reply(false)}>No</button>
+              </>
+            )}
+            {(game.phase === "won" || game.phase === "lost") && (
+              <button type="button" className="btn btn-primary" onClick={playAgain}>Play again</button>
+            )}
+            <button type="button" className="btn btn-link" onClick={() => pick(EXAMPLES[0])}>Leave the game</button>
+          </div>
+        </>
+      ) : (
+        <>
+          <label className="field-label pg-text-label" htmlFor="pg-text">Text</label>
+          <textarea id="pg-text" className="input pg-text" value={text} onChange={(e) => setText(e.target.value)} placeholder="Paste or type some text" />
+          <label className="field pg-labels">
+            <span className="field-label">Labels</span>
+            <input className="input" value={labels} onChange={(e) => setLabels(e.target.value)} placeholder="billing, support, shipping" />
+            <span className="field-hint">Separate labels with commas.</span>
+          </label>
+          <div className="pg-actions">
+            <label className="switch">
+              <input type="checkbox" role="switch" checked={several} onChange={(e) => setSeveral(e.target.checked)} />
+              <span className="switch-track" aria-hidden="true" />
+              Several labels can fit
+            </label>
+            {models.length > 1 && (
+              <select className="input" aria-label="Model" value={model} onChange={(e) => setModel(e.target.value)}>
+                {models.map((id) => <option key={id} value={id}>{id}</option>)}
+              </select>
+            )}
+            <button
+              type="button"
+              className="btn btn-primary pg-classify"
+              onClick={classify}
+              disabled={busy || !text.trim()}
+              aria-keyshortcuts={shortcut}
+            >
+              {busy ? "Classifying…" : "Classify"} <Shortcut />
+            </button>
+          </div>
+        </>
+      )}
       {error && <p className="pg-error pg-message">{error}</p>}
+      {answers.length > 0 && (
+        <div className="pg-history" role="group" aria-label="Answer history">
+          <button type="button" className="btn btn-sm pg-history-step" aria-label="Older answer" title="Older"
+            disabled={shown >= answers.length - 1} onClick={() => setBack(shown + 1)}>‹</button>
+          <span className="pg-history-count">{answers.length - shown} of {answers.length}</span>
+          <button type="button" className="btn btn-sm pg-history-step" aria-label="Newer answer" title="Newer"
+            disabled={shown === 0} onClick={() => setBack(shown - 1)}>›</button>
+        </div>
+      )}
       <section className="pg-stack" aria-live="polite" aria-label="Answers">
-        <AnswerStack answers={answers} />
+        <AnswerStack answers={answers} shown={shown} game={game !== null} />
       </section>
     </div>
   );
@@ -572,6 +813,7 @@ function About({ onClose }) {
       </div>
       <p>Type some text and the labels you care about. GLiNER Runner picks the label that fits best and scores each one from 0 to 1.</p>
       <p>Turn on <strong>Several labels can fit</strong> when a text can have more than one label, or none.</p>
+      <p>In <strong>20 questions</strong> you describe something without naming it. The model works out what it is by classifying your clues, and you only answer its guesses.</p>
       <p>Your text stays on your device: the model runs in this browser, or on your own computer.</p>
       <ul>
         <li><a href={`${BASE}/how-it-works/`}>How it works</a></li>
