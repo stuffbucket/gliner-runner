@@ -3,6 +3,12 @@
 #
 #   curl -fsSL https://github.com/stuffbucket/gliner-runner/releases/latest/download/install.sh | sh
 #
+# With --playground [options], it then runs `gliner-runner playground [options]`, which installs the model if
+# needed, starts the runner and opens the browser playground connected to it. A gliner-runner that is already on
+# PATH and has the playground command is used as is (nothing is downloaded):
+#
+#   curl -fsSL .../install.sh | sh -s -- --playground --yes
+#
 # Environment:
 #   GLINER_RUNNER_VERSION        X.Y.Z or X.Y.Z-rc.N to pin (default: latest stable release)
 #   GLINER_RUNNER_HOME           install root (default: $HOME/.local/share/gliner-runner)
@@ -22,6 +28,25 @@ die() {
   printf 'install.sh: error: %s\n' "$*" >&2
   exit 1
 }
+
+# --- options --------------------------------------------------------------
+playground=
+case "${1:-}" in
+  --playground)
+    playground=yes
+    shift
+    ;;
+  "") ;;
+  *) die "unknown option: $1 (supported: --playground [gliner-runner playground options])" ;;
+esac
+
+# Reuse an installed runner (Homebrew or an earlier install) when it is the ONNX runner and has the command.
+if [ -n "$playground" ] && command -v "$CMD" >/dev/null 2>&1 &&
+  "$CMD" --version 2>/dev/null | head -n 1 | grep -q "^$NAME" &&
+  "$CMD" playground --help >/dev/null 2>&1; then
+  say "Using the installed $CMD ($(command -v "$CMD"))."
+  exec "$CMD" playground "$@"
+fi
 
 # --- platform -------------------------------------------------------------
 case "$(uname -s)" in
@@ -139,6 +164,18 @@ case ":${PATH:-}:" in
   *":$bin_dir:"*) path_hint= ;;
   *) path_hint=yes ;;
 esac
+
+if [ -n "$playground" ]; then
+  if [ -n "$path_hint" ]; then
+    say "To run $CMD yourself later, add $bin_dir to your PATH, for example:"
+    say "     export PATH=\"$bin_dir:\$PATH\""
+  fi
+  say ""
+  # exec replaces this shell, so the EXIT trap would not clean up.
+  rm -rf "$tmp"
+  trap - EXIT HUP INT TERM
+  exec "$bin_dir/$CMD" playground "$@"
+fi
 
 say ""
 say "Next steps:"
