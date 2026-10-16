@@ -50,6 +50,15 @@ export function nodeAt(tree, path) {
 
 export const isGuess = (node) => node.children === undefined;
 
+/** What a classification of `node`'s children sends: their labels, and their descriptions if any have one. */
+export function levelOf(node) {
+  const described = node.children.filter((child) => child.description);
+  return {
+    labels: node.children.map((child) => child.label),
+    descriptions: described.length > 0 ? Object.fromEntries(described.map((child) => [child.label, child.description])) : undefined,
+  };
+}
+
 /** "Is it an animal, a vegetable or a mineral?" */
 export function question(options) {
   const phrases = options.map((option) => phrase(option.label));
@@ -58,7 +67,7 @@ export function question(options) {
 
 /** The question a classification answers: the options themselves at the top, then "What kind of animal is it?" and
  * "Which zoo animal is it?" (the options are on the card already). */
-function levelQuestion(path, options) {
+export function levelQuestion(path, options) {
   if (path.length === 0) return question(options);
   return path.length === 1 ? `What kind of ${path[0]} is it?` : `Which ${path.at(-1)} is it?`;
 }
@@ -68,7 +77,8 @@ export const guessQuestion = (label) => `Is it ${phrase(label)}?`;
 
 /**
  * A new game. `scores` holds, for every node scored so far, the probability of the path to it ("" is the root);
- * `opened` the nodes whose children have been classified; `ruledOut` the wrong guesses.
+ * `opened` the nodes whose children have been classified; `ruledOut` the wrong guesses; `levels` what each
+ * classification returned, and for which clues (the trace in twentyQuestionsTrace.js reuses them).
  */
 export const newGame = (tree, clues) => ({
   tree,
@@ -76,6 +86,7 @@ export const newGame = (tree, clues) => ({
   scores: new Map([["", 1]]),
   opened: new Set(),
   ruledOut: new Set(),
+  levels: new Map(),
   asked: 0,
   phase: "asking", // asking | guessing | won | lost
   guess: undefined,
@@ -87,6 +98,7 @@ const copy = (game) => ({
   scores: new Map(game.scores),
   opened: new Set(game.opened),
   ruledOut: new Set(game.ruledOut),
+  levels: new Map(game.levels),
 });
 
 /**
@@ -108,17 +120,22 @@ export function nextStep(game, tuning = TUNING) {
     return { kind: "guess", nodeKey: best.nodeKey, label: node.label, number, text: `Question ${number} of ${MAX_QUESTIONS} · ${guessQuestion(node.label)}` };
   }
   const options = node.children;
-  const described = options.filter((option) => option.description);
   return {
     kind: "classify",
     path,
     nodeKey: best.nodeKey,
     options,
     number,
-    labels: options.map((option) => option.label),
-    descriptions: described.length > 0 ? Object.fromEntries(described.map((o) => [o.label, o.description])) : undefined,
+    ...levelOf(node),
     text: `Question ${number} of ${MAX_QUESTIONS} · ${levelQuestion(path, options)}`,
   };
+}
+
+/** Each label's share of one classification, raised to 1/temperature and renormalised (see TUNING). */
+export function temper(labels, probabilities, tuning = TUNING) {
+  const tempered = labels.map((label) => (probabilities[label] ?? 0) ** (1 / tuning.temperature));
+  const total = tempered.reduce((sum, value) => sum + value, 0) || 1;
+  return tempered.map((value) => value / total);
 }
 
 /** The game after a classification: each option gets the probability of the path to it. */
@@ -126,11 +143,11 @@ export function afterClassification(game, step, probabilities, tuning = TUNING) 
   const state = copy(game);
   state.asked = step.number;
   state.opened.add(step.nodeKey);
+  state.levels.set(step.nodeKey, { clues: game.clues, probabilities });
   const parent = game.scores.get(step.nodeKey) ?? 0;
-  const tempered = step.options.map((option) => (probabilities[option.label] ?? 0) ** (1 / tuning.temperature));
-  const total = tempered.reduce((sum, value) => sum + value, 0) || 1;
-  step.options.forEach((option, index) => {
-    state.scores.set(key([...step.path, option.label]), (parent * (tempered[index] ?? 0)) / total);
+  const shares = temper(step.labels, probabilities, tuning);
+  step.labels.forEach((label, index) => {
+    state.scores.set(key([...step.path, label]), parent * shares[index]);
   });
   const top = [...step.options].sort((a, b) => (probabilities[b.label] ?? 0) - (probabilities[a.label] ?? 0))[0];
   state.note = top === undefined ? "" : isGuess(top) ? "" : `Most likely ${phrase(top.label)}.`;

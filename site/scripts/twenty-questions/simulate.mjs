@@ -5,12 +5,19 @@
 //     [--model decide-340m] [--only animal] [--report /tmp/report.json]
 //
 // `clue` is the tuning set and `alt` the held-out set: tune against `clue`, then check `alt` did not get worse.
+//
+// To see why one description does or does not reach one thing (the playground's "Why?"), trace it:
+//
+//   node site/scripts/twenty-questions/simulate.mjs --trace airplane --text "It moves fast and really high up."
+//
+// Without --text it traces the thing's own `clue` (or `alt` with --set alt).
 
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { parseArgs } from "node:util";
 
-import { MAX_QUESTIONS, afterClassification, afterReply, newGame, nextStep, startGuess } from "../../src/components/twentyQuestions.js";
+import { MAX_QUESTIONS, afterClassification, afterReply, levelOf, newGame, nextStep, startGuess } from "../../src/components/twentyQuestions.js";
+import { levelsFor, pathsTo, trace } from "../../src/components/twentyQuestionsTrace.js";
 import { classify, startRunner } from "../runner.mjs";
 import { buildTree, loadAnswers } from "./tree.mjs";
 
@@ -23,6 +30,8 @@ const { values } = parseArgs({
     concurrency: { type: "string", default: "8" },
     cache: { type: "string", default: "/tmp/twenty-questions-cache.json" },
     diagnose: { type: "boolean" },
+    trace: { type: "string" },
+    text: { type: "string" },
   },
 });
 
@@ -76,19 +85,15 @@ const answers = loadAnswers();
 const { tree } = buildTree(answers);
 /** Scores the true path of every clue: the category, the group within it, and the item's rank within its group. */
 async function diagnose(games) {
-  const level = (node) => ({
-    labels: node.children.map((c) => c.label),
-    descriptions: node.children.some((c) => c.description) ? Object.fromEntries(node.children.filter((c) => c.description).map((c) => [c.label, c.description])) : undefined,
-  });
   const rows = await pool(games, Number(values.concurrency), async ({ category, item }) => {
     const text = item[values.set];
     const categoryNode = tree.children.find((c) => c.label === category);
     const groupNode = categoryNode.children.find((g) => g.label === item.group);
-    const root = level(tree);
+    const root = levelOf(tree);
     const atRoot = await scores(text, root.labels, root.descriptions);
-    const inCategory = level(categoryNode);
+    const inCategory = levelOf(categoryNode);
     const atCategory = await scores(text, inCategory.labels, inCategory.descriptions);
-    const inGroup = level(groupNode);
+    const inGroup = levelOf(groupNode);
     const atGroup = await scores(text, inGroup.labels, inGroup.descriptions);
     const rank = Object.entries(atGroup).sort((a, b) => b[1] - a[1]).findIndex(([label]) => label === item.name) + 1;
     return { category, group: item.group, name: item.name, rootPick: top(atRoot), groupPick: top(atCategory), groupProb: atCategory[item.group], itemPick: top(atGroup), rank, size: inGroup.labels.length };
@@ -114,10 +119,43 @@ async function diagnose(games) {
   }
 }
 
+/** Prints the trace of one thing for one description: every step on the way to it, and where it was won or lost. */
+async function printTrace(name) {
+  const paths = pathsTo(tree, name);
+  const item = answers.categories.flatMap((c) => c.items).find((i) => i.name === name);
+  const text = values.text ?? item?.[values.set];
+  if (paths.length === 0 || text === undefined) {
+    console.log(paths.length === 0 ? `“${name}” is not in answers.json.` : `Give a description with --text.`);
+    return;
+  }
+  const levels = new Map();
+  for (const level of levelsFor(tree, paths)) levels.set(level.nodeKey, await scores(text, level.labels, level.descriptions));
+  const result = trace(tree, name, levels);
+  const mark = { ok: "✓", close: "~", lost: "✗" };
+  console.log(`“${text}”\n`);
+  (function show(step, depth) {
+    const pad = "  ".repeat(depth);
+    console.log(`${pad}${step.question}  (${step.n} options, sureness ${step.sureness.toFixed(2)})`);
+    for (const option of step.options.filter((o) => o.onPath || o.rank <= 3)) {
+      const where = option.rank === 1 ? `ahead by ${option.lead.toFixed(2)}` : `${option.behind.toFixed(1)}× behind`;
+      const note = option.onPath ? `  ${mark[option.status]} #${option.rank} of ${step.n}, ${where}` : "";
+      console.log(`${pad}  ${option.onPath ? "»" : " "} ${option.label.padEnd(32)} ${option.p.toFixed(3)}${note}`);
+      if (option.child) show(option.child, depth + 1);
+    }
+  })(result.root, 0);
+  for (const path of result.paths) {
+    console.log(`\n${path.path.join(" › ")}: path chance ${path.pathP.toFixed(3)}, weakest step ${path.weakest.option.p.toFixed(3)} ` +
+      `(${path.weakest.step.question}), typical step ${path.geoMean.toFixed(3)}`);
+  }
+  console.log(`\n${result.verdict}`);
+}
+
 const runner = await startRunner();
 base = runner.base;
 try {
-  if (values.diagnose) {
+  if (values.trace) {
+    await printTrace(values.trace);
+  } else if (values.diagnose) {
     const games = answers.categories
       .filter((category) => values.only === undefined || category.label === values.only)
       .flatMap((category) => category.items.map((item) => ({ category: category.label, item })));

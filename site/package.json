@@ -10,13 +10,17 @@
     "dev": "node scripts/generate.mjs && astro dev",
     "build": "node scripts/generate.mjs && astro build",
     "preview": "astro preview",
-    "test": "node --test scripts/generate.test.mjs"
+    "test": "node --test scripts/generate.test.mjs scripts/twenty-questions/trace.test.mjs"
   },
   "dependencies": {
     "@astrojs/react": "7.0.1",
     "@astrojs/starlight": "0.42.6",
     "@gliner-runner/onnx-runner-web": "workspace:*",
     "astro": "7.3.8",
+    "d3-brush": "3.0.0",
+    "d3-scale": "4.0.2",
+    "d3-selection": "3.0.0",
+    "d3-shape": "3.2.0",
     "react": "19.3.0",
     "react-dom": "19.3.0"
   },

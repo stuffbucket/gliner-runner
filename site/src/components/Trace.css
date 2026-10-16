@@ -1,0 +1,283 @@
+/* The "Why?" panel of 20 questions (see Trace.jsx); type, controls and colours come from styles/brand.css. */
+.tr {
+  display: grid;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) * 1.5);
+  background: var(--surface);
+  scroll-margin-top: 4.5rem;
+}
+.tr-head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 22rem) 1fr auto;
+  grid-template-areas: "title field . close";
+  align-items: end;
+  gap: 0.75rem 1rem;
+}
+.tr-head h2 {
+  grid-area: title;
+  font-size: var(--text-xl);
+  line-height: var(--control-h);
+}
+.tr-target-field {
+  grid-area: field;
+  display: grid;
+  gap: 0.45rem;
+}
+.tr-head > .btn {
+  grid-area: close;
+  align-self: center;
+}
+.tr-verdict {
+  font-size: var(--text-lg);
+  line-height: var(--leading-body);
+}
+
+/* The path in numbers: chance, weakest step, typical step, overall rank. */
+.tr-chips {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 0.75rem;
+  margin: 0;
+}
+.tr-chips > div {
+  display: grid;
+  align-content: start;
+  gap: 0.35rem;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  cursor: help;
+}
+.tr-chips dt {
+  color: var(--muted);
+  font: 600 var(--text-sm) / 1.2 var(--font);
+}
+.tr-chips dd {
+  margin: 0;
+  font-size: var(--text-xl);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.tr-chips dd span {
+  display: block;
+  color: var(--faint);
+  font-size: var(--text-sm);
+  font-weight: 400;
+}
+
+/* The range: presets, the scale, and the axis with its brush. */
+.tr-range {
+  display: grid;
+  gap: 0.6rem;
+}
+.tr-range-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.tr-scale {
+  display: inline-flex;
+  gap: 0.25rem;
+  margin-inline-start: 0.5rem;
+}
+.chip.tr-chip-on {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--text);
+}
+.tr-strip,
+.tr-curve {
+  min-width: 0;
+}
+.tr-strip svg,
+.tr-curve svg {
+  display: block;
+  overflow: visible;
+}
+.tr-axis {
+  stroke: var(--border);
+}
+.tr-axis-text {
+  fill: var(--faint);
+  font: 11px var(--font);
+  font-variant-numeric: tabular-nums;
+}
+.tr-tick {
+  stroke: var(--faint);
+  stroke-opacity: 0.6;
+}
+.tr-tick-target {
+  stroke: var(--accent);
+  stroke-opacity: 1;
+  stroke-width: 2;
+}
+.tr-brush .selection {
+  fill: var(--accent);
+  fill-opacity: 0.14;
+  stroke: var(--accent);
+}
+
+/* Steps: each one's options as bars; the step after an option on the way hangs under it. */
+.tr-step {
+  display: grid;
+  gap: 0.6rem;
+}
+.tr-step-head {
+  display: grid;
+  gap: 0.25rem;
+}
+.tr-step-question {
+  color: var(--text);
+  font-weight: 600;
+}
+.tr-step-meta,
+.tr-more {
+  color: var(--faint);
+  font-size: var(--text-sm);
+}
+.tr abbr {
+  text-decoration: underline dotted var(--faint);
+  cursor: help;
+}
+.tr-status {
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+.tr-ok {
+  color: var(--good);
+}
+.tr-close {
+  color: var(--busy);
+}
+.tr-lost {
+  color: var(--bad);
+}
+.tr-options {
+  display: grid;
+  grid-template-columns: minmax(6rem, max-content) minmax(4rem, 1fr) auto;
+  align-items: center;
+  gap: 0.4rem 0.85rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-variant-numeric: tabular-nums;
+}
+.tr-options > li {
+  display: contents;
+  color: var(--muted);
+}
+.tr-label {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.2rem 0.5rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.tr-on-path > .tr-label,
+.tr-on-path > .tr-p {
+  color: var(--text);
+  font-weight: 600;
+}
+.tr-winner > .tr-label::after {
+  content: "first";
+  color: var(--faint);
+  font-size: var(--text-sm);
+  font-weight: 400;
+}
+.tr-ruled-out {
+  color: var(--bad);
+  font-size: var(--text-sm);
+  font-weight: 400;
+}
+.tr-bar {
+  height: 0.5rem;
+  border-radius: 999px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+.tr-bar > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--faint);
+}
+.tr-on-path > .tr-bar > span {
+  background: var(--accent);
+}
+.tr-target > .tr-label {
+  color: var(--accent);
+}
+.tr-child {
+  grid-column: 1 / -1;
+  margin: 0.4rem 0 0.6rem 0.45rem;
+  padding-inline-start: 1.1rem;
+  border-inline-start: 2px solid var(--accent-soft);
+}
+
+/* Everything, ranked: the curve and the top ten. */
+.tr-ranking {
+  display: grid;
+  gap: 0.6rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border);
+}
+.tr-band {
+  fill: var(--accent);
+  fill-opacity: 0.08;
+}
+.tr-line {
+  fill: none;
+  stroke: var(--faint);
+  stroke-width: 1.5;
+}
+.tr-dot {
+  fill: var(--accent);
+  stroke: var(--bg);
+  stroke-width: 2;
+}
+.tr-hover {
+  fill: var(--text);
+}
+.tr-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+.tr-top li span:first-child {
+  margin-inline-end: 0.2rem;
+}
+.tr-top li span {
+  color: var(--faint);
+  font-variant-numeric: tabular-nums;
+}
+.tr-top li.tr-target {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+@media (max-width: 40rem) {
+  .tr {
+    padding: 1rem;
+  }
+  .tr-head {
+    grid-template-columns: 1fr auto;
+    grid-template-areas: "title close" "field field";
+  }
+  /* On a phone the labels take the room and wrap; the bars stay short. */
+  .tr-options {
+    grid-template-columns: minmax(0, 1fr) 4.5rem auto;
+  }
+  .tr-child {
+    margin-inline-start: 0.2rem;
+    padding-inline-start: 0.7rem;
+  }
+}

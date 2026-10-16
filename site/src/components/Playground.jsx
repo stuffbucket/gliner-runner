@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { HttpTransport, INSTALL_PEAK_BYTES, WorkerTransport } from "@gliner-runner/onnx-runner-web/client";
 import "./Playground.css";
+import Trace from "./Trace.jsx";
 import twenty from "../data/twenty-questions.json";
 import { MAX_QUESTIONS, afterClassification, afterReply, guessQuestion, newGame, nextStep, startGuess, verdict } from "./twentyQuestions.js";
 
@@ -297,10 +298,25 @@ function Workspace({ transport, models, onWarm }) {
     }
     setGame(null);
     setPlaying(false);
+    setWhy(false);
     setText(example.text);
     setLabels(example.labels);
     setSeveral(example.several ?? false);
   };
+
+  /** Classifies once, once the model has loaded; resolves with the classification and the model's time, or throws. */
+  async function infer({ text, labels: list, several = false, descriptions }) {
+    await loaded.current;
+    let reply;
+    try {
+      reply = await transport.request("POST", "/v1/infer", request(model, text, list, several, descriptions));
+    } catch {
+      throw new Error("Lost the connection to the runner.");
+    }
+    const data = parse(reply);
+    if (reply.status !== 200) throw new Error(message(data, "The runner rejected the request."));
+    return { ...data.output.category, modelMs: data.timing?.inference_ms };
+  }
 
   /** Classifies once and puts the answer on the stack; resolves with the answer, or nothing after an error. */
   async function run({ text, labels: list, several, descriptions, question }) {
@@ -310,24 +326,18 @@ function Workspace({ transport, models, onWarm }) {
     await loaded.current;
     const started = performance.now();
     try {
-      const reply = await transport.request("POST", "/v1/infer", request(model, text, list, several, descriptions));
-      const data = parse(reply);
-      if (reply.status !== 200) {
-        setError(message(data, "The runner rejected the request."));
-        return undefined;
-      }
-      const { value, probabilities } = data.output.category;
+      const { value, probabilities, modelMs } = await infer({ text, labels: list, several, descriptions });
       const answer = {
         question, text, labels: list, several, model,
         picked: [value].flat().filter(Boolean),
         scores: probabilities,
         elapsed: performance.now() - started,
-        modelMs: data.timing?.inference_ms,
+        modelMs,
       };
       push(answer);
       return answer;
-    } catch {
-      setError("Lost the connection to the runner.");
+    } catch (problem) {
+      setError(problem.message);
       return undefined;
     } finally {
       setBusy(false);
@@ -344,6 +354,8 @@ function Workspace({ transport, models, onWarm }) {
   // 20 questions: the player only writes clues and answers guesses. Once started, the game classifies on its own
   // until it has a guess to check, or runs out of questions.
   const [playing, setPlaying] = useState(false);
+  /** Whether the "Why?" panel is open (see Trace.jsx). */
+  const [why, setWhy] = useState(false);
   const clues = useRef("");
   const guessCard = useRef(undefined);
   const cluesBox = useRef(null);
@@ -426,6 +438,7 @@ function Workspace({ transport, models, onWarm }) {
   const shown = Math.min(back, Math.max(answers.length - 1, 0));
 
   return (
+    <>
     <div className="pg-workspace" onKeyDown={onKeyDown}>
       <div className="pg-examples">
         <span className="field-label">Example</span>
@@ -493,6 +506,9 @@ function Workspace({ transport, models, onWarm }) {
             {(game.phase === "won" || game.phase === "lost") && (
               <button type="button" className="btn btn-primary" onClick={playAgain}>Play again</button>
             )}
+            {game.clues.trim() && (
+              <button type="button" className="btn" aria-expanded={why} onClick={() => setWhy(!why)}>Why?</button>
+            )}
             <button type="button" className="btn btn-link" onClick={() => pick(EXAMPLES[0])}>Leave the game</button>
           </div>
         </>
@@ -542,6 +558,16 @@ function Workspace({ transport, models, onWarm }) {
         <AnswerStack answers={answers} shown={shown} game={game !== null} />
       </section>
     </div>
+    {game && why && (
+      <Trace
+        tree={twenty.tree}
+        game={game}
+        infer={(level) => infer(level).then((answer) => answer.probabilities)}
+        target={game.phase === "lost" ? "" : (game.guess ?? "")}
+        onClose={() => setWhy(false)}
+      />
+    )}
+    </>
   );
 }
 
