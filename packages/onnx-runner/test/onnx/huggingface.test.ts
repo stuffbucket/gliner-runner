@@ -89,6 +89,25 @@ test("follow mode (browsers) lets fetch follow the CDN redirect and refuses a to
   );
 });
 
+test("the default fetch is called on the global object, as browsers require", async (t) => {
+  const original = globalThis.fetch;
+  // Browsers throw "Illegal invocation" when fetch is called with any other receiver.
+  globalThis.fetch = function (this: unknown, ...args: Parameters<typeof fetch>) {
+    if (this !== undefined && this !== globalThis) {
+      throw new TypeError("Illegal invocation");
+    }
+    return original(...args);
+  } as typeof fetch;
+  t.after(() => {
+    globalThis.fetch = original;
+  });
+  await withHub({}, async (hub, directory) => {
+    const client = new HuggingFaceClient({ endpoint: hub.endpoint, token: undefined, maxAttempts: 1 });
+    await client.downloadFile(REPO, REVISION, described("tokenizer.json"), join(directory, "tokenizer.json"));
+    assert.equal(readFileSync(join(directory, "tokenizer.json"), "utf8"), '{"tokenizer":true}');
+  });
+});
+
 test("endpoint and token come from HF_ENDPOINT and HF_TOKEN", () => {
   assert.deepEqual(huggingFaceOptionsFromEnv({ HF_ENDPOINT: "http://mirror", HF_TOKEN: "t" }), { endpoint: "http://mirror", token: "t" });
   assert.deepEqual(huggingFaceOptionsFromEnv({ HF_ENDPOINT: "", HF_TOKEN: "" }), { endpoint: undefined, token: undefined });

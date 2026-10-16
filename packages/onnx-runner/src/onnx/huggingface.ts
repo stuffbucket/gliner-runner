@@ -94,7 +94,8 @@ export class HuggingFaceClient {
     if (this.#redirect === "follow" && this.#token !== undefined) {
       throw new Error("a Hugging Face token cannot be used when redirects are followed automatically");
     }
-    this.#fetch = options.fetch ?? globalThis.fetch;
+    // Wrapped, not stored as is: browsers throw "Illegal invocation" for a `fetch` called without its global.
+    this.#fetch = options.fetch ?? ((input, init) => globalThis.fetch(input, init));
     this.#maxAttempts = options.maxAttempts ?? 5;
     this.#retryBaseMs = options.retryBaseMs ?? 500;
     this.#retryMaxMs = options.retryMaxMs ?? 8000;
