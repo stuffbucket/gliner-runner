@@ -810,12 +810,35 @@ function OnMyMachine({ params, setStatus, useBrowser }) {
   );
 }
 
-function About({ onClose }) {
+/**
+ * The About panel. It is always there so it can slide in and out; while closed it can't be reached (inert, and
+ * hidden from screen readers). Opening it moves focus to its close button, and Escape closes it.
+ */
+function About({ open, onClose }) {
+  const close = useRef(null);
+  const wasOpen = useRef(open);
+  useEffect(() => {
+    // Only when it opens, not when the page loads with it already open.
+    if (open && !wasOpen.current) close.current?.focus();
+    wasOpen.current = open;
+    if (!open) return undefined;
+    const onKeyDown = (event) => {
+      if (event.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [open]);
   return (
-    <aside className="pg-about" aria-label="About the playground">
+    <aside
+      id="pg-about"
+      className={`pg-about${open ? " pg-about-open" : ""}`}
+      aria-label="About the playground"
+      aria-hidden={open ? undefined : "true"}
+      inert={!open}
+    >
       <div className="pg-about-head">
         <h2>About</h2>
-        <button type="button" className="btn btn-sm" onClick={onClose} aria-label="Close">✕</button>
+        <button type="button" ref={close} className="btn btn-sm" onClick={onClose} aria-label="Close">✕</button>
       </div>
       <p>Type some text and the labels you care about. GLiNER Runner picks the label that fits best and scores each one from 0 to 1.</p>
       <p>Turn on <strong>Several labels can fit</strong> when a text can have more than one label, or none.</p>
@@ -836,10 +859,11 @@ function About({ onClose }) {
 export default function Playground() {
   const params = new URLSearchParams(window.location.search);
   const [mode, setMode] = useState(() => params.get("mode") ?? stored(KEYS.mode, "tab"));
-  // On narrow screens the panel covers the playground, so it only reopens by itself on wide ones.
+  // On narrow screens the panel covers most of the playground, so it only reopens by itself on wide ones.
   const [about, setAbout] = useState(
     () => stored(KEYS.about, "closed") === "open" && window.matchMedia("(min-width: 60rem)").matches,
   );
+  const aboutToggle = useRef(null);
   const [status, setStatus] = useState({ tone: "idle", text: "Starting" });
   const choose = (next) => {
     store(KEYS.mode, next);
@@ -849,13 +873,25 @@ export default function Playground() {
     store(KEYS.about, open ? "open" : "closed");
     setAbout(open);
   };
+  // Closing from inside the panel hands focus back to the button that opens it, rather than losing it.
+  const closeAbout = () => {
+    toggleAbout(false);
+    aboutToggle.current?.focus();
+  };
   return (
-    <div className={`pg-app${about ? " pg-with-about" : ""}`}>
+    <div className="pg-app">
       <div className="pg-main">
         <header className="pg-bar">
           <h1>Playground</h1>
           <span className={`pill pill-${status.tone}`} title={status.title} role="status">{status.text}</span>
-          <button type="button" className="btn btn-sm pg-about-toggle" aria-expanded={about} onClick={() => toggleAbout(!about)}>
+          <button
+            type="button"
+            ref={aboutToggle}
+            className="btn btn-sm pg-about-toggle"
+            aria-expanded={about}
+            aria-controls="pg-about"
+            onClick={() => toggleAbout(!about)}
+          >
             {about ? "Hide about" : "About"}
           </button>
         </header>
@@ -865,7 +901,7 @@ export default function Playground() {
           <InTab params={params} setStatus={setStatus} useMachine={() => choose("local")} />
         )}
       </div>
-      {about && <About onClose={() => toggleAbout(false)} />}
+      <About open={about} onClose={closeAbout} />
     </div>
   );
 }
