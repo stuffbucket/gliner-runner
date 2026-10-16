@@ -20,7 +20,7 @@ export const MAX_QUESTIONS = 20;
  * - `temperature`: each classification's probabilities are raised to 1/temperature and renormalised (above 1
  *   trusts the classifier's first choice less).
  */
-export const TUNING = { discount: 1, temperature: 1 };
+export const TUNING = { discount: 0.45, temperature: 1 };
 
 /** Things that read better without "a" ("Is it gold?"). */
 const MASS = new Set([
