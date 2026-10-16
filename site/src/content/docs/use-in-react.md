@@ -8,7 +8,7 @@ sidebar:
 This guide builds a web page with a text box, a place to type labels, and a Classify button. The
 page calls the runner on your own computer. Nothing goes to the internet.
 
-You need the runner and the `decide-340m` model (see the [home page](/gliner-runner/)), and
+You need the runner and the `decide-340m` model (see [Get started](/gliner-runner/start/)), and
 Node.js version 20.19 or newer, or 22.12 or newer. Check with `node --version`.
 
 ## 1. Start the runner
@@ -198,3 +198,51 @@ works this way.
 - Change `model` to `decide-multilingual` to classify other languages.
 - Build a static copy with `npm run build`. The result is in `dist/`. To put it on a web server,
   see [If the page is served some other way](#if-the-page-is-served-some-other-way).
+
+## The browser playground
+
+The [playground](/gliner-runner/playground/) is a bigger version of this app, and it can run in two places.
+
+### In the browser
+
+By default the playground runs GLiNER Runner itself inside the page, in a
+[Web Worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API). It is the same program as
+`gliner-runner serve`, with the browser's private storage in place of a disk and
+[ONNX Runtime Web](https://onnxruntime.ai/docs/tutorials/web/) in place of the native ONNX Runtime. The page sends
+it the same `/v1/infer` requests this app sends to the runner on your computer.
+
+- **The model.** Only `decide-340m` runs in the browser. The first time, the page downloads it from Hugging Face
+  (1.95 GB), then checks and prepares it the same way `gliner-runner models install` does, which takes a few
+  minutes. The prepared model (1.75 GB) stays in the browser for this site, so later visits start right away.
+  **Remove the model** deletes it. The page asks the browser to keep the model when disk space runs low; if the
+  browser removes it anyway, the page offers the download again.
+- **Speed.** The page uses the graphics card through WebGPU when the browser has it, and the processor otherwise.
+  Before it uses the graphics card, it checks one known answer against the reference results. A classification
+  takes well under a second either way; loading the model takes a few seconds the first time.
+- **What you need.** A current desktop browser (Chrome, Edge, Firefox or Safari) and about 4 GB of free disk
+  space. Private and incognito windows usually do not let websites store this much; the page says so and offers
+  your computer instead. Phones and tablets are not supported.
+
+### On your computer
+
+**Run it on my computer instead** connects the playground to the runner on your computer. It is faster, can use
+all three models, and keeps the model outside the browser. One command sets everything up: it installs
+gliner-runner if needed (or uses the one you have), downloads the model if needed, allows the playground's
+address, starts the runner, and opens the playground connected to it:
+
+```sh
+curl -fsSL https://github.com/stuffbucket/gliner-runner/releases/latest/download/install.sh | sh -s -- --playground --yes
+```
+
+When gliner-runner is already installed (for example with Homebrew):
+
+```sh
+gliner-runner playground --yes
+```
+
+If the playground is already open, it connects by itself as soon as the runner is up. The runner keeps running
+until you press Ctrl+C. Chrome may ask whether the site can reach devices on your local network; allow it, because
+that is how the page reaches the runner on your computer.
+
+`gliner-runner playground` adds `https://stuffbucket.github.io` to the runner's list of allowed addresses.
+`gliner-runner cors list` shows the list, and `gliner-runner cors delete <number>` removes an address.

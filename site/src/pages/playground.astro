@@ -1,0 +1,20 @@
+---
+import Playground from "../components/Playground.jsx";
+import Plain from "../layouts/Plain.astro";
+---
+
+<Plain
+  title="Try it in your browser · GLiNER Runner"
+  description="Classify text with GLiNER Runner right in this page. Your text stays on your device."
+  current="playground"
+>
+  <main class="playground-page">
+    <Playground client:only="react" />
+  </main>
+</Plain>
+
+<style>
+  .playground-page {
+    padding: 1.25rem clamp(1rem, 4vw, 2.5rem) 2rem;
+  }
+</style>

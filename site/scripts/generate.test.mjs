@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { mkdtempSync, readdirSync } from "node:fs";
+import { existsSync, mkdtempSync, readdirSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { copyRunnerTemplates, fmtBytes, fmtDrift, parseNativeEvidence, rewriteLinks } from "./generate.mjs";
@@ -54,4 +54,18 @@ test("copies only the in-tab model's template for the playground worker", () => 
     "manifest.json",
     "template.json",
   ]);
+});
+
+test("the landing gallery is precomputed for real example pages and is self-consistent", () => {
+  const site = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+  const { entries } = JSON.parse(readFileSync(join(site, "src/data/gallery.json"), "utf8"));
+  assert.ok(entries.length >= 10);
+  for (const entry of entries) {
+    assert.ok(existsSync(join(site, "src/content/docs/examples", `${entry.example}.md`)), entry.example);
+    assert.deepEqual(Object.keys(entry.scores).sort(), [...entry.labels].sort(), entry.text);
+    assert.ok(entry.picked.every((label) => entry.labels.includes(label)), entry.text);
+    assert.ok(entry.multi || entry.picked.length === 1, entry.text);
+    assert.match(entry.revision, /^[0-9a-f]{40}$/);
+  }
+  assert.deepEqual(new Set(entries.map((entry) => entry.model)), new Set(["decide-340m", "decide-1b", "decide-multilingual"]));
 });

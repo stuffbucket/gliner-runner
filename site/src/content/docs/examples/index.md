@@ -49,7 +49,7 @@ text at a time and has no way to compare two.
 
 ## Before you start
 
-Install the program and a model (see the [home page](/gliner-runner/)). The English examples use
+Install the program and a model (see [Get started](/gliner-runner/start/)). The English examples use
 `decide-340m`. The other-languages page uses `decide-multilingual`.
 
 The commands work in Terminal on macOS and in any Linux shell. Paste each block whole.

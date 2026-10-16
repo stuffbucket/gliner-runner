@@ -1,173 +1,284 @@
-.playground {
+/* Layout of the playground (see Playground.jsx); type, controls and the answer card come from styles/brand.css. */
+.pg-app {
   display: grid;
-  gap: 1rem;
-  margin-top: 1.5rem;
-  padding: 1.25rem;
-  border: 1px solid var(--sl-color-hairline);
-  border-radius: 0.5rem;
-  background: var(--sl-color-bg-nav);
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2rem;
+  min-height: calc(100dvh - 3.5rem - 3.25rem);
+  color: var(--text);
 }
-.playground label {
-  font-weight: 600;
-  color: var(--sl-color-white);
+.pg-app.pg-with-about {
+  grid-template-columns: minmax(0, 1fr) 20rem;
 }
-.playground input:not([type="checkbox"]),
-.playground textarea,
-.playground select {
-  font: inherit;
-  width: 100%;
+.pg-main {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
   min-width: 0;
-  box-sizing: border-box;
-  padding: 0.5rem;
-  border: 1px solid var(--sl-color-gray-5);
-  border-radius: 0.25rem;
-  background: var(--sl-color-bg);
-  color: var(--sl-color-text);
 }
-.playground button {
-  font: inherit;
-  font-weight: 600;
-  justify-self: start;
-  padding: 0.5rem 1rem;
-  border: 0;
-  border-radius: 0.25rem;
-  background: var(--sl-color-accent);
-  color: var(--sl-color-black);
-  cursor: pointer;
-}
-.playground button:disabled {
-  opacity: 0.6;
-  cursor: progress;
-}
-.playground .form {
-  display: grid;
-  gap: 0.5rem;
-}
-.playground .form button {
-  margin-top: 0.5rem;
-}
-.playground .check {
-  font-weight: normal;
-  color: var(--sl-color-text);
-}
-.playground .notice {
-  padding: 0.75rem 1rem;
-  border-inline-start: 4px solid var(--sl-color-orange);
-  background: var(--sl-color-orange-low);
-  color: var(--sl-color-white);
-}
-.playground .notice p {
-  margin: 0.25rem 0;
-}
-.playground .error {
-  color: var(--sl-color-red-high);
-}
-.playground .result {
-  margin-top: 0.5rem;
-}
-.playground .answer {
-  margin: 0 0 0.5rem;
-  font-size: var(--sl-text-2xl);
-  font-weight: 600;
-  color: var(--sl-color-white);
-}
-.playground .result ul {
-  list-style: none;
+.pg-app h1,
+.pg-app h2 {
   margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 0.25rem;
+  color: var(--text);
+  letter-spacing: -0.015em;
 }
-.playground .result li {
-  display: grid;
-  grid-template-columns: minmax(6rem, auto) 1fr 3.5rem;
+.pg-app p {
+  margin: 0;
+}
+
+/* Title row: the pill is as tall as the title's capitals and centred on them. */
+.pg-bar {
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 0.75rem;
-  font-variant-numeric: tabular-nums;
+  gap: 0.75rem 1rem;
 }
-.playground meter {
-  width: 100%;
+.pg-bar h1 {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  line-height: 1;
 }
-.playground .modes {
-  display: inline-flex;
-  justify-self: start;
-  border: 1px solid var(--sl-color-gray-5);
-  border-radius: 0.375rem;
+.pg-about-toggle {
+  margin-inline-start: auto;
+}
+
+/*
+ * Workspace: examples, text, labels and actions on the left; the answer stack on the right, starting level with
+ * the text box and running to the bottom of the window.
+ */
+.pg-workspace {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(18rem, 2fr);
+  grid-template-rows: auto auto auto auto auto auto 1fr;
+  grid-template-areas:
+    "examples ."
+    "textlabel ."
+    "text stack"
+    "labels stack"
+    "actions stack"
+    "message stack"
+    ". stack";
+  column-gap: 2rem;
+}
+.pg-examples {
+  grid-area: examples;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+.pg-examples .field-label {
+  margin-inline-end: 0.35rem;
+}
+.pg-text-label {
+  grid-area: textlabel;
+  margin-bottom: 0.45rem;
+}
+.pg-text {
+  grid-area: text;
+  min-height: 14rem;
+}
+.pg-labels {
+  grid-area: labels;
+  margin-top: 1.25rem;
+}
+.pg-actions {
+  grid-area: actions;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+  margin-top: 1.25rem;
+}
+.pg-message {
+  grid-area: message;
+  margin-top: 1rem;
+}
+.pg-classify {
+  margin-inline-start: auto;
+}
+
+/* The stack takes no height of its own: its cards are cut off at the bottom of the area, never scrolled. */
+.pg-stack {
+  grid-area: stack;
+  position: relative;
+  min-height: 16rem;
+}
+.pg-stack > * {
+  position: absolute;
+  inset: 0 0 auto;
+}
+.pg-stack-cards {
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
   overflow: hidden;
 }
-.playground .modes button {
-  border-radius: 0;
+.pg-answer {
+  flex: none;
+  transition: opacity var(--duration-move) var(--ease-in-out);
+}
+.pg-enter {
+  animation: pg-enter var(--duration-move) var(--ease-out) both;
+}
+@keyframes pg-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-0.75rem) scale(0.985);
+  }
+}
+.pg-elapsed {
+  margin-inline-start: auto;
+  font-variant-numeric: tabular-nums;
+}
+.pg-placeholder {
+  min-height: 16rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-style: dashed;
   background: transparent;
-  color: var(--sl-color-text);
-  font-weight: 500;
+  color: var(--faint);
+  text-align: center;
 }
-.playground .modes button[aria-selected="true"] {
-  background: var(--sl-color-accent);
-  color: var(--sl-color-black);
-  font-weight: 600;
+.pg-none {
+  color: var(--muted);
+  font-size: var(--text-sm);
 }
-.playground .setup {
+
+/* Messages */
+.pg-muted {
+  color: var(--muted);
+}
+.pg-small,
+.pg-footer {
+  color: var(--faint);
+  font-size: var(--text-sm);
+}
+.pg-footer .btn-link {
+  font-size: inherit;
+}
+.pg-error {
+  color: var(--bad);
+}
+.pg-waiting::before {
+  content: "";
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  margin-inline-end: 0.6rem;
+  border-radius: 50%;
+  background: var(--busy);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+/* Cards for the steps before classifying */
+.pg-card {
   display: grid;
-  gap: 0.75rem;
+  gap: 1rem;
+  width: min(100%, 36rem);
+  margin: clamp(1rem, 8vh, 5rem) auto 0;
+  padding: 2rem;
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) * 1.5);
+  background: var(--surface);
+  font-size: var(--text-md);
+  line-height: var(--leading-body);
 }
-.playground .setup p {
-  margin: 0;
+.pg-card h2 {
+  font-size: var(--text-xl);
+  line-height: var(--leading-tight);
 }
-.playground .progress {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 0.375rem;
+.pg-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
 }
-.playground .progress progress {
+.pg-card progress {
   width: 100%;
-  height: 0.75rem;
+  height: 0.6rem;
+  accent-color: var(--accent);
 }
-.playground .progress button {
-  justify-self: start;
-}
-.playground .command {
+.pg-command {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: start;
   gap: 0.5rem;
-  margin: 0;
-  padding: 0;
-  background: none;
 }
-.playground .command pre {
-  margin: 0;
-  padding: 0.5rem 0.75rem;
-  overflow-x: auto;
-  white-space: pre-wrap;
+.pg-command code {
+  padding: 0.65rem 0.85rem;
+  border-radius: var(--radius);
+  background: var(--code);
+  font-size: var(--text-sm);
+  line-height: 1.5;
   word-break: break-all;
-  background: var(--sl-color-bg-inline-code);
-  border-radius: 0.25rem;
 }
-.playground button.secondary {
-  background: transparent;
-  color: var(--sl-color-text-accent);
-  border: 1px solid var(--sl-color-gray-5);
-  font-weight: 500;
-}
-.playground button.link {
-  padding: 0;
-  background: none;
-  color: var(--sl-color-text-accent);
-  font-weight: normal;
-  text-decoration: underline;
-}
-.playground .muted {
-  margin: 0;
-  color: var(--sl-color-gray-2);
-}
-.playground .small {
-  font-size: var(--sl-text-sm);
-}
-.playground details.advanced summary {
+.pg-advanced summary {
   cursor: pointer;
-  color: var(--sl-color-gray-2);
-  font-size: var(--sl-text-sm);
+  color: var(--muted);
+  font-size: var(--text-sm);
 }
-.playground details.advanced input {
-  margin-top: 0.5rem;
+.pg-advanced .input {
+  margin-top: 0.6rem;
+}
+
+/* About panel */
+.pg-about {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-self: start;
+  position: sticky;
+  top: 4.5rem;
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) * 1.5);
+  background: var(--surface);
+  font-size: var(--text-md);
+  line-height: var(--leading-body);
+}
+.pg-about-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.pg-about h2 {
+  font-size: var(--text-xl);
+}
+.pg-about ul {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+  padding-inline-start: 1.1rem;
+}
+
+@media (max-width: 60rem) {
+  .pg-workspace {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: none;
+    grid-template-areas: "examples" "textlabel" "text" "labels" "actions" "message" "stack";
+  }
+  .pg-text {
+    min-height: 10rem;
+  }
+  .pg-stack {
+    height: 32rem;
+    margin-top: 1.5rem;
+  }
+  /* On narrow screens the panel slides over the playground instead of squeezing it. */
+  .pg-app.pg-with-about {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .pg-about {
+    position: fixed;
+    inset: 3.5rem 0 0 auto;
+    width: min(85vw, 20rem);
+    border-radius: 0;
+    overflow-y: auto;
+    box-shadow: 0 10px 30px rgb(0 0 0 / 0.25);
+    z-index: 30;
+  }
 }

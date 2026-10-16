@@ -1,0 +1,210 @@
+---
+import Gallery from "../components/Gallery.astro";
+import Plain from "../layouts/Plain.astro";
+
+const base = import.meta.env.BASE_URL.replace(/\/?$/, "/");
+const docs = [
+  { href: "start/", title: "Get started", text: "Install the runner and a model, then classify your first text." },
+  { href: "how-it-works/", title: "How it works", text: "What it can and cannot do, how fast it is, and when to use something else." },
+  { href: "examples/", title: "Examples", text: "Support tickets, urgent messages, reviews, personal information and more." },
+  { href: "use-in-react/", title: "Use it in an app", text: "Call the runner from a web page, and how the browser version works." },
+  { href: "models/", title: "Models", text: "The three models, their sizes, languages and test results." },
+  { href: "docs/onnx-runtime/", title: "Reference", text: "Every command, option and API request." },
+];
+---
+
+<Plain
+  title="GLiNER Runner: sort text into labels you choose"
+  description="GLiNER Runner sorts text into labels you choose. It runs on your own computer or in your browser, and your text never leaves your device."
+>
+  <main>
+    <section class="hero">
+      <div class="pitch">
+        <h1>Sort text into the labels you choose.</h1>
+        <p class="lead">
+          Give GLiNER Runner a message and a few labels, and it tells you which one fits: billing or shipping, urgent
+          or can wait, positive or negative. It runs on your own computer, or right in your browser. Your text never
+          leaves your device.
+        </p>
+        <div class="cta">
+          <a class="btn btn-primary" href={`${base}playground/`}>Try it in your browser</a>
+          <a class="btn" href={`${base}start/`}>Get started</a>
+        </div>
+      </div>
+      <Gallery />
+    </section>
+
+    <section class="points">
+      <div>
+        <h2>Your labels</h2>
+        <p>Write any short labels. There is nothing to train: change them whenever you like.</p>
+      </div>
+      <div>
+        <h2>Private</h2>
+        <p>The model runs on your device. No account, and no text is sent to a server.</p>
+      </div>
+      <div>
+        <h2>Free and offline</h2>
+        <p>Open source (Apache-2.0). After the first download it works without an internet connection.</p>
+      </div>
+    </section>
+
+    <section class="install">
+      <h2>Install</h2>
+      <p>On macOS (Apple Silicon) or Linux:</p>
+      <pre><code><span class="prompt">$</span> curl -fsSL https://github.com/stuffbucket/gliner-runner/releases/latest/download/install.sh | sh
+<span class="prompt">$</span> gliner-runner models install decide-340m
+<span class="prompt">$</span> gliner-runner classify --labels billing,support,shipping "I was charged twice for my last order."
+<span class="output">billing (confidence 0.889)</span></code></pre>
+      <p><a href={`${base}start/`}>Homebrew, other options and the next steps →</a></p>
+    </section>
+
+    <section class="docs">
+      <h2>Documentation</h2>
+      <div class="grid">
+        {
+          docs.map((doc) => (
+            <a class="doc" href={`${base}${doc.href}`}>
+              <strong>{doc.title}</strong>
+              <span>{doc.text}</span>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>GLiNER Runner · Apache-2.0</span>
+    <a href="https://github.com/stuffbucket/gliner-runner">GitHub</a>
+    <a href={`${base}releases/`}>Releases</a>
+  </footer>
+</Plain>
+
+<style>
+  main {
+    width: min(100% - 2rem, 70rem);
+    margin: 0 auto;
+  }
+  h1,
+  h2 {
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(2rem, 5vw, 4rem);
+    padding: clamp(2.5rem, 8vw, 6rem) 0 clamp(2rem, 6vw, 4rem);
+  }
+  h1 {
+    margin: 0 0 1.25rem;
+    font-size: var(--text-3xl);
+  }
+  .lead {
+    margin: 0;
+    max-width: 36rem;
+    color: var(--muted);
+    font-size: var(--text-lg);
+  }
+  .cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+  .points {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.5rem;
+    padding: 2rem 0;
+    border-top: 1px solid var(--border);
+  }
+  .points h2 {
+    margin: 0 0 0.4rem;
+    font-size: var(--text-lg);
+  }
+  .points p {
+    margin: 0;
+    color: var(--muted);
+  }
+
+  .install,
+  .docs {
+    padding: 2.5rem 0;
+    border-top: 1px solid var(--border);
+  }
+  .install h2,
+  .docs h2 {
+    margin: 0 0 1rem;
+    font-size: var(--text-xl);
+  }
+  .install p {
+    margin: 0 0 0.75rem;
+    color: var(--muted);
+  }
+  pre {
+    margin: 0 0 1rem;
+    padding: 1rem 1.25rem;
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--code);
+    font-size: var(--text-sm);
+    line-height: 1.7;
+  }
+  .prompt {
+    color: var(--faint);
+    user-select: none;
+  }
+  .output {
+    color: var(--good);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+  .doc {
+    display: grid;
+    gap: 0.3rem;
+    padding: 1.1rem 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    text-decoration: none;
+  }
+  .doc:hover {
+    border-color: var(--accent);
+  }
+  .doc span {
+    color: var(--muted);
+    font-size: var(--text-sm);
+  }
+
+  footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    width: min(100% - 2rem, 70rem);
+    margin: 0 auto;
+    padding: 2rem 0 3rem;
+    border-top: 1px solid var(--border);
+    color: var(--faint);
+    font-size: var(--text-sm);
+  }
+  footer a {
+    color: var(--muted);
+  }
+
+  @media (max-width: 52rem) {
+    .hero,
+    .points,
+    .grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

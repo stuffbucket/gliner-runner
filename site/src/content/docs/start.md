@@ -1,5 +1,5 @@
 ---
-title: GLiNER Runner
+title: Get started
 description: Sort text into labels you choose, on your own computer, with no account and no internet connection after the first download.
 ---
 
