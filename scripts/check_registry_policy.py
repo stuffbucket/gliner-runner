@@ -124,6 +124,8 @@ def check_repository_guards() -> list[str]:
     lockfile = (ROOT / "pnpm-lock.yaml").read_text(encoding="utf-8")
     if "tarball:" in lockfile:
         errors.append("pnpm-lock.yaml must not persist registry tarball URLs")
+    if "integrity: sha1-" in lockfile:
+        errors.append("pnpm-lock.yaml must keep sha512 integrity hashes, not a mirror's sha1 ones")
     return errors
 
 

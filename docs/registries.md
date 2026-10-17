@@ -15,7 +15,25 @@ mise run setup
 
 Do not pass tokens on a command line or enable pnpm debug/HTTP logging in CI.
 The lockfile records integrity hashes but must not contain URL userinfo,
-credential query parameters, or auth fields.
+credential query parameters, auth fields, or tarball URLs.
+
+## CI and the npm mirror
+
+The workflows that install npm packages (`ci`, `site`, `_release-build` and
+`opt-in`) set `npm_config_registry` to the npm mirror developers use,
+`https://packagefeedproxy.microsoft.io/npm/`. It needs no credentials. With
+CI and local installs on the same mirror, the lockfile can only name versions
+the mirror has, and a lockfile that installs in CI installs locally too.
+
+The mirror lags npm by a week or more, so Dependabot holds npm updates for 14
+days (`cooldown` in `.github/dependabot.yml`); security updates are not held.
+If a lockfile still names a version the mirror lacks, re-resolve just that
+package through the mirror; pnpm keeps every version that still fits.
+
+The mirror serves sha1 integrity for some packages, and pnpm writes those
+into the lockfile when it re-resolves through it. Keep the sha512 hashes:
+`check:registry` rejects sha1 integrity in `pnpm-lock.yaml`, and a tarball's
+sha512 can be computed from the file itself (`npm pack <name>@<version>`).
 
 ## Docker and BuildKit
 
@@ -78,6 +96,7 @@ instruction, and keep subsequent build/package stages offline.
 
 - credential/config files that must remain outside the repository;
 - credential-bearing or sensitive-query URLs in lock/generated configuration;
+- tarball URLs or sha1 integrity hashes in `pnpm-lock.yaml`;
 - common token/password assignments in generated configuration;
 - Docker `COPY`, `ADD`, `ARG`, or `ENV` patterns for registry credentials;
 - removal of the approved npm and pip BuildKit adapters.
