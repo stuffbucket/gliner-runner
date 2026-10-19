@@ -11,6 +11,11 @@ on:
           - integration
           - benchmark
 
+# npm packages, and pnpm itself (mise installs it from npm), come from the same registry mirror developers use, so
+# the lockfile only names versions that mirror has. It needs no credentials; nothing here publishes to npm.
+env:
+  npm_config_registry: https://packagefeedproxy.microsoft.io/npm/
+
 permissions:
   contents: read
 

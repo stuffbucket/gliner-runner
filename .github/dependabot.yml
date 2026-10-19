@@ -10,3 +10,7 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    # Only propose releases at least two weeks old, so the lockfile stays installable through registry mirrors
+    # that lag behind npm. Security updates are not held back by this.
+    cooldown:
+      default-days: 14
