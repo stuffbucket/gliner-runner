@@ -8,7 +8,7 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { parseArgs } from "node:util";
 
-import { afterClassification, afterReply, newGame, nextStep, startGuess } from "../../src/components/twentyQuestions.js";
+import { afterClassification, afterReply, levelOf, newGame, nextStep, startGuess } from "../../src/components/twentyQuestions.js";
 import { classify, startRunner } from "../runner.mjs";
 import { buildTree, loadAnswers } from "./tree.mjs";
 
@@ -30,10 +30,7 @@ const { tree } = buildTree(answers);
 const levels = [];
 (function collect(node) {
   if (node.children === undefined) return;
-  const descriptions = node.children.some((c) => c.description)
-    ? Object.fromEntries(node.children.filter((c) => c.description).map((c) => [c.label, c.description]))
-    : undefined;
-  levels.push({ labels: node.children.map((c) => c.label), descriptions });
+  levels.push(levelOf(node));
   node.children.forEach(collect);
 })(tree);
 const games = answers.categories.flatMap((c) => c.items.map((item) => ({ name: item.name, text: item[values.set] })));
