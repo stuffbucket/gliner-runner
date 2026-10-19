@@ -61,7 +61,9 @@ jobs:
           version: 2026.9.5
           sha256: ${{ matrix.mise-sha256 }}
           install: true
-          cache: true
+          # Release builds never restore caches: a lower-trust workflow that can write to the default branch's
+          # caches could otherwise slip files into a release.
+          cache: false
       - name: Stamp release candidate version (build workspace only)
         if: inputs.channel == 'rc'
         run: mise run release:stamp
@@ -101,7 +103,9 @@ jobs:
           version: 2026.9.5
           sha256: 32f644d8c291bb182f702c6d2b0dda9f8b01441e940d74d328aad5f08446b2fd
           install: true
-          cache: true
+          # Release builds never restore caches: a lower-trust workflow that can write to the default branch's
+          # caches could otherwise slip files into a release.
+          cache: false
       - name: Stamp release candidate version (build workspace only)
         if: inputs.channel == 'rc'
         run: mise run release:stamp
