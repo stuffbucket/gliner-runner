@@ -80,7 +80,7 @@ export function status(option) {
 
 /**
  * The trace for `name`. `levels` maps a level's nodeKey to the probabilities its classification returned (missing
- * levels are left unscored). `ruledOut` holds the nodeKeys of wrong guesses in the game, if any.
+ * levels are left unscored). `ruledOut` holds the names of wrong guesses in the game, if any.
  *
  * Returns `{ name, paths, root, best, verdict }`: `root` is the first step; every step has `question`, `n`,
  * `sureness` and `options` (best first), and an option on the way to `name` has its `child` step (or `isTarget` at
@@ -107,6 +107,7 @@ export function trace(tree, name, levels, { ruledOut = new Set(), tuning = TUNIN
       .sort((a, b) => b.p - a.p);
     const options = ranked.map((option, index) => {
       const best = index === 0 ? ranked[1] : ranked[0];
+      const isThing = isGuess(nodeAt(tree, [...path, option.label]));
       const scored = {
         ...option,
         rank: index + 1,
@@ -114,8 +115,8 @@ export function trace(tree, name, levels, { ruledOut = new Set(), tuning = TUNIN
         behind: index === 0 ? 1 : ranked[0].p / Math.max(option.p, Number.EPSILON),
         isWinner: index === 0,
         onPath: onPath.has(option.nodeKey),
-        isTarget: onPath.has(option.nodeKey) && option.label === name && isGuess(nodeAt(tree, [...path, option.label])),
-        ruledOut: ruledOut.has(option.nodeKey),
+        isTarget: onPath.has(option.nodeKey) && option.label === name && isThing,
+        ruledOut: isThing && ruledOut.has(option.label),
       };
       scored.status = status(scored);
       if (scored.onPath && !scored.isTarget) scored.child = step([...path, option.label]);

@@ -1,10 +1,12 @@
 // Plays "20 questions" for every answer in answers.json against the real model, with the playground's own game
 // logic (src/components/twentyQuestions.js), answering each guess honestly. Use it to tune the tree:
 //
-//   GLINER_RUNNER_MODELS_DIR=dist/onnx-models node site/scripts/twenty-questions/simulate.mjs [--set clue|alt] \
-//     [--model decide-340m] [--only animal] [--report /tmp/report.json]
+//   GLINER_RUNNER_MODELS_DIR=dist/onnx-models node site/scripts/twenty-questions/simulate.mjs [--set clue|alt|both] \
+//     [--staged] [--model decide-340m] [--only animal] [--report /tmp/report.json]
 //
 // `clue` is the tuning set and `alt` the held-out set: tune against `clue`, then check `alt` did not get worse.
+// With --staged each game starts from `alt` and adds `clue` after the first wrong guess, the way a player adds a
+// clue in the playground: it should do about as well as `--set both` (`alt` and `clue` together from the start).
 //
 // To see why one description does or does not reach one thing (the playground's "Why?"), trace it:
 //
@@ -30,6 +32,7 @@ const { values } = parseArgs({
     concurrency: { type: "string", default: "8" },
     cache: { type: "string", default: "/tmp/twenty-questions-cache.json" },
     diagnose: { type: "boolean" },
+    staged: { type: "boolean" },
     trace: { type: "string" },
     text: { type: "string" },
   },
@@ -45,11 +48,17 @@ async function scores(text, labels, descriptions) {
   }
   return cache.get(id);
 }
+/** The clues for one thing in --set: `clue`, `alt`, or `both` (`alt` then `clue`, as --staged ends up with). */
+const textOf = (item) => (values.set === "both" ? `${item.alt} ${item.clue}` : item[values.set]);
 const top = (probabilities) => Object.entries(probabilities).sort((a, b) => b[1] - a[1])[0][0];
 
-/** Plays one game; returns the number of questions asked, whether it won, and the path it took. */
-async function play(tree, item, clues) {
+/**
+ * Plays one game; returns the number of questions put to the player, the model calls made, whether it won, and the
+ * path it took. Any `later` clue is added after the first wrong guess, as a player would in the playground.
+ */
+async function play(tree, item, clues, later) {
   let game = newGame(tree, clues);
+  let calls = 0;
   const trail = [];
   while (game.phase === "asking") {
     const step = nextStep(game);
@@ -58,13 +67,18 @@ async function play(tree, item, clues) {
       const yes = step.label === item.name;
       trail.push(yes ? `✓${step.label}` : `✗${step.label}`);
       game = afterReply(game, yes);
+      if (!yes && later !== undefined && game.clues === clues) {
+        game = { ...game, clues: `${clues} ${later}` };
+        trail.push("+clue");
+      }
       continue;
     }
-    const probabilities = await scores(clues, step.labels, step.descriptions);
-    trail.push(`[${top(probabilities)}]`);
+    const probabilities = await scores(step.clues, step.labels, step.descriptions);
+    calls += 1;
+    trail.push(`[${step.again ? "again: " : ""}${top(probabilities)}]`);
     game = afterClassification(game, step, probabilities);
   }
-  return { won: game.phase === "won", asked: game.asked, trail };
+  return { won: game.phase === "won", asked: game.asked, calls, trail };
 }
 
 async function pool(items, size, work) {
@@ -86,7 +100,7 @@ const { tree } = buildTree(answers);
 /** Scores the true path of every clue: the category, the group within it, and the item's rank within its group. */
 async function diagnose(games) {
   const rows = await pool(games, Number(values.concurrency), async ({ category, item }) => {
-    const text = item[values.set];
+    const text = textOf(item);
     const categoryNode = tree.children.find((c) => c.label === category);
     const groupNode = categoryNode.children.find((g) => g.label === item.group);
     const root = levelOf(tree);
@@ -123,7 +137,7 @@ async function diagnose(games) {
 async function printTrace(name) {
   const paths = pathsTo(tree, name);
   const item = answers.categories.flatMap((c) => c.items).find((i) => i.name === name);
-  const text = values.text ?? item?.[values.set];
+  const text = values.text ?? (item && textOf(item));
   if (paths.length === 0 || text === undefined) {
     console.log(paths.length === 0 ? `“${name}” is not in answers.json.` : `Give a description with --text.`);
     return;
@@ -166,7 +180,7 @@ try {
     .flatMap((category) => category.items.map((item) => ({ category: category.label, item })));
   const started = Date.now();
   const results = await pool(games, Number(values.concurrency), async ({ category, item }) => {
-    const outcome = await play(tree, item, item[values.set]);
+    const outcome = values.staged ? await play(tree, item, item.alt, item.clue) : await play(tree, item, textOf(item));
     return {
       category,
       group: item.group,
@@ -181,17 +195,20 @@ try {
   const summarize = (rows) => {
     const won = rows.filter((r) => r.won);
     const asked = won.map((r) => r.asked).sort((a, b) => a - b);
+    const calls = rows.map((r) => r.calls).sort((a, b) => a - b);
     return {
       games: rows.length,
       won: won.length,
       winRate: percent(won.length, rows.length),
       meanQuestions: asked.length ? (asked.reduce((a, b) => a + b, 0) / asked.length).toFixed(2) : "-",
       p90Questions: asked.length ? asked[Math.floor(asked.length * 0.9)] : "-",
+      meanModelCalls: (calls.reduce((a, b) => a + b, 0) / Math.max(calls.length, 1)).toFixed(1),
+      p90ModelCalls: calls.length ? calls[Math.floor(calls.length * 0.9)] : "-",
       firstQuestionRight: percent(rows.filter((r) => r.firstCategory).length, rows.length),
       groupRightFirstTime: percent(rows.filter((r) => r.firstGroup).length, rows.length),
     };
   };
-  console.log(`set=${values.set} model=${values.model} games=${results.length} in ${((Date.now() - started) / 1000).toFixed(0)} s`);
+  console.log(`set=${values.staged ? "alt then clue" : values.set} model=${values.model} games=${results.length} in ${((Date.now() - started) / 1000).toFixed(0)} s`);
   console.table(Object.fromEntries([...new Set(results.map((r) => r.category))].map((c) => [c, summarize(results.filter((r) => r.category === c))])));
   console.log("all:", summarize(results));
   const groups = new Map();

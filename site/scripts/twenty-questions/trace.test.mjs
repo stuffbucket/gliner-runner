@@ -29,6 +29,8 @@ const levels = new Map([
   ["vegetable", { fruit: 1 }],
   ["vegetable › fruit", { kiwi: 0.5, apple: 0.4, pear: 0.1 }],
 ]);
+// Path chances below are worked out by hand from these shares as they are, untempered.
+const plain = { temperature: 1 };
 
 test("a name in two places has two paths, and their levels are each classified once", () => {
   assert.deepEqual(pathsTo(tree, "kiwi"), [["animal", "bird", "kiwi"], ["vegetable", "fruit", "kiwi"]]);
@@ -38,7 +40,7 @@ test("a name in two places has two paths, and their levels are each classified o
 });
 
 test("each step on the way gets its place, its lead or how far behind, and a status", () => {
-  const result = trace(tree, "kiwi", levels, { ruledOut: new Set(["animal › bird › owl"]) });
+  const result = trace(tree, "kiwi", levels, { ruledOut: new Set(["owl"]) });
   const animal = result.root.options.find((o) => o.label === "animal");
   assert.equal(animal.rank, 1);
   assert.ok(Math.abs(animal.lead - 0.4) < 1e-9);
@@ -57,7 +59,7 @@ test("each step on the way gets its place, its lead or how far behind, and a sta
 });
 
 test("each path gets its chance, weakest step and typical step, and the verdict follows the likelier path", () => {
-  const result = trace(tree, "kiwi", levels);
+  const result = trace(tree, "kiwi", levels, { tuning: plain });
   const [viaBird, viaFruit] = result.paths;
   assert.ok(Math.abs(viaBird.pathP - 0.7 * 0.9 * 0.2) < 1e-9);
   assert.ok(Math.abs(viaFruit.pathP - 0.3 * 1 * 0.5) < 1e-9);
@@ -81,7 +83,7 @@ test("sureness runs from 0 for an even split to 1 for a certain answer", () => {
 });
 
 test("the overall ranking multiplies every step and leaves out unscored branches", () => {
-  const ranked = leafRanking(tree, levels);
+  const ranked = leafRanking(tree, levels, plain);
   assert.deepEqual(ranked.map((r) => r.label), ["owl", "kiwi", "kiwi", "apple", "pear"]);
   assert.ok(Math.abs(ranked[0].p - 0.7 * 0.9 * 0.8) < 1e-9);
 });
@@ -95,10 +97,10 @@ test("a probability range keeps every option on the way and counts the rest", ()
   assert.equal(below, 2);
 });
 
-test("the game records what each classification returned, for the trace to reuse", () => {
+test("the game records what each classification returned, and for which clues, for the trace to reuse", () => {
   const game = newGame(tree, "small and brown");
   const step = nextStep(game);
-  const after = afterClassification(game, step, { animal: 0.6, vegetable: 0.4 });
+  const after = { ...afterClassification(game, step, { animal: 0.6, vegetable: 0.4 }), clues: "small and brown, with feathers" };
   assert.deepEqual(after.levels.get(""), { clues: "small and brown", probabilities: { animal: 0.6, vegetable: 0.4 } });
   assert.equal(game.levels.size, 0);
 });

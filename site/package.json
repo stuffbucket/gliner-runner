@@ -10,7 +10,7 @@
     "dev": "node scripts/generate.mjs && astro dev",
     "build": "node scripts/generate.mjs && astro build",
     "preview": "astro preview",
-    "test": "node --test scripts/generate.test.mjs scripts/twenty-questions/trace.test.mjs"
+    "test": "node --test scripts/generate.test.mjs scripts/twenty-questions/game.test.mjs scripts/twenty-questions/trace.test.mjs"
   },
   "dependencies": {
     "@astrojs/react": "7.0.1",
