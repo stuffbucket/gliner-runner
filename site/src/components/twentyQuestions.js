@@ -1,13 +1,21 @@
-// "20 questions" for a classifier: the player describes something without naming it. The game asks two kinds of
-// question, each counting toward the 20:
-//   - a classification of the clues against the options at one level of the tree in
-//     site/src/data/twenty-questions.json ("Is it an animal, a vegetable or a mineral?", then a group, then the
-//     things in that group), which tells it how likely each option is;
-//   - a guess ("Is it a zebra?"), answered yes or no by the player.
-// It plays best-first: every option it has scored carries the probability of the whole path to it
-// (P(animal) x P(mammal | animal) x P(zebra | mammal)), and each turn it either guesses the most likely thing or
-// opens up the most likely group it has not looked inside yet. A wrong guess only removes that one thing, so the
-// game moves on to another group as soon as that group is more likely than what is left of the current one.
+// "20 questions" for a classifier: the player describes something without naming it, and the game asks "Is it a
+// zebra?" until it is right. Every question put to the player counts toward the 20: a guess, and any follow-up
+// question the game might ask. Working things out is free: to choose what to ask, the game classifies the clues
+// against the options at each level of the tree in site/src/data/twenty-questions.json ("Is it an animal, a
+// vegetable or a mineral?", then a group, then the things in that group), as often as it needs to, without asking
+// the player anything.
+//
+// The player is on the game's side, so this is a search, not a contest. How likely each thing is follows from the
+// clues alone: the product of the model's shares on the way down (P(animal) x P(zoo animal | animal) x
+// P(zebra | zoo animal)). A "no" only takes that thing away, leaving the others in the same order, and guessing the
+// most likely thing left each time both needs the fewest guesses on average and wins most often within 20.
+// So the game:
+//   - finds the most likely thing best-first: a group's chance is more than that of anything inside it, so once
+//     the likeliest thing found beats every group not yet looked inside, it is the likeliest of all, usually
+//     after only a few of the tree's levels;
+//   - keeps a classification only while the clues are the ones it was made for: a new clue makes every level
+//     worth asking again, so what the game guesses depends on the clues as they stand, not the order they came in;
+//   - rules out a wrong guess by name (a kiwi is a bird and a fruit, and is guessed once).
 // The functions are pure, so the playground and the simulator (site/scripts/twenty-questions/simulate.mjs) play
 // exactly the same game.
 
@@ -15,12 +23,10 @@ export const MAX_QUESTIONS = 20;
 
 /**
  * Search settings, tuned with site/scripts/twenty-questions/tune.mjs:
- * - `discount`: an unexplored group is worth its probability times this when compared with a guess, because
- *   opening it costs a question and still leaves a guess to make;
  * - `temperature`: each classification's probabilities are raised to 1/temperature and renormalised (above 1
  *   trusts the classifier's first choice less).
  */
-export const TUNING = { discount: 0.45, temperature: 1 };
+export const TUNING = { temperature: 1.4 };
 
 /** Things that read better without "a" ("Is it gold?"). */
 const MASS = new Set([
@@ -42,7 +48,6 @@ export const phrase = (label) => `${article(label)}${label}`;
 
 const SEPARATOR = " › ";
 export const key = (path) => path.join(SEPARATOR);
-const pathOf = (nodeKey) => (nodeKey === "" ? [] : nodeKey.split(SEPARATOR));
 
 export function nodeAt(tree, path) {
   return path.reduce((node, label) => node?.children?.find((child) => child.label === label), tree);
@@ -76,17 +81,15 @@ export function levelQuestion(path, options) {
 export const guessQuestion = (label) => `Is it ${phrase(label)}?`;
 
 /**
- * A new game. `scores` holds, for every node scored so far, the probability of the path to it ("" is the root);
- * `opened` the nodes whose children have been classified; `ruledOut` the wrong guesses; `levels` what each
- * classification returned, and for which clues (the trace in twentyQuestionsTrace.js reuses them).
+ * A new game. `levels` holds the latest classification of each level (by nodeKey, "" is the root) and the clues
+ * it was made for; only those made for the current clues count (the trace in twentyQuestionsTrace.js reuses them
+ * too). `ruledOut` holds the names of wrong guesses, and `asked` counts the questions put to the player.
  */
 export const newGame = (tree, clues) => ({
   tree,
   clues,
-  scores: new Map([["", 1]]),
-  opened: new Set(),
-  ruledOut: new Set(),
   levels: new Map(),
+  ruledOut: new Set(),
   asked: 0,
   phase: "asking", // asking | guessing | won | lost
   guess: undefined,
@@ -95,40 +98,47 @@ export const newGame = (tree, clues) => ({
 
 const copy = (game) => ({
   ...game,
-  scores: new Map(game.scores),
-  opened: new Set(game.opened),
   ruledOut: new Set(game.ruledOut),
   levels: new Map(game.levels),
 });
 
 /**
- * What to do next: `{ kind: "guess", label, nodeKey, text }` for the most likely thing, or
- * `{ kind: "classify", path, options, labels, descriptions, text }` to open the most likely unexplored group.
+ * What to do next, best-first from the root: `{ kind: "guess", label, nodeKey, p, number, text }` when the most
+ * likely thing is known, or `{ kind: "classify", path, nodeKey, options, labels, descriptions, clues, again, text }`
+ * for the most likely group not yet classified for the current clues (`again` if it was, for older clues). Nothing
+ * once every thing is ruled out.
  */
 export function nextStep(game, tuning = TUNING) {
-  let best;
-  for (const [nodeKey, score] of game.scores) {
-    if (game.opened.has(nodeKey) || game.ruledOut.has(nodeKey)) continue;
-    const value = isGuess(nodeAt(game.tree, pathOf(nodeKey))) ? score : score * tuning.discount;
-    if (best === undefined || value > best.value) best = { nodeKey, value };
+  const frontier = [{ path: [], node: game.tree, p: 1 }];
+  while (frontier.length > 0) {
+    const best = frontier.reduce((top, entry, index) => (entry.p > frontier[top].p ? index : top), 0);
+    const { path, node, p } = frontier.splice(best, 1)[0];
+    const nodeKey = key(path);
+    if (isGuess(node)) {
+      if (game.ruledOut.has(node.label)) continue;
+      const number = game.asked + 1;
+      return { kind: "guess", nodeKey, label: node.label, p, number, text: `Question ${number} of ${MAX_QUESTIONS} · ${guessQuestion(node.label)}` };
+    }
+    const level = game.levels.get(nodeKey);
+    if (level?.clues !== game.clues) {
+      const again = level !== undefined;
+      const question = levelQuestion(path, node.children);
+      return {
+        kind: "classify",
+        path,
+        nodeKey,
+        options: node.children,
+        ...levelOf(node),
+        clues: game.clues,
+        again,
+        text: again ? `With your new clue · ${question}` : question,
+      };
+    }
+    const { labels } = levelOf(node);
+    const shares = temper(labels, level.probabilities, tuning);
+    node.children.forEach((child, index) => frontier.push({ path: [...path, child.label], node: child, p: p * shares[index] }));
   }
-  if (best === undefined) return undefined;
-  const path = pathOf(best.nodeKey);
-  const node = nodeAt(game.tree, path);
-  const number = game.asked + 1;
-  if (isGuess(node)) {
-    return { kind: "guess", nodeKey: best.nodeKey, label: node.label, number, text: `Question ${number} of ${MAX_QUESTIONS} · ${guessQuestion(node.label)}` };
-  }
-  const options = node.children;
-  return {
-    kind: "classify",
-    path,
-    nodeKey: best.nodeKey,
-    options,
-    number,
-    ...levelOf(node),
-    text: `Question ${number} of ${MAX_QUESTIONS} · ${levelQuestion(path, options)}`,
-  };
+  return undefined;
 }
 
 /** Each label's share of one classification, raised to 1/temperature and renormalised (see TUNING). */
@@ -138,20 +148,15 @@ export function temper(labels, probabilities, tuning = TUNING) {
   return tempered.map((value) => value / total);
 }
 
-/** The game after a classification: each option gets the probability of the path to it. */
-export function afterClassification(game, step, probabilities, tuning = TUNING) {
+/**
+ * The game after a classification of `step.clues` (it costs no question). If the clues changed while the model
+ * was thinking, the level is out of date at once and the next step classifies it again.
+ */
+export function afterClassification(game, step, probabilities) {
   const state = copy(game);
-  state.asked = step.number;
-  state.opened.add(step.nodeKey);
-  state.levels.set(step.nodeKey, { clues: game.clues, probabilities });
-  const parent = game.scores.get(step.nodeKey) ?? 0;
-  const shares = temper(step.labels, probabilities, tuning);
-  step.labels.forEach((label, index) => {
-    state.scores.set(key([...step.path, label]), parent * shares[index]);
-  });
+  state.levels.set(step.nodeKey, { clues: step.clues, probabilities });
   const top = [...step.options].sort((a, b) => (probabilities[b.label] ?? 0) - (probabilities[a.label] ?? 0))[0];
   state.note = top === undefined ? "" : isGuess(top) ? "" : `Most likely ${phrase(top.label)}.`;
-  if (state.asked >= MAX_QUESTIONS) state.phase = "lost";
   return state;
 }
 
@@ -161,7 +166,6 @@ export function startGuess(game, step) {
   state.asked = step.number;
   state.phase = "guessing";
   state.guess = step.label;
-  state.guessKey = step.nodeKey;
   return state;
 }
 
@@ -172,10 +176,9 @@ export function afterReply(game, yes) {
     state.phase = "won";
     return state;
   }
-  state.ruledOut.add(game.guessKey);
+  state.ruledOut.add(game.guess);
   state.note = `Not ${phrase(game.guess)}.`;
   state.guess = undefined;
-  state.guessKey = undefined;
   state.phase = state.asked >= MAX_QUESTIONS || nextStep(state, TUNING) === undefined ? "lost" : "asking";
   return state;
 }

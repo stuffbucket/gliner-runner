@@ -1,6 +1,6 @@
 // Tunes the 20 questions search settings (TUNING in src/components/twentyQuestions.js). It classifies every clue
-// against every level of the tree once (cached, see simulate.mjs), then replays every game offline for a grid of
-// settings, which is instant because the engine never classifies the same level twice.
+// against every level of the tree once (cached, see simulate.mjs), then replays every game offline for a range of
+// settings, which is instant because for one set of clues the engine never classifies the same level twice.
 //
 //   GLINER_RUNNER_MODELS_DIR=dist/onnx-models node site/scripts/twenty-questions/tune.mjs [--set clue|alt]
 
@@ -66,28 +66,25 @@ function play({ name, text }, tuning) {
       game = afterReply(startGuess(game, step), step.label === name);
       continue;
     }
-    game = afterClassification(game, step, cache.get(id(text, step.labels, step.descriptions)), tuning);
+    game = afterClassification(game, step, cache.get(id(step.clues, step.labels, step.descriptions)));
   }
   return game;
 }
 
 const results = [];
-for (const discount of [1, 0.8, 0.6, 0.45, 0.35, 0.25, 0.18, 0.12]) {
-  for (const temperature of [0.7, 1, 1.4, 2, 3]) {
-    const outcomes = games.map((game) => play(game, { discount, temperature }));
-    const won = outcomes.filter((g) => g.phase === "won");
-    results.push({
-      discount,
-      temperature,
-      winRate: won.length / games.length,
-      meanAsked: won.reduce((sum, g) => sum + g.asked, 0) / Math.max(won.length, 1),
-    });
-  }
+for (const temperature of [0.5, 0.7, 0.85, 1, 1.2, 1.4, 1.7, 2, 2.5, 3]) {
+  const outcomes = games.map((game) => play(game, { temperature }));
+  const won = outcomes.filter((g) => g.phase === "won");
+  results.push({
+    temperature,
+    winRate: won.length / games.length,
+    meanAsked: won.reduce((sum, g) => sum + g.asked, 0) / Math.max(won.length, 1),
+  });
 }
 results.sort((a, b) => b.winRate - a.winRate || a.meanAsked - b.meanAsked);
 console.log(`set=${values.set} games=${games.length}`);
 for (const r of results.slice(0, 12)) {
-  console.log(`  discount ${String(r.discount).padEnd(5)} temperature ${String(r.temperature).padEnd(4)} won ${(100 * r.winRate).toFixed(1)}%  mean questions ${r.meanAsked.toFixed(2)}`);
+  console.log(`  temperature ${String(r.temperature).padEnd(4)} won ${(100 * r.winRate).toFixed(1)}%  mean questions ${r.meanAsked.toFixed(2)}`);
 }
-const baseline = results.find((r) => r.discount === 1 && r.temperature === 1);
+const baseline = results.find((r) => r.temperature === 1);
 console.log(`  (no tuning: won ${(100 * baseline.winRate).toFixed(1)}%, mean ${baseline.meanAsked.toFixed(2)})`);

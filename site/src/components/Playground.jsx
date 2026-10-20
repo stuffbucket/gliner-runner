@@ -374,7 +374,8 @@ function Workspace({ transport, models, onWarm }) {
     return startGuess(state, step);
   }
 
-  /** One question of 20 questions: classify the clues at the most likely unexplored level (see twentyQuestions.js). */
+  /** One step of 20 questions: classify the clues at the most likely level not yet classified for them (free), or
+   * stop to ask the next guess (see twentyQuestions.js). */
   async function ask() {
     if (busy || game?.phase !== "asking" || !game.clues.trim()) return;
     const step = nextStep(game);
@@ -382,16 +383,13 @@ function Workspace({ transport, models, onWarm }) {
       setGame(advance(game));
       return;
     }
-    const answer = await run({ text: game.clues, labels: step.labels, descriptions: step.descriptions, question: step.text });
+    const answer = await run({ text: step.clues, labels: step.labels, descriptions: step.descriptions, question: step.text });
     if (answer === undefined) {
       setPlaying(false);
       return;
     }
-    // Clues typed while the model was thinking are kept for the next question.
-    let state = { ...afterClassification(game, step, answer.scores), clues: clues.current };
-    if (state.phase === "lost") push({ kind: "verdict", message: verdict(state), model });
-    else state = advance(state);
-    setGame(state);
+    // Clues typed while the model was thinking are kept; the next step classifies again for them.
+    setGame(advance({ ...afterClassification(game, step, answer.scores), clues: clues.current }));
   }
 
   useEffect(() => {
@@ -478,15 +476,15 @@ function Workspace({ transport, models, onWarm }) {
             ) : playing ? (
               <>
                 <span className="field-label">Question {game.asked + 1} of {MAX_QUESTIONS}</span>
-                <p className="pg-turn-status">{busy ? "Thinking…" : "Choosing the next question…"}</p>
-                <span className="field-hint">It works out what to ask from your clues and stops to check each guess with you.</span>
+                <p className="pg-turn-status">{busy ? "Thinking…" : "Working out its next guess…"}</p>
+                <span className="field-hint">It thinks over your clues as often as it needs; only what it asks you counts toward the 20.</span>
               </>
             ) : (
               <span className="field-hint">
                 {game.asked === 0
                   ? game.clues === twenty.sample
-                    ? "This example describes a zebra; write your own, or start with it. The model then asks itself up to 20 questions and stops to check each guess with you."
-                    : "Then press Start. The model asks itself up to 20 questions and stops to check each guess with you."
+                    ? "This example describes a zebra; write your own, or start with it. The model then works out what it is and has 20 questions to ask you."
+                    : "Then press Start. The model works out what it is and has 20 questions to ask you."
                   : "Stopped. Change the clues if you like, then carry on."}
               </span>
             )}
@@ -868,7 +866,7 @@ function About({ open, onClose }) {
       </div>
       <p>Type some text and the labels you care about. GLiNER Runner picks the label that fits best and scores each one from 0 to 1.</p>
       <p>Turn on <strong>Several labels can fit</strong> when a text can have more than one label, or none.</p>
-      <p>In <strong>20 questions</strong> you describe something without naming it. The model works out what it is by classifying your clues, and you only answer its guesses.</p>
+      <p>In <strong>20 questions</strong> you describe something without naming it. The model works out what it is by classifying your clues, and every question it asks you counts toward the 20; thinking over your clues is free. Add a clue at any time and it thinks again with everything you have said.</p>
       <p>Your text stays on your device: the model runs in this browser, or on your own computer.</p>
       <ul>
         <li><a href={`${BASE}/how-it-works/`}>How it works</a></li>
