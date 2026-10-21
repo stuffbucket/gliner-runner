@@ -1,9 +1,10 @@
 import { parseArgs } from "node:util";
 
-import { ZodError } from "zod";
+import { z, ZodError } from "zod";
 
 import { BackendRegistry } from "./backend.js";
 import { KNOWN_MODELS } from "./catalog.js";
+import type { ArtifactCatalog } from "./catalog.js";
 import { loadComponents, type RunnerComponents } from "./components.js";
 import { InferenceRequestSchema, type InferenceRequest } from "./contracts.js";
 import {
@@ -12,6 +13,8 @@ import {
   InvalidSchemaError,
   ModelDownloadRequiredError,
   ModelIntegrityError,
+  domainHttpError,
+  type ErrorDetail,
 } from "./errors.js";
 import { Runtime } from "./runtime.js";
 import { defaultModelsDir, resolveSettings, type Settings } from "./settings.js";
@@ -22,17 +25,21 @@ export const DEFAULT_MODEL = "decide-340m";
 export const TASK_NAME = "category";
 
 export const CLASSIFY_USAGE = `Usage: gliner-runner classify --labels <a,b,c> [options] "<text>"
+       gliner-runner classify --jsonl [--labels <a,b,c>] [options] < requests.jsonl
 
 Classifies one text into labels you choose. Runs locally; no server is needed.
 The text is read from stdin when it is "-" or omitted.
 
 Options:
-  --labels <a,b,c>        Labels to choose from (required; comma-separated, may be repeated)
+  --labels <a,b,c>        Labels to choose from (comma-separated, may be repeated; required
+                          unless every --jsonl line gives its own "labels")
   --model <id>            decide-340m (default), decide-multilingual or decide-1b
   --multi                 Allow several labels (default: exactly one label)
   --threshold <0-1>       Confidence needed to select a label (default 0.5, exclusive bounds)
   --describe <label=text> Describe a label to help the model (repeatable)
   --json                  Print the full native JSON result instead of one line
+  --jsonl                 Classify many texts with one model load: read one JSON request per
+                          line on stdin, write one JSON result per line on stdout (see below)
   --models-dir <path>     Model root (default: GLINER_RUNNER_MODELS_DIR, else the user cache)
   --help, -h              Show this help
 
@@ -42,6 +49,25 @@ Examples:
   gliner-runner classify --labels billing,support,shipping "I was charged twice."
   gliner-runner classify --labels billing,support,shipping --multi "Refund me and ship the new one."
   echo "Where is my parcel?" | gliner-runner classify --labels billing,support,shipping
+
+Many texts (--jsonl):
+  Loading the model takes a few seconds; --jsonl pays that once for all the lines, so use it
+  whenever a script or program classifies more than a handful of texts. Each input line is
+  a JSON object; only "text" is required, the other fields default to the options:
+    {"id": "t1", "text": "...", "labels": ["a", "b"], "multi": true, "threshold": 0.4,
+     "descriptions": {"a": "what a means"}}
+  "labels" replaces --labels for that line (--describe entries for its labels still apply).
+  Each result is written as soon as it is ready, in input order, one line per request:
+    {"id":"t1","line":1,"output":{...the --json result...}}
+    {"id":"t2","line":2,"detail":{"code":"invalid_request","message":"...","retryable":false}}
+  "id" is copied from the request when given; "line" is the input line number. Blank lines
+  are skipped. A failed line gets a "detail" error (the HTTP API's error envelope) and the
+  rest continue. The command ends when stdin ends: exit code 0 when every line succeeded, 1
+  when any failed. Problems with the options or the model are reported on stderr before any
+  line is read (exit 2 or 1). Ctrl-C (SIGINT) or SIGTERM stops it at once.
+
+  printf '%s\\n' '{"text": "I was charged twice."}' '{"text": "Where is my parcel?"}' |
+    gliner-runner classify --jsonl --labels billing,support,shipping
 `;
 
 export const DEMO_USAGE = `Usage: gliner-runner demo [--model <id>] [--models-dir <path>]
@@ -64,12 +90,16 @@ export interface ClassifyIo {
   /** Whether stdin is an interactive terminal (then there is no piped text to read). */
   stdinIsTerminal: boolean;
   readStdin(): Promise<string>;
+  /** Reads stdin line by line for `--jsonl`; defaults to splitting `readStdin()` once it has all been read. */
+  readLines?: (() => AsyncIterable<string>) | undefined;
   /** Assembles the catalog and backends; defaults to the ONNX implementation (`loadComponents`). */
   components?: ((settings: Settings) => Promise<RunnerComponents>) | undefined;
   signal?: AbortSignal | undefined;
 }
 
 class UsageError extends Error {}
+/** A request whose classification schema is invalid; `--jsonl` reports it as `invalid_schema`. */
+class SchemaUsageError extends UsageError {}
 /** A failure the user can act on; printed as one line, exit code 1. */
 class RunError extends Error {}
 
@@ -137,6 +167,8 @@ export interface ParsedClassify {
   text: string | undefined;
   readStdin: boolean;
   json: boolean;
+  /** Read one JSON request per stdin line and write one JSON result per line. */
+  jsonl: boolean;
   modelsDir: string | undefined;
   spec: ClassifySpec;
 }
@@ -155,6 +187,7 @@ export function parseClassifyArguments(argv: readonly string[]): ParsedClassify 
         threshold: { type: "string" },
         describe: { type: "string", multiple: true },
         json: { type: "boolean" },
+        jsonl: { type: "boolean" },
         "models-dir": { type: "string" },
         help: { type: "boolean", short: "h" },
       },
@@ -167,22 +200,32 @@ export function parseClassifyArguments(argv: readonly string[]): ParsedClassify 
     help: values.help === true,
     model: values.model ?? DEFAULT_MODEL,
     json: values.json === true,
+    jsonl: values.jsonl === true,
     modelsDir: values["models-dir"],
   };
   if (base.help) {
     return { ...base, text: undefined, readStdin: false, spec: { labels: [], multi: false, threshold: 0.5, descriptions: {} } };
+  }
+  if (base.jsonl) {
+    if (positionals.length > 0) {
+      throw new UsageError("--jsonl reads the texts from stdin, one JSON request per line; do not pass a text argument");
+    }
+    if (base.json) {
+      throw new UsageError("--jsonl already writes JSON; leave out --json");
+    }
   }
   if (positionals.length > 1) {
     throw new UsageError(
       `expected one text argument but got ${positionals.length}; put the text in quotes, or pass it on stdin`,
     );
   }
-  if (values.labels === undefined) {
+  if (values.labels === undefined && !base.jsonl) {
     throw new UsageError("--labels is required, for example --labels billing,support,shipping");
   }
-  const labels = splitLabels(values.labels);
+  // With --jsonl the labels may come from each line instead.
+  const labels = splitLabels(values.labels ?? []);
   const descriptions = parseDescriptions(values.describe ?? []);
-  const unknown = Object.keys(descriptions).filter((label) => !labels.includes(label));
+  const unknown = values.labels === undefined ? [] : Object.keys(descriptions).filter((label) => !labels.includes(label));
   if (unknown.length > 0) {
     throw new UsageError(`--describe names a label that is not in --labels: ${unknown.join(", ")}`);
   }
@@ -190,7 +233,7 @@ export function parseClassifyArguments(argv: readonly string[]): ParsedClassify 
   return {
     ...base,
     text: text === "-" ? undefined : text,
-    readStdin: text === undefined || text === "-",
+    readStdin: !base.jsonl && (text === undefined || text === "-"),
     spec: { labels, multi: values.multi === true, threshold: parseThreshold(values.threshold), descriptions },
   };
 }
@@ -223,7 +266,8 @@ export function buildRequest(model: string, text: string, spec: ClassifySpec): I
     });
   } catch (error) {
     if (error instanceof ZodError) {
-      throw new UsageError(describeIssue(error));
+      const message = describeIssue(error);
+      throw error.issues[0]?.path[0] === "schema" ? new SchemaUsageError(message) : new UsageError(message);
     }
     throw error;
   }
@@ -289,6 +333,7 @@ export function formatClassification(view: ClassificationView, spec: Pick<Classi
 
 interface Session {
   runtime: Runtime;
+  catalog: ArtifactCatalog;
   modelsDir: string;
   modelsDirFlag: string | undefined;
 }
@@ -323,7 +368,7 @@ async function openSession(model: string, modelsDirFlag: string | undefined, io:
       memoryLimitBytes: settings.memoryLimitBytes,
     },
   });
-  return { runtime, modelsDir, modelsDirFlag, modelId };
+  return { runtime, catalog: components.catalog, modelsDir, modelsDirFlag, modelId };
 }
 
 /** Turns a runner error into the one-line message the user sees. */
@@ -375,6 +420,10 @@ export async function runClassifyCommand(argv: readonly string[], io: ClassifyIo
       io.stdout(CLASSIFY_USAGE);
       return 0;
     }
+    if (parsed.jsonl) {
+      session = await openSession(parsed.model, parsed.modelsDir, io);
+      return await runJsonl(session, parsed.spec, io);
+    }
     let text = parsed.text;
     if (parsed.readStdin) {
       if (io.stdinIsTerminal) {
@@ -402,6 +451,180 @@ export async function runClassifyCommand(argv: readonly string[], io: ClassifyIo
   } finally {
     await session?.runtime.close();
   }
+}
+
+// --- many texts: --jsonl -----------------------------------------------------------------------------------------
+
+/** One `--jsonl` input line; every field but `text` defaults to the command-line options. */
+const JsonlRequestSchema = z.strictObject({
+  id: z.union([z.string(), z.number()]).optional(),
+  text: z.string(),
+  labels: z.array(z.string()).min(1).optional(),
+  multi: z.boolean().optional(),
+  threshold: z.number().optional(),
+  descriptions: z.record(z.string(), z.string()).optional(),
+});
+type JsonlRequest = z.output<typeof JsonlRequestSchema>;
+
+/** The classification a line asks for: its own fields over the command-line defaults. */
+function lineSpec(line: JsonlRequest, defaults: ClassifySpec): ClassifySpec {
+  const labels = line.labels ?? defaults.labels;
+  if (labels.length === 0) {
+    throw new UsageError('no labels: give --labels, or a "labels" array on the line');
+  }
+  const threshold = line.threshold ?? defaults.threshold;
+  if (!(threshold > 0 && threshold < 1)) {
+    throw new UsageError(`threshold must be greater than 0 and less than 1, got ${threshold}`);
+  }
+  // --describe entries apply to the line's labels that they name; a line's own descriptions must name its labels.
+  const descriptions =
+    line.descriptions ?? Object.fromEntries(Object.entries(defaults.descriptions).filter(([label]) => labels.includes(label)));
+  const unknown = Object.keys(descriptions).filter((label) => !labels.includes(label));
+  if (unknown.length > 0) {
+    throw new UsageError(`descriptions name a label that is not in labels: ${unknown.join(", ")}`);
+  }
+  return { labels, multi: line.multi ?? defaults.multi, threshold, descriptions };
+}
+
+function describeLineIssue(error: ZodError): string {
+  const issue = error.issues[0];
+  if (issue === undefined) {
+    return "invalid request";
+  }
+  if (issue.path.length === 0) {
+    return issue.code === "unrecognized_keys"
+      ? `unknown field${issue.keys.length === 1 ? "" : "s"} ${issue.keys.map((key) => `"${key}"`).join(", ")}; ` +
+          "expected id, text, labels, multi, threshold, descriptions"
+      : 'each line must be a JSON object such as {"text": "..."}';
+  }
+  return `"${issue.path.map(String).join(".")}": ${issue.message}`;
+}
+
+/** The error envelope of the HTTP API (`detail` of a failed response) for one failed line. */
+function lineErrorDetail(error: unknown): ErrorDetail {
+  if (error instanceof SchemaUsageError) {
+    return { code: "invalid_schema", message: error.message, retryable: false };
+  }
+  if (error instanceof UsageError) {
+    return { code: "invalid_request", message: error.message, retryable: false };
+  }
+  const mapped = domainHttpError(error)?.detail;
+  if (mapped !== undefined && !Array.isArray(mapped) && typeof mapped === "object") {
+    return mapped as ErrorDetail;
+  }
+  return { code: "internal_error", message: error instanceof Error ? error.message : String(error), retryable: false };
+}
+
+function idOf(value: unknown): string | number | undefined {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    return undefined;
+  }
+  const id = (value as Record<string, unknown>)["id"];
+  return typeof id === "string" || typeof id === "number" ? id : undefined;
+}
+
+async function* splitLines(read: () => Promise<string>): AsyncGenerator<string> {
+  const text = await read();
+  const lines = text.split("\n");
+  if (lines.at(-1) === "") {
+    lines.pop();
+  }
+  yield* lines;
+}
+
+/** Exit code of a `--jsonl` run stopped through `io.signal`, as a shell reports SIGINT. */
+const INTERRUPTED = 130;
+
+/** Whether `classify <argv>` runs in `--jsonl` mode (false for help and for arguments that do not parse). */
+export function wantsJsonl(argv: readonly string[]): boolean {
+  try {
+    const parsed = parseClassifyArguments(argv);
+    return parsed.jsonl && !parsed.help;
+  } catch {
+    return false;
+  }
+}
+
+/** Yields lines until the source ends or `signal` aborts, without waiting for a line that never comes. */
+async function* linesUntilAborted(source: AsyncIterable<string>, signal: AbortSignal | undefined): AsyncGenerator<string> {
+  const iterator = source[Symbol.asyncIterator]();
+  const aborted =
+    signal === undefined
+      ? undefined
+      : new Promise<"aborted">((resolve) => {
+          if (signal.aborted) {
+            resolve("aborted");
+          }
+          signal.addEventListener("abort", () => resolve("aborted"), { once: true });
+        });
+  try {
+    for (;;) {
+      const next = await (aborted === undefined ? iterator.next() : Promise.race([iterator.next(), aborted]));
+      if (next === "aborted" || next.done === true) {
+        return;
+      }
+      yield next.value;
+    }
+  } finally {
+    // Not awaited: a source blocked on a read that never comes must not keep the command from finishing.
+    void iterator.return?.().catch(() => undefined);
+  }
+}
+
+/**
+ * `classify --jsonl`: one model load, then one JSON result line per JSON request line, in input order, each written
+ * as soon as it is ready. Returns 0 when every line succeeded, 1 when any failed, and 130 when `io.signal` aborted it
+ * (it then stops reading and writes no further line).
+ */
+async function runJsonl(session: Session & { modelId: string }, defaults: ClassifySpec, io: ClassifyIo): Promise<number> {
+  const { modelId } = session;
+  // A missing or damaged model fails the whole command once, on stderr, rather than every line.
+  try {
+    await session.catalog.resolve(modelId);
+  } catch (error) {
+    throw explain(error, modelId, session.modelsDirFlag);
+  }
+  const source = io.readLines?.() ?? splitLines(io.readStdin);
+  let lineNumber = 0;
+  let failed = 0;
+  for await (const raw of linesUntilAborted(source, io.signal)) {
+    lineNumber += 1;
+    if (raw.trim() === "") {
+      continue;
+    }
+    let id: string | number | undefined;
+    let result: Record<string, unknown>;
+    try {
+      let value: unknown;
+      try {
+        value = JSON.parse(raw);
+      } catch (error) {
+        throw new UsageError(`the line is not valid JSON: ${error instanceof Error ? error.message : String(error)}`);
+      }
+      id = idOf(value);
+      const parsed = JsonlRequestSchema.safeParse(value);
+      if (!parsed.success) {
+        throw new UsageError(describeLineIssue(parsed.error));
+      }
+      const request = buildRequest(modelId, parsed.data.text, lineSpec(parsed.data, defaults));
+      const response = await session.runtime.infer(request, io.signal);
+      result = { output: response.output };
+    } catch (error) {
+      if (io.signal?.aborted) {
+        break;
+      }
+      failed += 1;
+      result = { detail: lineErrorDetail(error) };
+    }
+    if (io.signal?.aborted) {
+      break;
+    }
+    io.stdout(`${stringifyWire({ ...(id === undefined ? {} : { id }), line: lineNumber, ...result })}\n`);
+  }
+  if (io.signal?.aborted) {
+    return INTERRUPTED;
+  }
+  return failed > 0 ? 1 : 0;
 }
 
 // --- demo --------------------------------------------------------------------------------------------------------
