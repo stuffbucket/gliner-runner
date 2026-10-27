@@ -1,0 +1,36 @@
+{
+  "personas": [
+    {
+      "id": "support-dev",
+      "name": "Dana, backend developer",
+      "background": "Builds the support tool at a small online shop. Uses the OpenAI and Claude APIs at work, so to Dana a \"model\" means a large language model you send a prompt to, and \"classify\" means asking a chat model a question.",
+      "goal": "Find out whether this can tag incoming support tickets as billing, shipping or technical, and how to call it from a Node.js backend.",
+      "knows": "HTTP APIs, JSON, Node.js, Docker. Has never run a model locally and does not know what GLiNER is.",
+      "handsOn": "classify"
+    },
+    {
+      "id": "react-dev",
+      "name": "Ravi, front-end developer",
+      "background": "Builds React apps. Wants features that work in the browser with no server.",
+      "goal": "Find out whether text can be classified entirely in the browser inside a React app, and what it costs the user in download size and speed.",
+      "knows": "React, Vite, fetch, CORS, Web Workers in theory. Little machine learning.",
+      "handsOn": "twenty-questions"
+    },
+    {
+      "id": "product-manager",
+      "name": "Priya, product manager",
+      "background": "Evaluating tools for a customer feedback team. Not a programmer, but reads documentation and can paste a command if told exactly what to type.",
+      "goal": "Decide whether this is accurate enough for sorting customer feedback and whether customer text stays private, then explain that to her manager.",
+      "knows": "Spreadsheets, survey tools, the idea of AI chat assistants. No command line experience beyond copying commands.",
+      "handsOn": "classify"
+    },
+    {
+      "id": "ml-engineer",
+      "name": "Marek, ML engineer",
+      "background": "Has trained text classifiers and used Hugging Face zero-shot pipelines. Skeptical of accuracy claims without methodology.",
+      "goal": "Find what model this is, how it was evaluated, how confidence scores are calibrated, and whether the numbers on the site are reproducible.",
+      "knows": "Transformers, NLI zero-shot classification, ONNX, evaluation metrics, calibration.",
+      "handsOn": null
+    }
+  ]
+}

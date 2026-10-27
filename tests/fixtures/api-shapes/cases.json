@@ -1,0 +1,1503 @@
+{
+  "_comment": "Written by scripts/api_shapes_fixture.py from the Python translation; the Python and TypeScript tests both check against it.",
+  "questions": [
+    {
+      "name": "every question type, with integer-like ids and option names",
+      "request": {
+        "request_id": "955b971b-4295-4e39-9e45-9b404e32bb6e",
+        "model": "decide-340m",
+        "backend": "onnx",
+        "precision": "fp32",
+        "state": "I have asked three times now. Can I please just talk to a real person?",
+        "questions": {
+          "is_human_escalation": {
+            "type": "noul",
+            "instructions": "Is the customer asking for a human agent?"
+          },
+          "is_repeat_contact": {
+            "type": "noul",
+            "instructions": "Has the customer contacted support about this before?",
+            "criteria": {
+              "true": "Mentions a prior attempt or ticket",
+              "false": null
+            }
+          },
+          "10": {
+            "type": "choice",
+            "instructions": "Which team should handle this?",
+            "criteria": {
+              "returns": "Exchanges, wrong or damaged items",
+              "shipping": null,
+              "billing": "Charges"
+            }
+          },
+          "2": {
+            "type": "choice",
+            "criteria": {
+              "10": "Ten",
+              "2": "Two",
+              "x": null
+            }
+          },
+          "bug_severity": {
+            "type": "score",
+            "instructions": "How severe is the reported issue?",
+            "criteria": [
+              "Cosmetic; no impact to functionality",
+              "Broken or degraded feature, but workaround exists",
+              "Blocking issue; no workaround exists"
+            ]
+          },
+          "topics": {
+            "type": "multi_select",
+            "instructions": "Which topics does the message raise?",
+            "criteria": {
+              "refund": null,
+              "human agent": "Wants a person",
+              "delivery": null
+            },
+            "threshold": 0.3
+          },
+          "tags": {
+            "type": "multi_select",
+            "criteria": {
+              "a": null,
+              "b": null
+            }
+          }
+        }
+      },
+      "requests": [
+        {
+          "model": "decide-340m",
+          "backend": "onnx",
+          "precision": "fp32",
+          "operation": "classify",
+          "text": "I have asked three times now. Can I please just talk to a real person?",
+          "schema": {
+            "kind": "classification",
+            "tasks": {
+              "is_human_escalation": {
+                "labels": [
+                  "yes",
+                  "no"
+                ],
+                "instruction": "Is the customer asking for a human agent?"
+              }
+            }
+          }
+        },
+        {
+          "model": "decide-340m",
+          "backend": "onnx",
+          "precision": "fp32",
+          "operation": "classify",
+          "text": "I have asked three times now. Can I please just talk to a real person?",
+          "schema": {
+            "kind": "classification",
+            "tasks": {
+              "is_repeat_contact": {
+                "labels": [
+                  "yes",
+                  "no"
+                ],
+                "label_descriptions": {
+                  "yes": "Mentions a prior attempt or ticket"
+                },
+                "instruction": "Has the customer contacted support about this before?"
+              }
+            }
+          }
+        },
+        {
+          "model": "decide-340m",
+          "backend": "onnx",
+          "precision": "fp32",
+          "operation": "classify",
+          "text": "I have asked three times now. Can I please just talk to a real person?",
+          "schema": {
+            "kind": "classification",
+            "tasks": {
+              "10": {
+                "labels": [
+                  "returns",
+                  "shipping",
+                  "billing"
+                ],
+                "label_descriptions": {
+                  "returns": "Exchanges, wrong or damaged items",
+                  "billing": "Charges"
+                },
+                "instruction": "Which team should handle this?"
+              }
+            }
+          }
+        },
+        {
+          "model": "decide-340m",
+          "backend": "onnx",
+          "precision": "fp32",
+          "operation": "classify",
+          "text": "I have asked three times now. Can I please just talk to a real person?",
+          "schema": {
+            "kind": "classification",
+            "tasks": {
+              "2": {
+                "labels": [
+                  "10",
+                  "2",
+                  "x"
+                ],
+                "label_descriptions": {
+                  "10": "Ten",
+                  "2": "Two"
+                }
+              }
+            }
+          }
+        },
+        {
+          "model": "decide-340m",
+          "backend": "onnx",
+          "precision": "fp32",
+          "operation": "classify",
+          "text": "I have asked three times now. Can I please just talk to a real person?",
+          "schema": {
+            "kind": "classification",
+            "tasks": {
+              "bug_severity": {
+                "labels": [
+                  "Cosmetic; no impact to functionality",
+                  "Broken or degraded feature, but workaround exists",
+                  "Blocking issue; no workaround exists"
+                ],
+                "ordered": true,
+                "instruction": "How severe is the reported issue?"
+              }
+            }
+          }
+        },
+        {
+          "model": "decide-340m",
+          "backend": "onnx",
+          "precision": "fp32",
+          "operation": "classify",
+          "text": "I have asked three times now. Can I please just talk to a real person?",
+          "schema": {
+            "kind": "classification",
+            "tasks": {
+              "topics": {
+                "labels": [
+                  "refund",
+                  "human agent",
+                  "delivery"
+                ],
+                "label_descriptions": {
+                  "human agent": "Wants a person"
+                },
+                "min_labels": 0,
+                "max_labels": null,
+                "threshold": 0.3,
+                "instruction": "Which topics does the message raise?"
+              }
+            }
+          },
+          "options": {
+            "threshold": 0.3
+          }
+        },
+        {
+          "model": "decide-340m",
+          "backend": "onnx",
+          "precision": "fp32",
+          "operation": "classify",
+          "text": "I have asked three times now. Can I please just talk to a real person?",
+          "schema": {
+            "kind": "classification",
+            "tasks": {
+              "tags": {
+                "labels": [
+                  "a",
+                  "b"
+                ],
+                "min_labels": 0,
+                "max_labels": null
+              }
+            }
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "output": {
+            "is_human_escalation": {
+              "value": "yes",
+              "confidence": 0.5,
+              "probabilities": {
+                "yes": 0.99,
+                "no": 0.010000000000000009
+              }
+            },
+            "_meta": {
+              "feasible": true,
+              "decoder": "independent",
+              "exact": true,
+              "objective": 0.0,
+              "violations": []
+            }
+          },
+          "inputTokens": 30
+        },
+        {
+          "output": {
+            "is_repeat_contact": {
+              "value": "yes",
+              "confidence": 0.5,
+              "probabilities": {
+                "yes": 0.93,
+                "no": 0.06999999999999995
+              }
+            },
+            "_meta": {
+              "feasible": true,
+              "decoder": "independent",
+              "exact": true,
+              "objective": 0.0,
+              "violations": []
+            }
+          },
+          "inputTokens": 41
+        },
+        {
+          "output": {
+            "10": {
+              "value": "returns",
+              "confidence": 0.5,
+              "probabilities": {
+                "returns": 0.61,
+                "shipping": 0.04,
+                "billing": 0.35
+              }
+            },
+            "_meta": {
+              "feasible": true,
+              "decoder": "independent",
+              "exact": true,
+              "objective": 0.0,
+              "violations": []
+            }
+          },
+          "inputTokens": 52
+        },
+        {
+          "output": {
+            "2": {
+              "value": "10",
+              "confidence": 0.5,
+              "probabilities": {
+                "10": 0.5,
+                "2": 0.25,
+                "x": 0.25
+              }
+            },
+            "_meta": {
+              "feasible": true,
+              "decoder": "independent",
+              "exact": true,
+              "objective": 0.0,
+              "violations": []
+            }
+          },
+          "inputTokens": 23
+        },
+        {
+          "output": {
+            "bug_severity": {
+              "value": "Broken or degraded feature, but workaround exists",
+              "confidence": 0.5,
+              "probabilities": {
+                "Cosmetic; no impact to functionality": 0.0,
+                "Broken or degraded feature, but workaround exists": 0.57,
+                "Blocking issue; no workaround exists": 0.43
+              }
+            },
+            "_meta": {
+              "feasible": true,
+              "decoder": "independent",
+              "exact": true,
+              "objective": 0.0,
+              "violations": []
+            }
+          },
+          "inputTokens": 60
+        },
+        {
+          "output": {
+            "topics": {
+              "value": [
+                "human agent",
+                "delivery"
+              ],
+              "confidence": 0.5,
+              "probabilities": {
+                "refund": 0.1,
+                "human agent": 0.9,
+                "delivery": 0.31
+              }
+            },
+            "_meta": {
+              "feasible": true,
+              "decoder": "independent",
+              "exact": true,
+              "objective": 0.0,
+              "violations": []
+            }
+          },
+          "inputTokens": 44
+        },
+        {
+          "output": {
+            "tags": {
+              "value": [],
+              "confidence": 0.5,
+              "probabilities": {
+                "a": 0.2,
+                "b": 0.4
+              }
+            },
+            "_meta": {
+              "feasible": true,
+              "decoder": "independent",
+              "exact": true,
+              "objective": 0.0,
+              "violations": []
+            }
+          },
+          "inputTokens": 12
+        }
+      ],
+      "response": {
+        "request_id": "955b971b-4295-4e39-9e45-9b404e32bb6e",
+        "model": "decide-340m",
+        "backend": "onnx",
+        "precision": "fp32",
+        "answers": {
+          "is_human_escalation": {
+            "type": "noul",
+            "noul": 0.99
+          },
+          "is_repeat_contact": {
+            "type": "noul",
+            "noul": 0.93
+          },
+          "10": {
+            "type": "choice",
+            "choice": "returns",
+            "confidence": 0.415,
+            "probabilities": {
+              "returns": 0.61,
+              "shipping": 0.04,
+              "billing": 0.35
+            }
+          },
+          "2": {
+            "type": "choice",
+            "choice": "10",
+            "confidence": 0.25,
+            "probabilities": {
+              "10": 0.5,
+              "2": 0.25,
+              "x": 0.25
+            }
+          },
+          "bug_severity": {
+            "type": "score",
+            "score": 1.43,
+            "confidence": 0.355,
+            "legend": {
+              "0": "Cosmetic; no impact to functionality",
+              "1": "Broken or degraded feature, but workaround exists",
+              "2": "Blocking issue; no workaround exists"
+            },
+            "probabilities": {
+              "0": 0.0,
+              "1": 0.57,
+              "2": 0.43
+            }
+          },
+          "topics": {
+            "type": "multi_select",
+            "selected": [
+              "human agent",
+              "delivery"
+            ],
+            "probabilities": {
+              "refund": 0.1,
+              "human agent": 0.9,
+              "delivery": 0.31
+            }
+          },
+          "tags": {
+            "type": "multi_select",
+            "selected": [],
+            "probabilities": {
+              "a": 0.2,
+              "b": 0.4
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 262,
+          "output_tokens": 0
+        }
+      }
+    },
+    {
+      "name": "a score split between opposite ends has zero confidence",
+      "request": {
+        "request_id": "955b971b-4295-4e39-9e45-9b404e32bb6e",
+        "model": "decide-340m",
+        "backend": "onnx",
+        "precision": "fp32",
+        "state": "Some text",
+        "questions": {
+          "level": {
+            "type": "score",
+            "criteria": [
+              "low",
+              "middle",
+              "high"
+            ]
+          }
+        }
+      },
+      "requests": [
+        {
+          "model": "decide-340m",
+          "backend": "onnx",
+          "precision": "fp32",
+          "operation": "classify",
+          "text": "Some text",
+          "schema": {
+            "kind": "classification",
+            "tasks": {
+              "level": {
+                "labels": [
+                  "low",
+                  "middle",
+                  "high"
+                ],
+                "ordered": true
+              }
+            }
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "output": {
+            "level": {
+              "value": "low",
+              "confidence": 0.5,
+              "probabilities": {
+                "low": 0.5,
+                "middle": 0.0,
+                "high": 0.5
+              }
+            },
+            "_meta": {
+              "feasible": true,
+              "decoder": "independent",
+              "exact": true,
+              "objective": 0.0,
+              "violations": []
+            }
+          },
+          "inputTokens": 9
+        }
+      ],
+      "response": {
+        "request_id": "955b971b-4295-4e39-9e45-9b404e32bb6e",
+        "model": "decide-340m",
+        "backend": "onnx",
+        "precision": "fp32",
+        "answers": {
+          "level": {
+            "type": "score",
+            "score": 1.0,
+            "confidence": 0.0,
+            "legend": {
+              "0": "low",
+              "1": "middle",
+              "2": "high"
+            },
+            "probabilities": {
+              "0": 0.5,
+              "1": 0.0,
+              "2": 0.5
+            }
+          }
+        },
+        "usage": {
+          "input_tokens": 9,
+          "output_tokens": 0
+        }
+      }
+    }
+  ],
+  "classify_text": [
+    {
+      "name": "single, multi with top_k and threshold, prompt and activation, with confidence",
+      "request": {
+        "request_id": "955b971b-4295-4e39-9e45-9b404e32bb6e",
+        "model": "decide-340m",
+        "backend": "onnx",
+        "precision": "fp32",
+        "text": "The battery is weak and the delivery was slow.",
+        "tasks": {
+          "sentiment": [
+            "positive",
+            "negative",
+            "neutral"
+          ],
+          "aspects": {
+            "labels": {
+              "battery": "Battery life",
+              "screen": null,
+              "price": null,
+              "delivery": "Shipping speed"
+            },
+            "multi_label": true,
+            "cls_threshold": 0.3,
+            "top_k": 2
+          },
+          "1": {
+            "labels": [
+              "yes",
+              "no"
+            ],
+            "prompt": "Is the customer unhappy?",
+            "class_act": "sigmoid",
+            "cls_threshold": 0.9
+          }
+        },
+        "include_confidence": true
+      },
+      "requests": [
+        {
+          "model": "decide-340m",
+          "backend": "onnx",
+          "precision": "fp32",
+          "operation": "classify",
+          "text": "The battery is weak and the delivery was slow.",
+          "schema": {
+            "kind": "classification",
+            "tasks": {
+              "sentiment": {
+                "labels": [
+                  "positive",
+                  "negative",
+                  "neutral"
+                ]
+              },
+              "aspects": {
+                "labels": [
+                  "battery",
+                  "screen",
+                  "price",
+                  "delivery"
+                ],
+                "label_descriptions": {
+                  "battery": "Battery life",
+                  "delivery": "Shipping speed"
+                },
+                "min_labels": 1,
+                "max_labels": 2,
+                "threshold": 0.3
+              },
+              "1": {
+                "labels": [
+                  "yes",
+                  "no"
+                ],
+                "activation": "sigmoid",
+                "instruction": "Is the customer unhappy?"
+              }
+            }
+          },
+          "options": {
+            "threshold": 0.3
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "output": {
+            "sentiment": {
+              "value": "negative",
+              "confidence": 0.5,
+              "probabilities": {
+                "positive": 0.02,
+                "negative": 0.95,
+                "neutral": 0.03
+              }
+            },
+            "aspects": {
+              "value": [
+                "battery",
+                "delivery"
+              ],
+              "confidence": 0.5,
+              "probabilities": {
+                "battery": 0.8,
+                "screen": 0.35,
+                "price": 0.1,
+                "delivery": 0.97
+              }
+            },
+            "1": {
+              "value": "yes",
+              "confidence": 0.5,
+              "probabilities": {
+                "yes": 0.88,
+                "no": 0.2
+              }
+            },
+            "_meta": {
+              "feasible": true,
+              "decoder": "independent",
+              "exact": true,
+              "objective": 0.0,
+              "violations": []
+            }
+          },
+          "inputTokens": 70
+        }
+      ],
+      "response": {
+        "request_id": "955b971b-4295-4e39-9e45-9b404e32bb6e",
+        "model": "decide-340m",
+        "backend": "onnx",
+        "precision": "fp32",
+        "result": {
+          "sentiment": {
+            "label": "negative",
+            "confidence": 0.95
+          },
+          "aspects": [
+            {
+              "label": "delivery",
+              "confidence": 0.97
+            },
+            {
+              "label": "battery",
+              "confidence": 0.8
+            }
+          ],
+          "1": {
+            "label": "yes",
+            "confidence": 0.88
+          }
+        },
+        "usage": {
+          "inputTokens": 70,
+          "outputTokens": 0
+        }
+      }
+    },
+    {
+      "name": "batch of texts without confidence, multi-label without top_k",
+      "request": {
+        "request_id": "955b971b-4295-4e39-9e45-9b404e32bb6e",
+        "model": "decide-340m",
+        "backend": "onnx",
+        "precision": "fp32",
+        "texts": [
+          "First text",
+          "Second text"
+        ],
+        "tasks": {
+          "topics": {
+            "labels": [
+              "weather",
+              "cooking",
+              "money"
+            ],
+            "multi_label": true
+          },
+          "intent": [
+            "ask",
+            "tell"
+          ]
+        },
+        "threshold": 0.4
+      },
+      "requests": [
+        {
+          "model": "decide-340m",
+          "backend": "onnx",
+          "precision": "fp32",
+          "operation": "classify",
+          "text": "First text",
+          "schema": {
+            "kind": "classification",
+            "tasks": {
+              "topics": {
+                "labels": [
+                  "weather",
+                  "cooking",
+                  "money"
+                ],
+                "min_labels": 1,
+                "max_labels": null
+              },
+              "intent": {
+                "labels": [
+                  "ask",
+                  "tell"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "model": "decide-340m",
+          "backend": "onnx",
+          "precision": "fp32",
+          "operation": "classify",
+          "text": "Second text",
+          "schema": {
+            "kind": "classification",
+            "tasks": {
+              "topics": {
+                "labels": [
+                  "weather",
+                  "cooking",
+                  "money"
+                ],
+                "min_labels": 1,
+                "max_labels": null
+              },
+              "intent": {
+                "labels": [
+                  "ask",
+                  "tell"
+                ]
+              }
+            }
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "output": {
+            "topics": {
+              "value": [
+                "cooking",
+                "money"
+              ],
+              "confidence": 0.5,
+              "probabilities": {
+                "weather": 0.1,
+                "cooking": 0.7,
+                "money": 0.6
+              }
+            },
+            "intent": {
+              "value": "tell",
+              "confidence": 0.5,
+              "probabilities": {
+                "ask": 0.3,
+                "tell": 0.7
+              }
+            },
+            "_meta": {
+              "feasible": true,
+              "decoder": "independent",
+              "exact": true,
+              "objective": 0.0,
+              "violations": []
+            }
+          },
+          "inputTokens": 20
+        },
+        {
+          "output": {
+            "topics": {
+              "value": [
+                "weather"
+              ],
+              "confidence": 0.5,
+              "probabilities": {
+                "weather": 0.45,
+                "cooking": 0.2,
+                "money": 0.3
+              }
+            },
+            "intent": {
+              "value": "ask",
+              "confidence": 0.5,
+              "probabilities": {
+                "ask": 0.6,
+                "tell": 0.4
+              }
+            },
+            "_meta": {
+              "feasible": true,
+              "decoder": "independent",
+              "exact": true,
+              "objective": 0.0,
+              "violations": []
+            }
+          },
+          "inputTokens": 21
+        }
+      ],
+      "response": {
+        "request_id": "955b971b-4295-4e39-9e45-9b404e32bb6e",
+        "model": "decide-340m",
+        "backend": "onnx",
+        "precision": "fp32",
+        "results": [
+          {
+            "topics": [
+              "cooking",
+              "money"
+            ],
+            "intent": "tell"
+          },
+          {
+            "topics": [
+              "weather"
+            ],
+            "intent": "ask"
+          }
+        ],
+        "usage": {
+          "inputTokens": 41,
+          "outputTokens": 0
+        }
+      }
+    }
+  ],
+  "invalid": [
+    {
+      "endpoint": "questions",
+      "body": {
+        "request_id": "955b971b-4295-4e39-9e45-9b404e32bb6e",
+        "model": "decide-340m",
+        "backend": "onnx",
+        "precision": "fp32",
+        "state": {
+          "subject": "Refund"
+        },
+        "questions": {
+          "q": {
+            "type": "noul",
+            "instructions": "Refund?"
+          }
+        }
+      },
+      "loc": [
+        "body",
+        "state"
+      ],
+      "msg": "Value error, state must be one string here: the GLiNER2.5 Decide models read plain text; write structured state out as text, for example \"subject: ...\\nmessage: ...\""
+    },
+    {
+      "endpoint": "questions",
+      "body": {
+        "request_id": "955b971b-4295-4e39-9e45-9b404e32bb6e",
+        "model": "decide-340m",
+        "backend": "onnx",
+        "precision": "fp32",
+        "state": "   ",
+        "questions": {
+          "q": {
+            "type": "noul"
+          }
+        }
+      },
+      "loc": [
+        "body",
+        "state"
+      ],
+      "msg": "Value error, state must not be blank"
+    },
+    {
+      "endpoint": "questions",
+      "body": {
+        "request_id": "955b971b-4295-4e39-9e45-9b404e32bb6e",
+        "model": "decide-340m",
+        "backend": "onnx",
+        "precision": "fp32",
+        "state": "text",
+        "questions": {
+          "q": {
+            "type": "box",
+            "instructions": "the mug"
+          }
+        }
+      },
+      "loc": [
+        "body",
+        "questions",
+        "q"
+      ],
+      "msg": "Value error, box questions find things in images, and the GLiNER2.5 Decide models read text only; use an image model for box questions"
+    },
+    {
+      "endpoint": "questions",
+      "body": {
+        "request_id": "955b971b-4295-4e39-9e45-9b404e32bb6e",
+        "model": "decide-340m",
+        "backend": "onnx",
+        "precision": "fp32",
+        "state": "text",
+        "questions": {
+          "q": {
+            "type": "rank"
+          }
+        }
+      },
+      "loc": [
+        "body",
+        "questions",
+        "q"
+      ],
+      "msg": "Value error, unknown question type; use noul, choice, score or multi_select"
+    },
+    {
+      "endpoint": "questions",
+      "body": {
+        "request_id": "955b971b-4295-4e39-9e45-9b404e32bb6e",
+        "model": "decide-340m",
+        "backend": "onnx",
+        "precision": "fp32",
+        "state": "text",
+        "assets": {
+          "photo": {
+            "type": "image"
+          }
+        },
+        "questions": {
+          "q": {
+            "type": "noul"
+          }
+        }
+      },
+      "loc": [
+        "body",
+        "assets"
+      ],
+      "msg": "Value error, images are not supported: the GLiNER2.5 Decide models read text only; send the text as state"
+    },
+    {
+      "endpoint": "questions",
+      "body": {
+        "request_id": "955b971b-4295-4e39-9e45-9b404e32bb6e",
+        "model": "decide-340m",
+        "backend": "onnx",
+        "precision": "fp32",
+        "state": "text",
+        "questions": {
+          "q": {
+            "type": "noul",
+            "instructions": {
+              "question": "Refund?"
+            }
+          }
+        }
+      },
+      "loc": [
+        "body",
+        "questions",
+        "q"
+      ],
+      "msg": "Value error, instructions must be one non-blank string or null; write structured instructions out as text"
+    },
+    {
+      "endpoint": "questions",
+      "body": {
+        "request_id": "955b971b-4295-4e39-9e45-9b404e32bb6e",
+        "model": "decide-340m",
+        "backend": "onnx",
+        "precision": "fp32",
+        "state": "text",
+        "questions": {
+          "q": {
+            "type": "noul",
+            "threshold": 0.3
+          }
+        }
+      },
+      "loc": [
+        "body",
+        "questions",
+        "q"
+      ],
+      "msg": "Value error, threshold applies only to multi_select questions"
+    },
+    {
+      "endpoint": "questions",
+      "body": {
+        "request_id": "955b971b-4295-4e39-9e45-9b404e32bb6e",
+        "model": "decide-340m",
+        "backend": "onnx",
+        "precision": "fp32",
+        "state": "text",
+        "questions": {
+          "q": {
+            "type": "noul",
+            "criteria": {
+              "yes": "Refund"
+            }
+          }
+        }
+      },
+      "loc": [
+        "body",
+        "questions",
+        "q"
+      ],
+      "msg": "Value error, noul criteria must be an object with only 'true' and 'false', each a non-blank string or null"
+    },
+    {
+      "endpoint": "questions",
+      "body": {
+        "request_id": "955b971b-4295-4e39-9e45-9b404e32bb6e",
+        "model": "decide-340m",
+        "backend": "onnx",
+        "precision": "fp32",
+        "state": "text",
+        "questions": {
+          "q": {
+            "type": "choice",
+            "criteria": [
+              "a",
+              "b"
+            ]
+          }
+        }
+      },
+      "loc": [
+        "body",
+        "questions",
+        "q"
+      ],
+      "msg": "Value error, criteria must map each option name to a non-blank description string or null"
+    },
+    {
+      "endpoint": "questions",
+      "body": {
+        "request_id": "955b971b-4295-4e39-9e45-9b404e32bb6e",
+        "model": "decide-340m",
+        "backend": "onnx",
+        "precision": "fp32",
+        "state": "text",
+        "questions": {
+          "q": {
+            "type": "choice",
+            "criteria": {
+              "a": {
+                "what": "A"
+              },
+              "b": null
+            }
+          }
+        }
+      },
+      "loc": [
+        "body",
+        "questions",
+        "q"
+      ],
+      "msg": "Value error, criteria must map each option name to a non-blank description string or null"
+    },
+    {
+      "endpoint": "questions",
+      "body": {
+        "request_id": "955b971b-4295-4e39-9e45-9b404e32bb6e",
+        "model": "decide-340m",
+        "backend": "onnx",
+        "precision": "fp32",
+        "state": "text",
+        "questions": {
+          "q": {
+            "type": "choice",
+            "criteria": {
+              "a": null
+            }
+          }
+        }
+      },
+      "loc": [
+        "body",
+        "questions",
+        "q"
+      ],
+      "msg": "Value error, a choice needs at least two options"
+    },
+    {
+      "endpoint": "questions",
+      "body": {
+        "request_id": "955b971b-4295-4e39-9e45-9b404e32bb6e",
+        "model": "decide-340m",
+        "backend": "onnx",
+        "precision": "fp32",
+        "state": "text",
+        "questions": {
+          "q": {
+            "type": "multi_select",
+            "criteria": {}
+          }
+        }
+      },
+      "loc": [
+        "body",
+        "questions",
+        "q"
+      ],
+      "msg": "Value error, a multi_select needs at least one option"
+    },
+    {
+      "endpoint": "questions",
+      "body": {
+        "request_id": "955b971b-4295-4e39-9e45-9b404e32bb6e",
+        "model": "decide-340m",
+        "backend": "onnx",
+        "precision": "fp32",
+        "state": "text",
+        "questions": {
+          "q": {
+            "type": "score",
+            "criteria": [
+              "only one"
+            ]
+          }
+        }
+      },
+      "loc": [
+        "body",
+        "questions",
+        "q"
+      ],
+      "msg": "Value error, score criteria must be a list of at least two level descriptions, each a non-blank string"
+    },
+    {
+      "endpoint": "questions",
+      "body": {
+        "request_id": "955b971b-4295-4e39-9e45-9b404e32bb6e",
+        "model": "decide-340m",
+        "backend": "onnx",
+        "precision": "fp32",
+        "state": "text",
+        "questions": {
+          "q": {
+            "type": "score",
+            "criteria": [
+              "same",
+              "same"
+            ]
+          }
+        }
+      },
+      "loc": [
+        "body",
+        "questions",
+        "q"
+      ],
+      "msg": "Value error, score levels must be unique"
+    },
+    {
+      "endpoint": "classify_text",
+      "body": {
+        "request_id": "955b971b-4295-4e39-9e45-9b404e32bb6e",
+        "model": "decide-340m",
+        "backend": "onnx",
+        "precision": "fp32",
+        "tasks": {
+          "t": [
+            "a",
+            "b"
+          ]
+        }
+      },
+      "loc": [
+        "body"
+      ],
+      "msg": "Value error, send exactly one of text or texts"
+    },
+    {
+      "endpoint": "classify_text",
+      "body": {
+        "request_id": "955b971b-4295-4e39-9e45-9b404e32bb6e",
+        "model": "decide-340m",
+        "backend": "onnx",
+        "precision": "fp32",
+        "text": "x",
+        "texts": [
+          "y"
+        ],
+        "tasks": {
+          "t": [
+            "a",
+            "b"
+          ]
+        }
+      },
+      "loc": [
+        "body"
+      ],
+      "msg": "Value error, send exactly one of text or texts"
+    },
+    {
+      "endpoint": "classify_text",
+      "body": {
+        "request_id": "955b971b-4295-4e39-9e45-9b404e32bb6e",
+        "model": "decide-340m",
+        "backend": "onnx",
+        "precision": "fp32",
+        "text": "x",
+        "tasks": {
+          "t": {
+            "labels": [
+              "a",
+              "b"
+            ],
+            "examples": [
+              [
+                "text",
+                "a"
+              ]
+            ]
+          }
+        }
+      },
+      "loc": [
+        "body",
+        "tasks",
+        "t"
+      ],
+      "msg": "Value error, few-shot examples are not part of this runner's protocol; leave examples out and describe the labels instead"
+    },
+    {
+      "endpoint": "classify_text",
+      "body": {
+        "request_id": "955b971b-4295-4e39-9e45-9b404e32bb6e",
+        "model": "decide-340m",
+        "backend": "onnx",
+        "precision": "fp32",
+        "text": "x",
+        "tasks": {
+          "t": {
+            "labels": [
+              "a",
+              "b"
+            ],
+            "max_len": 10
+          }
+        }
+      },
+      "loc": [
+        "body",
+        "tasks",
+        "t"
+      ],
+      "msg": "Value error, a task must be a list of label names, or an object with labels and any of multi_label, cls_threshold, top_k, class_act and prompt"
+    },
+    {
+      "endpoint": "classify_text",
+      "body": {
+        "request_id": "955b971b-4295-4e39-9e45-9b404e32bb6e",
+        "model": "decide-340m",
+        "backend": "onnx",
+        "precision": "fp32",
+        "text": "x",
+        "tasks": {
+          "t": "a"
+        }
+      },
+      "loc": [
+        "body",
+        "tasks",
+        "t"
+      ],
+      "msg": "Value error, a task must be a list of label names, or an object with labels and any of multi_label, cls_threshold, top_k, class_act and prompt"
+    },
+    {
+      "endpoint": "classify_text",
+      "body": {
+        "request_id": "955b971b-4295-4e39-9e45-9b404e32bb6e",
+        "model": "decide-340m",
+        "backend": "onnx",
+        "precision": "fp32",
+        "text": "x",
+        "tasks": {
+          "t": [
+            "a",
+            "a"
+          ]
+        }
+      },
+      "loc": [
+        "body",
+        "tasks",
+        "t"
+      ],
+      "msg": "Value error, labels must be a non-empty list of unique names, or an object mapping each name to a description or null"
+    },
+    {
+      "endpoint": "classify_text",
+      "body": {
+        "request_id": "955b971b-4295-4e39-9e45-9b404e32bb6e",
+        "model": "decide-340m",
+        "backend": "onnx",
+        "precision": "fp32",
+        "text": "x",
+        "tasks": {
+          "t": {
+            "labels": [
+              "a",
+              "b"
+            ],
+            "multi_label": true,
+            "cls_threshold": 0
+          }
+        }
+      },
+      "loc": [
+        "body",
+        "tasks",
+        "t"
+      ],
+      "msg": "Value error, cls_threshold must be greater than 0 and less than 1 here; to keep the best labels whatever their score, use top_k"
+    },
+    {
+      "endpoint": "classify_text",
+      "body": {
+        "request_id": "955b971b-4295-4e39-9e45-9b404e32bb6e",
+        "model": "decide-340m",
+        "backend": "onnx",
+        "precision": "fp32",
+        "text": "x",
+        "tasks": {
+          "t": {
+            "labels": [
+              "a",
+              "b"
+            ],
+            "top_k": 0
+          }
+        }
+      },
+      "loc": [
+        "body",
+        "tasks",
+        "t"
+      ],
+      "msg": "Value error, top_k must be an integer of at least 1"
+    },
+    {
+      "endpoint": "classify_text",
+      "body": {
+        "request_id": "955b971b-4295-4e39-9e45-9b404e32bb6e",
+        "model": "decide-340m",
+        "backend": "onnx",
+        "precision": "fp32",
+        "text": "x",
+        "tasks": {
+          "t": {
+            "labels": [
+              "a",
+              "b"
+            ],
+            "class_act": "relu"
+          }
+        }
+      },
+      "loc": [
+        "body",
+        "tasks",
+        "t"
+      ],
+      "msg": "Value error, class_act must be auto, sigmoid or softmax"
+    },
+    {
+      "endpoint": "classify_text",
+      "body": {
+        "request_id": "955b971b-4295-4e39-9e45-9b404e32bb6e",
+        "model": "decide-340m",
+        "backend": "onnx",
+        "precision": "fp32",
+        "text": "x",
+        "tasks": {
+          "t": {
+            "labels": [
+              "a",
+              "b"
+            ],
+            "multi_label": true,
+            "class_act": "softmax"
+          }
+        }
+      },
+      "loc": [
+        "body",
+        "tasks",
+        "t"
+      ],
+      "msg": "Value error, multi_label with class_act softmax picks labels differently in this runner; use class_act auto or sigmoid"
+    },
+    {
+      "endpoint": "classify_text",
+      "body": {
+        "request_id": "955b971b-4295-4e39-9e45-9b404e32bb6e",
+        "model": "decide-340m",
+        "backend": "onnx",
+        "precision": "fp32",
+        "text": "x",
+        "tasks": {
+          "t": {
+            "labels": [
+              "a",
+              "b"
+            ],
+            "multi_label": "yes"
+          }
+        }
+      },
+      "loc": [
+        "body",
+        "tasks",
+        "t"
+      ],
+      "msg": "Value error, multi_label must be true or false"
+    },
+    {
+      "endpoint": "classify_text",
+      "body": {
+        "request_id": "955b971b-4295-4e39-9e45-9b404e32bb6e",
+        "model": "decide-340m",
+        "backend": "onnx",
+        "precision": "fp32",
+        "text": "x",
+        "tasks": {
+          "t": {
+            "labels": [
+              "a",
+              "b"
+            ],
+            "prompt": " "
+          }
+        }
+      },
+      "loc": [
+        "body",
+        "tasks",
+        "t"
+      ],
+      "msg": "Value error, prompt must be a non-blank string"
+    }
+  ]
+}

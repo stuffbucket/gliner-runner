@@ -1,0 +1,48 @@
+{
+  "model": "decide-340m",
+  "task": "category",
+  "text": "I will pay my rent on Friday, and then I will bake bread.",
+  "labels": ["weather", "cooking", "sports", "money"],
+  "inputTokens": 30,
+  "model_text": "Reads the labels and the text together, as one input, and gives each label a score for how well it fits. It writes no text. It can only choose from the labels you sent.",
+  "replies": [
+    {
+      "id": "one",
+      "title": "One label",
+      "rule": "The probabilities are shared between the labels and add up to 1 (softmax). There is no threshold: the label with the highest probability is chosen.",
+      "task": { "labels": ["weather", "cooking", "sports", "money"] },
+      "value": "money",
+      "valueText": "\"money\"",
+      "confidence": 0.7832197985980985,
+      "confidenceText": "money's probability",
+      "probabilities": {
+        "weather": 0.001243578344630857,
+        "cooking": 0.21462858562489248,
+        "sports": 0.0009080374323781483,
+        "money": 0.7832197985980985
+      },
+      "threshold": null,
+      "inferenceMs": 32.891083000002254,
+      "queueMs": 4.212958999996772
+    },
+    {
+      "id": "several",
+      "title": "Several labels",
+      "rule": "Each label gets its own probability from 0 to 1 (sigmoid), so they do not add up to 1. Every label above the threshold is chosen.",
+      "task": { "labels": ["weather", "cooking", "sports", "money"], "min_labels": 0, "max_labels": null },
+      "value": ["cooking", "money"],
+      "valueText": "[\"cooking\", \"money\"]",
+      "confidence": 0.8589424440847746,
+      "confidenceText": "for the whole answer",
+      "probabilities": {
+        "weather": 0.010178094737185768,
+        "cooking": 0.6396000893475465,
+        "sports": 0.0074523185172699884,
+        "money": 0.8662421238746822
+      },
+      "threshold": 0.5,
+      "inferenceMs": 35.33479200000147,
+      "queueMs": 4.580874999999651
+    }
+  ]
+}

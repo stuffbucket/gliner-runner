@@ -1,0 +1,86 @@
+{
+  "about": "The copy slots copy-lab writes candidates for. Each slot sets its limits, the facts a reader must retell, and its baselines; anything not set comes from defaults. Run one with: node tools/copy-lab/lab.mjs --slot <id>",
+  "defaults": {
+    "maxWords": 35,
+    "maxSentenceWords": 12,
+    "maxGrade": 5,
+    "stallWords": ["model", "label", "classifier", "input", "output", "score", "probability", "probabilities", "inference", "token", "LLM", "softmax"],
+    "meta": ["this page", "this section", "below", "read on", "in short", "simply put", "think of it"],
+    "angles": ["glance", "multiple-choice", "not-chat", "users-words", "tiny-example"],
+    "drafters": ["claude-opus-5", "claude-sonnet-5", "gemini-4-argon", "gemini-3.8-flash"],
+    "perCall": 5,
+    "maxRetell": 48,
+    "personas": ["claude-sonnet-5", "gemini-3.8-flash"],
+    "runs": 3,
+    "grader": "claude-opus-5",
+    "judges": ["claude-opus-5", "claude-sonnet-5", "gemini-4-argon"],
+    "judgeTop": 12,
+    "facts": [
+      { "id": "picks", "fact": "It picks from options you give it: you supply the choices and it chooses among them." },
+      { "id": "nowrite", "fact": "It never writes or chats: it is not like ChatGPT and makes no text or answers of its own." },
+      { "id": "glance", "fact": "It makes a quick, at-a-glance call, the kind of snap decision a person makes without stopping to think." }
+    ]
+  },
+  "slots": [
+    {
+      "id": "fifteen-seconds",
+      "file": "site/src/content/docs/how-it-works.mdx",
+      "where": "The section \"The model in 15 seconds\", under the page's opening paragraph",
+      "purpose": "A picture of what the program does that a reader could repeat to a friend in 15 seconds.",
+      "maxWords": 35,
+      "baselines": [
+        {
+          "name": "current text",
+          "reference": true,
+          "text": "Most people hear \"model\" and think of a chat model. This is a different kind. It reads your text and your labels together, as one input, and gives each label a score for how well it fits. It never writes text. It cannot answer with a label you did not give it.\n\nIt works like a multiple-choice question. Your text is the question and your labels are the choices. With one label, the model marks one choice. With several labels, it marks every choice that applies, or none. Where the comparison stops: a person thinks the question through, while the model scores each choice from patterns it learned in training and does not check whether anything is true.\n\nThis kind of model is called a classifier. You write the list of labels, and it decides which of them fit:\n\ngliner-runner classify --labels billing,support,shipping \"I was charged twice for my last order.\"\nbilling (confidence 0.889)\n\nThe labels are billing, support, and shipping. The answer is billing."
+        },
+        {
+          "name": "landing lead",
+          "text": "Tossing the junk mail before you reach the front door. You make calls like this all day without thinking. GLiNER Runner makes them about text: give it a message and a few labels, and it tells you which one fits, such as billing or shipping, urgent or can wait, positive or negative."
+        },
+        {
+          "name": "user's words, lightly cut",
+          "text": "This is a thinking-fast model. It does something people do in their heads all the time. Nobody wakes up wanting to sort things into labels. But you do it all day."
+        }
+      ],
+      "show": {
+        "about": "Show, don't tell: one short sentence, then the \"be the model\" sliders (site/src/components/BeTheModel.jsx). The sentence is scored alone; the sliders are a layout option.",
+        "embed": "site/src/components/BeTheModel.jsx",
+        "maxWords": 15,
+        "maxSentences": 1,
+        "maxSentenceWords": 15,
+        "angles": ["show-lead-in"],
+        "perCall": 6,
+        "maxRetell": 16
+      }
+    },
+    {
+      "id": "opening",
+      "file": "site/src/content/docs/how-it-works.mdx",
+      "where": "The opening paragraph of How it works, right under the title",
+      "purpose": "Say what the program does, for a reader who just clicked How it works on the landing page.",
+      "maxWords": 30,
+      "facts": [
+        { "id": "picks", "fact": "It picks from options you give it: you supply the choices and it chooses among them." },
+        { "id": "nowrite", "fact": "It never writes or chats: it is not like ChatGPT and makes no text or answers of its own." },
+        { "id": "glance", "fact": "It makes a quick, at-a-glance call, the kind of snap decision a person makes without stopping to think." },
+        { "id": "device", "optional": true, "fact": "It runs on your own device (your computer or your browser), so your text stays with you." }
+      ],
+      "baselines": [
+        {
+          "name": "current text",
+          "reference": true,
+          "text": "You send a text and a few labels. You get back the label that fits, and a score for each one. Before you trust it with a job, or build on it, know what those scores mean, what the program cannot do, how much text it can read, and how fast it is."
+        },
+        {
+          "name": "landing lead",
+          "text": "You make calls like this all day without thinking. GLiNER Runner makes them about text: give it a message and a few labels, and it tells you which one fits, such as billing or shipping, urgent or can wait, positive or negative. It runs on your own computer, or right in your browser. Your text never leaves your device."
+        },
+        {
+          "name": "user's words, lightly cut",
+          "text": "This is a thinking-fast model. It does something people do in their heads all the time, and it runs on your own device. Nobody wakes up wanting to sort things into labels."
+        }
+      ]
+    }
+  ]
+}

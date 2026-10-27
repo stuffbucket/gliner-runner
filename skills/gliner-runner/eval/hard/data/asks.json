@@ -1,0 +1,22 @@
+[
+  {"id": "Q01", "text": "Can you tell me what time your office opens on Saturdays?", "answer": "question"},
+  {"id": "Q02", "text": "Please send me a copy of my last invoice.", "answer": "request"},
+  {"id": "Q03", "text": "Does the Pro plan include phone support?", "answer": "question"},
+  {"id": "Q04", "text": "Could you change my delivery address to 14 Elm Street?", "answer": "request"},
+  {"id": "Q05", "text": "Is it possible to use the app offline?", "answer": "question"},
+  {"id": "Q06", "text": "Can you reset my password for me?", "answer": "request"},
+  {"id": "Q07", "text": "How many users can share one license?", "answer": "question"},
+  {"id": "Q08", "text": "Can you cancel my order from yesterday?", "answer": "request"},
+  {"id": "Q09", "text": "What's the difference between the Basic and Pro plans?", "answer": "question"},
+  {"id": "Q10", "text": "Can you add my colleague Dana to our workspace?", "answer": "request"},
+  {"id": "Q11", "text": "Do you ship to Norway?", "answer": "question"},
+  {"id": "Q12", "text": "Could you extend my trial by another week?", "answer": "request"},
+  {"id": "Q13", "text": "Can I pay with PayPal?", "answer": "question"},
+  {"id": "Q14", "text": "Can you merge my two accounts into one?", "answer": "request"},
+  {"id": "Q15", "text": "Is my data stored in the EU?", "answer": "question"},
+  {"id": "Q16", "text": "Can you refund the duplicate charge on my card?", "answer": "request"},
+  {"id": "Q17", "text": "Can the report be exported as a PDF?", "answer": "question"},
+  {"id": "Q18", "text": "Could you switch our plan to annual billing?", "answer": "request"},
+  {"id": "Q19", "text": "Can I change the language of the interface myself?", "answer": "question"},
+  {"id": "Q20", "text": "Can you remove the old credit card from my account?", "answer": "request"}
+]

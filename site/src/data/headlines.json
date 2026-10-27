@@ -1,0 +1,19 @@
+{
+  "about": "The landing page's headline for each card in the gallery (src/data/gallery.json), keyed by the card's text: a call people make at a glance every day that is the same kind of call as the card's. Keep each one short enough to fit two lines on a phone.",
+  "headlines": {
+    "I was charged twice for my March order.": "Knowing which desk to take a problem to.",
+    "The basement is flooding. Can you call me right now?": "Knowing which call to take during dinner.",
+    "Congratulations! You won a $500 gift card. Tap the link to claim it now.": "Tossing the junk mail before you reach the front door.",
+    "The fire alarm in building B is going off. Please leave the building now.": "Knowing which noise means drop everything.",
+    "The pasta was excellent and the waiter was very kind, but it was far too expensive.": "Hearing the \u201cbut\u201d in a friend's review.",
+    "Too loud to talk, and the soup was cold.": "Hearing a complaint and knowing what went wrong.",
+    "BUY CHEAP WATCHES NOW!!! Click http://example.com/deal for 90% off.": "Pulling the ads off the community notice board.",
+    "Reach me at jordan.lee@example.com or on 415-555-0132.": "Shredding the envelope with your address on it.",
+    "Please cancel my subscription before the next renewal.": "Knowing which counter to queue at.",
+    "Ich kann mich nicht mehr einloggen, das Passwort wird nicht akzeptiert.": "Knowing it's a login problem, even in German.",
+    "Me cobraron dos veces el mismo pedido y quiero que me devuelvan el dinero.": "Knowing it's a billing problem, even in Spanish.",
+    "¿Dónde está la estación de tren más cercana?": "Hearing a few words and knowing the language.",
+    "Signed lease agreement for the apartment, valid until 2028.": "Keeping the lease, binning the old receipts.",
+    "Could you send me the updated budget numbers?": "Skimming your inbox for what needs a reply."
+  }
+}

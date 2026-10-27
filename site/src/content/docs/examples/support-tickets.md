@@ -72,3 +72,8 @@ All five went to the team a person would choose.
 - **Your own teams.** Replace the labels and descriptions with the names your team uses.
 - **Your own tickets.** Put them in a file, one per line, and end the loop with
   `done < tickets.txt` instead of the `<<'EOF'` block.
+
+## Next
+
+See [all examples](/gliner-runner/examples/), or [more ideas](/gliner-runner/more-ideas/) for other
+jobs to try.

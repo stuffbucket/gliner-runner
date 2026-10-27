@@ -84,3 +84,8 @@ cannot tell you that two files are the same. Use a different tool for that.
 - **Work through a file.** Put one item per line in a file and end the loop with
   `done < items.txt` instead of the `<<'EOF'` block.
 - **Change what counts as important.** Edit the descriptions to match what you keep.
+
+## Next
+
+See [all examples](/gliner-runner/examples/), or [more ideas](/gliner-runner/more-ideas/) for other
+jobs to try.

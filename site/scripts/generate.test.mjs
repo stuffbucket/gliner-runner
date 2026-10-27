@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 import { existsSync, mkdtempSync, readdirSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { copyRunnerTemplates, fmtBytes, fmtDrift, parseNativeEvidence, rewriteLinks } from "./generate.mjs";
+import { copyRunnerTemplates, fmtBytes, fmtDrift, fmtGB, parseNativeEvidence, rewriteLinks } from "./generate.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const ctx = { root, docNames: new Set(["protocol", "operations"]) };
@@ -40,6 +40,7 @@ test("formats numbers", () => {
   assert.equal(fmtDrift(7.152557373046875e-6), "7.153e-6");
   assert.equal(fmtDrift(0), "0");
   assert.equal(fmtBytes(1744089152), "1.62 GiB");
+  assert.equal(fmtGB(1954167862), "1.95 GB");
 });
 
 test("copies only the in-tab model's template for the playground worker", () => {

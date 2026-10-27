@@ -1,0 +1,58 @@
+/*
+ * The site's colours, in light and dark. brand.css (landing page and playground) imports this file, and so do
+ * components on the docs pages. Only custom properties live here, so it is safe to load next to Starlight's theme.
+ * The docs follow Starlight's theme switch, which always sets data-theme on <html>.
+ */
+:root {
+  --bg: #ffffff;
+  --surface: #f6f7f9;
+  --surface-2: #eceef2;
+  --text: #1c1f26;
+  --muted: #5b6270;
+  --faint: #8a90a0;
+  --border: #dde1e8;
+  --accent: #4b52d6;
+  --accent-text: #ffffff;
+  --accent-soft: #e8e9fb;
+  --good: #1f9254;
+  --busy: #c27a10;
+  --bad: #c43d3d;
+  --code: #f1f3f6;
+  --radius: 0.625rem;
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14161b;
+    --surface: #1c1f26;
+    --surface-2: #252932;
+    --text: #e8eaee;
+    --muted: #a6adbb;
+    --faint: #7c8394;
+    --border: #2f343e;
+    --accent: #8f97ff;
+    --accent-text: #11131a;
+    --accent-soft: #262a4a;
+    --good: #4cc489;
+    --busy: #e2a44a;
+    --bad: #ef7676;
+    --code: #20232b;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #14161b;
+  --surface: #1c1f26;
+  --surface-2: #252932;
+  --text: #e8eaee;
+  --muted: #a6adbb;
+  --faint: #7c8394;
+  --border: #2f343e;
+  --accent: #8f97ff;
+  --accent-text: #11131a;
+  --accent-soft: #262a4a;
+  --good: #4cc489;
+  --busy: #e2a44a;
+  --bad: #ef7676;
+  --code: #20232b;
+}

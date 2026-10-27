@@ -16,6 +16,14 @@ export function orderedTaskEntries<T>(tasks: Readonly<Record<string, T>>): Array
   return taskOrderOf(tasks).map((name) => [name, tasks[name] as T] as const);
 }
 
+/** Records the declared order of a `tasks` object the runner built itself (see `shapes.ts`). */
+export function declareTaskOrder(tasks: object, order: readonly string[]): void {
+  const actual = Object.keys(tasks);
+  if (order.length === actual.length && order.every((key) => Object.hasOwn(tasks, key))) {
+    declared.set(tasks, [...order]);
+  }
+}
+
 interface WithTasks {
   schema: { kind: string } & { tasks?: object };
 }

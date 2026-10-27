@@ -1,0 +1,408 @@
+---
+/*
+ * "What you send and what you get back" on the How it works page: one text and four labels, sent to the local
+ * server twice (one label, then several labels), with the parts of each reply.
+ *
+ * The numbers are copied from two real POST /v1/infer replies of `gliner-runner serve` with decide-340m
+ * (backend onnx, fp32) on an Apple M5 Max. The second request adds `min_labels: 0, max_labels: null` to the task,
+ * as `classify --multi` and the playground's "several labels" do. `classify` prints the same scores.
+ *
+ * The data is in src/data/request-and-reply.json, which scripts/markdown-copies.mjs also reads to write this
+ * figure as text in the page's Markdown copy.
+ */
+import "../styles/tokens.css";
+import figure from "../data/request-and-reply.json";
+
+const { text, labels, inputTokens, replies } = figure;
+
+const f3 = (n: number) => n.toFixed(3);
+const ms = (n: number) => `${Math.round(n)} ms`;
+const chosen = (reply: (typeof replies)[number], label: string) => [reply.value].flat().includes(label);
+const sum = (reply: (typeof replies)[number]) => Object.values(reply.probabilities).reduce((a, b) => a + b, 0);
+---
+
+<figure class="rr not-content" aria-labelledby="rr-caption">
+  <figcaption id="rr-caption">
+    One request, sent twice: once for one label and once for several labels. The numbers are from real replies of
+    <code>decide-340m</code>.
+  </figcaption>
+
+  <section class="rr-step" aria-labelledby="rr-send">
+    <h3 id="rr-send"><span class="rr-num" aria-hidden="true">1</span>You send</h3>
+    <dl class="rr-fields">
+      <div>
+        <dt>Text <code>text</code></dt>
+        <dd class="rr-text">"{text}"</dd>
+      </div>
+      <div>
+        <dt>Labels <code>labels</code></dt>
+        <dd>
+          <ul class="rr-chips">{labels.map((label) => <li>{label}</li>)}</ul>
+        </dd>
+      </div>
+      <div>
+        <dt>Label descriptions <code>label_descriptions</code></dt>
+        <dd>Optional. A short sentence per label that says what it means. None here.</dd>
+      </div>
+      <div>
+        <dt>One label or several <code>min_labels</code> <code>max_labels</code></dt>
+        <dd>
+          Sent both ways. One label is the default (at least 1, at most 1). Several labels means at least 0, with no
+          maximum.
+        </dd>
+      </div>
+      <div>
+        <dt>Threshold <code>threshold</code></dt>
+        <dd>0.5, the default. Used only with several labels.</dd>
+      </div>
+      <div>
+        <dt>Model <code>model</code></dt>
+        <dd><code>decide-340m</code>, the default.</dd>
+      </div>
+    </dl>
+  </section>
+
+  <svg class="rr-arrow" viewBox="0 0 16 24" width="16" height="24" aria-hidden="true" focusable="false">
+    <path d="M8 2v18M2 14l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+  </svg>
+
+  <section class="rr-step rr-model" aria-labelledby="rr-model">
+    <h3 id="rr-model"><span class="rr-num" aria-hidden="true">2</span>The model</h3>
+    <p>{figure.model_text}</p>
+  </section>
+
+  <svg class="rr-arrow" viewBox="0 0 16 24" width="16" height="24" aria-hidden="true" focusable="false">
+    <path d="M8 2v18M2 14l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+  </svg>
+
+  <section class="rr-step" aria-labelledby="rr-back">
+    <h3 id="rr-back"><span class="rr-num" aria-hidden="true">3</span>You get back</h3>
+    <div class="rr-modes">
+      {
+        replies.map((reply) => (
+          <section class="rr-mode" aria-labelledby={`rr-${reply.id}`}>
+            <h4 id={`rr-${reply.id}`}>{reply.title}</h4>
+            <p class="rr-rule">{reply.rule}</p>
+            <dl class="rr-pairs">
+              <div>
+                <dt><code>value</code></dt>
+                <dd><code>{reply.valueText}</code></dd>
+              </div>
+              <div>
+                <dt><code>confidence</code></dt>
+                <dd>
+                  {f3(reply.confidence)} <span class="rr-note">({reply.confidenceText})</span>
+                </dd>
+              </div>
+              <div class="rr-stacked">
+                <dt><code>probabilities</code></dt>
+                <dd>
+                  <ul class="rr-bars">
+                    {labels.map((label) => {
+                      const p = reply.probabilities[label as keyof typeof reply.probabilities];
+                      return (
+                        <li class={chosen(reply, label) ? "is-chosen" : undefined}>
+                          <span class="rr-label">{label}</span>
+                          <span class="rr-track" aria-hidden="true">
+                            <span class="rr-fill" style={`width: ${(p * 100).toFixed(1)}%`} />
+                            {reply.threshold !== null && (
+                              <span class="rr-threshold" style={`left: ${(reply.threshold as number) * 100}%`} />
+                            )}
+                          </span>
+                          <span class="rr-p">
+                            {f3(p)}
+                            {chosen(reply, label) && <span class="rr-sr">(chosen)</span>}
+                          </span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                  <p class="rr-sum">
+                    <span>
+                      Added up: <strong>{f3(sum(reply))}</strong>
+                    </span>
+                    {reply.threshold !== null && (
+                      <span class="rr-key" aria-hidden="true">
+                        <span class="rr-key-line" /> threshold {reply.threshold}
+                      </span>
+                    )}
+                  </p>
+                </dd>
+              </div>
+              <div class="rr-stacked">
+                <dt><code>timing</code></dt>
+                <dd>
+                  <ul class="rr-timing">
+                    <li>
+                      <code>inference_ms</code> {ms(reply.inferenceMs)} <span class="rr-note">in the model</span>
+                    </li>
+                    <li>
+                      <code>queue_ms</code> {ms(reply.queueMs)} <span class="rr-note">waiting</span>
+                    </li>
+                  </ul>
+                </dd>
+              </div>
+            </dl>
+          </section>
+        ))
+      }
+    </div>
+    <p class="rr-usage">
+      Both replies also give <code>usage</code>: {inputTokens} input tokens (the labels and the text) and 0 output
+      tokens, because the model writes nothing.
+    </p>
+  </section>
+</figure>
+
+<style>
+  .rr {
+    container-type: inline-size;
+    margin: 1.5rem 0;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+  }
+  .rr code {
+    padding: 0.05rem 0.3rem;
+    border-radius: 0.25rem;
+    background: var(--code);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 0.8125rem;
+    overflow-wrap: anywhere;
+  }
+  figcaption {
+    margin: 0 0 0.875rem;
+    color: var(--muted);
+  }
+  h3,
+  h4,
+  p,
+  dl,
+  dd,
+  ul {
+    margin: 0;
+    padding: 0;
+  }
+  ul {
+    list-style: none;
+  }
+
+  .rr-step {
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg);
+  }
+  .rr-step h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    color: var(--text);
+    font-size: 1.0625rem;
+    line-height: 1.3;
+  }
+  .rr-num {
+    display: inline-grid;
+    place-items: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 0.8125rem;
+    font-weight: 700;
+  }
+  .rr-model p {
+    color: var(--text);
+  }
+  .rr-arrow {
+    display: block;
+    margin: 0.375rem auto;
+    color: var(--faint);
+  }
+
+  /* What you send: one field per row; the name above the value on a narrow screen, beside it on a wide one. */
+  .rr-fields {
+    display: grid;
+    gap: 0.625rem;
+  }
+  .rr-fields > div {
+    display: grid;
+    gap: 0.125rem;
+  }
+  .rr-fields dt {
+    color: var(--muted);
+    font-size: 0.875rem;
+  }
+  .rr-fields dt code {
+    margin-left: 0.25rem;
+  }
+  .rr-text {
+    font-size: 1rem;
+  }
+  .rr-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+  }
+  .rr-chips li {
+    padding: 0.125rem 0.625rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--surface);
+  }
+  @container (min-width: 40rem) {
+    .rr-fields > div {
+      grid-template-columns: 15rem minmax(0, 1fr);
+      gap: 1rem;
+    }
+  }
+
+  /* What you get back: the two replies side by side when there is room. */
+  .rr-modes {
+    display: grid;
+    gap: 0.75rem;
+  }
+  @container (min-width: 40rem) {
+    .rr-modes {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  .rr-mode {
+    display: grid;
+    align-content: start;
+    gap: 0.625rem;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+  .rr-mode h4 {
+    color: var(--text);
+    font-size: 1rem;
+  }
+  .rr-rule {
+    color: var(--muted);
+    font-size: 0.875rem;
+  }
+  .rr-pairs {
+    display: grid;
+    gap: 0.5rem;
+  }
+  .rr-pairs > div {
+    display: grid;
+    grid-template-columns: 7rem minmax(0, 1fr);
+    gap: 0.5rem;
+    align-items: baseline;
+  }
+  .rr-pairs > .rr-stacked {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.375rem;
+  }
+  .rr-note {
+    color: var(--muted);
+    font-size: 0.875rem;
+  }
+
+  .rr-bars {
+    display: grid;
+    gap: 0.3rem;
+  }
+  .rr-bars li {
+    display: grid;
+    grid-template-columns: 4.5rem minmax(0, 1fr) 2.75rem;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  .rr-label {
+    color: var(--muted);
+  }
+  .is-chosen .rr-label {
+    color: var(--text);
+    font-weight: 700;
+  }
+  .rr-track {
+    position: relative;
+    height: 0.75rem;
+    border-radius: 0.25rem;
+    background: var(--surface-2);
+  }
+  .rr-fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    min-width: 2px;
+    border-radius: 0.25rem;
+    background: var(--faint);
+  }
+  .is-chosen .rr-fill {
+    background: var(--accent);
+  }
+  .rr-threshold {
+    position: absolute;
+    top: -0.2rem;
+    bottom: -0.2rem;
+    width: 2px;
+    margin-left: -1px;
+    background: var(--text);
+  }
+  .rr-p {
+    font-family: var(--mono);
+    font-size: 0.8125rem;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .is-chosen .rr-p {
+    font-weight: 700;
+  }
+  .rr-sum {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.25rem 1rem;
+    color: var(--muted);
+    font-size: 0.875rem;
+  }
+  .rr-sum strong {
+    color: var(--text);
+  }
+  .rr-key {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+  .rr-key-line {
+    display: inline-block;
+    width: 2px;
+    height: 0.9rem;
+    background: var(--text);
+  }
+  .rr-timing {
+    display: grid;
+    gap: 0.25rem;
+  }
+  @container (min-width: 32rem) {
+    .rr-step,
+    .rr-mode {
+      padding: 1rem;
+    }
+  }
+  .rr-usage {
+    margin-top: 0.75rem;
+    color: var(--muted);
+    font-size: 0.875rem;
+  }
+  .rr-sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+</style>

@@ -8,18 +8,27 @@
 //   benchmark-results/2026-10-14-onnx-runtime-parity-v1/*.json   node-vs-pytorch parity reports
 //   src/gliner_runner/model_inventory.py                         native PyTorch drift characterization
 //   docs/*.md                                                    copied with links rewritten
+//
+// It then writes llms.txt and a Markdown copy of every docs page into public/ (see markdown-copies.mjs).
 
 import { createHash } from "node:crypto";
 import { copyFileSync, existsSync, readdirSync, readFileSync, rmSync, mkdirSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, posix, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { siteComponents, writeMarkdownCopies } from "./markdown-copies.mjs";
 import { buildTree, loadAnswers } from "./twenty-questions/tree.mjs";
 
 export const REPO_URL = "https://github.com/stuffbucket/gliner-runner";
 export const BASE = "/gliner-runner";
 const PARITY_DIR = "benchmark-results/2026-10-14-onnx-runtime-parity-v1";
 const RECEIPT_PATH = "release/onnx-eval-receipt.json";
+// What each model is for, in the words of the Get started page (site/src/content/docs/start.md).
+const USE_FOR = {
+  "decide-340m": "English text. The default.",
+  "decide-multilingual": "Spanish, French, German, and other languages.",
+  "decide-1b": "English text, when you want the most accurate answers.",
+};
 const MODES = ["singleton", "repeated", "batch", "concurrent-group", "concurrent-all"];
 const DOC_ORDER = [
   "onnx-runtime",
@@ -46,6 +55,9 @@ export function fmtBytes(n) {
   }
   return `${n} B`;
 }
+
+/** Decimal gigabytes, the unit the rest of the site and `gliner-runner models install` use. */
+export const fmtGB = (n) => `${(n / 1e9).toFixed(2)} GB`;
 
 export const fmtInt = (n) => n.toLocaleString("en-US");
 
@@ -148,6 +160,7 @@ function modelPage({ model, entry, receipt, reports, native, order }) {
   const receiptModel = receipt.models.find((m) => m.model_id === model.modelId);
 
   const lines = [];
+  if (USE_FOR[model.modelId]) lines.push(`**Use it for:** ${USE_FOR[model.modelId]}`, "");
   lines.push(
     `${model.description}. Upstream model: [${model.repository}](${hfTree(model.repository, model.pinnedRevision)}), ` +
       `served by GLiNER Runner at one pinned revision. This page is generated from the repository's manifest, ` +
@@ -167,8 +180,8 @@ function modelPage({ model, entry, receipt, reports, native, order }) {
         ["Backend", `${code("onnx")} on ${code(manifest.provider)}`],
         ["Precision", `${code(manifest.precision)} (quantization: ${manifest.quantization})`],
         ["ONNX opset", String(manifest.opset)],
-        ["Download (upstream source files)", `${fmtBytes(sourceBytes)}`],
-        ["Installed artifact", `${fmtBytes(artifactBytes)}`],
+        ["Download (upstream source files)", `${fmtGB(sourceBytes)} (${fmtBytes(sourceBytes)})`],
+        ["Installed artifact (on disk)", `${fmtGB(artifactBytes)} (${fmtBytes(artifactBytes)})`],
         ["Source snapshot SHA-256", code(manifest.source_snapshot_sha256)],
         ["Manifest", `[${code("manifest.json")}](${repoBlob(`${entry.relDir}/manifest.json`)})`],
       ],
@@ -336,6 +349,10 @@ function modelPage({ model, entry, receipt, reports, native, order }) {
       `[${code("template.json")}](${repoBlob(`${entry.relDir}/template.json`)}) ` +
       `(SHA-256 ${code(receiptModel?.template_sha256 ?? "unknown")}).`,
     "",
+    "## Next",
+    "",
+    `[Evaluation](${BASE}/evaluation/): how the runner's answers were checked against the original implementation.`,
+    "",
   );
 
   return (
@@ -348,17 +365,19 @@ function modelPage({ model, entry, receipt, reports, native, order }) {
 }
 
 function modelsIndex({ models, templates, receipt }) {
-  const rows = models.map((m) => {
-    const entry = templates.get(m.modelId);
-    const worst = Math.max(...receipt.results.filter((r) => r.model_id === m.modelId).map((r) => r.max_raw_abs_diff));
+  const sizes = models.map((m) => {
+    const { manifest, template } = templates.get(m.modelId);
     return [
       `[${code(m.modelId)}](${BASE}/models/${m.modelId}/)`,
-      `[${m.repository}](https://huggingface.co/${m.repository})`,
-      `${(m.parameterCount / 1e6).toFixed(0)}M`,
-      entry.manifest.license,
-      fmtBytes(entry.manifest.files.reduce((s, f) => s + f.size, 0)),
-      fmtDrift(worst),
+      fmtGB(template.source_files.reduce((s, f) => s + f.size, 0)),
+      fmtGB(manifest.files.reduce((s, f) => s + f.size, 0)),
     ];
+  });
+  const details = models.map((m) => {
+    const license = templates.get(m.modelId).manifest.license;
+    const worst = Math.max(...receipt.results.filter((r) => r.model_id === m.modelId).map((r) => r.max_raw_abs_diff));
+    return `- [${code(m.modelId)}](${BASE}/models/${m.modelId}/): [${m.repository}](https://huggingface.co/${m.repository}), ` +
+      `${(m.parameterCount / 1e6).toFixed(0)}M parameters, license ${license}, max raw drift ${fmtDrift(worst)}.`;
   });
   return (
     frontmatter({
@@ -366,18 +385,25 @@ function modelsIndex({ models, templates, receipt }) {
       description: "Curated GLiNER2.5 Decide models served by GLiNER Runner, each pinned to an exact upstream revision.",
       sidebar: { order: 0 },
     }) +
-    "GLiNER Runner serves three curated models, each pinned to an immutable upstream revision. Each card lists " +
+    "Pick a model by the language of your text, and by how accurate the answers need to be:\n\n" +
+      models.map((m) => `- [${code(m.modelId)}](${BASE}/models/${m.modelId}/): ${USE_FOR[m.modelId] ?? m.description}`).join("\n") +
+      "\n\nTo judge the answers, try ten of your own texts with each model you are considering, and compare. " +
+      "Sizes, licenses and test results follow. Each model's own page has its files and checksums.\n\n" +
+      "GLiNER Runner serves three curated models, each pinned to an immutable upstream revision. Each card lists " +
       "the pinned revision, artifact files with checksums, and parity evaluation results.\n\n" +
-      table(["Model", "Upstream", "Parameters", "License", "Artifact size", "Max raw drift (ONNX vs PyTorch)"], rows, [
-        null,
-        null,
-        "r",
-        null,
-        "r",
-        "r",
-      ]) +
+      "## Sizes\n\n" +
+      table(["Model", "Download", "On disk"], sizes, [null, "r", "r"]) +
+      "\n\n**Download** is the upstream files fetched from Hugging Face. **On disk** is the prepared model that " +
+      "stays after the install. While a model installs, both are on disk at once.\n\n" +
+      "## Upstream, parameters, license, and parity\n\n" +
+      "Max raw drift is the largest absolute difference between a confidence or probability from ONNX Runtime and " +
+      "the same value from PyTorch, over both parity corpora. It measures agreement with PyTorch, not how often the " +
+      "labels are right.\n\n" +
+      details.join("\n") +
       "\n\nEvaluation covers ONNX Runtime on CPU in FP32 for the `classify` operation. See " +
-      `[Evaluation](${BASE}/evaluation/) for the full matrix.\n`
+      `[Evaluation](${BASE}/evaluation/) for the full matrix.\n\n` +
+      "## Next\n\n" +
+      `[Evaluation](${BASE}/evaluation/): how the runner's answers were checked against the original implementation.\n`
   );
 }
 
@@ -394,6 +420,11 @@ function evaluationPage({ root, models, receipt, reports, native }) {
   const lines = [];
 
   lines.push(
+    "Each model was run through GLiNER Runner and through the original implementation of these models, " +
+      "Fastino's GLiNER2 library on PyTorch, and the answers were compared. This does not measure how often a " +
+      `model's labels are right. To judge that, try the models on your own texts. The [examples](${BASE}/examples/) ` +
+      "show what we got, including the wrong answers.",
+    "",
     "The Python-free ONNX runner is accepted only against PyTorch. Two fixed request corpora are replayed " +
       "through the runner's real HTTP server for every curated model and compared with golden outputs produced by " +
       `the PyTorch backend (${code(ref.path)}, Fastino GLiNER2 ${ref.versions.gliner2}). ` +
@@ -514,6 +545,10 @@ function evaluationPage({ root, models, receipt, reports, native }) {
       "results, decoder metadata, error code, message, retryable flag, HTTP status) and of token usage.",
     "- Numeric comparison: raw confidence and probability values compared without rounding against an absolute " +
       "tolerance that gates acceptance. \"Synthetic zero\" is a diagnostic view only.",
+    "",
+    "## Next",
+    "",
+    `[Examples](${BASE}/examples/): jobs we ran with these models, with the answers we got.`,
     "",
   );
 
@@ -666,4 +701,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   console.log(`generated ${result.models} model pages, the evaluation page, and ${result.docs} docs pages`);
   copyRunnerTemplates(root, resolve(here, "../public/runner-templates"));
   writeFileSync(resolve(here, "../src/data/twenty-questions.json"), `${JSON.stringify(buildTree(loadAnswers()))}\n`);
+  const site = resolve(here, "..");
+  const copies = writeMarkdownCopies(resolve(site, "src/content/docs"), resolve(site, "public"), siteComponents(site));
+  console.log(`wrote llms.txt and ${copies.pages} Markdown copies of the docs pages`);
 }

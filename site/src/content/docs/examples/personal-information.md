@@ -96,3 +96,8 @@ little, and have a person look.
 - **Add kinds** that matter to you, such as `date of birth` or `government ID number`, each with
   a description.
 - **Use it as a gate.** Hold back any message that is not labelled `none` for a person to read.
+
+## Next
+
+See [all examples](/gliner-runner/examples/), or [more ideas](/gliner-runner/more-ideas/) for other
+jobs to try.

@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 import { afterClassification, newGame, nextStep } from "../../src/components/twentyQuestions.js";
-import { allLevels, inRange, leafRanking, levelsFor, pathsTo, sureness, thingNames, trace } from "../../src/components/twentyQuestionsTrace.js";
+import { allLevels, inRange, leafRanking, levelsFor, likeliest, pathsTo, sureness, thingNames, trace } from "../../src/components/twentyQuestionsTrace.js";
 
 const tree = {
   label: "anything",
@@ -103,4 +103,17 @@ test("the game records what each classification returned, and for which clues, f
   const after = { ...afterClassification(game, step, { animal: 0.6, vegetable: 0.4 }), clues: "small and brown, with feathers" };
   assert.deepEqual(after.levels.get(""), { clues: "small and brown", probabilities: { animal: 0.6, vegetable: 0.4 } });
   assert.equal(game.levels.size, 0);
+});
+
+test("the likeliest so far use only classifications for the current clues, without wrong guesses, each name once", () => {
+  const game = {
+    ...newGame(tree, "small and brown"),
+    levels: new Map([...levels].map(([nodeKey, probabilities]) => [nodeKey, { clues: "small and brown", probabilities }])),
+    ruledOut: new Set(["owl"]),
+  };
+  const top = likeliest(game, 3, plain);
+  assert.deepEqual(top.map((t) => t.label), ["kiwi", "apple", "pear"]);
+  assert.equal(top[0].nodeKey, "vegetable › fruit › kiwi"); // 0.15 by way of fruit beats 0.126 by way of bird
+  game.levels.set("vegetable", { clues: "older clues", probabilities: { fruit: 1 } });
+  assert.deepEqual(likeliest(game, 3, plain).map((t) => t.label), ["kiwi"]);
 });

@@ -38,7 +38,8 @@ while IFS= read -r line; do
   printf '  mood:   '
   gliner-runner classify --labels positive,mixed,negative "$line"
   printf '  topics: '
-  gliner-runner classify --multi --labels "food,service,price,cleanliness,noise" "$line"
+  gliner-runner classify --multi \
+    --labels "food,service,price,cleanliness,noise" "$line"
 done <<'EOF'
 The pasta was excellent and the waiter was very kind, but it was far too expensive.
 We waited an hour for a table and the bathroom was dirty.
@@ -72,7 +73,9 @@ The topics are right but not complete. The second review also complains about th
 threshold of 0.5. Lowering the threshold to 0.3 for the fourth review:
 
 ```sh
-gliner-runner classify --multi --threshold 0.3 --labels "food,service,price,cleanliness,noise" "Too loud to talk, and the soup was cold."
+gliner-runner classify --multi --threshold 0.3 \
+  --labels "food,service,price,cleanliness,noise" \
+  "Too loud to talk, and the soup was cold."
 ```
 
 ```text
@@ -89,3 +92,8 @@ That one now includes `food`. A lower threshold finds more topics and also more 
 - **Add describing words** to labels that are missed, for example
   `service=The staff, and how long people waited`.
 - **Try the larger model** with `--model decide-1b` and compare.
+
+## Next
+
+See [all examples](/gliner-runner/examples/), or [more ideas](/gliner-runner/more-ideas/) for other
+jobs to try.

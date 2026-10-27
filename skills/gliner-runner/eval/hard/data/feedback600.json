@@ -1,0 +1,3002 @@
+[
+ {
+  "id": "F001",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. I love this blender, it works perfectly.",
+  "answer": "positive"
+ },
+ {
+  "id": "F002",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. The blender broke after two days.",
+  "answer": "negative"
+ },
+ {
+  "id": "F003",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. The blender is excellent and well made.",
+  "answer": "positive"
+ },
+ {
+  "id": "F004",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. Terrible blender, a complete waste of money.",
+  "answer": "negative"
+ },
+ {
+  "id": "F005",
+  "text": "We bought it for our new apartment when we moved to the city last year. Really happy with my new blender.",
+  "answer": "positive"
+ },
+ {
+  "id": "F006",
+  "text": "We bought it for our new apartment when we moved to the city last year. I am very disappointed with this blender.",
+  "answer": "negative"
+ },
+ {
+  "id": "F007",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. This blender exceeded my expectations.",
+  "answer": "positive"
+ },
+ {
+  "id": "F008",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. The blender stopped working within a week.",
+  "answer": "negative"
+ },
+ {
+  "id": "F009",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. Fantastic blender, I would buy it again.",
+  "answer": "positive"
+ },
+ {
+  "id": "F010",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. Do not buy this blender, it is awful.",
+  "answer": "negative"
+ },
+ {
+  "id": "F011",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. The blender is great value and does exactly what I need.",
+  "answer": "positive"
+ },
+ {
+  "id": "F012",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. The blender feels cheap and flimsy.",
+  "answer": "negative"
+ },
+ {
+  "id": "F013",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. Five stars, the blender is wonderful.",
+  "answer": "positive"
+ },
+ {
+  "id": "F014",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. One star, the blender is useless.",
+  "answer": "negative"
+ },
+ {
+  "id": "F015",
+  "text": "We bought it for our new apartment when we moved to the city last year. My blender arrived quickly and works beautifully.",
+  "answer": "positive"
+ },
+ {
+  "id": "F016",
+  "text": "We bought it for our new apartment when we moved to the city last year. My blender arrived broken and support never answered.",
+  "answer": "negative"
+ },
+ {
+  "id": "F017",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. Best blender I have ever owned.",
+  "answer": "positive"
+ },
+ {
+  "id": "F018",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. Worst blender I have ever bought.",
+  "answer": "negative"
+ },
+ {
+  "id": "F019",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. The blender is sturdy, quiet and easy to use.",
+  "answer": "positive"
+ },
+ {
+  "id": "F020",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. The blender is loud, slow and hard to use.",
+  "answer": "negative"
+ },
+ {
+  "id": "F021",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. I love this headset, it works perfectly.",
+  "answer": "positive"
+ },
+ {
+  "id": "F022",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. The headset broke after two days.",
+  "answer": "negative"
+ },
+ {
+  "id": "F023",
+  "text": "We bought it for our new apartment when we moved to the city last year. The headset is excellent and well made.",
+  "answer": "positive"
+ },
+ {
+  "id": "F024",
+  "text": "We bought it for our new apartment when we moved to the city last year. Terrible headset, a complete waste of money.",
+  "answer": "negative"
+ },
+ {
+  "id": "F025",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. Really happy with my new headset.",
+  "answer": "positive"
+ },
+ {
+  "id": "F026",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. I am very disappointed with this headset.",
+  "answer": "negative"
+ },
+ {
+  "id": "F027",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. This headset exceeded my expectations.",
+  "answer": "positive"
+ },
+ {
+  "id": "F028",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. The headset stopped working within a week.",
+  "answer": "negative"
+ },
+ {
+  "id": "F029",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. Fantastic headset, I would buy it again.",
+  "answer": "positive"
+ },
+ {
+  "id": "F030",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. Do not buy this headset, it is awful.",
+  "answer": "negative"
+ },
+ {
+  "id": "F031",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. The headset is great value and does exactly what I need.",
+  "answer": "positive"
+ },
+ {
+  "id": "F032",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. The headset feels cheap and flimsy.",
+  "answer": "negative"
+ },
+ {
+  "id": "F033",
+  "text": "We bought it for our new apartment when we moved to the city last year. Five stars, the headset is wonderful.",
+  "answer": "positive"
+ },
+ {
+  "id": "F034",
+  "text": "We bought it for our new apartment when we moved to the city last year. One star, the headset is useless.",
+  "answer": "negative"
+ },
+ {
+  "id": "F035",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. My headset arrived quickly and works beautifully.",
+  "answer": "positive"
+ },
+ {
+  "id": "F036",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. My headset arrived broken and support never answered.",
+  "answer": "negative"
+ },
+ {
+  "id": "F037",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. Best headset I have ever owned.",
+  "answer": "positive"
+ },
+ {
+  "id": "F038",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. Worst headset I have ever bought.",
+  "answer": "negative"
+ },
+ {
+  "id": "F039",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. The headset is sturdy, quiet and easy to use.",
+  "answer": "positive"
+ },
+ {
+  "id": "F040",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. The headset is loud, slow and hard to use.",
+  "answer": "negative"
+ },
+ {
+  "id": "F041",
+  "text": "We bought it for our new apartment when we moved to the city last year. I love this backpack, it works perfectly.",
+  "answer": "positive"
+ },
+ {
+  "id": "F042",
+  "text": "We bought it for our new apartment when we moved to the city last year. The backpack broke after two days.",
+  "answer": "negative"
+ },
+ {
+  "id": "F043",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. The backpack is excellent and well made.",
+  "answer": "positive"
+ },
+ {
+  "id": "F044",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. Terrible backpack, a complete waste of money.",
+  "answer": "negative"
+ },
+ {
+  "id": "F045",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. Really happy with my new backpack.",
+  "answer": "positive"
+ },
+ {
+  "id": "F046",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. I am very disappointed with this backpack.",
+  "answer": "negative"
+ },
+ {
+  "id": "F047",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. This backpack exceeded my expectations.",
+  "answer": "positive"
+ },
+ {
+  "id": "F048",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. The backpack stopped working within a week.",
+  "answer": "negative"
+ },
+ {
+  "id": "F049",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. Fantastic backpack, I would buy it again.",
+  "answer": "positive"
+ },
+ {
+  "id": "F050",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. Do not buy this backpack, it is awful.",
+  "answer": "negative"
+ },
+ {
+  "id": "F051",
+  "text": "We bought it for our new apartment when we moved to the city last year. The backpack is great value and does exactly what I need.",
+  "answer": "positive"
+ },
+ {
+  "id": "F052",
+  "text": "We bought it for our new apartment when we moved to the city last year. The backpack feels cheap and flimsy.",
+  "answer": "negative"
+ },
+ {
+  "id": "F053",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. Five stars, the backpack is wonderful.",
+  "answer": "positive"
+ },
+ {
+  "id": "F054",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. One star, the backpack is useless.",
+  "answer": "negative"
+ },
+ {
+  "id": "F055",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. My backpack arrived quickly and works beautifully.",
+  "answer": "positive"
+ },
+ {
+  "id": "F056",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. My backpack arrived broken and support never answered.",
+  "answer": "negative"
+ },
+ {
+  "id": "F057",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. Best backpack I have ever owned.",
+  "answer": "positive"
+ },
+ {
+  "id": "F058",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. Worst backpack I have ever bought.",
+  "answer": "negative"
+ },
+ {
+  "id": "F059",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. The backpack is sturdy, quiet and easy to use.",
+  "answer": "positive"
+ },
+ {
+  "id": "F060",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. The backpack is loud, slow and hard to use.",
+  "answer": "negative"
+ },
+ {
+  "id": "F061",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. I love this kettle, it works perfectly.",
+  "answer": "positive"
+ },
+ {
+  "id": "F062",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. The kettle broke after two days.",
+  "answer": "negative"
+ },
+ {
+  "id": "F063",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. The kettle is excellent and well made.",
+  "answer": "positive"
+ },
+ {
+  "id": "F064",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. Terrible kettle, a complete waste of money.",
+  "answer": "negative"
+ },
+ {
+  "id": "F065",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. Really happy with my new kettle.",
+  "answer": "positive"
+ },
+ {
+  "id": "F066",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. I am very disappointed with this kettle.",
+  "answer": "negative"
+ },
+ {
+  "id": "F067",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. This kettle exceeded my expectations.",
+  "answer": "positive"
+ },
+ {
+  "id": "F068",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. The kettle stopped working within a week.",
+  "answer": "negative"
+ },
+ {
+  "id": "F069",
+  "text": "We bought it for our new apartment when we moved to the city last year. Fantastic kettle, I would buy it again.",
+  "answer": "positive"
+ },
+ {
+  "id": "F070",
+  "text": "We bought it for our new apartment when we moved to the city last year. Do not buy this kettle, it is awful.",
+  "answer": "negative"
+ },
+ {
+  "id": "F071",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. The kettle is great value and does exactly what I need.",
+  "answer": "positive"
+ },
+ {
+  "id": "F072",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. The kettle feels cheap and flimsy.",
+  "answer": "negative"
+ },
+ {
+  "id": "F073",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. Five stars, the kettle is wonderful.",
+  "answer": "positive"
+ },
+ {
+  "id": "F074",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. One star, the kettle is useless.",
+  "answer": "negative"
+ },
+ {
+  "id": "F075",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. My kettle arrived quickly and works beautifully.",
+  "answer": "positive"
+ },
+ {
+  "id": "F076",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. My kettle arrived broken and support never answered.",
+  "answer": "negative"
+ },
+ {
+  "id": "F077",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. Best kettle I have ever owned.",
+  "answer": "positive"
+ },
+ {
+  "id": "F078",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. Worst kettle I have ever bought.",
+  "answer": "negative"
+ },
+ {
+  "id": "F079",
+  "text": "We bought it for our new apartment when we moved to the city last year. The kettle is sturdy, quiet and easy to use.",
+  "answer": "positive"
+ },
+ {
+  "id": "F080",
+  "text": "We bought it for our new apartment when we moved to the city last year. The kettle is loud, slow and hard to use.",
+  "answer": "negative"
+ },
+ {
+  "id": "F081",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. I love this lamp, it works perfectly.",
+  "answer": "positive"
+ },
+ {
+  "id": "F082",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. The lamp broke after two days.",
+  "answer": "negative"
+ },
+ {
+  "id": "F083",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. The lamp is excellent and well made.",
+  "answer": "positive"
+ },
+ {
+  "id": "F084",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. Terrible lamp, a complete waste of money.",
+  "answer": "negative"
+ },
+ {
+  "id": "F085",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. Really happy with my new lamp.",
+  "answer": "positive"
+ },
+ {
+  "id": "F086",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. I am very disappointed with this lamp.",
+  "answer": "negative"
+ },
+ {
+  "id": "F087",
+  "text": "We bought it for our new apartment when we moved to the city last year. This lamp exceeded my expectations.",
+  "answer": "positive"
+ },
+ {
+  "id": "F088",
+  "text": "We bought it for our new apartment when we moved to the city last year. The lamp stopped working within a week.",
+  "answer": "negative"
+ },
+ {
+  "id": "F089",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. Fantastic lamp, I would buy it again.",
+  "answer": "positive"
+ },
+ {
+  "id": "F090",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. Do not buy this lamp, it is awful.",
+  "answer": "negative"
+ },
+ {
+  "id": "F091",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. The lamp is great value and does exactly what I need.",
+  "answer": "positive"
+ },
+ {
+  "id": "F092",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. The lamp feels cheap and flimsy.",
+  "answer": "negative"
+ },
+ {
+  "id": "F093",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. Five stars, the lamp is wonderful.",
+  "answer": "positive"
+ },
+ {
+  "id": "F094",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. One star, the lamp is useless.",
+  "answer": "negative"
+ },
+ {
+  "id": "F095",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. My lamp arrived quickly and works beautifully.",
+  "answer": "positive"
+ },
+ {
+  "id": "F096",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. My lamp arrived broken and support never answered.",
+  "answer": "negative"
+ },
+ {
+  "id": "F097",
+  "text": "We bought it for our new apartment when we moved to the city last year. Best lamp I have ever owned.",
+  "answer": "positive"
+ },
+ {
+  "id": "F098",
+  "text": "We bought it for our new apartment when we moved to the city last year. Worst lamp I have ever bought.",
+  "answer": "negative"
+ },
+ {
+  "id": "F099",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. The lamp is sturdy, quiet and easy to use.",
+  "answer": "positive"
+ },
+ {
+  "id": "F100",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. The lamp is loud, slow and hard to use.",
+  "answer": "negative"
+ },
+ {
+  "id": "F101",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. I love this office chair, it works perfectly.",
+  "answer": "positive"
+ },
+ {
+  "id": "F102",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. The office chair broke after two days.",
+  "answer": "negative"
+ },
+ {
+  "id": "F103",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. The office chair is excellent and well made.",
+  "answer": "positive"
+ },
+ {
+  "id": "F104",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. Terrible office chair, a complete waste of money.",
+  "answer": "negative"
+ },
+ {
+  "id": "F105",
+  "text": "We bought it for our new apartment when we moved to the city last year. Really happy with my new office chair.",
+  "answer": "positive"
+ },
+ {
+  "id": "F106",
+  "text": "We bought it for our new apartment when we moved to the city last year. I am very disappointed with this office chair.",
+  "answer": "negative"
+ },
+ {
+  "id": "F107",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. This office chair exceeded my expectations.",
+  "answer": "positive"
+ },
+ {
+  "id": "F108",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. The office chair stopped working within a week.",
+  "answer": "negative"
+ },
+ {
+  "id": "F109",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. Fantastic office chair, I would buy it again.",
+  "answer": "positive"
+ },
+ {
+  "id": "F110",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. Do not buy this office chair, it is awful.",
+  "answer": "negative"
+ },
+ {
+  "id": "F111",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. The office chair is great value and does exactly what I need.",
+  "answer": "positive"
+ },
+ {
+  "id": "F112",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. The office chair feels cheap and flimsy.",
+  "answer": "negative"
+ },
+ {
+  "id": "F113",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. Five stars, the office chair is wonderful.",
+  "answer": "positive"
+ },
+ {
+  "id": "F114",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. One star, the office chair is useless.",
+  "answer": "negative"
+ },
+ {
+  "id": "F115",
+  "text": "We bought it for our new apartment when we moved to the city last year. My office chair arrived quickly and works beautifully.",
+  "answer": "positive"
+ },
+ {
+  "id": "F116",
+  "text": "We bought it for our new apartment when we moved to the city last year. My office chair arrived broken and support never answered.",
+  "answer": "negative"
+ },
+ {
+  "id": "F117",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. Best office chair I have ever owned.",
+  "answer": "positive"
+ },
+ {
+  "id": "F118",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. Worst office chair I have ever bought.",
+  "answer": "negative"
+ },
+ {
+  "id": "F119",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. The office chair is sturdy, quiet and easy to use.",
+  "answer": "positive"
+ },
+ {
+  "id": "F120",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. The office chair is loud, slow and hard to use.",
+  "answer": "negative"
+ },
+ {
+  "id": "F121",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. I love this phone case, it works perfectly.",
+  "answer": "positive"
+ },
+ {
+  "id": "F122",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. The phone case broke after two days.",
+  "answer": "negative"
+ },
+ {
+  "id": "F123",
+  "text": "We bought it for our new apartment when we moved to the city last year. The phone case is excellent and well made.",
+  "answer": "positive"
+ },
+ {
+  "id": "F124",
+  "text": "We bought it for our new apartment when we moved to the city last year. Terrible phone case, a complete waste of money.",
+  "answer": "negative"
+ },
+ {
+  "id": "F125",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. Really happy with my new phone case.",
+  "answer": "positive"
+ },
+ {
+  "id": "F126",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. I am very disappointed with this phone case.",
+  "answer": "negative"
+ },
+ {
+  "id": "F127",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. This phone case exceeded my expectations.",
+  "answer": "positive"
+ },
+ {
+  "id": "F128",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. The phone case stopped working within a week.",
+  "answer": "negative"
+ },
+ {
+  "id": "F129",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. Fantastic phone case, I would buy it again.",
+  "answer": "positive"
+ },
+ {
+  "id": "F130",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. Do not buy this phone case, it is awful.",
+  "answer": "negative"
+ },
+ {
+  "id": "F131",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. The phone case is great value and does exactly what I need.",
+  "answer": "positive"
+ },
+ {
+  "id": "F132",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. The phone case feels cheap and flimsy.",
+  "answer": "negative"
+ },
+ {
+  "id": "F133",
+  "text": "We bought it for our new apartment when we moved to the city last year. Five stars, the phone case is wonderful.",
+  "answer": "positive"
+ },
+ {
+  "id": "F134",
+  "text": "We bought it for our new apartment when we moved to the city last year. One star, the phone case is useless.",
+  "answer": "negative"
+ },
+ {
+  "id": "F135",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. My phone case arrived quickly and works beautifully.",
+  "answer": "positive"
+ },
+ {
+  "id": "F136",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. My phone case arrived broken and support never answered.",
+  "answer": "negative"
+ },
+ {
+  "id": "F137",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. Best phone case I have ever owned.",
+  "answer": "positive"
+ },
+ {
+  "id": "F138",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. Worst phone case I have ever bought.",
+  "answer": "negative"
+ },
+ {
+  "id": "F139",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. The phone case is sturdy, quiet and easy to use.",
+  "answer": "positive"
+ },
+ {
+  "id": "F140",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. The phone case is loud, slow and hard to use.",
+  "answer": "negative"
+ },
+ {
+  "id": "F141",
+  "text": "We bought it for our new apartment when we moved to the city last year. I love this rice cooker, it works perfectly.",
+  "answer": "positive"
+ },
+ {
+  "id": "F142",
+  "text": "We bought it for our new apartment when we moved to the city last year. The rice cooker broke after two days.",
+  "answer": "negative"
+ },
+ {
+  "id": "F143",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. The rice cooker is excellent and well made.",
+  "answer": "positive"
+ },
+ {
+  "id": "F144",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. Terrible rice cooker, a complete waste of money.",
+  "answer": "negative"
+ },
+ {
+  "id": "F145",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. Really happy with my new rice cooker.",
+  "answer": "positive"
+ },
+ {
+  "id": "F146",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. I am very disappointed with this rice cooker.",
+  "answer": "negative"
+ },
+ {
+  "id": "F147",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. This rice cooker exceeded my expectations.",
+  "answer": "positive"
+ },
+ {
+  "id": "F148",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. The rice cooker stopped working within a week.",
+  "answer": "negative"
+ },
+ {
+  "id": "F149",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. Fantastic rice cooker, I would buy it again.",
+  "answer": "positive"
+ },
+ {
+  "id": "F150",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. Do not buy this rice cooker, it is awful.",
+  "answer": "negative"
+ },
+ {
+  "id": "F151",
+  "text": "We bought it for our new apartment when we moved to the city last year. The rice cooker is great value and does exactly what I need.",
+  "answer": "positive"
+ },
+ {
+  "id": "F152",
+  "text": "We bought it for our new apartment when we moved to the city last year. The rice cooker feels cheap and flimsy.",
+  "answer": "negative"
+ },
+ {
+  "id": "F153",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. Five stars, the rice cooker is wonderful.",
+  "answer": "positive"
+ },
+ {
+  "id": "F154",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. One star, the rice cooker is useless.",
+  "answer": "negative"
+ },
+ {
+  "id": "F155",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. My rice cooker arrived quickly and works beautifully.",
+  "answer": "positive"
+ },
+ {
+  "id": "F156",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. My rice cooker arrived broken and support never answered.",
+  "answer": "negative"
+ },
+ {
+  "id": "F157",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. Best rice cooker I have ever owned.",
+  "answer": "positive"
+ },
+ {
+  "id": "F158",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. Worst rice cooker I have ever bought.",
+  "answer": "negative"
+ },
+ {
+  "id": "F159",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. The rice cooker is sturdy, quiet and easy to use.",
+  "answer": "positive"
+ },
+ {
+  "id": "F160",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. The rice cooker is loud, slow and hard to use.",
+  "answer": "negative"
+ },
+ {
+  "id": "F161",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. I love this keyboard, it works perfectly.",
+  "answer": "positive"
+ },
+ {
+  "id": "F162",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. The keyboard broke after two days.",
+  "answer": "negative"
+ },
+ {
+  "id": "F163",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. The keyboard is excellent and well made.",
+  "answer": "positive"
+ },
+ {
+  "id": "F164",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. Terrible keyboard, a complete waste of money.",
+  "answer": "negative"
+ },
+ {
+  "id": "F165",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. Really happy with my new keyboard.",
+  "answer": "positive"
+ },
+ {
+  "id": "F166",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. I am very disappointed with this keyboard.",
+  "answer": "negative"
+ },
+ {
+  "id": "F167",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. This keyboard exceeded my expectations.",
+  "answer": "positive"
+ },
+ {
+  "id": "F168",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. The keyboard stopped working within a week.",
+  "answer": "negative"
+ },
+ {
+  "id": "F169",
+  "text": "We bought it for our new apartment when we moved to the city last year. Fantastic keyboard, I would buy it again.",
+  "answer": "positive"
+ },
+ {
+  "id": "F170",
+  "text": "We bought it for our new apartment when we moved to the city last year. Do not buy this keyboard, it is awful.",
+  "answer": "negative"
+ },
+ {
+  "id": "F171",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. The keyboard is great value and does exactly what I need.",
+  "answer": "positive"
+ },
+ {
+  "id": "F172",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. The keyboard feels cheap and flimsy.",
+  "answer": "negative"
+ },
+ {
+  "id": "F173",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. Five stars, the keyboard is wonderful.",
+  "answer": "positive"
+ },
+ {
+  "id": "F174",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. One star, the keyboard is useless.",
+  "answer": "negative"
+ },
+ {
+  "id": "F175",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. My keyboard arrived quickly and works beautifully.",
+  "answer": "positive"
+ },
+ {
+  "id": "F176",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. My keyboard arrived broken and support never answered.",
+  "answer": "negative"
+ },
+ {
+  "id": "F177",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. Best keyboard I have ever owned.",
+  "answer": "positive"
+ },
+ {
+  "id": "F178",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. Worst keyboard I have ever bought.",
+  "answer": "negative"
+ },
+ {
+  "id": "F179",
+  "text": "We bought it for our new apartment when we moved to the city last year. The keyboard is sturdy, quiet and easy to use.",
+  "answer": "positive"
+ },
+ {
+  "id": "F180",
+  "text": "We bought it for our new apartment when we moved to the city last year. The keyboard is loud, slow and hard to use.",
+  "answer": "negative"
+ },
+ {
+  "id": "F181",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. I love this water bottle, it works perfectly.",
+  "answer": "positive"
+ },
+ {
+  "id": "F182",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. The water bottle broke after two days.",
+  "answer": "negative"
+ },
+ {
+  "id": "F183",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. The water bottle is excellent and well made.",
+  "answer": "positive"
+ },
+ {
+  "id": "F184",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. Terrible water bottle, a complete waste of money.",
+  "answer": "negative"
+ },
+ {
+  "id": "F185",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. Really happy with my new water bottle.",
+  "answer": "positive"
+ },
+ {
+  "id": "F186",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. I am very disappointed with this water bottle.",
+  "answer": "negative"
+ },
+ {
+  "id": "F187",
+  "text": "We bought it for our new apartment when we moved to the city last year. This water bottle exceeded my expectations.",
+  "answer": "positive"
+ },
+ {
+  "id": "F188",
+  "text": "We bought it for our new apartment when we moved to the city last year. The water bottle stopped working within a week.",
+  "answer": "negative"
+ },
+ {
+  "id": "F189",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. Fantastic water bottle, I would buy it again.",
+  "answer": "positive"
+ },
+ {
+  "id": "F190",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. Do not buy this water bottle, it is awful.",
+  "answer": "negative"
+ },
+ {
+  "id": "F191",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. The water bottle is great value and does exactly what I need.",
+  "answer": "positive"
+ },
+ {
+  "id": "F192",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. The water bottle feels cheap and flimsy.",
+  "answer": "negative"
+ },
+ {
+  "id": "F193",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. Five stars, the water bottle is wonderful.",
+  "answer": "positive"
+ },
+ {
+  "id": "F194",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. One star, the water bottle is useless.",
+  "answer": "negative"
+ },
+ {
+  "id": "F195",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. My water bottle arrived quickly and works beautifully.",
+  "answer": "positive"
+ },
+ {
+  "id": "F196",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. My water bottle arrived broken and support never answered.",
+  "answer": "negative"
+ },
+ {
+  "id": "F197",
+  "text": "We bought it for our new apartment when we moved to the city last year. Best water bottle I have ever owned.",
+  "answer": "positive"
+ },
+ {
+  "id": "F198",
+  "text": "We bought it for our new apartment when we moved to the city last year. Worst water bottle I have ever bought.",
+  "answer": "negative"
+ },
+ {
+  "id": "F199",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. The water bottle is sturdy, quiet and easy to use.",
+  "answer": "positive"
+ },
+ {
+  "id": "F200",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. The water bottle is loud, slow and hard to use.",
+  "answer": "negative"
+ },
+ {
+  "id": "F201",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. I love this vacuum, it works perfectly.",
+  "answer": "positive"
+ },
+ {
+  "id": "F202",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. The vacuum broke after two days.",
+  "answer": "negative"
+ },
+ {
+  "id": "F203",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. The vacuum is excellent and well made.",
+  "answer": "positive"
+ },
+ {
+  "id": "F204",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. Terrible vacuum, a complete waste of money.",
+  "answer": "negative"
+ },
+ {
+  "id": "F205",
+  "text": "We bought it for our new apartment when we moved to the city last year. Really happy with my new vacuum.",
+  "answer": "positive"
+ },
+ {
+  "id": "F206",
+  "text": "We bought it for our new apartment when we moved to the city last year. I am very disappointed with this vacuum.",
+  "answer": "negative"
+ },
+ {
+  "id": "F207",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. This vacuum exceeded my expectations.",
+  "answer": "positive"
+ },
+ {
+  "id": "F208",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. The vacuum stopped working within a week.",
+  "answer": "negative"
+ },
+ {
+  "id": "F209",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. Fantastic vacuum, I would buy it again.",
+  "answer": "positive"
+ },
+ {
+  "id": "F210",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. Do not buy this vacuum, it is awful.",
+  "answer": "negative"
+ },
+ {
+  "id": "F211",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. The vacuum is great value and does exactly what I need.",
+  "answer": "positive"
+ },
+ {
+  "id": "F212",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. The vacuum feels cheap and flimsy.",
+  "answer": "negative"
+ },
+ {
+  "id": "F213",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. Five stars, the vacuum is wonderful.",
+  "answer": "positive"
+ },
+ {
+  "id": "F214",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. One star, the vacuum is useless.",
+  "answer": "negative"
+ },
+ {
+  "id": "F215",
+  "text": "We bought it for our new apartment when we moved to the city last year. My vacuum arrived quickly and works beautifully.",
+  "answer": "positive"
+ },
+ {
+  "id": "F216",
+  "text": "We bought it for our new apartment when we moved to the city last year. My vacuum arrived broken and support never answered.",
+  "answer": "negative"
+ },
+ {
+  "id": "F217",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. Best vacuum I have ever owned.",
+  "answer": "positive"
+ },
+ {
+  "id": "F218",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. Worst vacuum I have ever bought.",
+  "answer": "negative"
+ },
+ {
+  "id": "F219",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. The vacuum is sturdy, quiet and easy to use.",
+  "answer": "positive"
+ },
+ {
+  "id": "F220",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. The vacuum is loud, slow and hard to use.",
+  "answer": "negative"
+ },
+ {
+  "id": "F221",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. I love this tent, it works perfectly.",
+  "answer": "positive"
+ },
+ {
+  "id": "F222",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. The tent broke after two days.",
+  "answer": "negative"
+ },
+ {
+  "id": "F223",
+  "text": "We bought it for our new apartment when we moved to the city last year. The tent is excellent and well made.",
+  "answer": "positive"
+ },
+ {
+  "id": "F224",
+  "text": "We bought it for our new apartment when we moved to the city last year. Terrible tent, a complete waste of money.",
+  "answer": "negative"
+ },
+ {
+  "id": "F225",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. Really happy with my new tent.",
+  "answer": "positive"
+ },
+ {
+  "id": "F226",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. I am very disappointed with this tent.",
+  "answer": "negative"
+ },
+ {
+  "id": "F227",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. This tent exceeded my expectations.",
+  "answer": "positive"
+ },
+ {
+  "id": "F228",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. The tent stopped working within a week.",
+  "answer": "negative"
+ },
+ {
+  "id": "F229",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. Fantastic tent, I would buy it again.",
+  "answer": "positive"
+ },
+ {
+  "id": "F230",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. Do not buy this tent, it is awful.",
+  "answer": "negative"
+ },
+ {
+  "id": "F231",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. The tent is great value and does exactly what I need.",
+  "answer": "positive"
+ },
+ {
+  "id": "F232",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. The tent feels cheap and flimsy.",
+  "answer": "negative"
+ },
+ {
+  "id": "F233",
+  "text": "We bought it for our new apartment when we moved to the city last year. Five stars, the tent is wonderful.",
+  "answer": "positive"
+ },
+ {
+  "id": "F234",
+  "text": "We bought it for our new apartment when we moved to the city last year. One star, the tent is useless.",
+  "answer": "negative"
+ },
+ {
+  "id": "F235",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. My tent arrived quickly and works beautifully.",
+  "answer": "positive"
+ },
+ {
+  "id": "F236",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. My tent arrived broken and support never answered.",
+  "answer": "negative"
+ },
+ {
+  "id": "F237",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. Best tent I have ever owned.",
+  "answer": "positive"
+ },
+ {
+  "id": "F238",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. Worst tent I have ever bought.",
+  "answer": "negative"
+ },
+ {
+  "id": "F239",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. The tent is sturdy, quiet and easy to use.",
+  "answer": "positive"
+ },
+ {
+  "id": "F240",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. The tent is loud, slow and hard to use.",
+  "answer": "negative"
+ },
+ {
+  "id": "F241",
+  "text": "We bought it for our new apartment when we moved to the city last year. I love this jacket, it works perfectly.",
+  "answer": "positive"
+ },
+ {
+  "id": "F242",
+  "text": "We bought it for our new apartment when we moved to the city last year. The jacket broke after two days.",
+  "answer": "negative"
+ },
+ {
+  "id": "F243",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. The jacket is excellent and well made.",
+  "answer": "positive"
+ },
+ {
+  "id": "F244",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. Terrible jacket, a complete waste of money.",
+  "answer": "negative"
+ },
+ {
+  "id": "F245",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. Really happy with my new jacket.",
+  "answer": "positive"
+ },
+ {
+  "id": "F246",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. I am very disappointed with this jacket.",
+  "answer": "negative"
+ },
+ {
+  "id": "F247",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. This jacket exceeded my expectations.",
+  "answer": "positive"
+ },
+ {
+  "id": "F248",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. The jacket stopped working within a week.",
+  "answer": "negative"
+ },
+ {
+  "id": "F249",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. Fantastic jacket, I would buy it again.",
+  "answer": "positive"
+ },
+ {
+  "id": "F250",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. Do not buy this jacket, it is awful.",
+  "answer": "negative"
+ },
+ {
+  "id": "F251",
+  "text": "We bought it for our new apartment when we moved to the city last year. The jacket is great value and does exactly what I need.",
+  "answer": "positive"
+ },
+ {
+  "id": "F252",
+  "text": "We bought it for our new apartment when we moved to the city last year. The jacket feels cheap and flimsy.",
+  "answer": "negative"
+ },
+ {
+  "id": "F253",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. Five stars, the jacket is wonderful.",
+  "answer": "positive"
+ },
+ {
+  "id": "F254",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. One star, the jacket is useless.",
+  "answer": "negative"
+ },
+ {
+  "id": "F255",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. My jacket arrived quickly and works beautifully.",
+  "answer": "positive"
+ },
+ {
+  "id": "F256",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. My jacket arrived broken and support never answered.",
+  "answer": "negative"
+ },
+ {
+  "id": "F257",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. Best jacket I have ever owned.",
+  "answer": "positive"
+ },
+ {
+  "id": "F258",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. Worst jacket I have ever bought.",
+  "answer": "negative"
+ },
+ {
+  "id": "F259",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. The jacket is sturdy, quiet and easy to use.",
+  "answer": "positive"
+ },
+ {
+  "id": "F260",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. The jacket is loud, slow and hard to use.",
+  "answer": "negative"
+ },
+ {
+  "id": "F261",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. I love this speaker, it works perfectly.",
+  "answer": "positive"
+ },
+ {
+  "id": "F262",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. The speaker broke after two days.",
+  "answer": "negative"
+ },
+ {
+  "id": "F263",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. The speaker is excellent and well made.",
+  "answer": "positive"
+ },
+ {
+  "id": "F264",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. Terrible speaker, a complete waste of money.",
+  "answer": "negative"
+ },
+ {
+  "id": "F265",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. Really happy with my new speaker.",
+  "answer": "positive"
+ },
+ {
+  "id": "F266",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. I am very disappointed with this speaker.",
+  "answer": "negative"
+ },
+ {
+  "id": "F267",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. This speaker exceeded my expectations.",
+  "answer": "positive"
+ },
+ {
+  "id": "F268",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. The speaker stopped working within a week.",
+  "answer": "negative"
+ },
+ {
+  "id": "F269",
+  "text": "We bought it for our new apartment when we moved to the city last year. Fantastic speaker, I would buy it again.",
+  "answer": "positive"
+ },
+ {
+  "id": "F270",
+  "text": "We bought it for our new apartment when we moved to the city last year. Do not buy this speaker, it is awful.",
+  "answer": "negative"
+ },
+ {
+  "id": "F271",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. The speaker is great value and does exactly what I need.",
+  "answer": "positive"
+ },
+ {
+  "id": "F272",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. The speaker feels cheap and flimsy.",
+  "answer": "negative"
+ },
+ {
+  "id": "F273",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. Five stars, the speaker is wonderful.",
+  "answer": "positive"
+ },
+ {
+  "id": "F274",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. One star, the speaker is useless.",
+  "answer": "negative"
+ },
+ {
+  "id": "F275",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. My speaker arrived quickly and works beautifully.",
+  "answer": "positive"
+ },
+ {
+  "id": "F276",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. My speaker arrived broken and support never answered.",
+  "answer": "negative"
+ },
+ {
+  "id": "F277",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. Best speaker I have ever owned.",
+  "answer": "positive"
+ },
+ {
+  "id": "F278",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. Worst speaker I have ever bought.",
+  "answer": "negative"
+ },
+ {
+  "id": "F279",
+  "text": "We bought it for our new apartment when we moved to the city last year. The speaker is sturdy, quiet and easy to use.",
+  "answer": "positive"
+ },
+ {
+  "id": "F280",
+  "text": "We bought it for our new apartment when we moved to the city last year. The speaker is loud, slow and hard to use.",
+  "answer": "negative"
+ },
+ {
+  "id": "F281",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. I love this coffee grinder, it works perfectly.",
+  "answer": "positive"
+ },
+ {
+  "id": "F282",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. The coffee grinder broke after two days.",
+  "answer": "negative"
+ },
+ {
+  "id": "F283",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. The coffee grinder is excellent and well made.",
+  "answer": "positive"
+ },
+ {
+  "id": "F284",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. Terrible coffee grinder, a complete waste of money.",
+  "answer": "negative"
+ },
+ {
+  "id": "F285",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. Really happy with my new coffee grinder.",
+  "answer": "positive"
+ },
+ {
+  "id": "F286",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. I am very disappointed with this coffee grinder.",
+  "answer": "negative"
+ },
+ {
+  "id": "F287",
+  "text": "We bought it for our new apartment when we moved to the city last year. This coffee grinder exceeded my expectations.",
+  "answer": "positive"
+ },
+ {
+  "id": "F288",
+  "text": "We bought it for our new apartment when we moved to the city last year. The coffee grinder stopped working within a week.",
+  "answer": "negative"
+ },
+ {
+  "id": "F289",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. Fantastic coffee grinder, I would buy it again.",
+  "answer": "positive"
+ },
+ {
+  "id": "F290",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. Do not buy this coffee grinder, it is awful.",
+  "answer": "negative"
+ },
+ {
+  "id": "F291",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. The coffee grinder is great value and does exactly what I need.",
+  "answer": "positive"
+ },
+ {
+  "id": "F292",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. The coffee grinder feels cheap and flimsy.",
+  "answer": "negative"
+ },
+ {
+  "id": "F293",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. Five stars, the coffee grinder is wonderful.",
+  "answer": "positive"
+ },
+ {
+  "id": "F294",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. One star, the coffee grinder is useless.",
+  "answer": "negative"
+ },
+ {
+  "id": "F295",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. My coffee grinder arrived quickly and works beautifully.",
+  "answer": "positive"
+ },
+ {
+  "id": "F296",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. My coffee grinder arrived broken and support never answered.",
+  "answer": "negative"
+ },
+ {
+  "id": "F297",
+  "text": "We bought it for our new apartment when we moved to the city last year. Best coffee grinder I have ever owned.",
+  "answer": "positive"
+ },
+ {
+  "id": "F298",
+  "text": "We bought it for our new apartment when we moved to the city last year. Worst coffee grinder I have ever bought.",
+  "answer": "negative"
+ },
+ {
+  "id": "F299",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. The coffee grinder is sturdy, quiet and easy to use.",
+  "answer": "positive"
+ },
+ {
+  "id": "F300",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. The coffee grinder is loud, slow and hard to use.",
+  "answer": "negative"
+ },
+ {
+  "id": "F301",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. I love this toaster, it works perfectly.",
+  "answer": "positive"
+ },
+ {
+  "id": "F302",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. The toaster broke after two days.",
+  "answer": "negative"
+ },
+ {
+  "id": "F303",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. The toaster is excellent and well made.",
+  "answer": "positive"
+ },
+ {
+  "id": "F304",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. Terrible toaster, a complete waste of money.",
+  "answer": "negative"
+ },
+ {
+  "id": "F305",
+  "text": "We bought it for our new apartment when we moved to the city last year. Really happy with my new toaster.",
+  "answer": "positive"
+ },
+ {
+  "id": "F306",
+  "text": "We bought it for our new apartment when we moved to the city last year. I am very disappointed with this toaster.",
+  "answer": "negative"
+ },
+ {
+  "id": "F307",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. This toaster exceeded my expectations.",
+  "answer": "positive"
+ },
+ {
+  "id": "F308",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. The toaster stopped working within a week.",
+  "answer": "negative"
+ },
+ {
+  "id": "F309",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. Fantastic toaster, I would buy it again.",
+  "answer": "positive"
+ },
+ {
+  "id": "F310",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. Do not buy this toaster, it is awful.",
+  "answer": "negative"
+ },
+ {
+  "id": "F311",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. The toaster is great value and does exactly what I need.",
+  "answer": "positive"
+ },
+ {
+  "id": "F312",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. The toaster feels cheap and flimsy.",
+  "answer": "negative"
+ },
+ {
+  "id": "F313",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. Five stars, the toaster is wonderful.",
+  "answer": "positive"
+ },
+ {
+  "id": "F314",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. One star, the toaster is useless.",
+  "answer": "negative"
+ },
+ {
+  "id": "F315",
+  "text": "We bought it for our new apartment when we moved to the city last year. My toaster arrived quickly and works beautifully.",
+  "answer": "positive"
+ },
+ {
+  "id": "F316",
+  "text": "We bought it for our new apartment when we moved to the city last year. My toaster arrived broken and support never answered.",
+  "answer": "negative"
+ },
+ {
+  "id": "F317",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. Best toaster I have ever owned.",
+  "answer": "positive"
+ },
+ {
+  "id": "F318",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. Worst toaster I have ever bought.",
+  "answer": "negative"
+ },
+ {
+  "id": "F319",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. The toaster is sturdy, quiet and easy to use.",
+  "answer": "positive"
+ },
+ {
+  "id": "F320",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. The toaster is loud, slow and hard to use.",
+  "answer": "negative"
+ },
+ {
+  "id": "F321",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. I love this monitor, it works perfectly.",
+  "answer": "positive"
+ },
+ {
+  "id": "F322",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. The monitor broke after two days.",
+  "answer": "negative"
+ },
+ {
+  "id": "F323",
+  "text": "We bought it for our new apartment when we moved to the city last year. The monitor is excellent and well made.",
+  "answer": "positive"
+ },
+ {
+  "id": "F324",
+  "text": "We bought it for our new apartment when we moved to the city last year. Terrible monitor, a complete waste of money.",
+  "answer": "negative"
+ },
+ {
+  "id": "F325",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. Really happy with my new monitor.",
+  "answer": "positive"
+ },
+ {
+  "id": "F326",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. I am very disappointed with this monitor.",
+  "answer": "negative"
+ },
+ {
+  "id": "F327",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. This monitor exceeded my expectations.",
+  "answer": "positive"
+ },
+ {
+  "id": "F328",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. The monitor stopped working within a week.",
+  "answer": "negative"
+ },
+ {
+  "id": "F329",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. Fantastic monitor, I would buy it again.",
+  "answer": "positive"
+ },
+ {
+  "id": "F330",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. Do not buy this monitor, it is awful.",
+  "answer": "negative"
+ },
+ {
+  "id": "F331",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. The monitor is great value and does exactly what I need.",
+  "answer": "positive"
+ },
+ {
+  "id": "F332",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. The monitor feels cheap and flimsy.",
+  "answer": "negative"
+ },
+ {
+  "id": "F333",
+  "text": "We bought it for our new apartment when we moved to the city last year. Five stars, the monitor is wonderful.",
+  "answer": "positive"
+ },
+ {
+  "id": "F334",
+  "text": "We bought it for our new apartment when we moved to the city last year. One star, the monitor is useless.",
+  "answer": "negative"
+ },
+ {
+  "id": "F335",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. My monitor arrived quickly and works beautifully.",
+  "answer": "positive"
+ },
+ {
+  "id": "F336",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. My monitor arrived broken and support never answered.",
+  "answer": "negative"
+ },
+ {
+  "id": "F337",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. Best monitor I have ever owned.",
+  "answer": "positive"
+ },
+ {
+  "id": "F338",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. Worst monitor I have ever bought.",
+  "answer": "negative"
+ },
+ {
+  "id": "F339",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. The monitor is sturdy, quiet and easy to use.",
+  "answer": "positive"
+ },
+ {
+  "id": "F340",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. The monitor is loud, slow and hard to use.",
+  "answer": "negative"
+ },
+ {
+  "id": "F341",
+  "text": "We bought it for our new apartment when we moved to the city last year. I love this mattress, it works perfectly.",
+  "answer": "positive"
+ },
+ {
+  "id": "F342",
+  "text": "We bought it for our new apartment when we moved to the city last year. The mattress broke after two days.",
+  "answer": "negative"
+ },
+ {
+  "id": "F343",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. The mattress is excellent and well made.",
+  "answer": "positive"
+ },
+ {
+  "id": "F344",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. Terrible mattress, a complete waste of money.",
+  "answer": "negative"
+ },
+ {
+  "id": "F345",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. Really happy with my new mattress.",
+  "answer": "positive"
+ },
+ {
+  "id": "F346",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. I am very disappointed with this mattress.",
+  "answer": "negative"
+ },
+ {
+  "id": "F347",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. This mattress exceeded my expectations.",
+  "answer": "positive"
+ },
+ {
+  "id": "F348",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. The mattress stopped working within a week.",
+  "answer": "negative"
+ },
+ {
+  "id": "F349",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. Fantastic mattress, I would buy it again.",
+  "answer": "positive"
+ },
+ {
+  "id": "F350",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. Do not buy this mattress, it is awful.",
+  "answer": "negative"
+ },
+ {
+  "id": "F351",
+  "text": "We bought it for our new apartment when we moved to the city last year. The mattress is great value and does exactly what I need.",
+  "answer": "positive"
+ },
+ {
+  "id": "F352",
+  "text": "We bought it for our new apartment when we moved to the city last year. The mattress feels cheap and flimsy.",
+  "answer": "negative"
+ },
+ {
+  "id": "F353",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. Five stars, the mattress is wonderful.",
+  "answer": "positive"
+ },
+ {
+  "id": "F354",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. One star, the mattress is useless.",
+  "answer": "negative"
+ },
+ {
+  "id": "F355",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. My mattress arrived quickly and works beautifully.",
+  "answer": "positive"
+ },
+ {
+  "id": "F356",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. My mattress arrived broken and support never answered.",
+  "answer": "negative"
+ },
+ {
+  "id": "F357",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. Best mattress I have ever owned.",
+  "answer": "positive"
+ },
+ {
+  "id": "F358",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. Worst mattress I have ever bought.",
+  "answer": "negative"
+ },
+ {
+  "id": "F359",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. The mattress is sturdy, quiet and easy to use.",
+  "answer": "positive"
+ },
+ {
+  "id": "F360",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. The mattress is loud, slow and hard to use.",
+  "answer": "negative"
+ },
+ {
+  "id": "F361",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. I love this drill, it works perfectly.",
+  "answer": "positive"
+ },
+ {
+  "id": "F362",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. The drill broke after two days.",
+  "answer": "negative"
+ },
+ {
+  "id": "F363",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. The drill is excellent and well made.",
+  "answer": "positive"
+ },
+ {
+  "id": "F364",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. Terrible drill, a complete waste of money.",
+  "answer": "negative"
+ },
+ {
+  "id": "F365",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. Really happy with my new drill.",
+  "answer": "positive"
+ },
+ {
+  "id": "F366",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. I am very disappointed with this drill.",
+  "answer": "negative"
+ },
+ {
+  "id": "F367",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. This drill exceeded my expectations.",
+  "answer": "positive"
+ },
+ {
+  "id": "F368",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. The drill stopped working within a week.",
+  "answer": "negative"
+ },
+ {
+  "id": "F369",
+  "text": "We bought it for our new apartment when we moved to the city last year. Fantastic drill, I would buy it again.",
+  "answer": "positive"
+ },
+ {
+  "id": "F370",
+  "text": "We bought it for our new apartment when we moved to the city last year. Do not buy this drill, it is awful.",
+  "answer": "negative"
+ },
+ {
+  "id": "F371",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. The drill is great value and does exactly what I need.",
+  "answer": "positive"
+ },
+ {
+  "id": "F372",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. The drill feels cheap and flimsy.",
+  "answer": "negative"
+ },
+ {
+  "id": "F373",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. Five stars, the drill is wonderful.",
+  "answer": "positive"
+ },
+ {
+  "id": "F374",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. One star, the drill is useless.",
+  "answer": "negative"
+ },
+ {
+  "id": "F375",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. My drill arrived quickly and works beautifully.",
+  "answer": "positive"
+ },
+ {
+  "id": "F376",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. My drill arrived broken and support never answered.",
+  "answer": "negative"
+ },
+ {
+  "id": "F377",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. Best drill I have ever owned.",
+  "answer": "positive"
+ },
+ {
+  "id": "F378",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. Worst drill I have ever bought.",
+  "answer": "negative"
+ },
+ {
+  "id": "F379",
+  "text": "We bought it for our new apartment when we moved to the city last year. The drill is sturdy, quiet and easy to use.",
+  "answer": "positive"
+ },
+ {
+  "id": "F380",
+  "text": "We bought it for our new apartment when we moved to the city last year. The drill is loud, slow and hard to use.",
+  "answer": "negative"
+ },
+ {
+  "id": "F381",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. I love this printer, it works perfectly.",
+  "answer": "positive"
+ },
+ {
+  "id": "F382",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. The printer broke after two days.",
+  "answer": "negative"
+ },
+ {
+  "id": "F383",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. The printer is excellent and well made.",
+  "answer": "positive"
+ },
+ {
+  "id": "F384",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. Terrible printer, a complete waste of money.",
+  "answer": "negative"
+ },
+ {
+  "id": "F385",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. Really happy with my new printer.",
+  "answer": "positive"
+ },
+ {
+  "id": "F386",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. I am very disappointed with this printer.",
+  "answer": "negative"
+ },
+ {
+  "id": "F387",
+  "text": "We bought it for our new apartment when we moved to the city last year. This printer exceeded my expectations.",
+  "answer": "positive"
+ },
+ {
+  "id": "F388",
+  "text": "We bought it for our new apartment when we moved to the city last year. The printer stopped working within a week.",
+  "answer": "negative"
+ },
+ {
+  "id": "F389",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. Fantastic printer, I would buy it again.",
+  "answer": "positive"
+ },
+ {
+  "id": "F390",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. Do not buy this printer, it is awful.",
+  "answer": "negative"
+ },
+ {
+  "id": "F391",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. The printer is great value and does exactly what I need.",
+  "answer": "positive"
+ },
+ {
+  "id": "F392",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. The printer feels cheap and flimsy.",
+  "answer": "negative"
+ },
+ {
+  "id": "F393",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. Five stars, the printer is wonderful.",
+  "answer": "positive"
+ },
+ {
+  "id": "F394",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. One star, the printer is useless.",
+  "answer": "negative"
+ },
+ {
+  "id": "F395",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. My printer arrived quickly and works beautifully.",
+  "answer": "positive"
+ },
+ {
+  "id": "F396",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. My printer arrived broken and support never answered.",
+  "answer": "negative"
+ },
+ {
+  "id": "F397",
+  "text": "We bought it for our new apartment when we moved to the city last year. Best printer I have ever owned.",
+  "answer": "positive"
+ },
+ {
+  "id": "F398",
+  "text": "We bought it for our new apartment when we moved to the city last year. Worst printer I have ever bought.",
+  "answer": "negative"
+ },
+ {
+  "id": "F399",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. The printer is sturdy, quiet and easy to use.",
+  "answer": "positive"
+ },
+ {
+  "id": "F400",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. The printer is loud, slow and hard to use.",
+  "answer": "negative"
+ },
+ {
+  "id": "F401",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. I love this umbrella, it works perfectly.",
+  "answer": "positive"
+ },
+ {
+  "id": "F402",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. The umbrella broke after two days.",
+  "answer": "negative"
+ },
+ {
+  "id": "F403",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. The umbrella is excellent and well made.",
+  "answer": "positive"
+ },
+ {
+  "id": "F404",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. Terrible umbrella, a complete waste of money.",
+  "answer": "negative"
+ },
+ {
+  "id": "F405",
+  "text": "We bought it for our new apartment when we moved to the city last year. Really happy with my new umbrella.",
+  "answer": "positive"
+ },
+ {
+  "id": "F406",
+  "text": "We bought it for our new apartment when we moved to the city last year. I am very disappointed with this umbrella.",
+  "answer": "negative"
+ },
+ {
+  "id": "F407",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. This umbrella exceeded my expectations.",
+  "answer": "positive"
+ },
+ {
+  "id": "F408",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. The umbrella stopped working within a week.",
+  "answer": "negative"
+ },
+ {
+  "id": "F409",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. Fantastic umbrella, I would buy it again.",
+  "answer": "positive"
+ },
+ {
+  "id": "F410",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. Do not buy this umbrella, it is awful.",
+  "answer": "negative"
+ },
+ {
+  "id": "F411",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. The umbrella is great value and does exactly what I need.",
+  "answer": "positive"
+ },
+ {
+  "id": "F412",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. The umbrella feels cheap and flimsy.",
+  "answer": "negative"
+ },
+ {
+  "id": "F413",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. Five stars, the umbrella is wonderful.",
+  "answer": "positive"
+ },
+ {
+  "id": "F414",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. One star, the umbrella is useless.",
+  "answer": "negative"
+ },
+ {
+  "id": "F415",
+  "text": "We bought it for our new apartment when we moved to the city last year. My umbrella arrived quickly and works beautifully.",
+  "answer": "positive"
+ },
+ {
+  "id": "F416",
+  "text": "We bought it for our new apartment when we moved to the city last year. My umbrella arrived broken and support never answered.",
+  "answer": "negative"
+ },
+ {
+  "id": "F417",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. Best umbrella I have ever owned.",
+  "answer": "positive"
+ },
+ {
+  "id": "F418",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. Worst umbrella I have ever bought.",
+  "answer": "negative"
+ },
+ {
+  "id": "F419",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. The umbrella is sturdy, quiet and easy to use.",
+  "answer": "positive"
+ },
+ {
+  "id": "F420",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. The umbrella is loud, slow and hard to use.",
+  "answer": "negative"
+ },
+ {
+  "id": "F421",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. I love this router, it works perfectly.",
+  "answer": "positive"
+ },
+ {
+  "id": "F422",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. The router broke after two days.",
+  "answer": "negative"
+ },
+ {
+  "id": "F423",
+  "text": "We bought it for our new apartment when we moved to the city last year. The router is excellent and well made.",
+  "answer": "positive"
+ },
+ {
+  "id": "F424",
+  "text": "We bought it for our new apartment when we moved to the city last year. Terrible router, a complete waste of money.",
+  "answer": "negative"
+ },
+ {
+  "id": "F425",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. Really happy with my new router.",
+  "answer": "positive"
+ },
+ {
+  "id": "F426",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. I am very disappointed with this router.",
+  "answer": "negative"
+ },
+ {
+  "id": "F427",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. This router exceeded my expectations.",
+  "answer": "positive"
+ },
+ {
+  "id": "F428",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. The router stopped working within a week.",
+  "answer": "negative"
+ },
+ {
+  "id": "F429",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. Fantastic router, I would buy it again.",
+  "answer": "positive"
+ },
+ {
+  "id": "F430",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. Do not buy this router, it is awful.",
+  "answer": "negative"
+ },
+ {
+  "id": "F431",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. The router is great value and does exactly what I need.",
+  "answer": "positive"
+ },
+ {
+  "id": "F432",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. The router feels cheap and flimsy.",
+  "answer": "negative"
+ },
+ {
+  "id": "F433",
+  "text": "We bought it for our new apartment when we moved to the city last year. Five stars, the router is wonderful.",
+  "answer": "positive"
+ },
+ {
+  "id": "F434",
+  "text": "We bought it for our new apartment when we moved to the city last year. One star, the router is useless.",
+  "answer": "negative"
+ },
+ {
+  "id": "F435",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. My router arrived quickly and works beautifully.",
+  "answer": "positive"
+ },
+ {
+  "id": "F436",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. My router arrived broken and support never answered.",
+  "answer": "negative"
+ },
+ {
+  "id": "F437",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. Best router I have ever owned.",
+  "answer": "positive"
+ },
+ {
+  "id": "F438",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. Worst router I have ever bought.",
+  "answer": "negative"
+ },
+ {
+  "id": "F439",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. The router is sturdy, quiet and easy to use.",
+  "answer": "positive"
+ },
+ {
+  "id": "F440",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. The router is loud, slow and hard to use.",
+  "answer": "negative"
+ },
+ {
+  "id": "F441",
+  "text": "We bought it for our new apartment when we moved to the city last year. I love this frying pan, it works perfectly.",
+  "answer": "positive"
+ },
+ {
+  "id": "F442",
+  "text": "We bought it for our new apartment when we moved to the city last year. The frying pan broke after two days.",
+  "answer": "negative"
+ },
+ {
+  "id": "F443",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. The frying pan is excellent and well made.",
+  "answer": "positive"
+ },
+ {
+  "id": "F444",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. Terrible frying pan, a complete waste of money.",
+  "answer": "negative"
+ },
+ {
+  "id": "F445",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. Really happy with my new frying pan.",
+  "answer": "positive"
+ },
+ {
+  "id": "F446",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. I am very disappointed with this frying pan.",
+  "answer": "negative"
+ },
+ {
+  "id": "F447",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. This frying pan exceeded my expectations.",
+  "answer": "positive"
+ },
+ {
+  "id": "F448",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. The frying pan stopped working within a week.",
+  "answer": "negative"
+ },
+ {
+  "id": "F449",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. Fantastic frying pan, I would buy it again.",
+  "answer": "positive"
+ },
+ {
+  "id": "F450",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. Do not buy this frying pan, it is awful.",
+  "answer": "negative"
+ },
+ {
+  "id": "F451",
+  "text": "We bought it for our new apartment when we moved to the city last year. The frying pan is great value and does exactly what I need.",
+  "answer": "positive"
+ },
+ {
+  "id": "F452",
+  "text": "We bought it for our new apartment when we moved to the city last year. The frying pan feels cheap and flimsy.",
+  "answer": "negative"
+ },
+ {
+  "id": "F453",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. Five stars, the frying pan is wonderful.",
+  "answer": "positive"
+ },
+ {
+  "id": "F454",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. One star, the frying pan is useless.",
+  "answer": "negative"
+ },
+ {
+  "id": "F455",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. My frying pan arrived quickly and works beautifully.",
+  "answer": "positive"
+ },
+ {
+  "id": "F456",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. My frying pan arrived broken and support never answered.",
+  "answer": "negative"
+ },
+ {
+  "id": "F457",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. Best frying pan I have ever owned.",
+  "answer": "positive"
+ },
+ {
+  "id": "F458",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. Worst frying pan I have ever bought.",
+  "answer": "negative"
+ },
+ {
+  "id": "F459",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. The frying pan is sturdy, quiet and easy to use.",
+  "answer": "positive"
+ },
+ {
+  "id": "F460",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. The frying pan is loud, slow and hard to use.",
+  "answer": "negative"
+ },
+ {
+  "id": "F461",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. I love this desk, it works perfectly.",
+  "answer": "positive"
+ },
+ {
+  "id": "F462",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. The desk broke after two days.",
+  "answer": "negative"
+ },
+ {
+  "id": "F463",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. The desk is excellent and well made.",
+  "answer": "positive"
+ },
+ {
+  "id": "F464",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. Terrible desk, a complete waste of money.",
+  "answer": "negative"
+ },
+ {
+  "id": "F465",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. Really happy with my new desk.",
+  "answer": "positive"
+ },
+ {
+  "id": "F466",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. I am very disappointed with this desk.",
+  "answer": "negative"
+ },
+ {
+  "id": "F467",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. This desk exceeded my expectations.",
+  "answer": "positive"
+ },
+ {
+  "id": "F468",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. The desk stopped working within a week.",
+  "answer": "negative"
+ },
+ {
+  "id": "F469",
+  "text": "We bought it for our new apartment when we moved to the city last year. Fantastic desk, I would buy it again.",
+  "answer": "positive"
+ },
+ {
+  "id": "F470",
+  "text": "We bought it for our new apartment when we moved to the city last year. Do not buy this desk, it is awful.",
+  "answer": "negative"
+ },
+ {
+  "id": "F471",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. The desk is great value and does exactly what I need.",
+  "answer": "positive"
+ },
+ {
+  "id": "F472",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. The desk feels cheap and flimsy.",
+  "answer": "negative"
+ },
+ {
+  "id": "F473",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. Five stars, the desk is wonderful.",
+  "answer": "positive"
+ },
+ {
+  "id": "F474",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. One star, the desk is useless.",
+  "answer": "negative"
+ },
+ {
+  "id": "F475",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. My desk arrived quickly and works beautifully.",
+  "answer": "positive"
+ },
+ {
+  "id": "F476",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. My desk arrived broken and support never answered.",
+  "answer": "negative"
+ },
+ {
+  "id": "F477",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. Best desk I have ever owned.",
+  "answer": "positive"
+ },
+ {
+  "id": "F478",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. Worst desk I have ever bought.",
+  "answer": "negative"
+ },
+ {
+  "id": "F479",
+  "text": "We bought it for our new apartment when we moved to the city last year. The desk is sturdy, quiet and easy to use.",
+  "answer": "positive"
+ },
+ {
+  "id": "F480",
+  "text": "We bought it for our new apartment when we moved to the city last year. The desk is loud, slow and hard to use.",
+  "answer": "negative"
+ },
+ {
+  "id": "F481",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. I love this camera, it works perfectly.",
+  "answer": "positive"
+ },
+ {
+  "id": "F482",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. The camera broke after two days.",
+  "answer": "negative"
+ },
+ {
+  "id": "F483",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. The camera is excellent and well made.",
+  "answer": "positive"
+ },
+ {
+  "id": "F484",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. Terrible camera, a complete waste of money.",
+  "answer": "negative"
+ },
+ {
+  "id": "F485",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. Really happy with my new camera.",
+  "answer": "positive"
+ },
+ {
+  "id": "F486",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. I am very disappointed with this camera.",
+  "answer": "negative"
+ },
+ {
+  "id": "F487",
+  "text": "We bought it for our new apartment when we moved to the city last year. This camera exceeded my expectations.",
+  "answer": "positive"
+ },
+ {
+  "id": "F488",
+  "text": "We bought it for our new apartment when we moved to the city last year. The camera stopped working within a week.",
+  "answer": "negative"
+ },
+ {
+  "id": "F489",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. Fantastic camera, I would buy it again.",
+  "answer": "positive"
+ },
+ {
+  "id": "F490",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. Do not buy this camera, it is awful.",
+  "answer": "negative"
+ },
+ {
+  "id": "F491",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. The camera is great value and does exactly what I need.",
+  "answer": "positive"
+ },
+ {
+  "id": "F492",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. The camera feels cheap and flimsy.",
+  "answer": "negative"
+ },
+ {
+  "id": "F493",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. Five stars, the camera is wonderful.",
+  "answer": "positive"
+ },
+ {
+  "id": "F494",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. One star, the camera is useless.",
+  "answer": "negative"
+ },
+ {
+  "id": "F495",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. My camera arrived quickly and works beautifully.",
+  "answer": "positive"
+ },
+ {
+  "id": "F496",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. My camera arrived broken and support never answered.",
+  "answer": "negative"
+ },
+ {
+  "id": "F497",
+  "text": "We bought it for our new apartment when we moved to the city last year. Best camera I have ever owned.",
+  "answer": "positive"
+ },
+ {
+  "id": "F498",
+  "text": "We bought it for our new apartment when we moved to the city last year. Worst camera I have ever bought.",
+  "answer": "negative"
+ },
+ {
+  "id": "F499",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. The camera is sturdy, quiet and easy to use.",
+  "answer": "positive"
+ },
+ {
+  "id": "F500",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. The camera is loud, slow and hard to use.",
+  "answer": "negative"
+ },
+ {
+  "id": "F501",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. I love this bicycle helmet, it works perfectly.",
+  "answer": "positive"
+ },
+ {
+  "id": "F502",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. The bicycle helmet broke after two days.",
+  "answer": "negative"
+ },
+ {
+  "id": "F503",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. The bicycle helmet is excellent and well made.",
+  "answer": "positive"
+ },
+ {
+  "id": "F504",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. Terrible bicycle helmet, a complete waste of money.",
+  "answer": "negative"
+ },
+ {
+  "id": "F505",
+  "text": "We bought it for our new apartment when we moved to the city last year. Really happy with my new bicycle helmet.",
+  "answer": "positive"
+ },
+ {
+  "id": "F506",
+  "text": "We bought it for our new apartment when we moved to the city last year. I am very disappointed with this bicycle helmet.",
+  "answer": "negative"
+ },
+ {
+  "id": "F507",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. This bicycle helmet exceeded my expectations.",
+  "answer": "positive"
+ },
+ {
+  "id": "F508",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. The bicycle helmet stopped working within a week.",
+  "answer": "negative"
+ },
+ {
+  "id": "F509",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. Fantastic bicycle helmet, I would buy it again.",
+  "answer": "positive"
+ },
+ {
+  "id": "F510",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. Do not buy this bicycle helmet, it is awful.",
+  "answer": "negative"
+ },
+ {
+  "id": "F511",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. The bicycle helmet is great value and does exactly what I need.",
+  "answer": "positive"
+ },
+ {
+  "id": "F512",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. The bicycle helmet feels cheap and flimsy.",
+  "answer": "negative"
+ },
+ {
+  "id": "F513",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. Five stars, the bicycle helmet is wonderful.",
+  "answer": "positive"
+ },
+ {
+  "id": "F514",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. One star, the bicycle helmet is useless.",
+  "answer": "negative"
+ },
+ {
+  "id": "F515",
+  "text": "We bought it for our new apartment when we moved to the city last year. My bicycle helmet arrived quickly and works beautifully.",
+  "answer": "positive"
+ },
+ {
+  "id": "F516",
+  "text": "We bought it for our new apartment when we moved to the city last year. My bicycle helmet arrived broken and support never answered.",
+  "answer": "negative"
+ },
+ {
+  "id": "F517",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. Best bicycle helmet I have ever owned.",
+  "answer": "positive"
+ },
+ {
+  "id": "F518",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. Worst bicycle helmet I have ever bought.",
+  "answer": "negative"
+ },
+ {
+  "id": "F519",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. The bicycle helmet is sturdy, quiet and easy to use.",
+  "answer": "positive"
+ },
+ {
+  "id": "F520",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. The bicycle helmet is loud, slow and hard to use.",
+  "answer": "negative"
+ },
+ {
+  "id": "F521",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. I love this hair dryer, it works perfectly.",
+  "answer": "positive"
+ },
+ {
+  "id": "F522",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. The hair dryer broke after two days.",
+  "answer": "negative"
+ },
+ {
+  "id": "F523",
+  "text": "We bought it for our new apartment when we moved to the city last year. The hair dryer is excellent and well made.",
+  "answer": "positive"
+ },
+ {
+  "id": "F524",
+  "text": "We bought it for our new apartment when we moved to the city last year. Terrible hair dryer, a complete waste of money.",
+  "answer": "negative"
+ },
+ {
+  "id": "F525",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. Really happy with my new hair dryer.",
+  "answer": "positive"
+ },
+ {
+  "id": "F526",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. I am very disappointed with this hair dryer.",
+  "answer": "negative"
+ },
+ {
+  "id": "F527",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. This hair dryer exceeded my expectations.",
+  "answer": "positive"
+ },
+ {
+  "id": "F528",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. The hair dryer stopped working within a week.",
+  "answer": "negative"
+ },
+ {
+  "id": "F529",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. Fantastic hair dryer, I would buy it again.",
+  "answer": "positive"
+ },
+ {
+  "id": "F530",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. Do not buy this hair dryer, it is awful.",
+  "answer": "negative"
+ },
+ {
+  "id": "F531",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. The hair dryer is great value and does exactly what I need.",
+  "answer": "positive"
+ },
+ {
+  "id": "F532",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. The hair dryer feels cheap and flimsy.",
+  "answer": "negative"
+ },
+ {
+  "id": "F533",
+  "text": "We bought it for our new apartment when we moved to the city last year. Five stars, the hair dryer is wonderful.",
+  "answer": "positive"
+ },
+ {
+  "id": "F534",
+  "text": "We bought it for our new apartment when we moved to the city last year. One star, the hair dryer is useless.",
+  "answer": "negative"
+ },
+ {
+  "id": "F535",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. My hair dryer arrived quickly and works beautifully.",
+  "answer": "positive"
+ },
+ {
+  "id": "F536",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. My hair dryer arrived broken and support never answered.",
+  "answer": "negative"
+ },
+ {
+  "id": "F537",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. Best hair dryer I have ever owned.",
+  "answer": "positive"
+ },
+ {
+  "id": "F538",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. Worst hair dryer I have ever bought.",
+  "answer": "negative"
+ },
+ {
+  "id": "F539",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. The hair dryer is sturdy, quiet and easy to use.",
+  "answer": "positive"
+ },
+ {
+  "id": "F540",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. The hair dryer is loud, slow and hard to use.",
+  "answer": "negative"
+ },
+ {
+  "id": "F541",
+  "text": "We bought it for our new apartment when we moved to the city last year. I love this suitcase, it works perfectly.",
+  "answer": "positive"
+ },
+ {
+  "id": "F542",
+  "text": "We bought it for our new apartment when we moved to the city last year. The suitcase broke after two days.",
+  "answer": "negative"
+ },
+ {
+  "id": "F543",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. The suitcase is excellent and well made.",
+  "answer": "positive"
+ },
+ {
+  "id": "F544",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. Terrible suitcase, a complete waste of money.",
+  "answer": "negative"
+ },
+ {
+  "id": "F545",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. Really happy with my new suitcase.",
+  "answer": "positive"
+ },
+ {
+  "id": "F546",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. I am very disappointed with this suitcase.",
+  "answer": "negative"
+ },
+ {
+  "id": "F547",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. This suitcase exceeded my expectations.",
+  "answer": "positive"
+ },
+ {
+  "id": "F548",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. The suitcase stopped working within a week.",
+  "answer": "negative"
+ },
+ {
+  "id": "F549",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. Fantastic suitcase, I would buy it again.",
+  "answer": "positive"
+ },
+ {
+  "id": "F550",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. Do not buy this suitcase, it is awful.",
+  "answer": "negative"
+ },
+ {
+  "id": "F551",
+  "text": "We bought it for our new apartment when we moved to the city last year. The suitcase is great value and does exactly what I need.",
+  "answer": "positive"
+ },
+ {
+  "id": "F552",
+  "text": "We bought it for our new apartment when we moved to the city last year. The suitcase feels cheap and flimsy.",
+  "answer": "negative"
+ },
+ {
+  "id": "F553",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. Five stars, the suitcase is wonderful.",
+  "answer": "positive"
+ },
+ {
+  "id": "F554",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. One star, the suitcase is useless.",
+  "answer": "negative"
+ },
+ {
+  "id": "F555",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. My suitcase arrived quickly and works beautifully.",
+  "answer": "positive"
+ },
+ {
+  "id": "F556",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. My suitcase arrived broken and support never answered.",
+  "answer": "negative"
+ },
+ {
+  "id": "F557",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. Best suitcase I have ever owned.",
+  "answer": "positive"
+ },
+ {
+  "id": "F558",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. Worst suitcase I have ever bought.",
+  "answer": "negative"
+ },
+ {
+  "id": "F559",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. The suitcase is sturdy, quiet and easy to use.",
+  "answer": "positive"
+ },
+ {
+  "id": "F560",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. The suitcase is loud, slow and hard to use.",
+  "answer": "negative"
+ },
+ {
+  "id": "F561",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. I love this mouse, it works perfectly.",
+  "answer": "positive"
+ },
+ {
+  "id": "F562",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. The mouse broke after two days.",
+  "answer": "negative"
+ },
+ {
+  "id": "F563",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. The mouse is excellent and well made.",
+  "answer": "positive"
+ },
+ {
+  "id": "F564",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. Terrible mouse, a complete waste of money.",
+  "answer": "negative"
+ },
+ {
+  "id": "F565",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. Really happy with my new mouse.",
+  "answer": "positive"
+ },
+ {
+  "id": "F566",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. I am very disappointed with this mouse.",
+  "answer": "negative"
+ },
+ {
+  "id": "F567",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. This mouse exceeded my expectations.",
+  "answer": "positive"
+ },
+ {
+  "id": "F568",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. The mouse stopped working within a week.",
+  "answer": "negative"
+ },
+ {
+  "id": "F569",
+  "text": "We bought it for our new apartment when we moved to the city last year. Fantastic mouse, I would buy it again.",
+  "answer": "positive"
+ },
+ {
+  "id": "F570",
+  "text": "We bought it for our new apartment when we moved to the city last year. Do not buy this mouse, it is awful.",
+  "answer": "negative"
+ },
+ {
+  "id": "F571",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. The mouse is great value and does exactly what I need.",
+  "answer": "positive"
+ },
+ {
+  "id": "F572",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. The mouse feels cheap and flimsy.",
+  "answer": "negative"
+ },
+ {
+  "id": "F573",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. Five stars, the mouse is wonderful.",
+  "answer": "positive"
+ },
+ {
+  "id": "F574",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. One star, the mouse is useless.",
+  "answer": "negative"
+ },
+ {
+  "id": "F575",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. My mouse arrived quickly and works beautifully.",
+  "answer": "positive"
+ },
+ {
+  "id": "F576",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. My mouse arrived broken and support never answered.",
+  "answer": "negative"
+ },
+ {
+  "id": "F577",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. Best mouse I have ever owned.",
+  "answer": "positive"
+ },
+ {
+  "id": "F578",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. Worst mouse I have ever bought.",
+  "answer": "negative"
+ },
+ {
+  "id": "F579",
+  "text": "We bought it for our new apartment when we moved to the city last year. The mouse is sturdy, quiet and easy to use.",
+  "answer": "positive"
+ },
+ {
+  "id": "F580",
+  "text": "We bought it for our new apartment when we moved to the city last year. The mouse is loud, slow and hard to use.",
+  "answer": "negative"
+ },
+ {
+  "id": "F581",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. I love this fan, it works perfectly.",
+  "answer": "positive"
+ },
+ {
+  "id": "F582",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. The fan broke after two days.",
+  "answer": "negative"
+ },
+ {
+  "id": "F583",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. The fan is excellent and well made.",
+  "answer": "positive"
+ },
+ {
+  "id": "F584",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. Terrible fan, a complete waste of money.",
+  "answer": "negative"
+ },
+ {
+  "id": "F585",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. Really happy with my new fan.",
+  "answer": "positive"
+ },
+ {
+  "id": "F586",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. I am very disappointed with this fan.",
+  "answer": "negative"
+ },
+ {
+  "id": "F587",
+  "text": "We bought it for our new apartment when we moved to the city last year. This fan exceeded my expectations.",
+  "answer": "positive"
+ },
+ {
+  "id": "F588",
+  "text": "We bought it for our new apartment when we moved to the city last year. The fan stopped working within a week.",
+  "answer": "negative"
+ },
+ {
+  "id": "F589",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. Fantastic fan, I would buy it again.",
+  "answer": "positive"
+ },
+ {
+  "id": "F590",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. Do not buy this fan, it is awful.",
+  "answer": "negative"
+ },
+ {
+  "id": "F591",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. The fan is great value and does exactly what I need.",
+  "answer": "positive"
+ },
+ {
+  "id": "F592",
+  "text": "My sister recommended the brand, so I chose the same model she has at her house. The fan feels cheap and flimsy.",
+  "answer": "negative"
+ },
+ {
+  "id": "F593",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. Five stars, the fan is wonderful.",
+  "answer": "positive"
+ },
+ {
+  "id": "F594",
+  "text": "I ordered it in the spring after reading a few reviews online, and I have used it most days since then. One star, the fan is useless.",
+  "answer": "negative"
+ },
+ {
+  "id": "F595",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. My fan arrived quickly and works beautifully.",
+  "answer": "positive"
+ },
+ {
+  "id": "F596",
+  "text": "It was a birthday present for my partner, who had been asking for one for a long time. My fan arrived broken and support never answered.",
+  "answer": "negative"
+ },
+ {
+  "id": "F597",
+  "text": "We bought it for our new apartment when we moved to the city last year. Best fan I have ever owned.",
+  "answer": "positive"
+ },
+ {
+  "id": "F598",
+  "text": "We bought it for our new apartment when we moved to the city last year. Worst fan I have ever bought.",
+  "answer": "negative"
+ },
+ {
+  "id": "F599",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. The fan is sturdy, quiet and easy to use.",
+  "answer": "positive"
+ },
+ {
+  "id": "F600",
+  "text": "I picked it up in the store on my way home from work because my old one had stopped working. The fan is loud, slow and hard to use.",
+  "answer": "negative"
+ }
+]

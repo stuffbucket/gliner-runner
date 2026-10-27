@@ -1,0 +1,23 @@
+{
+  "name": "@gliner-runner/site-review",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Walks the documentation site as a few personas and reports what to improve",
+  "license": "Apache-2.0",
+  "scripts": {
+    "review": "node review.mjs",
+    "test": "node --test lib/*.test.mjs"
+  },
+  "dependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "axe-core": "4.13.0",
+    "playwright": "1.63.0"
+  },
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "config": {
+    "promptfoo": "0.123.1"
+  }
+}

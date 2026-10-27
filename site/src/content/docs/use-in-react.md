@@ -5,8 +5,10 @@ sidebar:
   order: 3
 ---
 
-This guide builds a web page with a text box, a place to type labels, and a Classify button. The
-page calls the runner on your own computer. Nothing goes to the internet.
+Build a web page with a text box, a place to type labels, and a Classify button. Type a message,
+press the button, and the label comes back from the runner on your own computer. Nothing goes to
+the internet. The playground on this site runs the same program right in the browser, and the last
+section shows how.
 
 You need the runner and the `decide-340m` model (see [Get started](/gliner-runner/start/)), and
 Node.js version 20.19 or newer, or 22.12 or newer. Check with `node --version`.
@@ -59,11 +61,18 @@ The component is one file, `src/App.jsx`:
 ```jsx
 import { useState } from "react";
 
-// Empty means "this page's own address", which Vite forwards to the runner (see vite.config.js).
+// Empty means "this page's own address", which Vite forwards to the
+// runner (see vite.config.js).
 const RUNNER = import.meta.env.VITE_RUNNER_URL ?? "";
 
+const NOT_REACHED =
+  "Could not reach the runner. Is `gliner-runner serve` running, and " +
+  "does `gliner-runner cors list` include this page's address?";
+
 export default function App() {
-  const [text, setText] = useState("I was charged twice for my last order.");
+  const [text, setText] = useState(
+    "I was charged twice for my last order.",
+  );
   const [labels, setLabels] = useState("billing, support, shipping");
   const [several, setSeveral] = useState(false);
   const [result, setResult] = useState(null);
@@ -73,18 +82,24 @@ export default function App() {
     setError("");
     setResult(null);
     const list = labels.split(",").map((s) => s.trim()).filter(Boolean);
-    const task = { labels: list, ...(several ? { min_labels: 0, max_labels: null } : {}) };
+    const task = several
+      ? { labels: list, min_labels: 0, max_labels: null }
+      : { labels: list };
     const reply = await fetch(`${RUNNER}/v1/infer`, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
-        model: "decide-340m", backend: "onnx", precision: "fp32", operation: "classify",
-        text, schema: { kind: "classification", tasks: { category: task } },
+        model: "decide-340m", backend: "onnx", precision: "fp32",
+        operation: "classify", text,
+        schema: { kind: "classification", tasks: { category: task } },
       }),
     }).catch(() => null);
-    if (!reply) return setError("Could not reach the runner. Is `gliner-runner serve` running, and does `gliner-runner cors list` include this page's address?");
+    if (!reply) return setError(NOT_REACHED);
     const data = await reply.json();
-    if (!reply.ok) return setError(data.detail?.message ?? "The runner rejected the request.");
+    if (!reply.ok) {
+      const message = data.detail?.message;
+      return setError(message ?? "The runner rejected the request.");
+    }
     setResult(data.output.category);
   }
 
@@ -92,15 +107,38 @@ export default function App() {
   return (
     <main>
       <h1>Classify text</h1>
-      <textarea value={text} onChange={(e) => setText(e.target.value)} rows={4} />
-      <input value={labels} onChange={(e) => setLabels(e.target.value)} aria-label="Labels, separated by commas" />
-      <label><input type="checkbox" checked={several} onChange={(e) => setSeveral(e.target.checked)} /> Allow several labels</label>
+      <textarea
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        rows={4}
+      />
+      <input
+        value={labels}
+        onChange={(e) => setLabels(e.target.value)}
+        aria-label="Labels, separated by commas"
+      />
+      <label>
+        <input
+          type="checkbox"
+          checked={several}
+          onChange={(e) => setSeveral(e.target.checked)}
+        />{" "}
+        Allow several labels
+      </label>
       <button onClick={classify}>Classify</button>
       {error && <p className="error">{error}</p>}
       {result && (
         <div>
-          <p className="answer">{picked.length ? picked.join(", ") : "No label fits."}</p>
-          <ul>{Object.entries(result.probabilities).map(([name, p]) => <li key={name}>{name}: {p.toFixed(3)}</li>)}</ul>
+          <p className="answer">
+            {picked.length ? picked.join(", ") : "No label fits."}
+          </p>
+          <ul>
+            {Object.entries(result.probabilities).map(([name, p]) => (
+              <li key={name}>
+                {name}: {p.toFixed(3)}
+              </li>
+            ))}
+          </ul>
         </div>
       )}
     </main>
@@ -130,8 +168,9 @@ problem, the page calls its own address, `/v1/infer`, and Vite passes anything s
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
-// The page calls /v1/infer on its own address. Vite forwards /v1 to the local
-// runner, so the browser never makes a cross-origin request and no CORS setup is needed.
+// The page calls /v1/infer on its own address. Vite forwards /v1 to
+// the local runner, so the browser never makes a cross-origin request
+// and no CORS setup is needed.
 export default defineConfig({
   plugins: [react()],
   server: {
@@ -144,15 +183,50 @@ To check the proxy without the page, send a request to the Vite address while `n
 running. It reaches the runner and returns the answer:
 
 ```sh
-curl -s http://localhost:5173/v1/infer -H 'content-type: application/json' -d '{
-  "model": "decide-340m", "backend": "onnx", "precision": "fp32", "operation": "classify",
+curl -s http://localhost:5173/v1/infer \
+  -H 'content-type: application/json' -d '{
+  "model": "decide-340m", "backend": "onnx",
+  "precision": "fp32", "operation": "classify",
   "text": "I was charged twice for my last order.",
-  "schema": {"kind": "classification", "tasks": {"category": {"labels": ["billing", "support", "shipping"]}}}
+  "schema": {"kind": "classification", "tasks": {
+    "category": {"labels": ["billing", "support", "shipping"]}
+  }}
 }'
 ```
 
-```text
-{"request_id":"ce093550-04c5-40f7-8b06-bff8c4bcfc0b","model":"decide-340m","backend":"onnx","precision":"fp32","output":{"category":{"value":"billing","confidence":0.8887295281128845,"probabilities":{"billing":0.8887295281128845,"support":0.04850131418933352,"shipping":0.06276915769778203}},"_meta":{"feasible":true,"decoder":"independent","exact":true,"objective":1.004750370979309,"violations":[]}},"error":null,"timing":{"queue_ms":4.562040999997407,"inference_ms":21.926749999984168},"usage":{"inputTokens":22,"outputTokens":0}}
+The reply comes on one line; here it is spread over several lines:
+
+```json
+{
+  "request_id": "ce093550-04c5-40f7-8b06-bff8c4bcfc0b",
+  "model": "decide-340m",
+  "backend": "onnx",
+  "precision": "fp32",
+  "output": {
+    "category": {
+      "value": "billing",
+      "confidence": 0.8887295281128845,
+      "probabilities": {
+        "billing": 0.8887295281128845,
+        "support": 0.04850131418933352,
+        "shipping": 0.06276915769778203
+      }
+    },
+    "_meta": {
+      "feasible": true,
+      "decoder": "independent",
+      "exact": true,
+      "objective": 1.004750370979309,
+      "violations": []
+    }
+  },
+  "error": null,
+  "timing": {
+    "queue_ms": 4.562040999997407,
+    "inference_ms": 21.926749999984168
+  },
+  "usage": {"inputTokens": 22, "outputTokens": 0}
+}
 ```
 
 ### If the page is served some other way
@@ -213,14 +287,14 @@ it the same `/v1/infer` requests this app sends to the runner on your computer.
 
 - **The model.** Only `decide-340m` runs in the browser. The first time, the page downloads it from Hugging Face
   (1.95 GB), then checks and prepares it the same way `gliner-runner models install` does, which takes a few
-  minutes. The prepared model (1.75 GB) stays in the browser for this site, so later visits start right away.
+  minutes. The prepared model (1.76 GB) stays in the browser for this site, so later visits start right away.
   **Remove the model** deletes it. The page asks the browser to keep the model when disk space runs low; if the
   browser removes it anyway, the page offers the download again.
 - **Speed.** The page uses the graphics card through WebGPU when the browser has it, and the processor otherwise.
   Before it uses the graphics card, it checks one known answer against the reference results. A classification
-  takes well under a second either way; loading the model takes a few seconds the first time.
-- **What you need.** A current desktop browser (Chrome, Edge, Firefox or Safari) and about 4 GB of free disk
-  space. Private and incognito windows usually do not let websites store this much; the page says so and offers
+  takes well under a second either way; loading the stored model takes a few seconds each time the page opens.
+- **What you need.** A current desktop browser (Chrome, Edge, Firefox or Safari) that lets this site store
+  3.8 GB: the download and the prepared model are both stored until the model is ready. Private and incognito windows usually do not let websites store this much; the page says so and offers
   your computer instead. Phones and tablets are not supported.
 
 ### On your computer
@@ -246,3 +320,8 @@ that is how the page reaches the runner on your computer.
 
 `gliner-runner playground` adds `https://stuffbucket.github.io` to the runner's list of allowed addresses.
 `gliner-runner cors list` shows the list, and `gliner-runner cors delete <number>` removes an address.
+
+## Next
+
+[Choose a model](/gliner-runner/models/): which model to use for your text, and how each one was
+tested.

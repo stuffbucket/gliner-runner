@@ -5,9 +5,11 @@ sidebar:
   label: Overview
 ---
 
-Every example is a job people already do by hand. Each page takes one job, lists the labels it
-uses, gives a command to paste into Terminal, and shows what we got when we ran it. Underneath,
-every job is the same thing: put a piece of text into one or more labels you choose.
+Each of these is a job people already do by hand: sending a ticket to the right team, spotting the
+urgent message, reading a review. Find one like yours and see whether the program can do it. Each
+example lists the labels it uses, gives a command to paste into Terminal, and shows what we got
+when we ran it. Underneath, every job is the same thing: put a piece of text into one or more
+labels you choose.
 
 ## Sort incoming messages
 
@@ -65,3 +67,8 @@ seconds, because the program loads the model every time. For a long list, see
   wording of a label can change them. Run the examples yourself and check them against your own
   text.
 - Where a result was wrong or uncertain, we say so on the page.
+
+## Next
+
+Pick the example closest to your job from the lists above. For jobs we have not run in full, see
+[More ideas](/gliner-runner/more-ideas/).

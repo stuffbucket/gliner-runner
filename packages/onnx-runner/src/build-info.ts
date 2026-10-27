@@ -13,7 +13,7 @@ export interface BuildInfo {
 
 export const BUILD_INFO: BuildInfo = {
   version: "0.4.0",
-  identitySha256: "63f4033ace2f4ffe3b1eab8f930c5a01637fa3db633bc36dd1891d62b420f7cd",
-  evalReceiptSha256: "5ec8d8990ea668d473081f446928ab74dbb3cb45b7804feca3e95683be1fabfb",
-  evalRunId: "4d1ad229-7566-46f1-b891-418a67599199",
+  identitySha256: "ae51b0049af7d86870a60e28ff58eebf94bb9475216590cf81dd1a25d82de44a",
+  evalReceiptSha256: "28d4a40adbcbb1b7c574633251c57f0bcd60a9b18fc05901a77c1a3bd6b6f028",
+  evalRunId: "734dbbec-f662-4456-8822-2b874643d203",
 };

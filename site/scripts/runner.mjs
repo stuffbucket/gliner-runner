@@ -18,9 +18,13 @@ const freePort = () =>
     });
   });
 
-export async function startRunner() {
+/**
+ * `cli` lets a caller use a runner built elsewhere (a worktree has no dist until it is built), and `args` adds
+ * serve flags such as `--cors-origin`.
+ */
+export async function startRunner({ cli = join(root, "packages/onnx-runner/dist/src/cli.js"), args = [] } = {}) {
   const port = await freePort();
-  const child = spawn(process.execPath, [join(root, "packages/onnx-runner/dist/src/cli.js"), "serve", "--port", String(port)], {
+  const child = spawn(process.execPath, [cli, "serve", "--port", String(port), ...args], {
     env: { ...process.env, XDG_CONFIG_HOME: mkdtempSync(join(tmpdir(), "runner-config-")) },
     stdio: ["ignore", "ignore", "inherit"],
   });

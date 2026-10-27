@@ -1,0 +1,401 @@
+# Tasks for the gliner-runner skill eval. metadata.split: "tuning" tasks were read while editing the skill;
+# "heldout" tasks were not, and are reported separately. Request bodies are sent to a real runner by
+# asserts.cjs:postBody. Rubrics state only facts checked against the code or a real run.
+
+# ---------------------------------------------------------------- tuning
+
+- description: ticket-http
+  metadata: { category: http, split: tuning }
+  vars:
+    task: >-
+      gliner-runner serve is running on this machine with default settings. Write a curl command
+      that classifies this support ticket into billing, technical, shipping, account or cancellation,
+      with a one-line description for each label so the model knows what we mean:
+      "My card was charged but the order page says payment failed."
+  assert:
+    - type: javascript
+      value: file://asserts.cjs:postBody
+      config: { mode: single, requireDescriptions: true, labelsInclude: [billing, technical, shipping, account, cancellation] }
+
+- description: tags-multi
+  metadata: { category: mode, split: tuning }
+  vars:
+    task: >-
+      Our product reviews can mention any of: battery, screen, price, delivery. A review can mention
+      several of them or none. Give me the curl request to the local gliner-runner server for this review:
+      "The battery is weak and the delivery was slow." I need every topic it mentions.
+  assert:
+    - type: javascript
+      value: file://asserts.cjs:postBody
+      config: { mode: multi, mustSelect: [battery, delivery] }
+
+- description: mode-choice-single
+  metadata: { category: mode, split: tuning }
+  vars:
+    task: >-
+      Each incoming email goes to exactly one queue: sales, support or legal. In gliner-runner, should I
+      use single-label or multi-label mode, and which request fields control that? Show the JSON request
+      body for the email "Can you send me a quote for 40 seats?".
+  assert:
+    - type: javascript
+      value: file://asserts.cjs:postBody
+      config: { mode: single, labelsInclude: [sales, support, legal] }
+    - type: regex
+      value: "max_labels"
+
+- description: none-fit
+  metadata: { category: no-match, split: tuning }
+  vars:
+    task: >-
+      We route chat messages to exactly one team: sales, support, or legal. Many messages are just "hi"
+      or "thanks" and fit no team. How do I get gliner-runner to tell me when nothing fits, while still
+      getting one team for the rest? Show the curl request for the message "thanks, have a nice day".
+  assert:
+    - type: javascript
+      value: file://asserts.cjs:postBody
+      config: { noMatch: true, labelsInclude: [sales, support, legal] }
+
+- description: prob-041
+  metadata: { category: interpret, split: tuning }
+  vars:
+    task: >-
+      A teammate is looking at gliner-runner output and sees probability 0.41 for the label "refund".
+      What does 0.41 mean if the task is single-label (the default), and what does it mean if the task
+      has min_labels 0 and max_labels null? Would "refund" be returned in each case?
+  assert:
+    - type: llm-rubric
+      value: >-
+        Grade against these facts. Single-label (default): probabilities come from a softmax over the
+        labels that were sent, so they sum to 1 and compare the labels with each other; 0.41 is refund's
+        share, and refund is returned as the value if 0.41 is the highest probability among the labels
+        (the default mode always returns exactly one label); the number changes if labels are added or
+        removed. Several labels (min_labels 0, max_labels null): each label gets an independent sigmoid
+        score, the scores do not sum to 1, and a label is returned only if its score is above the
+        threshold, which defaults to 0.5, so with defaults refund is NOT returned. Pass only if the answer
+        states both the softmax/sum-to-1/relative meaning for single-label and the independent per-label
+        meaning with the 0.5 default threshold for several labels, and gets "returned or not" right for
+        both. Fail if it claims 0.41 is a calibrated chance of being correct, or says the single-label
+        probabilities are independent.
+
+- description: threshold-low
+  metadata: { category: threshold, split: tuning }
+  vars:
+    task: >-
+      I call gliner-runner with several labels per text (min_labels 0, max_labels null). I want a label
+      returned whenever its probability is at least 0.3 instead of 0.5. Show the JSON request body for the
+      text "I was charged twice, and now I cannot log in to see my invoices." with the labels billing,
+      technical, shipping, account, cancellation.
+  assert:
+    # No check on which labels come back: the answer picks the task name, and the task name shifts the scores.
+    - type: javascript
+      value: file://asserts.cjs:postBody
+      config: { mode: multi, maxThreshold: 0.3 }
+
+- description: threshold-policy
+  metadata: { category: threshold, split: tuning }
+  vars:
+    task: >-
+      Write a TypeScript function routeTicket(text) that calls the local gliner-runner server to classify
+      a ticket's urgency (urgent, normal, low), then auto-assigns it, sends it to a human, or leaves it in
+      the normal queue depending on how sure the model is. Explain how I should pick the cutoffs.
+  assert:
+    - type: javascript
+      value: file://asserts.cjs:regex
+      config:
+        all: ["/v1/infer", "onnx", "fp32", "classification"]
+    - type: llm-rubric
+      value: >-
+        Pass if the answer: (1) uses the response's confidence or per-label probabilities (output.<task>
+        .confidence / .probabilities) to decide; (2) keeps the cutoffs as named constants in code rather
+        than magic numbers scattered through the logic; (3) says the cutoffs must be tuned on the user's
+        own labeled texts and depend on the cost of a mistake; (4) does not claim the confidence is the
+        probability that the answer is correct. Fail if any of these is missing or contradicted.
+
+- description: react-browser
+  metadata: { category: browser, split: tuning }
+  vars:
+    task: >-
+      I have a React app made with Vite; its dev server runs on http://localhost:5173. Add a "Classify"
+      button that sends the textarea's text to gliner-runner running on my machine and shows the chosen
+      label from billing, support, shipping. Give me the code and anything I must configure.
+  assert:
+    - type: javascript
+      value: file://asserts.cjs:regex
+      config:
+        all: ["/v1/infer", "[\"']onnx[\"']", "[\"']fp32[\"']", "[\"']classify[\"']", "classification"]
+        any: [["proxy", "cors", "allowed by default", "already allowed"]]
+        none: ["npm (i|install|add) [^\\n]*@gliner-runner/onnx-runner-web"]
+
+- description: install-serve
+  metadata: { category: install, split: tuning }
+  vars:
+    task: >-
+      Set up gliner-runner on a fresh Mac and get its HTTP service answering a classification request.
+      Give me the exact commands, in order.
+  assert:
+    - type: javascript
+      value: file://asserts.cjs:regex
+      config:
+        all: ["models install decide-340m", "gliner-runner serve", "8090"]
+        any: [["brew install gliner-runner", "install\\.sh"]]
+    - type: javascript
+      value: file://asserts.cjs:postBody
+
+- description: model-pick
+  metadata: { category: model, split: tuning }
+  vars:
+    task: >-
+      Our support tickets arrive in German and French. Which gliner-runner model should I use, how do I
+      install it, and what changes in my HTTP request? Show the request body for "Ich wurde zweimal belastet."
+      with the labels billing, shipping, technical.
+  assert:
+    - type: javascript
+      value: file://asserts.cjs:postBody
+      config: { model: decide-multilingual }
+    - type: regex
+      value: "models install decide-multilingual"
+
+- description: debug-409-fp16
+  metadata: { category: debug, split: tuning }
+  vars:
+    task: >-
+      My request to gliner-runner returns HTTP 409 with
+      {"detail":{"code":"unsupported_configuration","message":"backend onnx does not support model=decide-340m, operation=classify, precision=fp16, device=cpu; no fallback was attempted","retryable":false}}.
+      I set fp16 to make it faster. What should I change?
+  assert:
+    - type: javascript
+      value: file://asserts.cjs:regex
+      config:
+        all: ["fp32"]
+    - type: llm-rubric
+      value: >-
+        Pass if the answer tells the user to send "precision": "fp32" (the ONNX runner only runs CPU/FP32)
+        and does not suggest a way to make fp16 work on this runner, such as a flag or setting. Mentioning
+        that the separate Python/PyTorch server supports other precisions is fine.
+
+- description: debug-422-parens
+  metadata: { category: debug, split: tuning }
+  vars:
+    task: >-
+      gliner-runner answers 422 with {"detail":{"code":"invalid_schema","message":"label name may not contain '(': label and prompt strings are injected into the model prompt verbatim, and this would corrupt logit-to-label alignment","retryable":false}}.
+      My labels are ["bug (software)", "bug (hardware)", "feature request"]. How do I fix it without losing the distinction?
+  assert:
+    - type: javascript
+      value: file://asserts.cjs:regex
+      config:
+        all: ["label_descriptions"]
+    - type: javascript
+      value: file://asserts.cjs:postBody
+      config: { fillDefaults: true }
+
+- description: not-llm-summarize
+  metadata: { category: not-llm, split: tuning }
+  vars:
+    task: >-
+      Use gliner-runner to summarize each customer email into one sentence for our dashboard. Write the
+      request I should send.
+  assert:
+    - type: javascript
+      value: file://asserts.cjs:regex
+      config:
+        none: ["\"operation\"\\s*:\\s*\"summar", "operation:\\s*['\"]summar"]
+    - type: llm-rubric
+      value: >-
+        gliner-runner only classifies text into labels the caller supplies; it cannot summarize, generate
+        or rewrite text. Pass only if the answer says clearly, near the start, that gliner-runner cannot
+        produce summaries, and points to an LLM (or other generator) for summaries. Offering a
+        classification it can do instead is good. Fail if the answer presents any gliner-runner request as
+        producing a summary.
+
+- description: batch-many
+  metadata: { category: batch, split: tuning }
+  vars:
+    task: >-
+      I have 10,000 short product reviews in reviews.json (an array of strings). Write a Node.js script
+      that labels each one positive, negative or mixed with gliner-runner and writes the results to a file.
+      It should finish reasonably fast.
+  assert:
+    - type: javascript
+      value: file://asserts.cjs:regex
+      config:
+        all: ["/v1/(batch|infer)"]
+        none: ["(execSync|execFile|spawn|exec)\\([^)]*classify", "`gliner-runner classify"]
+    - type: llm-rubric
+      value: >-
+        Facts: gliner-runner serve keeps the model loaded; POST /v1/batch takes {"requests": [...]} with 1
+        to 256 infer requests and returns {"responses": [...]} in the same order; the server also batches
+        concurrent /v1/infer calls; the default queue holds 256 pending requests per model, and requests
+        beyond that get 429 queue_full with Retry-After. Pass if the script sends
+        requests to a running server either through /v1/batch in chunks of at most 256 or with bounded
+        concurrency on /v1/infer, and reads output.<task>.value. Fail if it runs the CLI once per text, sends
+        more than 256 requests in one /v1/batch call, keeps more than 256 requests in flight without
+        retrying 429, or invents fields such as a top-level "texts" array.
+
+- description: cors-origin
+  metadata: { category: browser, split: tuning }
+  vars:
+    task: >-
+      My internal tool at https://tools.example.com calls http://127.0.0.1:8090/v1/infer from the
+      browser, and the browser console says the request was blocked by CORS. The runner is gliner-runner
+      serve. How do I fix it?
+  assert:
+    - type: javascript
+      value: file://asserts.cjs:regex
+      config:
+        any:
+          - ["gliner-runner cors add https://tools\\.example\\.com(?![/\\w])", "--cors-origin[ =]https://tools\\.example\\.com(?![/\\w])", "GLINER_RUNNER_CORS_ORIGINS=['\"]?https://tools\\.example\\.com"]
+          - ["restart", "next time .*serve.* starts", "start .*serve.* again"]
+
+- description: read-multi-confidence
+  metadata: { category: interpret, split: tuning }
+  vars:
+    task: >-
+      With min_labels 0 and max_labels null I got
+      {"value":["billing","account"],"confidence":0.794,"probabilities":{"billing":0.717,"technical":0.184,"shipping":0.023,"account":0.577,"cancellation":0.041}}.
+      Is 0.794 the confidence for billing? How sure is the model about account?
+  assert:
+    - type: llm-rubric
+      value: >-
+        Facts from the code: with several labels, confidence is one number for the whole selection, the
+        geometric mean over all labels of p for a selected label and 1 - p for an unselected one; it is not
+        the confidence of billing or of the first label. Each label's own score is its entry in
+        probabilities, an independent sigmoid; account is 0.577, just above the default 0.5 threshold.
+        Pass if the answer says 0.794 is not billing's confidence but a score for the whole set of chosen
+        and rejected labels, and reads account's score as 0.577 (close to the threshold). Mentioning the
+        geometric mean is good but not required. Fail if it says 0.794 belongs to billing.
+
+- description: task-name
+  metadata: { category: http, split: tuning }
+  vars:
+    task: >-
+      In a gliner-runner request, schema.tasks has a key such as "category". Is that key only an id for
+      my own code? I would like to rename my tasks t1 and t2 to keep things short.
+  assert:
+    - type: llm-rubric
+      value: >-
+        Fact verified on the runner: the task name is part of the text given to the model (the prompt is
+        the task name, or "name: instruction"), so renaming a task changes the probabilities (for one ticket,
+        "category" gave billing 0.889 and "department" gave 0.757). Pass if the answer says the task key
+        is model input that affects the scores and advises descriptive plain-word names over t1/t2. Fail
+        if it says the key is only an identifier with no effect on results.
+
+- description: debug-download
+  metadata: { category: debug, split: tuning }
+  vars:
+    task: >-
+      I switched my request to "model": "decide-1b" and gliner-runner now answers 409 with code
+      model_download_required. What do I do?
+  assert:
+    - type: javascript
+      value: file://asserts.cjs:regex
+      config:
+        all: ["models install decide-1b"]
+    - type: llm-rubric
+      value: >-
+        Facts: inference never downloads by itself (unless serve was started with --auto-download); the fix
+        is to install the model, e.g. `gliner-runner models install decide-1b`, which downloads about 4.8 GB
+        and asks for approval (or --yes), or an approved POST /v1/models/decide-1b/downloads. Pass if the
+        answer gives the install command and mentions the large download or getting approval first. Fail
+        if it tells the user to change backend or precision.
+
+# ---------------------------------------------------------------- held out (not read while editing)
+
+- description: descriptions-ambiguous
+  metadata: { category: http, split: heldout }
+  vars:
+    task: >-
+      gliner-runner keeps confusing "account" (login and profile problems) with "billing" (money and card
+      problems). Show me how to change the curl request so it tells them apart. Text: "I can't log in to
+      update my card details." Labels: account, billing, shipping.
+  assert:
+    - type: javascript
+      value: file://asserts.cjs:postBody
+      config: { requireDescriptions: true, labelsInclude: [account, billing, shipping] }
+
+- description: two-tasks
+  metadata: { category: http, split: heldout }
+  vars:
+    task: >-
+      For each message I need its topic (billing, technical, shipping) and whether it is urgent or can
+      wait. Can I get both from gliner-runner in one call? Show the curl for
+      "The site is down and I can't pay my invoice!"
+  assert:
+    - type: javascript
+      value: file://asserts.cjs:postBody
+      config: { minTasks: 2 }
+
+- description: extract-order-number
+  metadata: { category: not-llm, split: heldout }
+  vars:
+    task: >-
+      Use gliner-runner to pull the order number (like A-12345) out of each customer email so we can
+      look it up.
+  assert:
+    - type: llm-rubric
+      value: >-
+        gliner-runner only classifies text into supplied labels; it cannot extract spans such as an order
+        number (extract_* operations return 409 unsupported_configuration). It can classify whether an
+        email contains an order number. Pass only if the answer says clearly that gliner-runner cannot
+        extract the number and suggests another way (a regular expression, or an LLM/NER tool), optionally
+        offering a has-order-number classification. Fail if it presents a gliner-runner request as
+        returning the order number.
+
+- description: python-client
+  metadata: { category: http, split: heldout }
+  vars:
+    task: >-
+      Write Python code that sends a review to the local gliner-runner server, classifies it as positive,
+      negative or mixed, and prints the label and the confidence.
+  assert:
+    - type: javascript
+      value: file://asserts.cjs:regex
+      config:
+        all: ["/v1/infer", "onnx", "fp32", "classify", "classification", "\\[[\"']output[\"']\\]", "confidence"]
+    - type: javascript
+      value: file://asserts.cjs:postBody
+
+- description: debug-extra-field
+  metadata: { category: debug, split: heldout }
+  vars:
+    task: >-
+      gliner-runner answers 422 to this body:
+      {"model":"decide-340m","backend":"onnx","precision":"fp32","operation":"classify","text":"Where is my parcel?","labels":["billing","shipping"]}
+      The error mentions "extra_forbidden" for ["body","labels"] and a missing "schema". Show me the corrected body.
+  assert:
+    - type: javascript
+      value: file://asserts.cjs:postBody
+      config: { labelsInclude: [billing, shipping] }
+
+- description: long-docs
+  metadata: { category: limits, split: heldout }
+  vars:
+    task: >-
+      We want to sort 20-page contracts into NDA, employment, lease, or sales agreement with gliner-runner.
+      Anything I should know before I send whole contracts as the text?
+  assert:
+    - type: llm-rubric
+      value: >-
+        Facts from the docs: it works best on a sentence up to about 500 words; about 2,000 words still
+        works but takes seconds; much longer texts take far too long (4,000 words took 8 seconds, 8,000
+        words did not finish in minutes); one passage on another topic can decide a long mixed text. The
+        advice is to split long documents into paragraphs or sections and classify each, then combine in
+        code. Pass if the answer recommends splitting (or using a short representative part such as the
+        title and first section) because long texts are slow, and explains how to combine the parts.
+        Fail if it says whole 20-page contracts are fine as one text, or invents a hard token limit with a
+        specific number.
+
+- description: empty-value
+  metadata: { category: interpret, split: heldout }
+  vars:
+    task: >-
+      My gliner-runner call with min_labels 0 and max_labels null returns "value": [] and
+      "confidence": null for some texts. Is that a bug? What should my code do?
+  assert:
+    - type: llm-rubric
+      value: >-
+        Facts: with several labels, a label is returned only when its probability is above the threshold
+        (default 0.5); when none is, value is [] and confidence is null. This is a valid "no label applies"
+        answer, not an error. Options: treat it as no match in code, look at probabilities, lower the
+        threshold (both the task threshold and options.threshold), or add labels. Pass if the answer says it
+        is expected behavior meaning no label passed the threshold and tells the code to handle it as "none".
+        Fail if it calls it a server bug.

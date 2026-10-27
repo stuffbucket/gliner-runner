@@ -1,0 +1,585 @@
+{
+  "banking77/intent": {
+    "source": "template",
+    "rule": "The customer's message is about {label words}.",
+    "labels": {
+      "Refund_not_showing_up": "The customer's message is about Refund not showing up.",
+      "activate_my_card": "The customer's message is about activate my card.",
+      "age_limit": "The customer's message is about age limit.",
+      "apple_pay_or_google_pay": "The customer's message is about apple pay or google pay.",
+      "atm_support": "The customer's message is about atm support.",
+      "automatic_top_up": "The customer's message is about automatic top up.",
+      "balance_not_updated_after_bank_transfer": "The customer's message is about balance not updated after bank transfer.",
+      "balance_not_updated_after_cheque_or_cash_deposit": "The customer's message is about balance not updated after cheque or cash deposit.",
+      "beneficiary_not_allowed": "The customer's message is about beneficiary not allowed.",
+      "cancel_transfer": "The customer's message is about cancel transfer.",
+      "card_about_to_expire": "The customer's message is about card about to expire.",
+      "card_acceptance": "The customer's message is about card acceptance.",
+      "card_arrival": "The customer's message is about card arrival.",
+      "card_delivery_estimate": "The customer's message is about card delivery estimate.",
+      "card_linking": "The customer's message is about card linking.",
+      "card_not_working": "The customer's message is about card not working.",
+      "card_payment_fee_charged": "The customer's message is about card payment fee charged.",
+      "card_payment_not_recognised": "The customer's message is about card payment not recognised.",
+      "card_payment_wrong_exchange_rate": "The customer's message is about card payment wrong exchange rate.",
+      "card_swallowed": "The customer's message is about card swallowed.",
+      "cash_withdrawal_charge": "The customer's message is about cash withdrawal charge.",
+      "cash_withdrawal_not_recognised": "The customer's message is about cash withdrawal not recognised.",
+      "change_pin": "The customer's message is about change pin.",
+      "compromised_card": "The customer's message is about compromised card.",
+      "contactless_not_working": "The customer's message is about contactless not working.",
+      "country_support": "The customer's message is about country support.",
+      "declined_card_payment": "The customer's message is about declined card payment.",
+      "declined_cash_withdrawal": "The customer's message is about declined cash withdrawal.",
+      "declined_transfer": "The customer's message is about declined transfer.",
+      "direct_debit_payment_not_recognised": "The customer's message is about direct debit payment not recognised.",
+      "disposable_card_limits": "The customer's message is about disposable card limits.",
+      "edit_personal_details": "The customer's message is about edit personal details.",
+      "exchange_charge": "The customer's message is about exchange charge.",
+      "exchange_rate": "The customer's message is about exchange rate.",
+      "exchange_via_app": "The customer's message is about exchange via app.",
+      "extra_charge_on_statement": "The customer's message is about extra charge on statement.",
+      "failed_transfer": "The customer's message is about failed transfer.",
+      "fiat_currency_support": "The customer's message is about fiat currency support.",
+      "get_disposable_virtual_card": "The customer's message is about get disposable virtual card.",
+      "get_physical_card": "The customer's message is about get physical card.",
+      "getting_spare_card": "The customer's message is about getting spare card.",
+      "getting_virtual_card": "The customer's message is about getting virtual card.",
+      "lost_or_stolen_card": "The customer's message is about lost or stolen card.",
+      "lost_or_stolen_phone": "The customer's message is about lost or stolen phone.",
+      "order_physical_card": "The customer's message is about order physical card.",
+      "passcode_forgotten": "The customer's message is about passcode forgotten.",
+      "pending_card_payment": "The customer's message is about pending card payment.",
+      "pending_cash_withdrawal": "The customer's message is about pending cash withdrawal.",
+      "pending_top_up": "The customer's message is about pending top up.",
+      "pending_transfer": "The customer's message is about pending transfer.",
+      "pin_blocked": "The customer's message is about pin blocked.",
+      "receiving_money": "The customer's message is about receiving money.",
+      "request_refund": "The customer's message is about request refund.",
+      "reverted_card_payment?": "The customer's message is about reverted card payment?.",
+      "supported_cards_and_currencies": "The customer's message is about supported cards and currencies.",
+      "terminate_account": "The customer's message is about terminate account.",
+      "top_up_by_bank_transfer_charge": "The customer's message is about top up by bank transfer charge.",
+      "top_up_by_card_charge": "The customer's message is about top up by card charge.",
+      "top_up_by_cash_or_cheque": "The customer's message is about top up by cash or cheque.",
+      "top_up_failed": "The customer's message is about top up failed.",
+      "top_up_limits": "The customer's message is about top up limits.",
+      "top_up_reverted": "The customer's message is about top up reverted.",
+      "topping_up_by_card": "The customer's message is about topping up by card.",
+      "transaction_charged_twice": "The customer's message is about transaction charged twice.",
+      "transfer_fee_charged": "The customer's message is about transfer fee charged.",
+      "transfer_into_account": "The customer's message is about transfer into account.",
+      "transfer_not_received_by_recipient": "The customer's message is about transfer not received by recipient.",
+      "transfer_timing": "The customer's message is about transfer timing.",
+      "unable_to_verify_identity": "The customer's message is about unable to verify identity.",
+      "verify_my_identity": "The customer's message is about verify my identity.",
+      "verify_source_of_funds": "The customer's message is about verify source of funds.",
+      "verify_top_up": "The customer's message is about verify top up.",
+      "virtual_card_not_working": "The customer's message is about virtual card not working.",
+      "visa_or_mastercard": "The customer's message is about visa or mastercard.",
+      "why_verify_identity": "The customer's message is about why verify identity.",
+      "wrong_amount_of_cash_received": "The customer's message is about wrong amount of cash received.",
+      "wrong_exchange_rate_for_cash_withdrawal": "The customer's message is about wrong exchange rate for cash withdrawal."
+    }
+  },
+  "news_category/topic": {
+    "source": "template",
+    "rule": "A news story from the {Label In Title Case} section.",
+    "labels": {
+      "ARTS": "A news story from the Arts section.",
+      "ARTS & CULTURE": "A news story from the Arts & Culture section.",
+      "BLACK VOICES": "A news story from the Black Voices section.",
+      "BUSINESS": "A news story from the Business section.",
+      "COLLEGE": "A news story from the College section.",
+      "COMEDY": "A news story from the Comedy section.",
+      "CRIME": "A news story from the Crime section.",
+      "CULTURE & ARTS": "A news story from the Culture & Arts section.",
+      "DIVORCE": "A news story from the Divorce section.",
+      "EDUCATION": "A news story from the Education section.",
+      "ENTERTAINMENT": "A news story from the Entertainment section.",
+      "ENVIRONMENT": "A news story from the Environment section.",
+      "FIFTY": "A news story from the Fifty section.",
+      "FOOD & DRINK": "A news story from the Food & Drink section.",
+      "GOOD NEWS": "A news story from the Good News section.",
+      "GREEN": "A news story from the Green section.",
+      "HEALTHY LIVING": "A news story from the Healthy Living section.",
+      "HOME & LIVING": "A news story from the Home & Living section.",
+      "IMPACT": "A news story from the Impact section.",
+      "LATINO VOICES": "A news story from the Latino Voices section.",
+      "MEDIA": "A news story from the Media section.",
+      "MONEY": "A news story from the Money section.",
+      "PARENTING": "A news story from the Parenting section.",
+      "PARENTS": "A news story from the Parents section.",
+      "POLITICS": "A news story from the Politics section.",
+      "QUEER VOICES": "A news story from the Queer Voices section.",
+      "RELIGION": "A news story from the Religion section.",
+      "SCIENCE": "A news story from the Science section.",
+      "SPORTS": "A news story from the Sports section.",
+      "STYLE": "A news story from the Style section.",
+      "STYLE & BEAUTY": "A news story from the Style & Beauty section.",
+      "TASTE": "A news story from the Taste section.",
+      "TECH": "A news story from the Tech section.",
+      "THE WORLDPOST": "A news story from the The Worldpost section.",
+      "TRAVEL": "A news story from the Travel section.",
+      "U.S. NEWS": "A news story from the U.S. News section.",
+      "WEDDINGS": "A news story from the Weddings section.",
+      "WEIRD NEWS": "A news story from the Weird News section.",
+      "WELLNESS": "A news story from the Wellness section.",
+      "WOMEN": "A news story from the Women section.",
+      "WORLD NEWS": "A news story from the World News section.",
+      "WORLDPOST": "A news story from the Worldpost section."
+    }
+  },
+  "massive/scenario": {
+    "source": "template",
+    "rule": "A request to a voice assistant about {label words}.",
+    "labels": {
+      "alarm": "A request to a voice assistant about alarm.",
+      "audio": "A request to a voice assistant about audio.",
+      "calendar": "A request to a voice assistant about calendar.",
+      "cooking": "A request to a voice assistant about cooking.",
+      "datetime": "A request to a voice assistant about datetime.",
+      "email": "A request to a voice assistant about email.",
+      "general": "A request to a voice assistant about general.",
+      "iot": "A request to a voice assistant about iot.",
+      "lists": "A request to a voice assistant about lists.",
+      "music": "A request to a voice assistant about music.",
+      "news": "A request to a voice assistant about news.",
+      "play": "A request to a voice assistant about play.",
+      "qa": "A request to a voice assistant about qa.",
+      "recommendation": "A request to a voice assistant about recommendation.",
+      "social": "A request to a voice assistant about social.",
+      "takeaway": "A request to a voice assistant about takeaway.",
+      "transport": "A request to a voice assistant about transport.",
+      "weather": "A request to a voice assistant about weather."
+    }
+  },
+  "go_emotions/emotions": {
+    "source": "documentation",
+    "rule": "GoEmotions paper (arXiv:2005.00547) appendix A, verbatim; 'neutral' is not defined there and uses 'No emotion.'",
+    "labels": {
+      "admiration": "Finding something impressive or worthy of respect.",
+      "amusement": "Finding something funny or being entertained.",
+      "anger": "A strong feeling of displeasure or antagonism.",
+      "annoyance": "Mild anger, irritation.",
+      "approval": "Having or expressing a favorable opinion.",
+      "caring": "Displaying kindness and concern for others.",
+      "confusion": "Lack of understanding, uncertainty.",
+      "curiosity": "A strong desire to know or learn something.",
+      "desire": "A strong feeling of wanting something or wishing for something to happen.",
+      "disappointment": "Sadness or displeasure caused by the nonfulfillment of one's hopes or expectations.",
+      "disapproval": "Having or expressing an unfavorable opinion.",
+      "disgust": "Revulsion or strong disapproval aroused by something unpleasant or offensive.",
+      "embarrassment": "Self-consciousness, shame, or awkwardness.",
+      "excitement": "Feeling of great enthusiasm and eagerness.",
+      "fear": "Being afraid or worried.",
+      "gratitude": "A feeling of thankfulness and appreciation.",
+      "grief": "Intense sorrow, especially caused by someone's death.",
+      "joy": "A feeling of pleasure and happiness.",
+      "love": "A strong positive emotion of regard and affection.",
+      "nervousness": "Apprehension, worry, anxiety.",
+      "optimism": "Hopefulness and confidence about the future or the success of something.",
+      "pride": "Pleasure or satisfaction due to ones own achievements or the achievements of those with whom one is closely associated.",
+      "realization": "Becoming aware of something.",
+      "relief": "Reassurance and relaxation following release from anxiety or distress.",
+      "remorse": "Regret or guilty feeling.",
+      "sadness": "Emotional pain, sorrow.",
+      "surprise": "Feeling astonished, startled by something unexpected.",
+      "neutral": "No emotion."
+    }
+  },
+  "civil_comments/toxicity": {
+    "source": "documentation",
+    "rule": "Civil Comments paper (arXiv:1903.04561) abstract definition of toxicity; 'not toxic' is its negation.",
+    "labels": {
+      "toxic": "Anything that is rude, disrespectful, or unreasonable that would make someone want to leave a conversation.",
+      "not toxic": "Nothing that is rude, disrespectful, or unreasonable that would make someone want to leave a conversation."
+    }
+  },
+  "fast_decisions/agent_handoff/should_handoff": {
+    "source": "template",
+    "rule": "{head words}: {label words}",
+    "labels": {
+      "no": "should handoff: no",
+      "yes": "should handoff: yes"
+    }
+  },
+  "fast_decisions/banking_intent/intent": {
+    "source": "template",
+    "rule": "{head words}: {label words}",
+    "labels": {
+      "balance": "intent: balance",
+      "branch_appointment": "intent: branch appointment",
+      "card_lost": "intent: card lost",
+      "close_account": "intent: close account",
+      "direct_deposit": "intent: direct deposit",
+      "dispute_charge": "intent: dispute charge",
+      "fee_refund": "intent: fee refund",
+      "fraud_alert": "intent: fraud alert",
+      "limit_increase": "intent: limit increase",
+      "loan_payment": "intent: loan payment",
+      "mortgage": "intent: mortgage",
+      "new_account": "intent: new account",
+      "other": "intent: other",
+      "statement": "intent: statement",
+      "transfer": "intent: transfer",
+      "wire": "intent: wire"
+    }
+  },
+  "fast_decisions/benefits_request/asking_status": {
+    "source": "template",
+    "rule": "{head words}: {label words}",
+    "labels": {
+      "no": "asking status: no",
+      "yes": "asking status: yes"
+    }
+  },
+  "fast_decisions/benefits_request/program": {
+    "source": "template",
+    "rule": "{head words}: {label words}",
+    "labels": {
+      "childcare": "program: childcare",
+      "disability": "program: disability",
+      "food_assistance": "program: food assistance",
+      "health_coverage": "program: health coverage",
+      "housing_aid": "program: housing aid",
+      "other": "program: other",
+      "pension": "program: pension",
+      "tax_credit": "program: tax credit",
+      "unemployment": "program: unemployment"
+    }
+  },
+  "fast_decisions/clinic_request/request": {
+    "source": "template",
+    "rule": "{head words}: {label words}",
+    "labels": {
+      "appointment": "request: appointment",
+      "billing": "request: billing",
+      "cancel_visit": "request: cancel visit",
+      "insurance": "request: insurance",
+      "lab_results": "request: lab results",
+      "other": "request: other",
+      "provider_message": "request: provider message",
+      "records": "request: records",
+      "referral": "request: referral",
+      "refill": "request: refill",
+      "symptom_question": "request: symptom question"
+    }
+  },
+  "fast_decisions/clinic_request/urgent": {
+    "source": "template",
+    "rule": "{head words}: {label words}",
+    "labels": {
+      "no": "urgent: no",
+      "yes": "urgent: yes"
+    }
+  },
+  "fast_decisions/document_type/doc_type": {
+    "source": "template",
+    "rule": "{head words}: {label words}",
+    "labels": {
+      "bank_statement": "doc type: bank statement",
+      "clinical_note": "doc type: clinical note",
+      "contract": "doc type: contract",
+      "invoice": "doc type: invoice",
+      "lease": "doc type: lease",
+      "news_article": "doc type: news article",
+      "receipt": "doc type: receipt",
+      "recipe": "doc type: recipe",
+      "research_abstract": "doc type: research abstract",
+      "resume": "doc type: resume",
+      "sports_recap": "doc type: sports recap",
+      "syllabus": "doc type: syllabus"
+    }
+  },
+  "fast_decisions/email_triage/action": {
+    "source": "template",
+    "rule": "{head words}: {label words}",
+    "labels": {
+      "approve": "action: approve",
+      "escalate": "action: escalate",
+      "fyi": "action: fyi",
+      "reply": "action: reply"
+    }
+  },
+  "fast_decisions/email_triage/category": {
+    "source": "template",
+    "rule": "{head words}: {label words}",
+    "labels": {
+      "billing": "category: billing",
+      "calendar": "category: calendar",
+      "legal": "category: legal",
+      "newsletter": "category: newsletter",
+      "recruiting": "category: recruiting",
+      "sales": "category: sales",
+      "security": "category: security",
+      "support": "category: support"
+    }
+  },
+  "fast_decisions/email_triage/is_phishing": {
+    "source": "template",
+    "rule": "{head words}: {label words}",
+    "labels": {
+      "no": "is phishing: no",
+      "yes": "is phishing: yes"
+    }
+  },
+  "fast_decisions/email_triage/needs_reply": {
+    "source": "template",
+    "rule": "{head words}: {label words}",
+    "labels": {
+      "no": "needs reply: no",
+      "yes": "needs reply: yes"
+    }
+  },
+  "fast_decisions/news_topic/topic": {
+    "source": "template",
+    "rule": "{head words}: {label words}",
+    "labels": {
+      "business": "topic: business",
+      "culture": "topic: culture",
+      "entertainment": "topic: entertainment",
+      "health": "topic: health",
+      "politics": "topic: politics",
+      "science": "topic: science",
+      "sports": "topic: sports",
+      "technology": "topic: technology",
+      "weather": "topic: weather",
+      "world": "topic: world"
+    }
+  },
+  "fast_decisions/paper_field/field": {
+    "source": "template",
+    "rule": "{head words}: {label words}",
+    "labels": {
+      "biology": "field: biology",
+      "chemistry": "field: chemistry",
+      "computer_science": "field: computer science",
+      "earth_science": "field: earth science",
+      "economics": "field: economics",
+      "engineering": "field: engineering",
+      "mathematics": "field: mathematics",
+      "medicine": "field: medicine",
+      "other": "field: other",
+      "physics": "field: physics"
+    }
+  },
+  "fast_decisions/product_feedback/feedback_type": {
+    "source": "template",
+    "rule": "{head words}: {label words}",
+    "labels": {
+      "bug": "feedback type: bug",
+      "feature_request": "feedback type: feature request",
+      "how_to": "feedback type: how to",
+      "praise": "feedback type: praise"
+    }
+  },
+  "fast_decisions/product_feedback/product_area": {
+    "source": "template",
+    "rule": "{head words}: {label words}",
+    "labels": {
+      "admin": "product area: admin",
+      "billing": "product area: billing",
+      "checkout": "product area: checkout",
+      "integrations": "product area: integrations",
+      "mobile": "product area: mobile",
+      "notifications": "product area: notifications",
+      "search": "product area: search",
+      "shipping": "product area: shipping"
+    }
+  },
+  "fast_decisions/restaurant_review/aspects": {
+    "source": "template",
+    "rule": "{head words}: {label words}",
+    "labels": {
+      "ambiance": "aspects: ambiance",
+      "cleanliness": "aspects: cleanliness",
+      "food": "aspects: food",
+      "price": "aspects: price",
+      "service": "aspects: service",
+      "wait": "aspects: wait"
+    }
+  },
+  "fast_decisions/restaurant_review/sentiment": {
+    "source": "template",
+    "rule": "{head words}: {label words}",
+    "labels": {
+      "negative": "sentiment: negative",
+      "neutral": "sentiment: neutral",
+      "positive": "sentiment: positive"
+    }
+  },
+  "fast_decisions/review_sentiment/sentiment": {
+    "source": "template",
+    "rule": "{head words}: {label words}",
+    "labels": {
+      "negative": "sentiment: negative",
+      "neutral": "sentiment: neutral",
+      "positive": "sentiment: positive"
+    }
+  },
+  "fast_decisions/screen_tags/format": {
+    "source": "template",
+    "rule": "{head words}: {label words}",
+    "labels": {
+      "film": "format: film",
+      "series": "format: series"
+    }
+  },
+  "fast_decisions/screen_tags/genres": {
+    "source": "template",
+    "rule": "{head words}: {label words}",
+    "labels": {
+      "action": "genres: action",
+      "comedy": "genres: comedy",
+      "documentary": "genres: documentary",
+      "drama": "genres: drama",
+      "horror": "genres: horror",
+      "kids": "genres: kids",
+      "romance": "genres: romance",
+      "sci_fi": "genres: sci fi"
+    }
+  },
+  "fast_decisions/sports_recap/result": {
+    "source": "template",
+    "rule": "{head words}: {label words}",
+    "labels": {
+      "draw": "result: draw",
+      "loss": "result: loss",
+      "upcoming": "result: upcoming",
+      "win": "result: win"
+    }
+  },
+  "fast_decisions/sports_recap/sport": {
+    "source": "template",
+    "rule": "{head words}: {label words}",
+    "labels": {
+      "baseball": "sport: baseball",
+      "basketball": "sport: basketball",
+      "cricket": "sport: cricket",
+      "football": "sport: football",
+      "motorsport": "sport: motorsport",
+      "other": "sport: other",
+      "soccer": "sport: soccer",
+      "tennis": "sport: tennis"
+    }
+  },
+  "fast_decisions/sports_recap/upset": {
+    "source": "template",
+    "rule": "{head words}: {label words}",
+    "labels": {
+      "no": "upset: no",
+      "yes": "upset: yes"
+    }
+  },
+  "fast_decisions/support_intent/intent": {
+    "source": "template",
+    "rule": "{head words}: {label words}",
+    "labels": {
+      "appointment": "intent: appointment",
+      "bug_report": "intent: bug report",
+      "cancel_subscription": "intent: cancel subscription",
+      "change_address": "intent: change address",
+      "change_order": "intent: change order",
+      "close_account": "intent: close account",
+      "complaint": "intent: complaint",
+      "damaged_item": "intent: damaged item",
+      "data_export": "intent: data export",
+      "downgrade_plan": "intent: downgrade plan",
+      "feature_request": "intent: feature request",
+      "invoice_copy": "intent: invoice copy",
+      "login_problem": "intent: login problem",
+      "missing_item": "intent: missing item",
+      "order_status": "intent: order status",
+      "other": "intent: other",
+      "outage": "intent: outage",
+      "partner_inquiry": "intent: partner inquiry",
+      "password_reset": "intent: password reset",
+      "pricing_question": "intent: pricing question",
+      "product_question": "intent: product question",
+      "promo_code": "intent: promo code",
+      "refund_request": "intent: refund request",
+      "shipping_delay": "intent: shipping delay",
+      "speak_to_human": "intent: speak to human",
+      "tax_document": "intent: tax document",
+      "update_payment": "intent: update payment",
+      "upgrade_plan": "intent: upgrade plan"
+    }
+  },
+  "fast_decisions/support_topic/topic": {
+    "source": "template",
+    "rule": "{head words}: {label words}",
+    "labels": {
+      "account_access": "topic: account access",
+      "billing": "topic: billing",
+      "compliance": "topic: compliance",
+      "data_privacy": "topic: data privacy",
+      "integrations": "topic: integrations",
+      "onboarding": "topic: onboarding",
+      "other": "topic: other",
+      "pricing": "topic: pricing",
+      "returns": "topic: returns",
+      "security": "topic: security",
+      "shipping": "topic: shipping",
+      "technical_outage": "topic: technical outage"
+    }
+  },
+  "fast_decisions/ticket_route/contains_pii": {
+    "source": "template",
+    "rule": "{head words}: {label words}",
+    "labels": {
+      "no": "contains pii: no",
+      "yes": "contains pii: yes"
+    }
+  },
+  "fast_decisions/ticket_route/queue": {
+    "source": "template",
+    "rule": "{head words}: {label words}",
+    "labels": {
+      "account_closure": "queue: account closure",
+      "api": "queue: api",
+      "billing_disputes": "queue: billing disputes",
+      "compliance": "queue: compliance",
+      "fraud_review": "queue: fraud review",
+      "general": "queue: general",
+      "identity": "queue: identity",
+      "mobile_app": "queue: mobile app",
+      "onboarding": "queue: onboarding",
+      "outages": "queue: outages",
+      "partnerships": "queue: partnerships",
+      "payments": "queue: payments",
+      "product_feedback": "queue: product feedback",
+      "refunds": "queue: refunds",
+      "returns": "queue: returns",
+      "shipping": "queue: shipping"
+    }
+  },
+  "fast_decisions/ticket_route/urgency": {
+    "source": "template",
+    "rule": "{head words}: {label words}",
+    "labels": {
+      "critical": "urgency: critical",
+      "high": "urgency: high",
+      "low": "urgency: low",
+      "normal": "urgency: normal"
+    }
+  },
+  "fast_decisions/travel_request/intent": {
+    "source": "template",
+    "rule": "{head words}: {label words}",
+    "labels": {
+      "baggage": "intent: baggage",
+      "cancel_trip": "intent: cancel trip",
+      "car": "intent: car",
+      "change_flight": "intent: change flight",
+      "disruption": "intent: disruption",
+      "hotel": "intent: hotel",
+      "loyalty": "intent: loyalty",
+      "new_booking": "intent: new booking",
+      "other": "intent: other",
+      "refund": "intent: refund",
+      "seat": "intent: seat",
+      "visa_docs": "intent: visa docs"
+    }
+  }
+}

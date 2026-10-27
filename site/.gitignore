@@ -7,3 +7,5 @@ src/content/docs/docs/
 src/content/docs/evaluation/
 public/runner-templates/
 src/data/twenty-questions.json
+public/llms.txt
+public/**/*.md

@@ -400,3 +400,76 @@
   background: var(--surface-2);
   color: var(--muted);
 }
+/* The thinking between two questions: lighter than the cards either side, so the stack reads question, thinking,
+   question. */
+.pg-thinking {
+  gap: 0.8rem;
+  padding: 1.1rem 1.5rem;
+  background: transparent;
+}
+.pg-thinking-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.75rem;
+}
+.pg-thinking-tag {
+  padding: 0.1rem 0.55rem;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: var(--text-sm);
+}
+.pg-thinking-count {
+  margin-inline-start: auto;
+  color: var(--faint);
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+}
+.pg-thinking-clues {
+  color: var(--text);
+  font-size: var(--text-md);
+  line-height: var(--leading-snug);
+}
+.pg-thinking-now {
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+.pg-thinking-leaders {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.pg-thinking-label,
+.pg-thinking-path {
+  color: var(--faint);
+  font-size: var(--text-sm);
+}
+.pg-thinking-leaders .answer-scores {
+  font-size: var(--text-sm);
+}
+.pg-thinking-looks summary {
+  color: var(--muted);
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+.pg-thinking-looks ol {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.3rem 1rem;
+  max-height: 12rem;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+  color: var(--muted);
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+}
+.pg-thinking-looks li {
+  display: contents;
+}
+.pg-thinking-looks li > span:last-child {
+  color: var(--text);
+  text-align: end;
+}

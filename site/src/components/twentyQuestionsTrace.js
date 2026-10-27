@@ -187,6 +187,18 @@ export function leafRanking(tree, levels, tuning = TUNING) {
 }
 
 /**
+ * The `count` things a game thinks most likely so far: ranked from only the classifications made for its clues,
+ * without its wrong guesses, each name once (at its likelier place).
+ */
+export function likeliest(game, count = 3, tuning = TUNING) {
+  const fresh = new Map([...game.levels].filter(([, level]) => level.clues === game.clues).map(([nodeKey, level]) => [nodeKey, level.probabilities]));
+  const seen = new Set();
+  return leafRanking(game.tree, fresh, tuning)
+    .filter((thing) => !game.ruledOut.has(thing.label) && !seen.has(thing.label) && seen.add(thing.label))
+    .slice(0, count);
+}
+
+/**
  * The options of a step to draw for the probability range [low, high]: those inside it, and every option on the way
  * to the thing being traced whatever its probability, plus how many were left out above and below the range.
  */
