@@ -1,5 +1,64 @@
 # Changelog
 
+## [0.5.0](https://github.com/stuffbucket/gliner-runner/compare/v0.4.0...v0.5.0) (2026-10-27)
+
+
+### Features
+
+* accept jev, Microsoft-Decision-1 and GLiNER2 request shapes (API 1.1.0) ([bb83dc3](https://github.com/stuffbucket/gliner-runner/commit/bb83dc3173eb6c63807f366250755a31d3722131))
+* **benchmarks:** accuracy results for the three Decide models on eight labelled sets ([bb83dc3](https://github.com/stuffbucket/gliner-runner/commit/bb83dc3173eb6c63807f366250755a31d3722131))
+* browser playground on the docs site, and a saved CORS allow-list ([bd870d6](https://github.com/stuffbucket/gliner-runner/commit/bd870d6e006726730eec01131f5258717493df8a))
+* **cors:** save allowed browser origins in settings.json ([5b36e44](https://github.com/stuffbucket/gliner-runner/commit/5b36e44c68a25a60eb4c8a51c4fd36469c20d357))
+* run gliner-runner inside the playground page, and one-command "use my machine" ([6be2eb4](https://github.com/stuffbucket/gliner-runner/commit/6be2eb400a981da8acce063d9512ac94f1f8c848))
+* **runner:** gliner-runner playground and install.sh --playground ([c7fdd76](https://github.com/stuffbucket/gliner-runner/commit/c7fdd7659e62345998593c8352552207d5944d7d))
+* **site:** "Why?" in 20 questions traces the way to any thing ([5de2244](https://github.com/stuffbucket/gliner-runner/commit/5de2244f46c4198bdfcf98b0578e97ae28bbcb00))
+* **site:** "Why?" in 20 questions traces the way to any thing ([265c781](https://github.com/stuffbucket/gliner-runner/commit/265c781e8551166bf7f6fe3afa40a24a99daf357))
+* **site:** 20 questions folds its classifications into one thinking card ([bb83dc3](https://github.com/stuffbucket/gliner-runner/commit/bb83dc3173eb6c63807f366250755a31d3722131))
+* **site:** 20 questions in the playground ([b25c2ec](https://github.com/stuffbucket/gliner-runner/commit/b25c2ec42792961eda9322267b304b47f32445c8))
+* **site:** 20 questions in the playground, and a steeper fade in the stack ([036bb2e](https://github.com/stuffbucket/gliner-runner/commit/036bb2e4f73debe2933f91faca075894f757024c))
+* **site:** a 20 questions game tuned on 605 answers, and timing that skips the model load ([5c937e5](https://github.com/stuffbucket/gliner-runner/commit/5c937e5caa90a806e53142239e176dcc1db8f2f1))
+* **site:** a rotating gallery of real example answers on the landing page ([8814f55](https://github.com/stuffbucket/gliner-runner/commit/8814f551ce8ad0f2951c324b5f75f1d0ea9d9b90))
+* **site:** a simple landing page and a full-window playground ([8fb51e3](https://github.com/stuffbucket/gliner-runner/commit/8fb51e318c9c785ecfe3811ed559e5e5eeee396f))
+* **site:** a stack of answer cards beside the text box ([4a0ce13](https://github.com/stuffbucket/gliner-runner/commit/4a0ce13c1c088872c9e3adfcebd64adb869b3aaf))
+* **site:** a status bar, z-order tokens, and About as a floating panel ([efa678a](https://github.com/stuffbucket/gliner-runner/commit/efa678a12ac681b468a1dbc45abdf3ea5059f454))
+* **site:** a status bar, z-order tokens, and About as a floating panel ([df7db26](https://github.com/stuffbucket/gliner-runner/commit/df7db2609b8954f09fe8709e3ca0e7a35d4ed383))
+* **site:** Accuracy, Use it from a coding agent, and Coming from jev, GLiNER2 or Azure ([bb83dc3](https://github.com/stuffbucket/gliner-runner/commit/bb83dc3173eb6c63807f366250755a31d3722131))
+* **site:** Be the model, be the kid ([bb83dc3](https://github.com/stuffbucket/gliner-runner/commit/bb83dc3173eb6c63807f366250755a31d3722131))
+* **site:** browser playground that calls the local runner ([5f35a5e](https://github.com/stuffbucket/gliner-runner/commit/5f35a5e98a734f774c79b1e0c8329099c2094737))
+* **site:** Classify, Start and answering a guess show the newest card ([e67d2ad](https://github.com/stuffbucket/gliner-runner/commit/e67d2adc980e8a0f313ec26fe1c86fbe33e0bf70))
+* **site:** How it works shows what you send, what comes back, and what a classifier does ([bb83dc3](https://github.com/stuffbucket/gliner-runner/commit/bb83dc3173eb6c63807f366250755a31d3722131))
+* **site:** jump to the newest card when you ask for one ([5c897c0](https://github.com/stuffbucket/gliner-runner/commit/5c897c0e182a49d45ac85da37b768993307eb288))
+* **site:** landing headlines name the everyday call the gallery card shows ([bb83dc3](https://github.com/stuffbucket/gliner-runner/commit/bb83dc3173eb6c63807f366250755a31d3722131))
+* **site:** llms.txt and a Markdown copy of every docs page ([bb83dc3](https://github.com/stuffbucket/gliner-runner/commit/bb83dc3173eb6c63807f366250755a31d3722131))
+* **site:** one type ramp and control set for the landing page and playground ([6caeb5e](https://github.com/stuffbucket/gliner-runner/commit/6caeb5ea056246c912dbf7d27f8412f9b4ed007d))
+* **site:** simple landing page and a full-window playground ([d10341e](https://github.com/stuffbucket/gliner-runner/commit/d10341e6d2bb93533cbc897bfca39ee3e14972b1))
+* **site:** step back and forth through the answer stack ([e0fabbc](https://github.com/stuffbucket/gliner-runner/commit/e0fabbca073a4a2628dc1e5e9047dc541aa2cebe))
+* **site:** the On this page panel opens from an icon button ([bb83dc3](https://github.com/stuffbucket/gliner-runner/commit/bb83dc3173eb6c63807f366250755a31d3722131))
+* **site:** the playground runs gliner-runner in the tab or on this machine ([2d4b6f9](https://github.com/stuffbucket/gliner-runner/commit/2d4b6f92e52b5de0fcfc11aa9eb6126f36e220aa))
+* **site:** tune 20 questions to open fewer unlikely groups ([7f16f80](https://github.com/stuffbucket/gliner-runner/commit/7f16f80cb9566d113c2c083912162bd1c4119d23))
+* **skills:** gliner-runner agent skill with an A/B eval ([bb83dc3](https://github.com/stuffbucket/gliner-runner/commit/bb83dc3173eb6c63807f366250755a31d3722131))
+* **tools:** site-review and copy-lab ([bb83dc3](https://github.com/stuffbucket/gliner-runner/commit/bb83dc3173eb6c63807f366250755a31d3722131))
+* **web:** run gliner-runner in a browser Web Worker ([de58657](https://github.com/stuffbucket/gliner-runner/commit/de58657807037b677412dccf7b54c91db7da8d20))
+
+
+### Bug Fixes
+
+* **deps:** resolve postcss-selector-parser to 7.1.6 (GHSA-rj75-hqrm-r3gf) ([#32](https://github.com/stuffbucket/gliner-runner/issues/32)) ([d5f7eae](https://github.com/stuffbucket/gliner-runner/commit/d5f7eae811294fe056c398e0bcbe7a54cb16d41a))
+* **release:** carry the #platform import map into the packaged app ([d862e16](https://github.com/stuffbucket/gliner-runner/commit/d862e16a8e47cb5f1e1ea36bf4fe8d3b397963ef))
+* **runner:** call fetch on the global object, as browsers require ([e6300cb](https://github.com/stuffbucket/gliner-runner/commit/e6300cb05db30b172114a801c646c9c3961421cc))
+* **site:** 20 questions re-thinks every level when a clue is added ([76905f6](https://github.com/stuffbucket/gliner-runner/commit/76905f63137f7aaed3f85485301fee844377875a))
+* **site:** 20 questions re-thinks every level when a clue is added ([4d11c54](https://github.com/stuffbucket/gliner-runner/commit/4d11c54b424f7e64fe527c267a9e061f370ac7a6))
+* **site:** make 20 questions clear about whose turn it is ([24f83d3](https://github.com/stuffbucket/gliner-runner/commit/24f83d3873ed2f1f3e5f83107a6498c823fccdda))
+* **site:** slide the answer stack as one column ([1acd8eb](https://github.com/stuffbucket/gliner-runner/commit/1acd8eb277e6d9215465966c5e2f196721459f78))
+* **site:** steer the 20 questions sample to the zebra in 4 questions ([43f1c27](https://github.com/stuffbucket/gliner-runner/commit/43f1c277e5682eb6f4523ba5154633c342d43079))
+* **site:** tables, code blocks and the header fit a phone and take keyboard focus ([bb83dc3](https://github.com/stuffbucket/gliner-runner/commit/bb83dc3173eb6c63807f366250755a31d3722131))
+
+
+### Documentation
+
+* simpler introduction and examples organized by job ([f3e8113](https://github.com/stuffbucket/gliner-runner/commit/f3e81133f30823cdea6617f814fb5b4b560c4b83))
+* simpler introduction and examples organized by job ([b364068](https://github.com/stuffbucket/gliner-runner/commit/b36406859b8b8de3dd2b127ad0b406fdd41aa440))
+
 ## [0.4.0](https://github.com/stuffbucket/gliner-runner/compare/v0.3.1...v0.4.0) (2026-10-15)
 
 
