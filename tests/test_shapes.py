@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import json
-from collections.abc import Sequence
+import threading
+from collections.abc import Callable, Sequence
 from pathlib import Path
 from typing import Any
 
@@ -171,6 +172,29 @@ class ScriptedBackend(RecordingBackend):
         return results
 
 
+def _within(seconds: float, check: Callable[[], None]) -> None:
+    """Run ``check`` and fail if it has not finished within ``seconds``.
+
+    Both endpoints fan one request out into several inference requests that queue together. If
+    the scheduler stops answering them, the test fails here instead of waiting forever.
+    """
+    errors: list[BaseException] = []
+
+    def run() -> None:
+        try:
+            check()
+        except BaseException as error:  # re-raised below, in the test's own thread
+            errors.append(error)
+
+    thread = threading.Thread(target=run, daemon=True)
+    thread.start()
+    thread.join(seconds)
+    if thread.is_alive():
+        pytest.fail(f"no answer within {seconds} s")
+    if errors:
+        raise errors[0]
+
+
 def _client() -> TestClient:
     registry = BackendRegistry()
     registry.register(BackendName.PYTORCH, lambda _model, _precision, _device: ScriptedBackend())
@@ -201,58 +225,65 @@ QUESTIONS = {
 
 
 def test_questions_endpoint_answers_exactly_like_the_requests_sent_by_hand() -> None:
-    with _client() as client:
-        response = client.post("/v1/questions", json=QUESTIONS)
-        assert response.status_code == 200
-        body = response.json()
-        request = QuestionsRequest.model_validate(QUESTIONS)
-        planned = plan_questions(request)
-        by_hand = []
-        for item in planned:
-            reply = client.post("/v1/infer", json=item.request)
-            assert reply.status_code == 200
-            by_hand.append(InferenceResponse.model_validate(reply.json()))
-    expected = questions_response(request, planned, by_hand)
-    assert body["answers"] == expected["answers"]
-    assert list(body["answers"]) == ["wants_human", "team", "severity", "topics"]
-    assert body["usage"] == expected["usage"]
-    assert body["usage"]["input_tokens"] == 4 * len(QUESTIONS["state"])
-    first: Any = by_hand[0].output
-    assert body["answers"]["wants_human"]["noul"] == first["wants_human"]["probabilities"]["yes"]
+    def check() -> None:
+        with _client() as client:
+            response = client.post("/v1/questions", json=QUESTIONS)
+            assert response.status_code == 200
+            body = response.json()
+            request = QuestionsRequest.model_validate(QUESTIONS)
+            planned = plan_questions(request)
+            by_hand = []
+            for item in planned:
+                reply = client.post("/v1/infer", json=item.request)
+                assert reply.status_code == 200
+                by_hand.append(InferenceResponse.model_validate(reply.json()))
+        expected = questions_response(request, planned, by_hand)
+        assert body["answers"] == expected["answers"]
+        assert list(body["answers"]) == ["wants_human", "team", "severity", "topics"]
+        assert body["usage"] == expected["usage"]
+        assert body["usage"]["input_tokens"] == 4 * len(QUESTIONS["state"])
+        first: Any = by_hand[0].output
+        noul = body["answers"]["wants_human"]["noul"]
+        assert noul == first["wants_human"]["probabilities"]["yes"]
+
+    _within(5, check)
 
 
 def test_classify_text_endpoint_answers_exactly_like_the_request_sent_by_hand() -> None:
-    payload = {
-        "model": "fastino/decide",
-        "backend": "pytorch",
-        "precision": "fp32",
-        "texts": ["The battery is weak.", "The delivery was slow and the price too high."],
-        "tasks": {
-            "sentiment": ["positive", "negative", "neutral"],
-            "aspects": {
-                "labels": ["battery", "price", "delivery"],
-                "multi_label": True,
-                "cls_threshold": 0.4,
-                "top_k": 2,
+    def check() -> None:
+        payload = {
+            "model": "fastino/decide",
+            "backend": "pytorch",
+            "precision": "fp32",
+            "texts": ["The battery is weak.", "The delivery was slow and the price too high."],
+            "tasks": {
+                "sentiment": ["positive", "negative", "neutral"],
+                "aspects": {
+                    "labels": ["battery", "price", "delivery"],
+                    "multi_label": True,
+                    "cls_threshold": 0.4,
+                    "top_k": 2,
+                },
             },
-        },
-        "include_confidence": True,
-    }
-    with _client() as client:
-        response = client.post("/v1/classify_text", json=payload)
-        assert response.status_code == 200
-        request = ClassifyTextRequest.model_validate(payload)
-        plan = plan_classify_text(request)
-        by_hand = [
-            InferenceResponse.model_validate(client.post("/v1/infer", json=item).json())
-            for item in plan.requests
-        ]
-    body = response.json()
-    expected = classify_text_response(request, plan, by_hand)
-    assert body["results"] == expected["results"]
-    assert "result" not in body
-    tokens = sum(len(text) for text in payload["texts"])
-    assert body["usage"] == {"inputTokens": tokens, "outputTokens": 0}
+            "include_confidence": True,
+        }
+        with _client() as client:
+            response = client.post("/v1/classify_text", json=payload)
+            assert response.status_code == 200
+            request = ClassifyTextRequest.model_validate(payload)
+            plan = plan_classify_text(request)
+            by_hand = [
+                InferenceResponse.model_validate(client.post("/v1/infer", json=item).json())
+                for item in plan.requests
+            ]
+        body = response.json()
+        expected = classify_text_response(request, plan, by_hand)
+        assert body["results"] == expected["results"]
+        assert "result" not in body
+        tokens = sum(len(text) for text in payload["texts"])
+        assert body["usage"] == {"inputTokens": tokens, "outputTokens": 0}
+
+    _within(5, check)
 
 
 def test_untranslatable_questions_return_422_with_the_reason() -> None:
