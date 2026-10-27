@@ -108,7 +108,7 @@ The exact production dependency in `pnpm-lock.yaml` is:
 
 | Package | Version | License |
 | --- | --- | --- |
-| `zod` | `4.6.5` | MIT |
+| `zod` | `4.6.6` | MIT |
 
 `@types/node`, `typescript`, and `undici-types` are build/test inputs and are
 not production dependencies of the published client package.
@@ -177,7 +177,7 @@ Direct dependencies:
 | --- | --- | --- |
 | `@huggingface/tokenizers` | `0.2.0` | Apache-2.0 |
 | `onnxruntime-node` | `1.30.0` | MIT |
-| `zod` | `4.6.5` | MIT |
+| `zod` | `4.6.6` | MIT |
 
 Transitive production dependencies (all installed by `onnxruntime-node` or its
 dependencies):
