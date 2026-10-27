@@ -274,7 +274,7 @@ describe("runner identity", () => {
 
   test("production closure of the real lockfile matches the onnx-runner dependencies", () => {
     const closure = lockfileProductionClosure(readFileSync(join(REAL_ROOT, "pnpm-lock.yaml"), "utf8"), "packages/onnx-runner").map((entry) => entry.id);
-    assert.ok(closure.includes("zod@4.6.5"));
+    assert.ok(closure.includes("zod@4.6.6"));
     assert.ok(closure.some((id) => id.startsWith("onnxruntime-node@")));
     assert.ok(closure.some((id) => id.startsWith("@huggingface/tokenizers@")));
     assert.ok(!closure.some((id) => id.startsWith("typescript@")), "dev dependencies are excluded");
