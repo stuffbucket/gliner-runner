@@ -6,6 +6,10 @@ python = "3.12.12"
 [env]
 PYTHONDONTWRITEBYTECODE = "1"
 PYTHONUNBUFFERED = "1"
+# onnxruntime-node's install script fetches optional CUDA 12 libraries from NuGet on Linux x64.
+# Nothing here uses them (the CPU runtime ships inside the package), and the download times out
+# in CI often enough to fail installs, so every install through mise skips it.
+ONNXRUNTIME_NODE_INSTALL = "skip"
 
 [tasks.setup]
 description = "Install workspace development dependencies"

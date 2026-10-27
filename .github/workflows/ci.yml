@@ -79,9 +79,6 @@ jobs:
             mise-sha256: 3721d44253d0a014545eb1fe13258333da270b98d8c7523e07e7619e74e2f77f
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 20
-    env:
-      # Never fetch the optional GPU libraries; the CPU runtime ships inside onnxruntime-node.
-      ONNXRUNTIME_NODE_INSTALL: skip
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
