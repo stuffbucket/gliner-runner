@@ -47,8 +47,6 @@ jobs:
     timeout-minutes: 30
     env:
       GLINER_RUNNER_RELEASE_VERSION: ${{ inputs.version }}
-      # Never fetch the optional GPU libraries; the CPU runtime ships inside onnxruntime-node.
-      ONNXRUNTIME_NODE_INSTALL: skip
     steps:
       - name: Check out source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
