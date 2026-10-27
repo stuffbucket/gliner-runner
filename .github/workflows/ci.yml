@@ -30,7 +30,7 @@ jobs:
           # The ONNX evaluation receipt check compares the ledger with the base revision.
           fetch-depth: 0
       - name: Install pinned tools
-        uses: jdx/mise-action@9b200bcecbfd6303e69a4a261b2e09e3757440a7 # v5.2.0
+        uses: jdx/mise-action@fc42bcc7ddbf51124c30f95a877a0c5168a3bfde # v5.2.1
         with:
           version: 2026.9.5
           sha256: 32f644d8c291bb182f702c6d2b0dda9f8b01441e940d74d328aad5f08446b2fd
@@ -52,7 +52,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install pinned tools
-        uses: jdx/mise-action@9b200bcecbfd6303e69a4a261b2e09e3757440a7 # v5.2.0
+        uses: jdx/mise-action@fc42bcc7ddbf51124c30f95a877a0c5168a3bfde # v5.2.1
         with:
           version: 2026.9.5
           sha256: 32f644d8c291bb182f702c6d2b0dda9f8b01441e940d74d328aad5f08446b2fd
@@ -79,16 +79,13 @@ jobs:
             mise-sha256: 3721d44253d0a014545eb1fe13258333da270b98d8c7523e07e7619e74e2f77f
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 20
-    env:
-      # Never fetch the optional GPU libraries; the CPU runtime ships inside onnxruntime-node.
-      ONNXRUNTIME_NODE_INSTALL: skip
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - name: Install pinned tools
-        uses: jdx/mise-action@9b200bcecbfd6303e69a4a261b2e09e3757440a7 # v5.2.0
+        uses: jdx/mise-action@fc42bcc7ddbf51124c30f95a877a0c5168a3bfde # v5.2.1
         with:
           version: 2026.9.5
           sha256: ${{ matrix.mise-sha256 }}
