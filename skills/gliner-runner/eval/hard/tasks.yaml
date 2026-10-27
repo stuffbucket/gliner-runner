@@ -1,0 +1,236 @@
+# Hard-tier tasks. Each answer is a script; run.cjs:check runs it against a real runner and scores the
+# output with scorers.cjs. metadata.split: "tuning" tasks were read while editing the skill; "heldout"
+# tasks were not (their failures were not read until the skill was final).
+
+# ---------------------------------------------------------------- tuning
+
+- description: route-tickets
+  metadata: { category: routing, split: tuning }
+  vars:
+    task: >-
+      tickets.json is a JSON array of 40 support tickets, each {"id": "T01", "text": "..."}. Write a script
+      that routes every ticket to one team: billing, technical, shipping or account. Some messages are
+      small talk or have nothing to do with our product; those must go to "other" instead of a team.
+      Print a JSON array of {"id": ..., "team": ...}, one per ticket.
+  assert:
+    - type: javascript
+      value: file://run.cjs:check
+      config: { task: route-tickets }
+
+- description: tag-reviews
+  metadata: { category: multi-label, split: tuning }
+  vars:
+    task: >-
+      reviews.json is a JSON array of {"id", "text"}: posts from our product forum. Tag each post with every
+      topic it talks about, from: battery, screen, price, delivery. A post can have several tags, and posts
+      that are about none of these four topics (including other parts of the product) must get no tag.
+      Print a JSON object mapping each id to its list of tags, for example {"R01": ["battery"], "R02": []}.
+  assert:
+    - type: javascript
+      value: file://run.cjs:check
+      config: { task: tag-reviews }
+
+- description: bulk-600
+  metadata: { category: throughput, split: tuning }
+  vars:
+    task: >-
+      feedback.json is a JSON array of 600 {"id", "text"} customer comments. Label each one positive or
+      negative with gliner-runner, as fast as the server allows. The server is shared with other jobs, so
+      the script must not cause any 429 queue_full responses and must not send requests the server will
+      reject. Print a JSON array of {"id": ..., "label": ...} with all 600 results.
+  assert:
+    - type: javascript
+      value: file://run.cjs:check
+      config: { task: bulk-600 }
+
+- description: close-labels
+  metadata: { category: descriptions, split: tuning }
+  vars:
+    task: >-
+      messages.json is a JSON array of {"id", "text"} customer messages. Classify each one as "complaint"
+      or "feedback". Our definitions differ from everyday usage: a complaint is any message where the
+      customer asks us to fix, replace, refund or correct something, even when the tone is friendly.
+      Feedback is an opinion about us, positive or negative, even an angry one, that asks for nothing to
+      be done. Print a JSON object mapping each id to "complaint" or "feedback".
+  assert:
+    - type: javascript
+      value: file://run.cjs:check
+      config: { task: close-labels }
+
+- description: flag-bands
+  metadata: { category: thresholds, split: tuning }
+  vars:
+    task: >-
+      comments.json is a JSON array of {"id", "text"} user comments. Use model decide-340m with one task
+      named "flags" with exactly these labels in this order: "spam", "insult", "personal information",
+      "off-topic". A comment can have any number of flags, or none; use no label descriptions. Our policy:
+      a flag whose score is 0.8 or higher is a "yes", a score from 0.3 up to 0.8 is "unsure" and goes to a
+      moderator, and anything lower is ignored. Keep the two cutoffs as named constants. Print a JSON object
+      mapping each id to {"yes": [flags], "unsure": [flags]}.
+  assert:
+    - type: javascript
+      value: file://run.cjs:check
+      config: { task: flag-bands }
+
+- description: parse-modes
+  metadata: { category: parsing, split: tuning }
+  vars:
+    task: >-
+      reviews.json is a JSON array of {"id", "text"}. For each text send ONE request to decide-340m with two
+      tasks, in this order: "sentiment" (exactly one of the labels positive, negative, neutral) and
+      "topics" (any number of the labels battery, screen, price, delivery, zero included; default
+      threshold). Use exactly these labels and no label descriptions.
+      Print a JSON object mapping each id to {"sentiment": the chosen label, "sentiment_confidence": the
+      confidence of that choice, "topics": [selected topics], "topic_scores": {each of the four topics: its
+      own score}, "topics_confidence": the topics task's confidence as returned, null if it is null}.
+  assert:
+    - type: javascript
+      value: file://run.cjs:check
+      config: { task: parse-modes }
+
+- description: fix-broken
+  metadata: { category: debug, split: tuning }
+  vars:
+    task: |-
+      This script is supposed to read tickets.json (a JSON array of {"id", "text"}) and print a JSON object
+      mapping each id to {"label": ..., "confidence": ...} using decide-340m, but every request fails or the
+      output is wrong. Fix it. Keep the task name "priority" and the labels urgent, normal, low in that
+      order, with no label descriptions, and keep the output format.
+
+      ```js
+      const fs = require("fs");
+      const tickets = JSON.parse(fs.readFileSync("tickets.json", "utf8"));
+      const out = {};
+      (async () => {
+        for (const t of tickets) {
+          const res = await fetch("http://127.0.0.1:8099/v1/infer", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({
+              backend: "onnx",
+              precision: "fp32",
+              operation: "classify",
+              text: t.text,
+              schema: { kind: "classify", tasks: { priority: { labels: "urgent, normal, low" } } },
+            }),
+          });
+          const data = await res.json();
+          out[t.id] = { label: data.output.value, confidence: data.output.confidence };
+        }
+        console.log(JSON.stringify(out));
+      })();
+      ```
+  assert:
+    - type: javascript
+      value: file://run.cjs:check
+      config: { task: fix-broken }
+
+- description: retry-429
+  metadata: { category: throughput, split: tuning }
+  vars:
+    task: >-
+      feedback.json is a JSON array of 120 {"id", "text"} customer comments. Label each one positive or
+      negative with gliner-runner. The server is shared: other jobs keep its request queue full for
+      a while, so some of your requests will be turned away at first. The script must still finish and
+      print a JSON array of {"id": ..., "label": ...} with all 120 results.
+  assert:
+    - type: javascript
+      value: file://run.cjs:check
+      config: { task: retry-429 }
+
+- description: fix-threshold
+  metadata: { category: debug, split: tuning }
+  vars:
+    task: |-
+      This script should print, for each comment in comments.json (a JSON array of {"id", "text"}), every
+      flag whose score is above 0.4, with that flag's own score: {"K01": {"spam": 0.93}, "K02": {}, ...}.
+      Every request fails with HTTP 422, and the author is not sure the rest is right. Fix it so it does
+      what it should. Keep model decide-340m, the task name "flags", the four labels in this order, no
+      label descriptions, and any number of flags per comment.
+
+      ```js
+      const fs = require("fs");
+      const comments = JSON.parse(fs.readFileSync("comments.json", "utf8"));
+      const LABELS = ["spam", "insult", "personal information", "off-topic"];
+      (async () => {
+        const out = {};
+        for (const c of comments) {
+          const res = await fetch("http://127.0.0.1:8099/v1/infer", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({
+              model: "decide-340m", backend: "onnx", precision: "fp32", operation: "classify",
+              text: c.text,
+              schema: { kind: "classification", tasks: { flags: {
+                labels: LABELS, min_labels: 0, max_labels: 5, threshold: 0.4,
+              } } },
+            }),
+          });
+          const data = await res.json();
+          const f = data.output.flags;
+          out[c.id] = Object.fromEntries(f.value.map((label) => [label, f.confidence]));
+        }
+        console.log(JSON.stringify(out));
+      })();
+      ```
+  assert:
+    - type: javascript
+      value: file://run.cjs:check
+      config: { task: fix-threshold }
+
+# ---------------------------------------------------------------- held out (not read while editing the skill)
+
+- description: shell-tsv
+  metadata: { category: shell, split: heldout }
+  vars:
+    task: >-
+      lines.txt has one short text per line; the texts contain quotes, apostrophes, backslashes, dollar
+      signs and non-ASCII characters. Write a bash script (curl and jq) that classifies each line with
+      decide-340m, task name "topic", labels food, travel, money, health in that order, exactly one label
+      per line, no descriptions. Print one line per input line: the line number (starting at 1), a tab,
+      the label, a tab, and the confidence rounded to 3 decimals.
+  assert:
+    - type: javascript
+      value: file://run.cjs:check
+      config: { task: shell-tsv }
+
+- description: route-bands
+  metadata: { category: thresholds, split: heldout }
+  vars:
+    task: >-
+      tickets.json is a JSON array of {"id", "text"}. Route each ticket with decide-340m, task name "team",
+      labels billing, technical, shipping, account, other in that order, exactly one label each, no
+      descriptions. Policy: if the answer is "other" or its confidence is below 0.5, the action is
+      "fallback" and the team is null; if the confidence is from 0.5 up to 0.8, the action is "review";
+      at 0.8 or above the action is "route". Keep the cutoffs as named constants. Print a JSON object
+      mapping each id to {"action": ..., "team": ...}.
+  assert:
+    - type: javascript
+      value: file://run.cjs:check
+      config: { task: route-bands }
+
+- description: top-two
+  metadata: { category: parsing, split: heldout }
+  vars:
+    task: >-
+      messages.json is a JSON array of {"id", "text"}. Classify each with decide-340m, task name "intent",
+      labels question, request, complaint in that order, exactly one label, no descriptions. For each id
+      print the two most likely labels and their probabilities, and mark it ambiguous when the first
+      probability minus the second is below 0.15. Output a JSON object mapping each id to {"first": label,
+      "p1": number, "second": label, "p2": number, "ambiguous": true or false}.
+  assert:
+    - type: javascript
+      value: file://run.cjs:check
+      config: { task: top-two }
+
+- description: zero-or-one
+  metadata: { category: no-match, split: heldout }
+  vars:
+    task: >-
+      chat.json is a JSON array of {"id", "text"} messages from our team chat. Send each message to at most
+      one team: sales, support or legal. Small talk and messages for none of them get no team. Print a
+      JSON object mapping each id to the team name, or null when no team should get it.
+  assert:
+    - type: javascript
+      value: file://run.cjs:check
+      config: { task: zero-or-one }

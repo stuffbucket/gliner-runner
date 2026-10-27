@@ -72,3 +72,8 @@ All six are sorted the way a person would sort them. The dinner message has the 
   `can wait` either way, so check your own cases.
 - **Add labels** such as `delivery update` or `appointment`.
 - **Wrap it in a script** that runs on a list of messages exported from your phone.
+
+## Next
+
+See [all examples](/gliner-runner/examples/), or [more ideas](/gliner-runner/more-ideas/) for other
+jobs to try.

@@ -1,34 +1,50 @@
 ---
 import Gallery from "../components/Gallery.astro";
 import Plain from "../layouts/Plain.astro";
+import gallery from "../data/gallery.json";
+import { headlines } from "../data/headlines.json";
 
 const base = import.meta.env.BASE_URL.replace(/\/?$/, "/");
+// In the order a new visitor needs them: see it work, understand it, install it, use it, choose a model, more ideas.
 const docs = [
+  { href: "playground/", title: "Try it in your browser", text: "Type your own text and labels. The model runs in this page or on your computer." },
+  { href: "how-it-works/", title: "How it works", text: "What you send, what you get back, what the scores mean, and what it cannot do." },
   { href: "start/", title: "Get started", text: "Install the runner and a model, then classify your first text." },
-  { href: "how-it-works/", title: "How it works", text: "What it can and cannot do, how fast it is, and when to use something else." },
+  { href: "command-line-and-http/", title: "Command line and HTTP", text: "Every option of the classify command, and the request your program sends." },
+  { href: "use-in-react/", title: "Use it in a React app", text: "Call the runner from a web page, and how the browser version works." },
+  { href: "models/", title: "Choose a model", text: "The three models, their sizes and languages, and how they were tested." },
   { href: "examples/", title: "Examples", text: "Support tickets, urgent messages, reviews, personal information and more." },
-  { href: "use-in-react/", title: "Use it in an app", text: "Call the runner from a web page, and how the browser version works." },
-  { href: "models/", title: "Models", text: "The three models, their sizes, languages and test results." },
+  { href: "more-ideas/", title: "More ideas", text: "Other jobs to try, each with a starting set of labels." },
   { href: "docs/onnx-runtime/", title: "Reference", text: "Every command, option and API request." },
 ];
+// One headline per gallery card, shown with its card: the everyday version of the call the card shows.
+const cardHeadlines = gallery.entries.map(({ text }) => {
+  const headline = (headlines as Record<string, string>)[text];
+  if (!headline) throw new Error(`src/data/headlines.json has no headline for the gallery card "${text}"`);
+  return headline;
+});
 ---
 
 <Plain
-  title="GLiNER Runner: sort text into labels you choose"
-  description="GLiNER Runner sorts text into labels you choose. It runs on your own computer or in your browser, and your text never leaves your device."
+  title="GLiNER Runner: quick calls about text, on your own device"
+  description="GLiNER Runner reads a message and tells you which of your labels fits, the way you sort the mail at a glance. It runs on your own computer or in your browser, and your text never leaves your device."
 >
   <main>
     <section class="hero">
       <div class="pitch">
-        <h1>Sort text into the labels you choose.</h1>
+        <h1 class="headlines">
+          {cardHeadlines.map((headline, index) => (
+            <span data-headline={index} data-active={index === 0 ? "" : undefined}>{headline}</span>
+          ))}
+        </h1>
         <p class="lead">
-          Give GLiNER Runner a message and a few labels, and it tells you which one fits: billing or shipping, urgent
-          or can wait, positive or negative. It runs on your own computer, or right in your browser. Your text never
-          leaves your device.
+          You make calls like this all day without thinking. GLiNER Runner makes them about text: give it a message and
+          a few labels, and it tells you which one fits, such as billing or shipping, urgent or can wait, positive or
+          negative. It runs on your own computer, or right in your browser. Your text never leaves your device.
         </p>
         <div class="cta">
           <a class="btn btn-primary" href={`${base}playground/`}>Try it in your browser</a>
-          <a class="btn" href={`${base}start/`}>Get started</a>
+          <a class="btn" href={`${base}how-it-works/`}>How it works</a>
         </div>
       </div>
       <Gallery />
@@ -52,7 +68,7 @@ const docs = [
     <section class="install">
       <h2>Install</h2>
       <p>On macOS (Apple Silicon) or Linux:</p>
-      <pre><code><span class="prompt">$</span> curl -fsSL https://github.com/stuffbucket/gliner-runner/releases/latest/download/install.sh | sh
+      <pre role="region" aria-label="Install commands" tabindex="0"><code><span class="prompt">$</span> curl -fsSL https://github.com/stuffbucket/gliner-runner/releases/latest/download/install.sh | sh
 <span class="prompt">$</span> gliner-runner models install decide-340m
 <span class="prompt">$</span> gliner-runner classify --labels billing,support,shipping "I was charged twice for my last order."
 <span class="output">billing (confidence 0.889)</span></code></pre>
@@ -92,16 +108,58 @@ const docs = [
     letter-spacing: -0.01em;
   }
 
+  /* The two halves of the hero read as one composition: they are the same height, and the top of the headline and
+     the bottom of the buttons sit on the same lines as the card's quote and controls. For that the pitch gets the
+     card's padding (3 x --space), and both halves put their blocks 3 x --space apart. */
   .hero {
     display: grid;
     grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
-    align-items: center;
+    align-items: stretch;
     gap: clamp(2rem, 5vw, 4rem);
     padding: clamp(2.5rem, 8vw, 6rem) 0 clamp(2rem, 6vw, 4rem);
   }
+  .pitch {
+    container-type: inline-size;
+    display: flex;
+    flex-direction: column;
+    /* If the card is ever the taller half, the extra room is shared evenly between the blocks. */
+    justify-content: space-between;
+    gap: calc(var(--space) * 3);
+    padding-block: calc(var(--space) * 3);
+  }
   h1 {
-    margin: 0 0 1.25rem;
+    margin: 0;
     font-size: var(--text-3xl);
+  }
+  /* The headlines change with the gallery's card (Gallery.astro moves both). They share one grid cell, so the
+     heading is as tall as the longest one and the page never jumps; only the one shown is read out. The size
+     follows the column's width so that every headline takes two lines, and the first line always starts level
+     with the card's quote. */
+  .headlines {
+    display: grid;
+    /* Shorter headlines sit on the lead paragraph; the room for the longest is above them. */
+    align-items: end;
+    font-size: clamp(2rem, 7.4cqi, 3rem);
+    text-wrap: balance;
+  }
+  .headlines span {
+    grid-area: 1 / 1;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 0.45s ease,
+      visibility 0s linear 0.45s;
+  }
+  .headlines span[data-active] {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.45s ease;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .headlines span,
+    .headlines span[data-active] {
+      transition: none;
+    }
   }
   .lead {
     margin: 0;
@@ -112,8 +170,7 @@ const docs = [
   .cta {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.75rem;
-    margin-top: 2rem;
+    gap: calc(var(--space) * 1.5);
   }
   .points {
     display: grid;
@@ -155,12 +212,18 @@ const docs = [
     font-size: var(--text-sm);
     line-height: 1.7;
   }
+  /* The commands scroll sideways on a phone, so the block takes focus for the keyboard. */
+  pre:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+  }
   .prompt {
     color: var(--faint);
     user-select: none;
   }
+  /* --good alone is 3.6:1 on --code in light; mixed with --text it is 5.5:1 in light and 8.5:1 in dark. */
   .output {
-    color: var(--good);
+    color: color-mix(in srgb, var(--good) 70%, var(--text));
   }
 
   .grid {
@@ -193,7 +256,7 @@ const docs = [
     margin: 0 auto;
     padding: 2rem 0 3rem;
     border-top: 1px solid var(--border);
-    color: var(--faint);
+    color: var(--muted);
     font-size: var(--text-sm);
   }
   footer a {
@@ -205,6 +268,13 @@ const docs = [
     .points,
     .grid {
       grid-template-columns: minmax(0, 1fr);
+    }
+    /* In one column the halves are stacked, so there are no shared lines to keep. */
+    .pitch {
+      padding-block: 0;
+    }
+    .headlines {
+      font-size: var(--text-3xl);
     }
   }
 </style>

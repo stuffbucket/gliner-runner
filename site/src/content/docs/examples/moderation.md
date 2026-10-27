@@ -80,3 +80,8 @@ specific examples.
   description.
 - **Keep a person in the loop.** This is a first filter. It will make mistakes, and it should not
   remove posts without someone looking.
+
+## Next
+
+See [all examples](/gliner-runner/examples/), or [more ideas](/gliner-runner/more-ideas/) for other
+jobs to try.

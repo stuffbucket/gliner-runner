@@ -9,7 +9,7 @@ Host tools: [mise](https://mise.jdx.dev/) (pins Node 24, pnpm, Python). Everythi
 | `mise run setup` | Install dependencies (`pnpm install --frozen-lockfile`, plus the Python dev extras). |
 | `mise run check` | Everything CI runs. Offline; no models, no network. |
 | `mise run dev` | Build the ONNX runner and serve it on `127.0.0.1:8080` with `dist/onnx-models`. Override with `GLINER_RUNNER_DEV_PORT` and `GLINER_RUNNER_ONNX_MODELS_DIR`. |
-| `mise run models` | Install the three curated models into `dist/onnx-models` with `gliner-runner-onnx models install <id> --yes`. **Downloads about 7 GB** unless a verified local snapshot (for example the Hugging Face cache) is found first. |
+| `mise run models` | Install the three curated models into `dist/onnx-models` with `gliner-runner-onnx models install <id> --yes`. **Downloads about 7.9 GB** unless a verified local snapshot (for example the Hugging Face cache) is found first. |
 | `mise run receipt` | Alias of `eval:onnx-receipt`. Runs real parity against the models in `dist/onnx-models` and writes the receipt, ledger line and `build-info.ts`. |
 | `mise run release:local` | Build and verify this host's release assets into `dist/release`. See [releases](releases.md). |
 | `mise run lint:shell` | `shellcheck` on `install.sh` (not part of `check`; needs `shellcheck`). |
@@ -32,7 +32,7 @@ Needed after any change to runner source, templates, corpora, goldens, dependenc
 (CI fails with "receipt is stale" otherwise). See [evaluation receipt](onnx-runtime.md#evaluation-receipt).
 
 ```sh
-mise run models                    # once; fills dist/onnx-models (about 7 GB)
+mise run models                    # once; fills dist/onnx-models (about 7.9 GB)
 mise run receipt                   # builds, runs parity for 3 models x 2 corpora, writes the receipt
 mise run check                     # confirms the receipt matches the tree
 git add release/ packages/onnx-runner/src/build-info.ts

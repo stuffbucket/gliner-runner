@@ -1,0 +1,22 @@
+[
+  {"id": "Z01", "text": "Can I get a price quote for 50 licenses for my company?", "answer": "sales"},
+  {"id": "Z02", "text": "Do you offer volume discounts for schools?", "answer": "sales"},
+  {"id": "Z03", "text": "I'd like to book a demo of the enterprise plan.", "answer": "sales"},
+  {"id": "Z04", "text": "Which plan should I buy for a team of twelve?", "answer": "sales"},
+  {"id": "Z05", "text": "Can we upgrade our contract to include the analytics add-on?", "answer": "sales"},
+  {"id": "Z06", "text": "The app freezes when I open a large file.", "answer": "support"},
+  {"id": "Z07", "text": "I can't reset my password, the link has expired.", "answer": "support"},
+  {"id": "Z08", "text": "Notifications stopped arriving on my phone after the update.", "answer": "support"},
+  {"id": "Z09", "text": "How do I connect my calendar to the app? The setting is greyed out.", "answer": "support"},
+  {"id": "Z10", "text": "The export button gives an error message.", "answer": "support"},
+  {"id": "Z11", "text": "Please send us your data processing agreement for our GDPR review.", "answer": "legal"},
+  {"id": "Z12", "text": "We received a subpoena regarding one of your users.", "answer": "legal"},
+  {"id": "Z13", "text": "Your website uses our trademarked logo without permission.", "answer": "legal"},
+  {"id": "Z14", "text": "Our lawyers need to review the liability clause in the terms of service.", "answer": "legal"},
+  {"id": "Z15", "text": "I want to report a copyright infringement in a shared document.", "answer": "legal"},
+  {"id": "Z16", "text": "thanks!", "answer": null},
+  {"id": "Z17", "text": "Good morning everyone", "answer": null},
+  {"id": "Z18", "text": "Who's up for lunch at noon?", "answer": null},
+  {"id": "Z19", "text": "ok", "answer": null},
+  {"id": "Z20", "text": "Happy Friday, have a great weekend.", "answer": null}
+]

@@ -1,10 +1,13 @@
 ---
 title: Get started
-description: Sort text into labels you choose, on your own computer, with no account and no internet connection after the first download.
+description: Install the program and a model, and get your first answer in Terminal. No account, and no internet connection after the first download.
 ---
 
-GLiNER Runner sorts text into labels you choose. It runs on your own computer, and your text
-never leaves it.
+Install the program and a model, then give it a sentence and a few labels in Terminal. A moment
+later you have your first answer. It all happens on your own computer, and your text never leaves
+it.
+
+To see it work first, with nothing to install, use the [playground](/gliner-runner/playground/).
 
 ## What it does
 
@@ -15,7 +18,8 @@ For example, the text is a sentence about the weather, and the labels are `weath
 `sports`, and `money`:
 
 ```sh
-gliner-runner classify --labels weather,cooking,sports,money "Heavy rain is expected all weekend, with strong winds along the coast."
+gliner-runner classify --labels weather,cooking,sports,money \
+  "Heavy rain is expected all weekend, with strong winds along the coast."
 ```
 
 ```text
@@ -37,7 +41,8 @@ while IFS= read -r line; do
   printf '  one label: '
   gliner-runner classify --labels weather,cooking,sports,money "$line"
   printf '  --multi:   '
-  gliner-runner classify --multi --labels weather,cooking,sports,money "$line"
+  gliner-runner classify --multi --labels weather,cooking,sports,money \
+    "$line"
 done <<'EOF'
 The home team won the final by two goals.
 I will pay my rent on Friday, and then I will bake bread.
@@ -113,10 +118,13 @@ program with the same name is running instead. `which gliner-runner` shows which
 The program does not include a model. A model is a large file that you download once.
 
 | Model | Download | Use it for |
-| --- | --- | --- |
-| `decide-340m` | about 2.0 GB | English text. The default. |
-| `decide-multilingual` | about 1.2 GB | Spanish, French, German, and other languages |
-| `decide-1b` | about 4.8 GB | English text, when you want the most accurate answers |
+| --- | ---: | --- |
+| `decide-340m` | 1.95 GB | English text. The default. |
+| `decide-multilingual` | 1.17 GB | Spanish, French, German, and other languages |
+| `decide-1b` | 4.76 GB | English text, when you want the most accurate answers |
+
+Once installed, they take 1.76 GB, 1.13 GB, and 4.14 GB on disk. While a model installs, its download is
+on disk as well.
 
 To get one model, name it:
 
@@ -162,17 +170,24 @@ gliner-runner demo (model: decide-340m)
 Then use your own text and your own labels:
 
 ```sh
-gliner-runner classify --labels billing,support,shipping "My package never arrived."
+gliner-runner classify --labels billing,support,shipping \
+  "My package never arrived."
 ```
 
 ## Next
 
-- [How it works](/gliner-runner/how-it-works/): what the program can and cannot do, how fast it is,
-  and when to use something else.
+[Use it from the command line or over HTTP](/gliner-runner/command-line-and-http/): every option
+of `classify`, and the local server for many texts.
+
+Also:
+
+- [How it works](/gliner-runner/how-it-works/): what you send, what comes back, what the numbers
+  mean, how fast it is, and when to use something else.
+- [Use it in a React app](/gliner-runner/use-in-react/): a small web page that calls the program.
+- [Choose a model](/gliner-runner/models/): the three models, and how they were tested.
 - [Examples](/gliner-runner/examples/): jobs you can do with it, such as sorting support tickets,
   finding what matters in an email, flagging personal information, and reading reviews.
-- [Use it in a React app](/gliner-runner/use-in-react/): a small web page that calls the program.
-- [Try it in your browser](/gliner-runner/playground/): classify text on this site with the runner
-  on your computer.
 - [More ideas](/gliner-runner/more-ideas/): other things to sort, grouped by job.
-- [Reference](/gliner-runner/models/): the models, test results, and technical documents.
+- [Try it in your browser](/gliner-runner/playground/): classify text on this site, in the browser
+  or with the runner on your computer.
+- [Reference](/gliner-runner/docs/onnx-runtime/): technical documents.

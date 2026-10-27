@@ -1,0 +1,18 @@
+{
+  "name": "@gliner-runner/copy-lab",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Drafts short website copy with several models, checks it, and ranks it by how well a disinterested reader retells it",
+  "license": "Apache-2.0",
+  "scripts": {
+    "lab": "node lab.mjs",
+    "test": "node --test lib/*.test.mjs"
+  },
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "config": {
+    "promptfoo": "0.123.1"
+  }
+}

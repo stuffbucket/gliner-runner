@@ -1,0 +1,164 @@
+{
+  "questions": [
+    {
+      "id": "home-input-output",
+      "page": "home",
+      "persona": "support-dev",
+      "question": "What do I send to this program, and what do I get back?",
+      "rubric": "Says you send a text and a list of labels you choose, and get back the label that fits best. Mentioning a confidence score is a plus but not required.",
+      "mustMatch": ["label"]
+    },
+    {
+      "id": "home-privacy",
+      "page": "home",
+      "persona": "product-manager",
+      "question": "If I put our customers' messages into it, are they sent to anyone?",
+      "rubric": "Says the text is not sent to a server: the model runs on your own computer or in your browser and the text stays on the device.",
+      "mustMatch": ["(device|computer|browser|not sent|never leaves|stays)"]
+    },
+    {
+      "id": "home-install",
+      "page": "home",
+      "persona": "support-dev",
+      "question": "How do I install it on my Mac?",
+      "rubric": "Gives the curl ... install.sh | sh command (Homebrew may also be mentioned) and says a model must be installed, for example with `gliner-runner models install decide-340m`.",
+      "mustMatch": ["install"]
+    },
+    {
+      "id": "start-confidence",
+      "page": "start",
+      "persona": "support-dev",
+      "question": "What does the confidence number mean, and what values can it take?",
+      "rubric": "Says it is a number from 0 (not confident) to 1 (very confident) that says how sure the program is about the label.",
+      "mustMatch": ["\\b0\\b", "\\b1\\b"]
+    },
+    {
+      "id": "start-no-label-fits",
+      "page": "start",
+      "persona": "product-manager",
+      "question": "What happens when none of my labels fit a message?",
+      "rubric": "Says that with one label per text it still picks a label, with a low confidence; that with --multi it returns no label when no score reaches 0.5; or that you can add a label such as 'none of these'. At least two of these three points.",
+      "mustMatch": []
+    },
+    {
+      "id": "start-which-model",
+      "page": "start",
+      "persona": "support-dev",
+      "question": "Which model should I download for English support tickets, and how big is the download?",
+      "rubric": "Names decide-340m (the default, for English) and a download of about 1.95 GB (older pages round it to 2.0 GB; either is right). Mentioning decide-1b (about 4.8 GB) as the more accurate option is fine.",
+      "mustMatch": ["decide-340m", "(1\\.95|2(\\.0)?) ?GB"]
+    },
+    {
+      "id": "start-text-length",
+      "page": "start",
+      "persona": "ml-engineer",
+      "question": "How long can a text be?",
+      "rubric": "Required: it works best up to about 500 words (a few paragraphs), and much longer documents should be split into parts. Optional: 2,000 words works but takes a few seconds.",
+      "mustMatch": ["500"]
+    },
+    {
+      "id": "how-probabilities",
+      "page": "how-it-works",
+      "persona": "support-dev",
+      "question": "In the server's JSON answer there is a field called probabilities. What is in it?",
+      "rubric": "Required: probabilities holds a score for every label that was sent, keyed by label name, not only for the chosen one. Optional: the chosen label is in value and its score in confidence.",
+      "mustMatch": ["(each|every|per) label"]
+    },
+    {
+      "id": "how-confidence-percent",
+      "page": "how-it-works",
+      "persona": "product-manager",
+      "question": "If a label comes back with confidence 0.8, is it right 80% of the time?",
+      "rubric": "Says no: the confidence is not a percentage of how often the answer is right; use it to compare answers, for example to send low numbers to a person.",
+      "mustMatch": ["\\bnot?\\b"]
+    },
+    {
+      "id": "how-extraction",
+      "page": "how-it-works",
+      "persona": "ml-engineer",
+      "question": "Can it pull names, numbers or dates out of a text?",
+      "rubric": "Says no: it only classifies into your labels. It can say whether a message contains, for example, a phone number, but cannot point at it or return it.",
+      "mustMatch": ["\\b(no|cannot|can't|can not)\\b"]
+    },
+    {
+      "id": "how-chat-model",
+      "page": "how-it-works",
+      "persona": "support-dev",
+      "question": "When should I use a chat model such as Claude instead of this?",
+      "rubric": "Lists at least two of: writing (drafting, summarizing, rewriting), open-ended answers, several steps of reasoning, and labels you cannot list in advance.",
+      "mustMatch": []
+    },
+    {
+      "id": "how-speed",
+      "page": "how-it-works",
+      "persona": "support-dev",
+      "question": "How long does one classification take if I run it as a server?",
+      "rubric": "Required: about 25 milliseconds per request (median) with gliner-runner serve, on the machine the page measured. Optional: a single classify command takes about 1.4 to 1.5 seconds because it loads the model each time.",
+      "mustMatch": ["25"]
+    },
+    {
+      "id": "react-request",
+      "page": "use-in-react",
+      "persona": "react-dev",
+      "question": "Where does the React example send its request, and what is in the request body?",
+      "rubric": "Required: it POSTs to /v1/infer, and the JSON body has the model (decide-340m), the text, and the labels inside a schema. Optional: the forwarding to 127.0.0.1:8090, and the backend, precision and operation fields.",
+      "mustMatch": ["/v1/infer", "labels"]
+    },
+    {
+      "id": "react-cors",
+      "page": "use-in-react",
+      "persona": "react-dev",
+      "question": "Why does the example not need any CORS setup?",
+      "rubric": "Says the page calls its own address and the Vite dev server proxies /v1 to the runner (server.proxy in vite.config.js), so the browser makes no cross-origin request.",
+      "mustMatch": ["prox"]
+    },
+    {
+      "id": "react-in-browser",
+      "page": "use-in-react",
+      "persona": "react-dev",
+      "question": "Can the model run entirely in the browser, and what does that cost the user?",
+      "rubric": "Required: yes, it can run in the browser (the playground does, in a Web Worker), and the cost is a large first download of about 1.95 GB, kept in the browser afterwards. Optional: only decide-340m, about 4 GB of free disk, WebGPU or the processor, no phones.",
+      "mustMatch": ["(1\\.95|1\\.75|4 ?GB)"]
+    },
+    {
+      "id": "react-deployed",
+      "page": "use-in-react",
+      "persona": "react-dev",
+      "question": "If I put my page on GitHub Pages, how does it reach the runner?",
+      "rubric": "Required: build the page with the runner's address (VITE_RUNNER_URL=http://127.0.0.1:8090), and allow the page's address with `gliner-runner cors add <origin>`. Optional: restart the runner afterwards.",
+      "mustMatch": ["cors add"]
+    },
+    {
+      "id": "playground-start",
+      "page": "playground",
+      "persona": "product-manager",
+      "question": "What do I have to do before I can try it on this page, and does my text leave my computer?",
+      "rubric": "Says you either download the model into the browser (a large download) or run it on your own computer with the command shown, and that the text stays on the device.",
+      "mustMatch": []
+    },
+    {
+      "id": "models-upstream",
+      "page": "models",
+      "persona": "ml-engineer",
+      "question": "Which upstream model is decide-340m, and how many parameters does it have?",
+      "rubric": "Says it is fastino/GLiNER2.5-Decide with 486M parameters. Noting that the name says 340m is a plus.",
+      "mustMatch": ["GLiNER2\\.5-Decide", "486"]
+    },
+    {
+      "id": "evaluation-what",
+      "page": "evaluation",
+      "persona": "ml-engineer",
+      "question": "What does the evaluation measure: accuracy on a labelled dataset, or something else?",
+      "rubric": "Required: it measures parity, that the ONNX runner's outputs match the PyTorch reference, and not accuracy on a labelled dataset. Optional: 372/372 exact matches, drift under the 1e-4 tolerance.",
+      "mustMatch": ["(parity|pytorch|match)"]
+    },
+    {
+      "id": "evaluation-how-often-right",
+      "page": "evaluation",
+      "persona": "product-manager",
+      "question": "Does this page tell me how often the labels are correct?",
+      "rubric": "Says no, or not directly: the page shows that the ONNX version gives the same results as the PyTorch reference, not how often the labels are right.",
+      "mustMatch": []
+    }
+  ]
+}

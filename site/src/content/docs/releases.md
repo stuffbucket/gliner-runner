@@ -3,8 +3,9 @@ title: Releases
 description: Where to get GLiNER Runner releases and how stable and release-candidate builds differ.
 ---
 
-All builds are published on the
-[GitHub releases page](https://github.com/stuffbucket/gliner-runner/releases). Each release attaches
+The installer picks the latest stable release for you. Every build, stable or not, is on the
+[GitHub releases page](https://github.com/stuffbucket/gliner-runner/releases), so you can install
+an exact version instead. Each release attaches
 the Python wheel and sdist, the TypeScript client, the OpenAPI document, the ONNX runner archive,
 `release-manifest.json`, and `SHA256SUMS`.
 
@@ -21,3 +22,7 @@ curl -fsSL https://github.com/stuffbucket/gliner-runner/releases/latest/download
 ```
 
 How releases are produced and packaged is documented in [Release engineering](/gliner-runner/docs/releases/).
+
+## Next
+
+[Get started](/gliner-runner/start/) shows how to install GLiNER Runner and a model.

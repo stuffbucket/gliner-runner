@@ -252,6 +252,152 @@
         "title": "ClassificationTask",
         "type": "object"
       },
+      "ClassifyTextRequest": {
+        "additionalProperties": false,
+        "description": "``POST /v1/classify_text``: the arguments of GLiNER2's ``classify_text`` (``text``) and\n``batch_classify_text`` (``texts``), plus the runner's explicit model, backend and precision.",
+        "properties": {
+          "backend": {
+            "$ref": "#/components/schemas/BackendName"
+          },
+          "include_confidence": {
+            "default": false,
+            "title": "Include Confidence",
+            "type": "boolean"
+          },
+          "model": {
+            "minLength": 1,
+            "title": "Model",
+            "type": "string"
+          },
+          "precision": {
+            "$ref": "#/components/schemas/Precision"
+          },
+          "request_id": {
+            "format": "uuid",
+            "title": "Request Id",
+            "type": "string"
+          },
+          "tasks": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Gliner2Task"
+            },
+            "minProperties": 1,
+            "title": "Tasks",
+            "type": "object"
+          },
+          "text": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Text"
+          },
+          "texts": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "maxItems": 256,
+                "minItems": 1,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Texts"
+          },
+          "threshold": {
+            "default": 0.5,
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Threshold",
+            "type": "number"
+          }
+        },
+        "required": [
+          "model",
+          "backend",
+          "precision",
+          "tasks"
+        ],
+        "title": "ClassifyTextRequest",
+        "type": "object"
+      },
+      "ClassifyTextResponse": {
+        "additionalProperties": false,
+        "description": "Has ``result`` for ``text`` and ``results`` for ``texts``, never both.",
+        "properties": {
+          "backend": {
+            "$ref": "#/components/schemas/BackendName"
+          },
+          "model": {
+            "title": "Model",
+            "type": "string"
+          },
+          "precision": {
+            "$ref": "#/components/schemas/Precision"
+          },
+          "request_id": {
+            "format": "uuid",
+            "title": "Request Id",
+            "type": "string"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/JsonValue"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Result"
+          },
+          "results": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/JsonValue"
+                  },
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Results"
+          },
+          "usage": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Usage",
+            "type": "object"
+          }
+        },
+        "required": [
+          "request_id",
+          "model",
+          "backend",
+          "precision",
+          "usage"
+        ],
+        "title": "ClassifyTextResponse",
+        "type": "object"
+      },
       "DownloadJob": {
         "additionalProperties": false,
         "properties": {
@@ -362,6 +508,11 @@
         ],
         "title": "EntitySchema",
         "type": "object"
+      },
+      "Gliner2Task": {
+        "$ref": "#/components/schemas/JsonValue",
+        "description": "One GLiNER2 ``classify_text`` task: a label list, or an object with ``labels``.",
+        "title": "Gliner2Task"
       },
       "HTTPValidationError": {
         "properties": {
@@ -839,6 +990,146 @@
         "title": "ProfileGuidance",
         "type": "object"
       },
+      "Question": {
+        "additionalProperties": false,
+        "description": "One jev or Microsoft-Decision-1 question.",
+        "properties": {
+          "criteria": {
+            "$ref": "#/components/schemas/JsonValue"
+          },
+          "instructions": {
+            "$ref": "#/components/schemas/JsonValue"
+          },
+          "threshold": {
+            "anyOf": [
+              {
+                "exclusiveMaximum": 1.0,
+                "exclusiveMinimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Threshold"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "title": "Question",
+        "type": "object"
+      },
+      "QuestionsRequest": {
+        "additionalProperties": false,
+        "description": "``POST /v1/questions``: jev and Decision-1 ``state`` and ``questions``, plus the runner's\nexplicit model, backend and precision.",
+        "properties": {
+          "assets": {
+            "$ref": "#/components/schemas/JsonValue"
+          },
+          "backend": {
+            "$ref": "#/components/schemas/BackendName"
+          },
+          "model": {
+            "minLength": 1,
+            "title": "Model",
+            "type": "string"
+          },
+          "precision": {
+            "$ref": "#/components/schemas/Precision"
+          },
+          "questions": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Question"
+            },
+            "minProperties": 1,
+            "title": "Questions",
+            "type": "object"
+          },
+          "request_id": {
+            "format": "uuid",
+            "title": "Request Id",
+            "type": "string"
+          },
+          "state": {
+            "$ref": "#/components/schemas/JsonValue"
+          }
+        },
+        "required": [
+          "model",
+          "backend",
+          "precision",
+          "state",
+          "questions"
+        ],
+        "title": "QuestionsRequest",
+        "type": "object"
+      },
+      "QuestionsResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "answers": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/JsonValue"
+            },
+            "title": "Answers",
+            "type": "object"
+          },
+          "backend": {
+            "$ref": "#/components/schemas/BackendName"
+          },
+          "model": {
+            "title": "Model",
+            "type": "string"
+          },
+          "precision": {
+            "$ref": "#/components/schemas/Precision"
+          },
+          "request_id": {
+            "format": "uuid",
+            "title": "Request Id",
+            "type": "string"
+          },
+          "usage": {
+            "$ref": "#/components/schemas/QuestionsUsage"
+          }
+        },
+        "required": [
+          "request_id",
+          "model",
+          "backend",
+          "precision",
+          "answers",
+          "usage"
+        ],
+        "title": "QuestionsResponse",
+        "type": "object"
+      },
+      "QuestionsUsage": {
+        "additionalProperties": false,
+        "properties": {
+          "input_tokens": {
+            "minimum": 0.0,
+            "title": "Input Tokens",
+            "type": "integer"
+          },
+          "output_tokens": {
+            "const": 0,
+            "title": "Output Tokens",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "input_tokens",
+          "output_tokens"
+        ],
+        "title": "QuestionsUsage",
+        "type": "object"
+      },
       "RefreshResult": {
         "additionalProperties": false,
         "properties": {
@@ -988,7 +1279,7 @@
   "info": {
     "summary": "Local, explicitly configured GLiNER inference",
     "title": "GLiNER Runner",
-    "version": "1.0.0"
+    "version": "1.1.0"
   },
   "openapi": "3.1.0",
   "paths": {
@@ -1080,6 +1371,54 @@
           }
         },
         "summary": "Capabilities",
+        "tags": [
+          "inference"
+        ]
+      }
+    },
+    "/v1/classify_text": {
+      "post": {
+        "description": "GLiNER2 classify_text and batch_classify_text; one classification request per text.",
+        "operationId": "classify_text_v1_classify_text_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClassifyTextRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClassifyTextResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "409": {
+            "description": "Unsupported explicit configuration"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "429": {
+            "description": "Queue capacity exhausted"
+          }
+        },
+        "summary": "Classify Text",
         "tags": [
           "inference"
         ]
@@ -1266,6 +1605,54 @@
         "summary": "Create Download",
         "tags": [
           "models"
+        ]
+      }
+    },
+    "/v1/questions": {
+      "post": {
+        "description": "jev and Microsoft-Decision-1 questions; each one is one classification request.",
+        "operationId": "questions_v1_questions_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuestionsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuestionsResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "409": {
+            "description": "Unsupported explicit configuration"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "429": {
+            "description": "Queue capacity exhausted"
+          }
+        },
+        "summary": "Questions",
+        "tags": [
+          "inference"
         ]
       }
     }

@@ -1,0 +1,22 @@
+[
+  {"id": "C01", "text": "Your new logo is ugly and I hate the colors.", "answer": "feedback"},
+  {"id": "C02", "text": "My order arrived broken. I want a replacement.", "answer": "complaint"},
+  {"id": "C03", "text": "Honestly the checkout page is terrible, worst design I've seen.", "answer": "feedback"},
+  {"id": "C04", "text": "I'm fine with the app, but please refund the $20 you charged me twice.", "answer": "complaint"},
+  {"id": "C05", "text": "The new menu layout is confusing and annoying.", "answer": "feedback"},
+  {"id": "C06", "text": "The technician never showed up. Send someone tomorrow or credit my account.", "answer": "complaint"},
+  {"id": "C07", "text": "Your prices are too high compared to other shops.", "answer": "feedback"},
+  {"id": "C08", "text": "Nice product, but one item was missing from the box. Please send it.", "answer": "complaint"},
+  {"id": "C09", "text": "I really dislike the dark mode, it's hard on the eyes.", "answer": "feedback"},
+  {"id": "C10", "text": "Great service as always! Could you fix the wrong name on my invoice?", "answer": "complaint"},
+  {"id": "C11", "text": "The music in your store is way too loud. Very unpleasant visit.", "answer": "feedback"},
+  {"id": "C12", "text": "I was charged for delivery even though it said free. I want that money back.", "answer": "complaint"},
+  {"id": "C13", "text": "Disappointed that you removed the old reports page. It was better.", "answer": "feedback"},
+  {"id": "C14", "text": "Thanks for the quick reply. The replacement still doesn't turn on, please exchange it.", "answer": "complaint"},
+  {"id": "C15", "text": "The waiting time on your hotline is ridiculous.", "answer": "feedback"},
+  {"id": "C16", "text": "Lovely staff. The jacket I bought has a torn seam, can I get a new one?", "answer": "complaint"},
+  {"id": "C17", "text": "Your emails are far too frequent and boring.", "answer": "feedback"},
+  {"id": "C18", "text": "Happy overall, but the discount code wasn't applied. Please adjust my bill.", "answer": "complaint"},
+  {"id": "C19", "text": "The font on your website is too small for older people like me. Shameful.", "answer": "feedback"},
+  {"id": "C20", "text": "All good with the delivery. My account still shows the old plan though, please correct it.", "answer": "complaint"}
+]

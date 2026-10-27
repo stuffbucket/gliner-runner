@@ -235,7 +235,7 @@ async function ensureModel(
   if (entry.available_locally) {
     return true;
   }
-  const question = `${model} is not installed. Download and prepare it now (about 1.9 GB for decide-340m)? [y/N] `;
+  const question = `${model} is not installed. Download and prepare it now (a 1.95 GB download for decide-340m)? [y/N] `;
   if (!approved) {
     if (!io.interactive) {
       say(`${model} is not installed; pass --yes to download it (stdin is not a terminal, so there is no prompt).`);

@@ -1,0 +1,7891 @@
+{
+ "seed": 20261021,
+ "runs": {
+  "amazon_polarity-sentiment--decide-340m--plain": {
+   "task": "amazon_polarity/sentiment",
+   "model": "decide-340m",
+   "descriptions": false,
+   "latency": {
+    "requests": 1000,
+    "inference_ms_median": 162.1,
+    "inference_ms_p90": 303.7,
+    "client_ms_median": 171.3,
+    "client_ms_p90": 314.1,
+    "client_ms_total": 189441,
+    "input_tokens_median": 96.0
+   },
+   "n": 1000,
+   "accuracy": 0.928,
+   "accuracy_ci95": [
+    0.9103,
+    0.9424
+   ],
+   "macro_f1": 0.928,
+   "per_label": {
+    "negative": {
+     "precision": 0.9315,
+     "recall": 0.924,
+     "f1": 0.9277,
+     "support": 500
+    },
+    "positive": {
+     "precision": 0.9246,
+     "recall": 0.932,
+     "f1": 0.9283,
+     "support": 500
+    }
+   },
+   "calibration": {
+    "ece": 0.0402,
+    "bins": [
+     {
+      "low": 0.0,
+      "high": 0.1,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.1,
+      "high": 0.2,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.2,
+      "high": 0.3,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.3,
+      "high": 0.4,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.4,
+      "high": 0.5,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.5,
+      "high": 0.6,
+      "n": 12,
+      "confidence": 0.5383,
+      "accuracy": 0.5
+     },
+     {
+      "low": 0.6,
+      "high": 0.7,
+      "n": 16,
+      "confidence": 0.6524,
+      "accuracy": 0.3125
+     },
+     {
+      "low": 0.7,
+      "high": 0.8,
+      "n": 32,
+      "confidence": 0.7489,
+      "accuracy": 0.7188
+     },
+     {
+      "low": 0.8,
+      "high": 0.9,
+      "n": 38,
+      "confidence": 0.8536,
+      "accuracy": 0.7105
+     },
+     {
+      "low": 0.9,
+      "high": 1.0,
+      "n": 902,
+      "confidence": 0.9921,
+      "accuracy": 0.9612
+     }
+    ]
+   },
+   "auc": {
+    "positive_label": "negative",
+    "value": 0.9702
+   },
+   "baselines": {
+    "majority": {
+     "rule": "always 'positive'",
+     "accuracy": 0.5,
+     "macro_f1": 0.3333
+    },
+    "random": {
+     "rule": "uniform over the candidate labels",
+     "accuracy": 0.498,
+     "macro_f1": 0.4979
+    }
+   }
+  },
+  "banking77-intent--decide-1b--plain--sub200": {
+   "task": "banking77/intent",
+   "model": "decide-1b",
+   "descriptions": false,
+   "latency": {
+    "requests": 200,
+    "inference_ms_median": 651.3,
+    "inference_ms_p90": 867.6,
+    "client_ms_median": 657.2,
+    "client_ms_p90": 873.7,
+    "client_ms_total": 151592,
+    "input_tokens_median": 582.0
+   },
+   "n": 200,
+   "accuracy": 0.72,
+   "accuracy_ci95": [
+    0.6541,
+    0.7776
+   ],
+   "macro_f1": 0.7104,
+   "per_label": {
+    "Refund_not_showing_up": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 3
+    },
+    "activate_my_card": {
+     "precision": 0.75,
+     "recall": 1.0,
+     "f1": 0.8571,
+     "support": 3
+    },
+    "age_limit": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 3
+    },
+    "apple_pay_or_google_pay": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 3
+    },
+    "atm_support": {
+     "precision": 1.0,
+     "recall": 0.6667,
+     "f1": 0.8,
+     "support": 3
+    },
+    "automatic_top_up": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 3
+    },
+    "balance_not_updated_after_bank_transfer": {
+     "precision": 1.0,
+     "recall": 0.6667,
+     "f1": 0.8,
+     "support": 3
+    },
+    "balance_not_updated_after_cheque_or_cash_deposit": {
+     "precision": 1.0,
+     "recall": 0.6667,
+     "f1": 0.8,
+     "support": 3
+    },
+    "beneficiary_not_allowed": {
+     "precision": 1.0,
+     "recall": 0.3333,
+     "f1": 0.5,
+     "support": 3
+    },
+    "cancel_transfer": {
+     "precision": 1.0,
+     "recall": 0.6667,
+     "f1": 0.8,
+     "support": 3
+    },
+    "card_about_to_expire": {
+     "precision": 1.0,
+     "recall": 0.6667,
+     "f1": 0.8,
+     "support": 3
+    },
+    "card_acceptance": {
+     "precision": 0.3333,
+     "recall": 0.3333,
+     "f1": 0.3333,
+     "support": 3
+    },
+    "card_arrival": {
+     "precision": 1.0,
+     "recall": 0.3333,
+     "f1": 0.5,
+     "support": 3
+    },
+    "card_delivery_estimate": {
+     "precision": 0.5,
+     "recall": 1.0,
+     "f1": 0.6667,
+     "support": 3
+    },
+    "card_linking": {
+     "precision": 1.0,
+     "recall": 0.6667,
+     "f1": 0.8,
+     "support": 3
+    },
+    "card_not_working": {
+     "precision": 0.6667,
+     "recall": 0.6667,
+     "f1": 0.6667,
+     "support": 3
+    },
+    "card_payment_fee_charged": {
+     "precision": 0.75,
+     "recall": 1.0,
+     "f1": 0.8571,
+     "support": 3
+    },
+    "card_payment_not_recognised": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 3
+    },
+    "card_payment_wrong_exchange_rate": {
+     "precision": 1.0,
+     "recall": 0.3333,
+     "f1": 0.5,
+     "support": 3
+    },
+    "card_swallowed": {
+     "precision": 1.0,
+     "recall": 0.3333,
+     "f1": 0.5,
+     "support": 3
+    },
+    "cash_withdrawal_charge": {
+     "precision": 0.6667,
+     "recall": 0.6667,
+     "f1": 0.6667,
+     "support": 3
+    },
+    "cash_withdrawal_not_recognised": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 3
+    },
+    "change_pin": {
+     "precision": 0.4286,
+     "recall": 1.0,
+     "f1": 0.6,
+     "support": 3
+    },
+    "compromised_card": {
+     "precision": 0.75,
+     "recall": 1.0,
+     "f1": 0.8571,
+     "support": 3
+    },
+    "contactless_not_working": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 3
+    },
+    "country_support": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 3
+    },
+    "declined_card_payment": {
+     "precision": 0.6667,
+     "recall": 0.6667,
+     "f1": 0.6667,
+     "support": 3
+    },
+    "declined_cash_withdrawal": {
+     "precision": 0.6667,
+     "recall": 0.6667,
+     "f1": 0.6667,
+     "support": 3
+    },
+    "declined_transfer": {
+     "precision": 1.0,
+     "recall": 0.6667,
+     "f1": 0.8,
+     "support": 3
+    },
+    "direct_debit_payment_not_recognised": {
+     "precision": 1.0,
+     "recall": 0.6667,
+     "f1": 0.8,
+     "support": 3
+    },
+    "disposable_card_limits": {
+     "precision": 0.75,
+     "recall": 1.0,
+     "f1": 0.8571,
+     "support": 3
+    },
+    "edit_personal_details": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 3
+    },
+    "exchange_charge": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 3
+    },
+    "exchange_rate": {
+     "precision": 0.6,
+     "recall": 1.0,
+     "f1": 0.75,
+     "support": 3
+    },
+    "exchange_via_app": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 3
+    },
+    "extra_charge_on_statement": {
+     "precision": 0.75,
+     "recall": 1.0,
+     "f1": 0.8571,
+     "support": 3
+    },
+    "failed_transfer": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 3
+    },
+    "fiat_currency_support": {
+     "precision": 0.3,
+     "recall": 1.0,
+     "f1": 0.4615,
+     "support": 3
+    },
+    "get_disposable_virtual_card": {
+     "precision": 0.6,
+     "recall": 1.0,
+     "f1": 0.75,
+     "support": 3
+    },
+    "get_physical_card": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 3
+    },
+    "getting_spare_card": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 3
+    },
+    "getting_virtual_card": {
+     "precision": 1.0,
+     "recall": 0.6667,
+     "f1": 0.8,
+     "support": 3
+    },
+    "lost_or_stolen_card": {
+     "precision": 0.4286,
+     "recall": 1.0,
+     "f1": 0.6,
+     "support": 3
+    },
+    "lost_or_stolen_phone": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 3
+    },
+    "order_physical_card": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 3
+    },
+    "passcode_forgotten": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 3
+    },
+    "pending_card_payment": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 2
+    },
+    "pending_cash_withdrawal": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 2
+    },
+    "pending_top_up": {
+     "precision": 1.0,
+     "recall": 0.5,
+     "f1": 0.6667,
+     "support": 2
+    },
+    "pending_transfer": {
+     "precision": 0.6667,
+     "recall": 1.0,
+     "f1": 0.8,
+     "support": 2
+    },
+    "pin_blocked": {
+     "precision": 1.0,
+     "recall": 0.5,
+     "f1": 0.6667,
+     "support": 2
+    },
+    "receiving_money": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 2
+    },
+    "request_refund": {
+     "precision": 0.6667,
+     "recall": 1.0,
+     "f1": 0.8,
+     "support": 2
+    },
+    "reverted_card_payment?": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 2
+    },
+    "supported_cards_and_currencies": {
+     "precision": 0.25,
+     "recall": 0.5,
+     "f1": 0.3333,
+     "support": 2
+    },
+    "terminate_account": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 2
+    },
+    "top_up_by_bank_transfer_charge": {
+     "precision": 1.0,
+     "recall": 0.5,
+     "f1": 0.6667,
+     "support": 2
+    },
+    "top_up_by_card_charge": {
+     "precision": 1.0,
+     "recall": 0.5,
+     "f1": 0.6667,
+     "support": 2
+    },
+    "top_up_by_cash_or_cheque": {
+     "precision": 1.0,
+     "recall": 0.5,
+     "f1": 0.6667,
+     "support": 2
+    },
+    "top_up_failed": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 2
+    },
+    "top_up_limits": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 2
+    },
+    "top_up_reverted": {
+     "precision": 1.0,
+     "recall": 0.5,
+     "f1": 0.6667,
+     "support": 2
+    },
+    "topping_up_by_card": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 2
+    },
+    "transaction_charged_twice": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 2
+    },
+    "transfer_fee_charged": {
+     "precision": 1.0,
+     "recall": 0.5,
+     "f1": 0.6667,
+     "support": 2
+    },
+    "transfer_into_account": {
+     "precision": 0.1429,
+     "recall": 0.5,
+     "f1": 0.2222,
+     "support": 2
+    },
+    "transfer_not_received_by_recipient": {
+     "precision": 1.0,
+     "recall": 0.5,
+     "f1": 0.6667,
+     "support": 2
+    },
+    "transfer_timing": {
+     "precision": 0.6667,
+     "recall": 1.0,
+     "f1": 0.8,
+     "support": 2
+    },
+    "unable_to_verify_identity": {
+     "precision": 1.0,
+     "recall": 0.5,
+     "f1": 0.6667,
+     "support": 2
+    },
+    "verify_my_identity": {
+     "precision": 0.6667,
+     "recall": 1.0,
+     "f1": 0.8,
+     "support": 2
+    },
+    "verify_source_of_funds": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 2
+    },
+    "verify_top_up": {
+     "precision": 0.6667,
+     "recall": 1.0,
+     "f1": 0.8,
+     "support": 2
+    },
+    "virtual_card_not_working": {
+     "precision": 1.0,
+     "recall": 0.5,
+     "f1": 0.6667,
+     "support": 2
+    },
+    "visa_or_mastercard": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 2
+    },
+    "why_verify_identity": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 2
+    },
+    "wrong_amount_of_cash_received": {
+     "precision": 0.5,
+     "recall": 0.5,
+     "f1": 0.5,
+     "support": 2
+    },
+    "wrong_exchange_rate_for_cash_withdrawal": {
+     "precision": 1.0,
+     "recall": 0.5,
+     "f1": 0.6667,
+     "support": 2
+    }
+   },
+   "calibration": {
+    "ece": 0.1187,
+    "bins": [
+     {
+      "low": 0.0,
+      "high": 0.1,
+      "n": 7,
+      "confidence": 0.0824,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.1,
+      "high": 0.2,
+      "n": 4,
+      "confidence": 0.1613,
+      "accuracy": 0.25
+     },
+     {
+      "low": 0.2,
+      "high": 0.3,
+      "n": 13,
+      "confidence": 0.2433,
+      "accuracy": 0.3846
+     },
+     {
+      "low": 0.3,
+      "high": 0.4,
+      "n": 11,
+      "confidence": 0.3661,
+      "accuracy": 0.8182
+     },
+     {
+      "low": 0.4,
+      "high": 0.5,
+      "n": 10,
+      "confidence": 0.4598,
+      "accuracy": 0.6
+     },
+     {
+      "low": 0.5,
+      "high": 0.6,
+      "n": 12,
+      "confidence": 0.5572,
+      "accuracy": 0.4167
+     },
+     {
+      "low": 0.6,
+      "high": 0.7,
+      "n": 16,
+      "confidence": 0.6651,
+      "accuracy": 0.6875
+     },
+     {
+      "low": 0.7,
+      "high": 0.8,
+      "n": 11,
+      "confidence": 0.7337,
+      "accuracy": 0.4545
+     },
+     {
+      "low": 0.8,
+      "high": 0.9,
+      "n": 18,
+      "confidence": 0.8412,
+      "accuracy": 0.7778
+     },
+     {
+      "low": 0.9,
+      "high": 1.0,
+      "n": 98,
+      "confidence": 0.9831,
+      "accuracy": 0.898
+     }
+    ]
+   },
+   "baselines": {
+    "majority": {
+     "rule": "always 'exchange_rate'",
+     "accuracy": 0.015,
+     "macro_f1": 0.0004
+    },
+    "random": {
+     "rule": "uniform over the candidate labels",
+     "accuracy": 0.015,
+     "macro_f1": 0.0139
+    }
+   },
+   "subsample": "sub200"
+  },
+  "banking77-intent--decide-340m--desc--sub200": {
+   "task": "banking77/intent",
+   "model": "decide-340m",
+   "descriptions": true,
+   "latency": {
+    "requests": 200,
+    "inference_ms_median": 5240.6,
+    "inference_ms_p90": 5944.4,
+    "client_ms_median": 5253.1,
+    "client_ms_p90": 5982.2,
+    "client_ms_total": 945359,
+    "input_tokens_median": 1998.0
+   },
+   "n": 200,
+   "accuracy": 0.71,
+   "accuracy_ci95": [
+    0.6436,
+    0.7685
+   ],
+   "macro_f1": 0.6752,
+   "per_label": {
+    "Refund_not_showing_up": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 3
+    },
+    "activate_my_card": {
+     "precision": 0.5,
+     "recall": 1.0,
+     "f1": 0.6667,
+     "support": 3
+    },
+    "age_limit": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 3
+    },
+    "apple_pay_or_google_pay": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 3
+    },
+    "atm_support": {
+     "precision": 1.0,
+     "recall": 0.6667,
+     "f1": 0.8,
+     "support": 3
+    },
+    "automatic_top_up": {
+     "precision": 0.75,
+     "recall": 1.0,
+     "f1": 0.8571,
+     "support": 3
+    },
+    "balance_not_updated_after_bank_transfer": {
+     "precision": 1.0,
+     "recall": 0.6667,
+     "f1": 0.8,
+     "support": 3
+    },
+    "balance_not_updated_after_cheque_or_cash_deposit": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 3
+    },
+    "beneficiary_not_allowed": {
+     "precision": 1.0,
+     "recall": 0.3333,
+     "f1": 0.5,
+     "support": 3
+    },
+    "cancel_transfer": {
+     "precision": 1.0,
+     "recall": 0.6667,
+     "f1": 0.8,
+     "support": 3
+    },
+    "card_about_to_expire": {
+     "precision": 1.0,
+     "recall": 0.6667,
+     "f1": 0.8,
+     "support": 3
+    },
+    "card_acceptance": {
+     "precision": 1.0,
+     "recall": 0.6667,
+     "f1": 0.8,
+     "support": 3
+    },
+    "card_arrival": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 3
+    },
+    "card_delivery_estimate": {
+     "precision": 0.4286,
+     "recall": 1.0,
+     "f1": 0.6,
+     "support": 3
+    },
+    "card_linking": {
+     "precision": 1.0,
+     "recall": 0.6667,
+     "f1": 0.8,
+     "support": 3
+    },
+    "card_not_working": {
+     "precision": 0.75,
+     "recall": 1.0,
+     "f1": 0.8571,
+     "support": 3
+    },
+    "card_payment_fee_charged": {
+     "precision": 0.75,
+     "recall": 1.0,
+     "f1": 0.8571,
+     "support": 3
+    },
+    "card_payment_not_recognised": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 3
+    },
+    "card_payment_wrong_exchange_rate": {
+     "precision": 1.0,
+     "recall": 0.3333,
+     "f1": 0.5,
+     "support": 3
+    },
+    "card_swallowed": {
+     "precision": 1.0,
+     "recall": 0.6667,
+     "f1": 0.8,
+     "support": 3
+    },
+    "cash_withdrawal_charge": {
+     "precision": 0.6,
+     "recall": 1.0,
+     "f1": 0.75,
+     "support": 3
+    },
+    "cash_withdrawal_not_recognised": {
+     "precision": 1.0,
+     "recall": 0.6667,
+     "f1": 0.8,
+     "support": 3
+    },
+    "change_pin": {
+     "precision": 0.4286,
+     "recall": 1.0,
+     "f1": 0.6,
+     "support": 3
+    },
+    "compromised_card": {
+     "precision": 0.75,
+     "recall": 1.0,
+     "f1": 0.8571,
+     "support": 3
+    },
+    "contactless_not_working": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 3
+    },
+    "country_support": {
+     "precision": 1.0,
+     "recall": 0.3333,
+     "f1": 0.5,
+     "support": 3
+    },
+    "declined_card_payment": {
+     "precision": 0.6667,
+     "recall": 0.6667,
+     "f1": 0.6667,
+     "support": 3
+    },
+    "declined_cash_withdrawal": {
+     "precision": 0.75,
+     "recall": 1.0,
+     "f1": 0.8571,
+     "support": 3
+    },
+    "declined_transfer": {
+     "precision": 1.0,
+     "recall": 0.6667,
+     "f1": 0.8,
+     "support": 3
+    },
+    "direct_debit_payment_not_recognised": {
+     "precision": 1.0,
+     "recall": 0.6667,
+     "f1": 0.8,
+     "support": 3
+    },
+    "disposable_card_limits": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 3
+    },
+    "edit_personal_details": {
+     "precision": 0.5,
+     "recall": 1.0,
+     "f1": 0.6667,
+     "support": 3
+    },
+    "exchange_charge": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 3
+    },
+    "exchange_rate": {
+     "precision": 0.6,
+     "recall": 1.0,
+     "f1": 0.75,
+     "support": 3
+    },
+    "exchange_via_app": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 3
+    },
+    "extra_charge_on_statement": {
+     "precision": 1.0,
+     "recall": 0.6667,
+     "f1": 0.8,
+     "support": 3
+    },
+    "failed_transfer": {
+     "precision": 1.0,
+     "recall": 0.6667,
+     "f1": 0.8,
+     "support": 3
+    },
+    "fiat_currency_support": {
+     "precision": 0.5,
+     "recall": 0.3333,
+     "f1": 0.4,
+     "support": 3
+    },
+    "get_disposable_virtual_card": {
+     "precision": 0.75,
+     "recall": 1.0,
+     "f1": 0.8571,
+     "support": 3
+    },
+    "get_physical_card": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 3
+    },
+    "getting_spare_card": {
+     "precision": 1.0,
+     "recall": 0.6667,
+     "f1": 0.8,
+     "support": 3
+    },
+    "getting_virtual_card": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 3
+    },
+    "lost_or_stolen_card": {
+     "precision": 0.5,
+     "recall": 1.0,
+     "f1": 0.6667,
+     "support": 3
+    },
+    "lost_or_stolen_phone": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 3
+    },
+    "order_physical_card": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 3
+    },
+    "passcode_forgotten": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 3
+    },
+    "pending_card_payment": {
+     "precision": 0.6667,
+     "recall": 1.0,
+     "f1": 0.8,
+     "support": 2
+    },
+    "pending_cash_withdrawal": {
+     "precision": 1.0,
+     "recall": 0.5,
+     "f1": 0.6667,
+     "support": 2
+    },
+    "pending_top_up": {
+     "precision": 1.0,
+     "recall": 0.5,
+     "f1": 0.6667,
+     "support": 2
+    },
+    "pending_transfer": {
+     "precision": 0.4,
+     "recall": 1.0,
+     "f1": 0.5714,
+     "support": 2
+    },
+    "pin_blocked": {
+     "precision": 1.0,
+     "recall": 0.5,
+     "f1": 0.6667,
+     "support": 2
+    },
+    "receiving_money": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 2
+    },
+    "request_refund": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 2
+    },
+    "reverted_card_payment?": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 2
+    },
+    "supported_cards_and_currencies": {
+     "precision": 0.2,
+     "recall": 1.0,
+     "f1": 0.3333,
+     "support": 2
+    },
+    "terminate_account": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 2
+    },
+    "top_up_by_bank_transfer_charge": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 2
+    },
+    "top_up_by_card_charge": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 2
+    },
+    "top_up_by_cash_or_cheque": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 2
+    },
+    "top_up_failed": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 2
+    },
+    "top_up_limits": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 2
+    },
+    "top_up_reverted": {
+     "precision": 1.0,
+     "recall": 0.5,
+     "f1": 0.6667,
+     "support": 2
+    },
+    "topping_up_by_card": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 2
+    },
+    "transaction_charged_twice": {
+     "precision": 0.6667,
+     "recall": 1.0,
+     "f1": 0.8,
+     "support": 2
+    },
+    "transfer_fee_charged": {
+     "precision": 0.5,
+     "recall": 0.5,
+     "f1": 0.5,
+     "support": 2
+    },
+    "transfer_into_account": {
+     "precision": 0.5,
+     "recall": 0.5,
+     "f1": 0.5,
+     "support": 2
+    },
+    "transfer_not_received_by_recipient": {
+     "precision": 1.0,
+     "recall": 0.5,
+     "f1": 0.6667,
+     "support": 2
+    },
+    "transfer_timing": {
+     "precision": 0.6667,
+     "recall": 1.0,
+     "f1": 0.8,
+     "support": 2
+    },
+    "unable_to_verify_identity": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 2
+    },
+    "verify_my_identity": {
+     "precision": 0.4,
+     "recall": 1.0,
+     "f1": 0.5714,
+     "support": 2
+    },
+    "verify_source_of_funds": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 2
+    },
+    "verify_top_up": {
+     "precision": 0.4,
+     "recall": 1.0,
+     "f1": 0.5714,
+     "support": 2
+    },
+    "virtual_card_not_working": {
+     "precision": 1.0,
+     "recall": 0.5,
+     "f1": 0.6667,
+     "support": 2
+    },
+    "visa_or_mastercard": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 2
+    },
+    "why_verify_identity": {
+     "precision": 1.0,
+     "recall": 0.5,
+     "f1": 0.6667,
+     "support": 2
+    },
+    "wrong_amount_of_cash_received": {
+     "precision": 0.3333,
+     "recall": 0.5,
+     "f1": 0.4,
+     "support": 2
+    },
+    "wrong_exchange_rate_for_cash_withdrawal": {
+     "precision": 1.0,
+     "recall": 0.5,
+     "f1": 0.6667,
+     "support": 2
+    }
+   },
+   "calibration": {
+    "ece": 0.1823,
+    "bins": [
+     {
+      "low": 0.0,
+      "high": 0.1,
+      "n": 8,
+      "confidence": 0.0759,
+      "accuracy": 0.375
+     },
+     {
+      "low": 0.1,
+      "high": 0.2,
+      "n": 21,
+      "confidence": 0.1488,
+      "accuracy": 0.1905
+     },
+     {
+      "low": 0.2,
+      "high": 0.3,
+      "n": 19,
+      "confidence": 0.2476,
+      "accuracy": 0.5263
+     },
+     {
+      "low": 0.3,
+      "high": 0.4,
+      "n": 19,
+      "confidence": 0.3416,
+      "accuracy": 0.5789
+     },
+     {
+      "low": 0.4,
+      "high": 0.5,
+      "n": 21,
+      "confidence": 0.4447,
+      "accuracy": 0.7143
+     },
+     {
+      "low": 0.5,
+      "high": 0.6,
+      "n": 30,
+      "confidence": 0.5469,
+      "accuracy": 0.8667
+     },
+     {
+      "low": 0.6,
+      "high": 0.7,
+      "n": 20,
+      "confidence": 0.6448,
+      "accuracy": 0.85
+     },
+     {
+      "low": 0.7,
+      "high": 0.8,
+      "n": 25,
+      "confidence": 0.7481,
+      "accuracy": 0.88
+     },
+     {
+      "low": 0.8,
+      "high": 0.9,
+      "n": 19,
+      "confidence": 0.8612,
+      "accuracy": 0.8947
+     },
+     {
+      "low": 0.9,
+      "high": 1.0,
+      "n": 18,
+      "confidence": 0.9498,
+      "accuracy": 0.9444
+     }
+    ]
+   },
+   "baselines": {
+    "majority": {
+     "rule": "always 'exchange_rate'",
+     "accuracy": 0.015,
+     "macro_f1": 0.0004
+    },
+    "random": {
+     "rule": "uniform over the candidate labels",
+     "accuracy": 0.015,
+     "macro_f1": 0.0139
+    }
+   },
+   "subsample": "sub200"
+  },
+  "banking77-intent--decide-340m--plain": {
+   "task": "banking77/intent",
+   "model": "decide-340m",
+   "descriptions": false,
+   "latency": {
+    "requests": 770,
+    "inference_ms_median": 706.2,
+    "inference_ms_p90": 1271.4,
+    "client_ms_median": 718.1,
+    "client_ms_p90": 1285.1,
+    "client_ms_total": 650338,
+    "input_tokens_median": 534.0
+   },
+   "n": 770,
+   "accuracy": 0.713,
+   "accuracy_ci95": [
+    0.68,
+    0.7438
+   ],
+   "macro_f1": 0.7115,
+   "per_label": {
+    "Refund_not_showing_up": {
+     "precision": 1.0,
+     "recall": 0.5,
+     "f1": 0.6667,
+     "support": 10
+    },
+    "activate_my_card": {
+     "precision": 0.9091,
+     "recall": 1.0,
+     "f1": 0.9524,
+     "support": 10
+    },
+    "age_limit": {
+     "precision": 0.9091,
+     "recall": 1.0,
+     "f1": 0.9524,
+     "support": 10
+    },
+    "apple_pay_or_google_pay": {
+     "precision": 0.6364,
+     "recall": 0.7,
+     "f1": 0.6667,
+     "support": 10
+    },
+    "atm_support": {
+     "precision": 0.5,
+     "recall": 0.7,
+     "f1": 0.5833,
+     "support": 10
+    },
+    "automatic_top_up": {
+     "precision": 0.8571,
+     "recall": 0.6,
+     "f1": 0.7059,
+     "support": 10
+    },
+    "balance_not_updated_after_bank_transfer": {
+     "precision": 1.0,
+     "recall": 0.6,
+     "f1": 0.75,
+     "support": 10
+    },
+    "balance_not_updated_after_cheque_or_cash_deposit": {
+     "precision": 1.0,
+     "recall": 0.6,
+     "f1": 0.75,
+     "support": 10
+    },
+    "beneficiary_not_allowed": {
+     "precision": 1.0,
+     "recall": 0.4,
+     "f1": 0.5714,
+     "support": 10
+    },
+    "cancel_transfer": {
+     "precision": 0.7778,
+     "recall": 0.7,
+     "f1": 0.7368,
+     "support": 10
+    },
+    "card_about_to_expire": {
+     "precision": 1.0,
+     "recall": 0.7,
+     "f1": 0.8235,
+     "support": 10
+    },
+    "card_acceptance": {
+     "precision": 0.5833,
+     "recall": 0.7,
+     "f1": 0.6364,
+     "support": 10
+    },
+    "card_arrival": {
+     "precision": 0.8333,
+     "recall": 0.5,
+     "f1": 0.625,
+     "support": 10
+    },
+    "card_delivery_estimate": {
+     "precision": 0.5,
+     "recall": 0.7,
+     "f1": 0.5833,
+     "support": 10
+    },
+    "card_linking": {
+     "precision": 0.8889,
+     "recall": 0.8,
+     "f1": 0.8421,
+     "support": 10
+    },
+    "card_not_working": {
+     "precision": 0.6923,
+     "recall": 0.9,
+     "f1": 0.7826,
+     "support": 10
+    },
+    "card_payment_fee_charged": {
+     "precision": 0.9,
+     "recall": 0.9,
+     "f1": 0.9,
+     "support": 10
+    },
+    "card_payment_not_recognised": {
+     "precision": 1.0,
+     "recall": 0.6,
+     "f1": 0.75,
+     "support": 10
+    },
+    "card_payment_wrong_exchange_rate": {
+     "precision": 1.0,
+     "recall": 0.7,
+     "f1": 0.8235,
+     "support": 10
+    },
+    "card_swallowed": {
+     "precision": 1.0,
+     "recall": 0.5,
+     "f1": 0.6667,
+     "support": 10
+    },
+    "cash_withdrawal_charge": {
+     "precision": 0.8182,
+     "recall": 0.9,
+     "f1": 0.8571,
+     "support": 10
+    },
+    "cash_withdrawal_not_recognised": {
+     "precision": 0.9,
+     "recall": 0.9,
+     "f1": 0.9,
+     "support": 10
+    },
+    "change_pin": {
+     "precision": 0.4762,
+     "recall": 1.0,
+     "f1": 0.6452,
+     "support": 10
+    },
+    "compromised_card": {
+     "precision": 0.7273,
+     "recall": 0.8,
+     "f1": 0.7619,
+     "support": 10
+    },
+    "contactless_not_working": {
+     "precision": 1.0,
+     "recall": 0.8,
+     "f1": 0.8889,
+     "support": 10
+    },
+    "country_support": {
+     "precision": 0.75,
+     "recall": 0.9,
+     "f1": 0.8182,
+     "support": 10
+    },
+    "declined_card_payment": {
+     "precision": 0.6,
+     "recall": 0.6,
+     "f1": 0.6,
+     "support": 10
+    },
+    "declined_cash_withdrawal": {
+     "precision": 0.8571,
+     "recall": 0.6,
+     "f1": 0.7059,
+     "support": 10
+    },
+    "declined_transfer": {
+     "precision": 1.0,
+     "recall": 0.7,
+     "f1": 0.8235,
+     "support": 10
+    },
+    "direct_debit_payment_not_recognised": {
+     "precision": 1.0,
+     "recall": 0.6,
+     "f1": 0.75,
+     "support": 10
+    },
+    "disposable_card_limits": {
+     "precision": 0.75,
+     "recall": 0.9,
+     "f1": 0.8182,
+     "support": 10
+    },
+    "edit_personal_details": {
+     "precision": 0.9091,
+     "recall": 1.0,
+     "f1": 0.9524,
+     "support": 10
+    },
+    "exchange_charge": {
+     "precision": 1.0,
+     "recall": 0.9,
+     "f1": 0.9474,
+     "support": 10
+    },
+    "exchange_rate": {
+     "precision": 0.6429,
+     "recall": 0.9,
+     "f1": 0.75,
+     "support": 10
+    },
+    "exchange_via_app": {
+     "precision": 0.25,
+     "recall": 0.1,
+     "f1": 0.1429,
+     "support": 10
+    },
+    "extra_charge_on_statement": {
+     "precision": 0.8889,
+     "recall": 0.8,
+     "f1": 0.8421,
+     "support": 10
+    },
+    "failed_transfer": {
+     "precision": 0.8182,
+     "recall": 0.9,
+     "f1": 0.8571,
+     "support": 10
+    },
+    "fiat_currency_support": {
+     "precision": 0.3333,
+     "recall": 0.3,
+     "f1": 0.3158,
+     "support": 10
+    },
+    "get_disposable_virtual_card": {
+     "precision": 0.6667,
+     "recall": 0.6,
+     "f1": 0.6316,
+     "support": 10
+    },
+    "get_physical_card": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 10
+    },
+    "getting_spare_card": {
+     "precision": 1.0,
+     "recall": 0.4,
+     "f1": 0.5714,
+     "support": 10
+    },
+    "getting_virtual_card": {
+     "precision": 0.8,
+     "recall": 0.8,
+     "f1": 0.8,
+     "support": 10
+    },
+    "lost_or_stolen_card": {
+     "precision": 0.5882,
+     "recall": 1.0,
+     "f1": 0.7407,
+     "support": 10
+    },
+    "lost_or_stolen_phone": {
+     "precision": 1.0,
+     "recall": 0.9,
+     "f1": 0.9474,
+     "support": 10
+    },
+    "order_physical_card": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 10
+    },
+    "passcode_forgotten": {
+     "precision": 0.7692,
+     "recall": 1.0,
+     "f1": 0.8696,
+     "support": 10
+    },
+    "pending_card_payment": {
+     "precision": 0.7273,
+     "recall": 0.8,
+     "f1": 0.7619,
+     "support": 10
+    },
+    "pending_cash_withdrawal": {
+     "precision": 0.7,
+     "recall": 0.7,
+     "f1": 0.7,
+     "support": 10
+    },
+    "pending_top_up": {
+     "precision": 0.6154,
+     "recall": 0.8,
+     "f1": 0.6957,
+     "support": 10
+    },
+    "pending_transfer": {
+     "precision": 0.6667,
+     "recall": 0.6,
+     "f1": 0.6316,
+     "support": 10
+    },
+    "pin_blocked": {
+     "precision": 0.8571,
+     "recall": 0.6,
+     "f1": 0.7059,
+     "support": 10
+    },
+    "receiving_money": {
+     "precision": 0.25,
+     "recall": 0.4,
+     "f1": 0.3077,
+     "support": 10
+    },
+    "request_refund": {
+     "precision": 0.6429,
+     "recall": 0.9,
+     "f1": 0.75,
+     "support": 10
+    },
+    "reverted_card_payment?": {
+     "precision": 1.0,
+     "recall": 0.9,
+     "f1": 0.9474,
+     "support": 10
+    },
+    "supported_cards_and_currencies": {
+     "precision": 0.25,
+     "recall": 0.6,
+     "f1": 0.3529,
+     "support": 10
+    },
+    "terminate_account": {
+     "precision": 0.8333,
+     "recall": 1.0,
+     "f1": 0.9091,
+     "support": 10
+    },
+    "top_up_by_bank_transfer_charge": {
+     "precision": 0.75,
+     "recall": 0.3,
+     "f1": 0.4286,
+     "support": 10
+    },
+    "top_up_by_card_charge": {
+     "precision": 0.9091,
+     "recall": 1.0,
+     "f1": 0.9524,
+     "support": 10
+    },
+    "top_up_by_cash_or_cheque": {
+     "precision": 0.7273,
+     "recall": 0.8,
+     "f1": 0.7619,
+     "support": 10
+    },
+    "top_up_failed": {
+     "precision": 0.7273,
+     "recall": 0.8,
+     "f1": 0.7619,
+     "support": 10
+    },
+    "top_up_limits": {
+     "precision": 0.6667,
+     "recall": 1.0,
+     "f1": 0.8,
+     "support": 10
+    },
+    "top_up_reverted": {
+     "precision": 1.0,
+     "recall": 0.8,
+     "f1": 0.8889,
+     "support": 10
+    },
+    "topping_up_by_card": {
+     "precision": 0.3333,
+     "recall": 0.2,
+     "f1": 0.25,
+     "support": 10
+    },
+    "transaction_charged_twice": {
+     "precision": 0.8182,
+     "recall": 0.9,
+     "f1": 0.8571,
+     "support": 10
+    },
+    "transfer_fee_charged": {
+     "precision": 0.7273,
+     "recall": 0.8,
+     "f1": 0.7619,
+     "support": 10
+    },
+    "transfer_into_account": {
+     "precision": 0.4,
+     "recall": 0.6,
+     "f1": 0.48,
+     "support": 10
+    },
+    "transfer_not_received_by_recipient": {
+     "precision": 0.8571,
+     "recall": 0.6,
+     "f1": 0.7059,
+     "support": 10
+    },
+    "transfer_timing": {
+     "precision": 0.4375,
+     "recall": 0.7,
+     "f1": 0.5385,
+     "support": 10
+    },
+    "unable_to_verify_identity": {
+     "precision": 0.7778,
+     "recall": 0.7,
+     "f1": 0.7368,
+     "support": 10
+    },
+    "verify_my_identity": {
+     "precision": 0.6667,
+     "recall": 1.0,
+     "f1": 0.8,
+     "support": 10
+    },
+    "verify_source_of_funds": {
+     "precision": 0.9091,
+     "recall": 1.0,
+     "f1": 0.9524,
+     "support": 10
+    },
+    "verify_top_up": {
+     "precision": 0.875,
+     "recall": 0.7,
+     "f1": 0.7778,
+     "support": 10
+    },
+    "virtual_card_not_working": {
+     "precision": 0.8571,
+     "recall": 0.6,
+     "f1": 0.7059,
+     "support": 10
+    },
+    "visa_or_mastercard": {
+     "precision": 0.9,
+     "recall": 0.9,
+     "f1": 0.9,
+     "support": 10
+    },
+    "why_verify_identity": {
+     "precision": 0.8571,
+     "recall": 0.6,
+     "f1": 0.7059,
+     "support": 10
+    },
+    "wrong_amount_of_cash_received": {
+     "precision": 0.6667,
+     "recall": 0.8,
+     "f1": 0.7273,
+     "support": 10
+    },
+    "wrong_exchange_rate_for_cash_withdrawal": {
+     "precision": 1.0,
+     "recall": 0.7,
+     "f1": 0.8235,
+     "support": 10
+    }
+   },
+   "calibration": {
+    "ece": 0.1267,
+    "bins": [
+     {
+      "low": 0.0,
+      "high": 0.1,
+      "n": 2,
+      "confidence": 0.0885,
+      "accuracy": 0.5
+     },
+     {
+      "low": 0.1,
+      "high": 0.2,
+      "n": 18,
+      "confidence": 0.1628,
+      "accuracy": 0.3889
+     },
+     {
+      "low": 0.2,
+      "high": 0.3,
+      "n": 30,
+      "confidence": 0.2537,
+      "accuracy": 0.3
+     },
+     {
+      "low": 0.3,
+      "high": 0.4,
+      "n": 31,
+      "confidence": 0.3517,
+      "accuracy": 0.3871
+     },
+     {
+      "low": 0.4,
+      "high": 0.5,
+      "n": 44,
+      "confidence": 0.4474,
+      "accuracy": 0.5455
+     },
+     {
+      "low": 0.5,
+      "high": 0.6,
+      "n": 45,
+      "confidence": 0.5583,
+      "accuracy": 0.4222
+     },
+     {
+      "low": 0.6,
+      "high": 0.7,
+      "n": 49,
+      "confidence": 0.6491,
+      "accuracy": 0.6531
+     },
+     {
+      "low": 0.7,
+      "high": 0.8,
+      "n": 47,
+      "confidence": 0.7419,
+      "accuracy": 0.5532
+     },
+     {
+      "low": 0.8,
+      "high": 0.9,
+      "n": 56,
+      "confidence": 0.8522,
+      "accuracy": 0.625
+     },
+     {
+      "low": 0.9,
+      "high": 1.0,
+      "n": 448,
+      "confidence": 0.9864,
+      "accuracy": 0.8571
+     }
+    ]
+   },
+   "baselines": {
+    "majority": {
+     "rule": "always 'top_up_reverted'",
+     "accuracy": 0.013,
+     "macro_f1": 0.0003
+    },
+    "random": {
+     "rule": "uniform over the candidate labels",
+     "accuracy": 0.0156,
+     "macro_f1": 0.0157
+    }
+   }
+  },
+  "banking77-intent--decide-340m--plain--sub200": {
+   "task": "banking77/intent",
+   "model": "decide-340m",
+   "descriptions": false,
+   "latency": {
+    "requests": 200,
+    "inference_ms_median": 640.2,
+    "inference_ms_p90": 1277.5,
+    "client_ms_median": 648.9,
+    "client_ms_p90": 1292.8,
+    "client_ms_total": 164980,
+    "input_tokens_median": 534.0
+   },
+   "n": 200,
+   "accuracy": 0.735,
+   "accuracy_ci95": [
+    0.6698,
+    0.7913
+   ],
+   "macro_f1": 0.7178,
+   "per_label": {
+    "Refund_not_showing_up": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 3
+    },
+    "activate_my_card": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 3
+    },
+    "age_limit": {
+     "precision": 0.75,
+     "recall": 1.0,
+     "f1": 0.8571,
+     "support": 3
+    },
+    "apple_pay_or_google_pay": {
+     "precision": 0.6,
+     "recall": 1.0,
+     "f1": 0.75,
+     "support": 3
+    },
+    "atm_support": {
+     "precision": 1.0,
+     "recall": 0.6667,
+     "f1": 0.8,
+     "support": 3
+    },
+    "automatic_top_up": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 3
+    },
+    "balance_not_updated_after_bank_transfer": {
+     "precision": 1.0,
+     "recall": 0.6667,
+     "f1": 0.8,
+     "support": 3
+    },
+    "balance_not_updated_after_cheque_or_cash_deposit": {
+     "precision": 1.0,
+     "recall": 0.3333,
+     "f1": 0.5,
+     "support": 3
+    },
+    "beneficiary_not_allowed": {
+     "precision": 1.0,
+     "recall": 0.3333,
+     "f1": 0.5,
+     "support": 3
+    },
+    "cancel_transfer": {
+     "precision": 1.0,
+     "recall": 0.6667,
+     "f1": 0.8,
+     "support": 3
+    },
+    "card_about_to_expire": {
+     "precision": 1.0,
+     "recall": 0.6667,
+     "f1": 0.8,
+     "support": 3
+    },
+    "card_acceptance": {
+     "precision": 0.6667,
+     "recall": 0.6667,
+     "f1": 0.6667,
+     "support": 3
+    },
+    "card_arrival": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 3
+    },
+    "card_delivery_estimate": {
+     "precision": 0.375,
+     "recall": 1.0,
+     "f1": 0.5455,
+     "support": 3
+    },
+    "card_linking": {
+     "precision": 1.0,
+     "recall": 0.6667,
+     "f1": 0.8,
+     "support": 3
+    },
+    "card_not_working": {
+     "precision": 0.75,
+     "recall": 1.0,
+     "f1": 0.8571,
+     "support": 3
+    },
+    "card_payment_fee_charged": {
+     "precision": 0.75,
+     "recall": 1.0,
+     "f1": 0.8571,
+     "support": 3
+    },
+    "card_payment_not_recognised": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 3
+    },
+    "card_payment_wrong_exchange_rate": {
+     "precision": 1.0,
+     "recall": 0.3333,
+     "f1": 0.5,
+     "support": 3
+    },
+    "card_swallowed": {
+     "precision": 1.0,
+     "recall": 0.6667,
+     "f1": 0.8,
+     "support": 3
+    },
+    "cash_withdrawal_charge": {
+     "precision": 0.6,
+     "recall": 1.0,
+     "f1": 0.75,
+     "support": 3
+    },
+    "cash_withdrawal_not_recognised": {
+     "precision": 1.0,
+     "recall": 0.6667,
+     "f1": 0.8,
+     "support": 3
+    },
+    "change_pin": {
+     "precision": 0.4286,
+     "recall": 1.0,
+     "f1": 0.6,
+     "support": 3
+    },
+    "compromised_card": {
+     "precision": 0.75,
+     "recall": 1.0,
+     "f1": 0.8571,
+     "support": 3
+    },
+    "contactless_not_working": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 3
+    },
+    "country_support": {
+     "precision": 1.0,
+     "recall": 0.6667,
+     "f1": 0.8,
+     "support": 3
+    },
+    "declined_card_payment": {
+     "precision": 0.6667,
+     "recall": 0.6667,
+     "f1": 0.6667,
+     "support": 3
+    },
+    "declined_cash_withdrawal": {
+     "precision": 0.75,
+     "recall": 1.0,
+     "f1": 0.8571,
+     "support": 3
+    },
+    "declined_transfer": {
+     "precision": 1.0,
+     "recall": 0.6667,
+     "f1": 0.8,
+     "support": 3
+    },
+    "direct_debit_payment_not_recognised": {
+     "precision": 1.0,
+     "recall": 0.6667,
+     "f1": 0.8,
+     "support": 3
+    },
+    "disposable_card_limits": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 3
+    },
+    "edit_personal_details": {
+     "precision": 0.75,
+     "recall": 1.0,
+     "f1": 0.8571,
+     "support": 3
+    },
+    "exchange_charge": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 3
+    },
+    "exchange_rate": {
+     "precision": 0.6,
+     "recall": 1.0,
+     "f1": 0.75,
+     "support": 3
+    },
+    "exchange_via_app": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 3
+    },
+    "extra_charge_on_statement": {
+     "precision": 1.0,
+     "recall": 0.6667,
+     "f1": 0.8,
+     "support": 3
+    },
+    "failed_transfer": {
+     "precision": 1.0,
+     "recall": 0.6667,
+     "f1": 0.8,
+     "support": 3
+    },
+    "fiat_currency_support": {
+     "precision": 0.3333,
+     "recall": 0.6667,
+     "f1": 0.4444,
+     "support": 3
+    },
+    "get_disposable_virtual_card": {
+     "precision": 0.75,
+     "recall": 1.0,
+     "f1": 0.8571,
+     "support": 3
+    },
+    "get_physical_card": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 3
+    },
+    "getting_spare_card": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 3
+    },
+    "getting_virtual_card": {
+     "precision": 1.0,
+     "recall": 0.3333,
+     "f1": 0.5,
+     "support": 3
+    },
+    "lost_or_stolen_card": {
+     "precision": 0.5,
+     "recall": 1.0,
+     "f1": 0.6667,
+     "support": 3
+    },
+    "lost_or_stolen_phone": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 3
+    },
+    "order_physical_card": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 3
+    },
+    "passcode_forgotten": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 3
+    },
+    "pending_card_payment": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 2
+    },
+    "pending_cash_withdrawal": {
+     "precision": 0.6667,
+     "recall": 1.0,
+     "f1": 0.8,
+     "support": 2
+    },
+    "pending_top_up": {
+     "precision": 0.5,
+     "recall": 0.5,
+     "f1": 0.5,
+     "support": 2
+    },
+    "pending_transfer": {
+     "precision": 0.6667,
+     "recall": 1.0,
+     "f1": 0.8,
+     "support": 2
+    },
+    "pin_blocked": {
+     "precision": 1.0,
+     "recall": 0.5,
+     "f1": 0.6667,
+     "support": 2
+    },
+    "receiving_money": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 2
+    },
+    "request_refund": {
+     "precision": 0.6667,
+     "recall": 1.0,
+     "f1": 0.8,
+     "support": 2
+    },
+    "reverted_card_payment?": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 2
+    },
+    "supported_cards_and_currencies": {
+     "precision": 0.3333,
+     "recall": 1.0,
+     "f1": 0.5,
+     "support": 2
+    },
+    "terminate_account": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 2
+    },
+    "top_up_by_bank_transfer_charge": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 2
+    },
+    "top_up_by_card_charge": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 2
+    },
+    "top_up_by_cash_or_cheque": {
+     "precision": 0.5,
+     "recall": 0.5,
+     "f1": 0.5,
+     "support": 2
+    },
+    "top_up_failed": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 2
+    },
+    "top_up_limits": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 2
+    },
+    "top_up_reverted": {
+     "precision": 1.0,
+     "recall": 0.5,
+     "f1": 0.6667,
+     "support": 2
+    },
+    "topping_up_by_card": {
+     "precision": 0.5,
+     "recall": 0.5,
+     "f1": 0.5,
+     "support": 2
+    },
+    "transaction_charged_twice": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 2
+    },
+    "transfer_fee_charged": {
+     "precision": 0.5,
+     "recall": 0.5,
+     "f1": 0.5,
+     "support": 2
+    },
+    "transfer_into_account": {
+     "precision": 0.3333,
+     "recall": 0.5,
+     "f1": 0.4,
+     "support": 2
+    },
+    "transfer_not_received_by_recipient": {
+     "precision": 1.0,
+     "recall": 0.5,
+     "f1": 0.6667,
+     "support": 2
+    },
+    "transfer_timing": {
+     "precision": 0.6667,
+     "recall": 1.0,
+     "f1": 0.8,
+     "support": 2
+    },
+    "unable_to_verify_identity": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 2
+    },
+    "verify_my_identity": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 2
+    },
+    "verify_source_of_funds": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 2
+    },
+    "verify_top_up": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 2
+    },
+    "virtual_card_not_working": {
+     "precision": 1.0,
+     "recall": 0.5,
+     "f1": 0.6667,
+     "support": 2
+    },
+    "visa_or_mastercard": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 2
+    },
+    "why_verify_identity": {
+     "precision": 1.0,
+     "recall": 1.0,
+     "f1": 1.0,
+     "support": 2
+    },
+    "wrong_amount_of_cash_received": {
+     "precision": 0.3333,
+     "recall": 0.5,
+     "f1": 0.4,
+     "support": 2
+    },
+    "wrong_exchange_rate_for_cash_withdrawal": {
+     "precision": 1.0,
+     "recall": 0.5,
+     "f1": 0.6667,
+     "support": 2
+    }
+   },
+   "calibration": {
+    "ece": 0.1216,
+    "bins": [
+     {
+      "low": 0.0,
+      "high": 0.1,
+      "n": 1,
+      "confidence": 0.0965,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.1,
+      "high": 0.2,
+      "n": 5,
+      "confidence": 0.1695,
+      "accuracy": 0.6
+     },
+     {
+      "low": 0.2,
+      "high": 0.3,
+      "n": 10,
+      "confidence": 0.2547,
+      "accuracy": 0.3
+     },
+     {
+      "low": 0.3,
+      "high": 0.4,
+      "n": 6,
+      "confidence": 0.3578,
+      "accuracy": 0.5
+     },
+     {
+      "low": 0.4,
+      "high": 0.5,
+      "n": 10,
+      "confidence": 0.4534,
+      "accuracy": 0.4
+     },
+     {
+      "low": 0.5,
+      "high": 0.6,
+      "n": 7,
+      "confidence": 0.5484,
+      "accuracy": 0.5714
+     },
+     {
+      "low": 0.6,
+      "high": 0.7,
+      "n": 13,
+      "confidence": 0.6379,
+      "accuracy": 0.6923
+     },
+     {
+      "low": 0.7,
+      "high": 0.8,
+      "n": 14,
+      "confidence": 0.7303,
+      "accuracy": 0.5714
+     },
+     {
+      "low": 0.8,
+      "high": 0.9,
+      "n": 15,
+      "confidence": 0.8408,
+      "accuracy": 0.4667
+     },
+     {
+      "low": 0.9,
+      "high": 1.0,
+      "n": 119,
+      "confidence": 0.9876,
+      "accuracy": 0.8908
+     }
+    ]
+   },
+   "baselines": {
+    "majority": {
+     "rule": "always 'exchange_rate'",
+     "accuracy": 0.015,
+     "macro_f1": 0.0004
+    },
+    "random": {
+     "rule": "uniform over the candidate labels",
+     "accuracy": 0.015,
+     "macro_f1": 0.0139
+    }
+   },
+   "subsample": "sub200"
+  },
+  "civil_comments-toxicity--decide-340m--desc": {
+   "task": "civil_comments/toxicity",
+   "model": "decide-340m",
+   "descriptions": true,
+   "latency": {
+    "requests": 1000,
+    "inference_ms_median": 101.2,
+    "inference_ms_p90": 224.5,
+    "client_ms_median": 111.6,
+    "client_ms_p90": 236.9,
+    "client_ms_total": 135546,
+    "input_tokens_median": 100.0
+   },
+   "n": 1000,
+   "accuracy": 0.476,
+   "accuracy_ci95": [
+    0.4452,
+    0.507
+   ],
+   "macro_f1": 0.4145,
+   "per_label": {
+    "not toxic": {
+     "precision": 0.9901,
+     "recall": 0.4348,
+     "f1": 0.6042,
+     "support": 920
+    },
+    "toxic": {
+     "precision": 0.1275,
+     "recall": 0.95,
+     "f1": 0.2249,
+     "support": 80
+    }
+   },
+   "calibration": {
+    "ece": 0.2327,
+    "bins": [
+     {
+      "low": 0.0,
+      "high": 0.1,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.1,
+      "high": 0.2,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.2,
+      "high": 0.3,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.3,
+      "high": 0.4,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.4,
+      "high": 0.5,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.5,
+      "high": 0.6,
+      "n": 202,
+      "confidence": 0.5472,
+      "accuracy": 0.5
+     },
+     {
+      "low": 0.6,
+      "high": 0.7,
+      "n": 266,
+      "confidence": 0.6535,
+      "accuracy": 0.5038
+     },
+     {
+      "low": 0.7,
+      "high": 0.8,
+      "n": 301,
+      "confidence": 0.7493,
+      "accuracy": 0.485
+     },
+     {
+      "low": 0.8,
+      "high": 0.9,
+      "n": 186,
+      "confidence": 0.8444,
+      "accuracy": 0.414
+     },
+     {
+      "low": 0.9,
+      "high": 1.0,
+      "n": 45,
+      "confidence": 0.9264,
+      "accuracy": 0.4
+     }
+    ]
+   },
+   "auc": {
+    "positive_label": "toxic",
+    "value": 0.7621
+   },
+   "baselines": {
+    "majority": {
+     "rule": "always 'not toxic'",
+     "accuracy": 0.92,
+     "macro_f1": 0.4792
+    },
+    "random": {
+     "rule": "uniform over the candidate labels",
+     "accuracy": 0.51,
+     "macro_f1": 0.4133
+    }
+   }
+  },
+  "civil_comments-toxicity--decide-340m--plain": {
+   "task": "civil_comments/toxicity",
+   "model": "decide-340m",
+   "descriptions": false,
+   "latency": {
+    "requests": 1000,
+    "inference_ms_median": 120.3,
+    "inference_ms_p90": 285.2,
+    "client_ms_median": 129.2,
+    "client_ms_p90": 293.1,
+    "client_ms_total": 155835,
+    "input_tokens_median": 55.0
+   },
+   "n": 1000,
+   "accuracy": 0.46,
+   "accuracy_ci95": [
+    0.4293,
+    0.491
+   ],
+   "macro_f1": 0.4026,
+   "per_label": {
+    "not toxic": {
+     "precision": 0.9872,
+     "recall": 0.4185,
+     "f1": 0.5878,
+     "support": 920
+    },
+    "toxic": {
+     "precision": 0.123,
+     "recall": 0.9375,
+     "f1": 0.2174,
+     "support": 80
+    }
+   },
+   "calibration": {
+    "ece": 0.3501,
+    "bins": [
+     {
+      "low": 0.0,
+      "high": 0.1,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.1,
+      "high": 0.2,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.2,
+      "high": 0.3,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.3,
+      "high": 0.4,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.4,
+      "high": 0.5,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.5,
+      "high": 0.6,
+      "n": 118,
+      "confidence": 0.5555,
+      "accuracy": 0.5
+     },
+     {
+      "low": 0.6,
+      "high": 0.7,
+      "n": 130,
+      "confidence": 0.6565,
+      "accuracy": 0.4769
+     },
+     {
+      "low": 0.7,
+      "high": 0.8,
+      "n": 175,
+      "confidence": 0.7504,
+      "accuracy": 0.52
+     },
+     {
+      "low": 0.8,
+      "high": 0.9,
+      "n": 225,
+      "confidence": 0.8523,
+      "accuracy": 0.4933
+     },
+     {
+      "low": 0.9,
+      "high": 1.0,
+      "n": 352,
+      "confidence": 0.9549,
+      "accuracy": 0.3892
+     }
+    ]
+   },
+   "auc": {
+    "positive_label": "toxic",
+    "value": 0.7279
+   },
+   "baselines": {
+    "majority": {
+     "rule": "always 'not toxic'",
+     "accuracy": 0.92,
+     "macro_f1": 0.4792
+    },
+    "random": {
+     "rule": "uniform over the candidate labels",
+     "accuracy": 0.51,
+     "macro_f1": 0.4133
+    }
+   }
+  },
+  "fast_decisions--decide-1b--plain--sub200": {
+   "task": "fast_decisions",
+   "model": "decide-1b",
+   "descriptions": false,
+   "latency": {
+    "requests": 342,
+    "inference_ms_median": 243.2,
+    "inference_ms_p90": 531.1,
+    "client_ms_median": 250.2,
+    "client_ms_p90": 541.5,
+    "client_ms_total": 107989,
+    "input_tokens_median": 215.0
+   },
+   "n_rows": 200,
+   "n_decisions": 342,
+   "domain_average": 0.6078,
+   "overall_accuracy": 0.5789,
+   "overall_ci95": [
+    0.526,
+    0.6301
+   ],
+   "domains": {
+    "agent_handoff": 0.75,
+    "banking_intent": 0.6667,
+    "benefits_request": 0.7917,
+    "clinic_request": 0.7083,
+    "document_type": 0.9167,
+    "email_triage": 0.5208,
+    "news_topic": 0.5,
+    "paper_field": 0.4167,
+    "product_feedback": 0.5,
+    "restaurant_review": 0.5417,
+    "review_sentiment": 0.75,
+    "screen_tags": 0.4167,
+    "sports_recap": 0.6111,
+    "support_intent": 0.7273,
+    "support_topic": 0.4545,
+    "ticket_route": 0.3333,
+    "travel_request": 0.7273
+   },
+   "heads": {
+    "fast_decisions/agent_handoff/should_handoff": 0.75,
+    "fast_decisions/banking_intent/intent": 0.6667,
+    "fast_decisions/benefits_request/asking_status": 0.6667,
+    "fast_decisions/benefits_request/program": 0.9167,
+    "fast_decisions/clinic_request/request": 0.5833,
+    "fast_decisions/clinic_request/urgent": 0.8333,
+    "fast_decisions/document_type/doc_type": 0.9167,
+    "fast_decisions/email_triage/action": 0.5833,
+    "fast_decisions/email_triage/category": 0.25,
+    "fast_decisions/email_triage/is_phishing": 0.5,
+    "fast_decisions/email_triage/needs_reply": 0.75,
+    "fast_decisions/news_topic/topic": 0.5,
+    "fast_decisions/paper_field/field": 0.4167,
+    "fast_decisions/product_feedback/feedback_type": 0.9167,
+    "fast_decisions/product_feedback/product_area": 0.0833,
+    "fast_decisions/restaurant_review/aspects": 0.0833,
+    "fast_decisions/restaurant_review/sentiment": 1.0,
+    "fast_decisions/review_sentiment/sentiment": 0.75,
+    "fast_decisions/screen_tags/format": 0.75,
+    "fast_decisions/screen_tags/genres": 0.0833,
+    "fast_decisions/sports_recap/result": 0.75,
+    "fast_decisions/sports_recap/sport": 0.5833,
+    "fast_decisions/sports_recap/upset": 0.5,
+    "fast_decisions/support_intent/intent": 0.7273,
+    "fast_decisions/support_topic/topic": 0.4545,
+    "fast_decisions/ticket_route/contains_pii": 0.3636,
+    "fast_decisions/ticket_route/queue": 0.4545,
+    "fast_decisions/ticket_route/urgency": 0.1818,
+    "fast_decisions/travel_request/intent": 0.7273
+   },
+   "single_label_calibration": {
+    "ece": 0.1592,
+    "bins": [
+     {
+      "low": 0.0,
+      "high": 0.1,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.1,
+      "high": 0.2,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.2,
+      "high": 0.3,
+      "n": 6,
+      "confidence": 0.2416,
+      "accuracy": 0.1667
+     },
+     {
+      "low": 0.3,
+      "high": 0.4,
+      "n": 12,
+      "confidence": 0.3348,
+      "accuracy": 0.25
+     },
+     {
+      "low": 0.4,
+      "high": 0.5,
+      "n": 16,
+      "confidence": 0.4387,
+      "accuracy": 0.3125
+     },
+     {
+      "low": 0.5,
+      "high": 0.6,
+      "n": 37,
+      "confidence": 0.5509,
+      "accuracy": 0.3784
+     },
+     {
+      "low": 0.6,
+      "high": 0.7,
+      "n": 22,
+      "confidence": 0.6414,
+      "accuracy": 0.5455
+     },
+     {
+      "low": 0.7,
+      "high": 0.8,
+      "n": 36,
+      "confidence": 0.7489,
+      "accuracy": 0.6111
+     },
+     {
+      "low": 0.8,
+      "high": 0.9,
+      "n": 28,
+      "confidence": 0.8587,
+      "accuracy": 0.6071
+     },
+     {
+      "low": 0.9,
+      "high": 1.0,
+      "n": 149,
+      "confidence": 0.978,
+      "accuracy": 0.8121
+     }
+    ]
+   },
+   "baselines": {
+    "majority": {
+     "rule": "most common gold answer per head",
+     "domain_average": 0.3733
+    },
+    "random": {
+     "rule": "uniform label per single-label head; each label with p=0.5 on several-label heads",
+     "domain_average": 0.201
+    }
+   },
+   "subsample": "sub200"
+  },
+  "fast_decisions--decide-340m--desc": {
+   "task": "fast_decisions",
+   "model": "decide-340m",
+   "descriptions": true,
+   "latency": {
+    "requests": 2900,
+    "inference_ms_median": 219.9,
+    "inference_ms_p90": 462.6,
+    "client_ms_median": 230.9,
+    "client_ms_p90": 477.3,
+    "client_ms_total": 758147,
+    "input_tokens_median": 220.0
+   },
+   "n_rows": 1700,
+   "n_decisions": 2900,
+   "domain_average": 0.6145,
+   "overall_accuracy": 0.5983,
+   "overall_ci95": [
+    0.5803,
+    0.616
+   ],
+   "domains": {
+    "agent_handoff": 0.75,
+    "banking_intent": 0.61,
+    "benefits_request": 0.765,
+    "clinic_request": 0.62,
+    "document_type": 0.81,
+    "email_triage": 0.565,
+    "news_topic": 0.68,
+    "paper_field": 0.43,
+    "product_feedback": 0.485,
+    "restaurant_review": 0.46,
+    "review_sentiment": 0.83,
+    "screen_tags": 0.445,
+    "sports_recap": 0.7167,
+    "support_intent": 0.7,
+    "support_topic": 0.45,
+    "ticket_route": 0.5,
+    "travel_request": 0.63
+   },
+   "heads": {
+    "fast_decisions/agent_handoff/should_handoff": 0.75,
+    "fast_decisions/banking_intent/intent": 0.61,
+    "fast_decisions/benefits_request/asking_status": 0.68,
+    "fast_decisions/benefits_request/program": 0.85,
+    "fast_decisions/clinic_request/request": 0.52,
+    "fast_decisions/clinic_request/urgent": 0.72,
+    "fast_decisions/document_type/doc_type": 0.81,
+    "fast_decisions/email_triage/action": 0.54,
+    "fast_decisions/email_triage/category": 0.45,
+    "fast_decisions/email_triage/is_phishing": 0.59,
+    "fast_decisions/email_triage/needs_reply": 0.68,
+    "fast_decisions/news_topic/topic": 0.68,
+    "fast_decisions/paper_field/field": 0.43,
+    "fast_decisions/product_feedback/feedback_type": 0.72,
+    "fast_decisions/product_feedback/product_area": 0.25,
+    "fast_decisions/restaurant_review/aspects": 0.1,
+    "fast_decisions/restaurant_review/sentiment": 0.82,
+    "fast_decisions/review_sentiment/sentiment": 0.83,
+    "fast_decisions/screen_tags/format": 0.79,
+    "fast_decisions/screen_tags/genres": 0.1,
+    "fast_decisions/sports_recap/result": 0.85,
+    "fast_decisions/sports_recap/sport": 0.59,
+    "fast_decisions/sports_recap/upset": 0.71,
+    "fast_decisions/support_intent/intent": 0.7,
+    "fast_decisions/support_topic/topic": 0.45,
+    "fast_decisions/ticket_route/contains_pii": 0.52,
+    "fast_decisions/ticket_route/queue": 0.58,
+    "fast_decisions/ticket_route/urgency": 0.4,
+    "fast_decisions/travel_request/intent": 0.63
+   },
+   "single_label_calibration": {
+    "ece": 0.019,
+    "bins": [
+     {
+      "low": 0.0,
+      "high": 0.1,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.1,
+      "high": 0.2,
+      "n": 3,
+      "confidence": 0.1707,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.2,
+      "high": 0.3,
+      "n": 65,
+      "confidence": 0.2701,
+      "accuracy": 0.3077
+     },
+     {
+      "low": 0.3,
+      "high": 0.4,
+      "n": 222,
+      "confidence": 0.3556,
+      "accuracy": 0.3153
+     },
+     {
+      "low": 0.4,
+      "high": 0.5,
+      "n": 282,
+      "confidence": 0.4521,
+      "accuracy": 0.422
+     },
+     {
+      "low": 0.5,
+      "high": 0.6,
+      "n": 413,
+      "confidence": 0.5535,
+      "accuracy": 0.5303
+     },
+     {
+      "low": 0.6,
+      "high": 0.7,
+      "n": 464,
+      "confidence": 0.6514,
+      "accuracy": 0.6336
+     },
+     {
+      "low": 0.7,
+      "high": 0.8,
+      "n": 446,
+      "confidence": 0.7527,
+      "accuracy": 0.7511
+     },
+     {
+      "low": 0.8,
+      "high": 0.9,
+      "n": 360,
+      "confidence": 0.8492,
+      "accuracy": 0.8611
+     },
+     {
+      "low": 0.9,
+      "high": 1.0,
+      "n": 345,
+      "confidence": 0.9538,
+      "accuracy": 0.9362
+     }
+    ]
+   },
+   "baselines": {
+    "majority": {
+     "rule": "most common gold answer per head",
+     "domain_average": 0.2575
+    },
+    "random": {
+     "rule": "uniform label per single-label head; each label with p=0.5 on several-label heads",
+     "domain_average": 0.202
+    }
+   }
+  },
+  "fast_decisions--decide-340m--desc--sub200": {
+   "task": "fast_decisions",
+   "model": "decide-340m",
+   "descriptions": true,
+   "latency": {
+    "requests": 342,
+    "inference_ms_median": 223.0,
+    "inference_ms_p90": 468.3,
+    "client_ms_median": 231.6,
+    "client_ms_p90": 475.1,
+    "client_ms_total": 89281,
+    "input_tokens_median": 222.0
+   },
+   "n_rows": 200,
+   "n_decisions": 342,
+   "domain_average": 0.5816,
+   "overall_accuracy": 0.5556,
+   "overall_ci95": [
+    0.5026,
+    0.6073
+   ],
+   "domains": {
+    "agent_handoff": 0.6667,
+    "banking_intent": 0.5,
+    "benefits_request": 0.6667,
+    "clinic_request": 0.6667,
+    "document_type": 0.9167,
+    "email_triage": 0.4583,
+    "news_topic": 0.5833,
+    "paper_field": 0.25,
+    "product_feedback": 0.4583,
+    "restaurant_review": 0.5417,
+    "review_sentiment": 0.8333,
+    "screen_tags": 0.375,
+    "sports_recap": 0.6667,
+    "support_intent": 0.8182,
+    "support_topic": 0.4545,
+    "ticket_route": 0.3939,
+    "travel_request": 0.6364
+   },
+   "heads": {
+    "fast_decisions/agent_handoff/should_handoff": 0.6667,
+    "fast_decisions/banking_intent/intent": 0.5,
+    "fast_decisions/benefits_request/asking_status": 0.5833,
+    "fast_decisions/benefits_request/program": 0.75,
+    "fast_decisions/clinic_request/request": 0.5,
+    "fast_decisions/clinic_request/urgent": 0.8333,
+    "fast_decisions/document_type/doc_type": 0.9167,
+    "fast_decisions/email_triage/action": 0.4167,
+    "fast_decisions/email_triage/category": 0.1667,
+    "fast_decisions/email_triage/is_phishing": 0.4167,
+    "fast_decisions/email_triage/needs_reply": 0.8333,
+    "fast_decisions/news_topic/topic": 0.5833,
+    "fast_decisions/paper_field/field": 0.25,
+    "fast_decisions/product_feedback/feedback_type": 0.75,
+    "fast_decisions/product_feedback/product_area": 0.1667,
+    "fast_decisions/restaurant_review/aspects": 0.0833,
+    "fast_decisions/restaurant_review/sentiment": 1.0,
+    "fast_decisions/review_sentiment/sentiment": 0.8333,
+    "fast_decisions/screen_tags/format": 0.6667,
+    "fast_decisions/screen_tags/genres": 0.0833,
+    "fast_decisions/sports_recap/result": 0.8333,
+    "fast_decisions/sports_recap/sport": 0.5833,
+    "fast_decisions/sports_recap/upset": 0.5833,
+    "fast_decisions/support_intent/intent": 0.8182,
+    "fast_decisions/support_topic/topic": 0.4545,
+    "fast_decisions/ticket_route/contains_pii": 0.3636,
+    "fast_decisions/ticket_route/queue": 0.5455,
+    "fast_decisions/ticket_route/urgency": 0.2727,
+    "fast_decisions/travel_request/intent": 0.6364
+   },
+   "single_label_calibration": {
+    "ece": 0.066,
+    "bins": [
+     {
+      "low": 0.0,
+      "high": 0.1,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.1,
+      "high": 0.2,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.2,
+      "high": 0.3,
+      "n": 10,
+      "confidence": 0.2848,
+      "accuracy": 0.2
+     },
+     {
+      "low": 0.3,
+      "high": 0.4,
+      "n": 22,
+      "confidence": 0.3499,
+      "accuracy": 0.1818
+     },
+     {
+      "low": 0.4,
+      "high": 0.5,
+      "n": 32,
+      "confidence": 0.4557,
+      "accuracy": 0.4688
+     },
+     {
+      "low": 0.5,
+      "high": 0.6,
+      "n": 58,
+      "confidence": 0.558,
+      "accuracy": 0.4655
+     },
+     {
+      "low": 0.6,
+      "high": 0.7,
+      "n": 54,
+      "confidence": 0.6557,
+      "accuracy": 0.5741
+     },
+     {
+      "low": 0.7,
+      "high": 0.8,
+      "n": 49,
+      "confidence": 0.7569,
+      "accuracy": 0.6735
+     },
+     {
+      "low": 0.8,
+      "high": 0.9,
+      "n": 41,
+      "confidence": 0.8541,
+      "accuracy": 0.878
+     },
+     {
+      "low": 0.9,
+      "high": 1.0,
+      "n": 40,
+      "confidence": 0.9598,
+      "accuracy": 0.95
+     }
+    ]
+   },
+   "baselines": {
+    "majority": {
+     "rule": "most common gold answer per head",
+     "domain_average": 0.3733
+    },
+    "random": {
+     "rule": "uniform label per single-label head; each label with p=0.5 on several-label heads",
+     "domain_average": 0.2113
+    }
+   },
+   "subsample": "sub200"
+  },
+  "fast_decisions--decide-340m--plain": {
+   "task": "fast_decisions",
+   "model": "decide-340m",
+   "descriptions": false,
+   "latency": {
+    "requests": 2900,
+    "inference_ms_median": 95.2,
+    "inference_ms_p90": 210.0,
+    "client_ms_median": 101.1,
+    "client_ms_p90": 218.4,
+    "client_ms_total": 361823,
+    "input_tokens_median": 177.0
+   },
+   "n_rows": 1700,
+   "n_decisions": 2900,
+   "domain_average": 0.634,
+   "overall_accuracy": 0.6193,
+   "overall_ci95": [
+    0.6015,
+    0.6368
+   ],
+   "domains": {
+    "agent_handoff": 0.76,
+    "banking_intent": 0.64,
+    "benefits_request": 0.75,
+    "clinic_request": 0.645,
+    "document_type": 0.79,
+    "email_triage": 0.5925,
+    "news_topic": 0.69,
+    "paper_field": 0.47,
+    "product_feedback": 0.515,
+    "restaurant_review": 0.535,
+    "review_sentiment": 0.84,
+    "screen_tags": 0.48,
+    "sports_recap": 0.7567,
+    "support_intent": 0.76,
+    "support_topic": 0.44,
+    "ticket_route": 0.4833,
+    "travel_request": 0.63
+   },
+   "heads": {
+    "fast_decisions/agent_handoff/should_handoff": 0.76,
+    "fast_decisions/banking_intent/intent": 0.64,
+    "fast_decisions/benefits_request/asking_status": 0.64,
+    "fast_decisions/benefits_request/program": 0.86,
+    "fast_decisions/clinic_request/request": 0.57,
+    "fast_decisions/clinic_request/urgent": 0.72,
+    "fast_decisions/document_type/doc_type": 0.79,
+    "fast_decisions/email_triage/action": 0.55,
+    "fast_decisions/email_triage/category": 0.52,
+    "fast_decisions/email_triage/is_phishing": 0.61,
+    "fast_decisions/email_triage/needs_reply": 0.69,
+    "fast_decisions/news_topic/topic": 0.69,
+    "fast_decisions/paper_field/field": 0.47,
+    "fast_decisions/product_feedback/feedback_type": 0.74,
+    "fast_decisions/product_feedback/product_area": 0.29,
+    "fast_decisions/restaurant_review/aspects": 0.25,
+    "fast_decisions/restaurant_review/sentiment": 0.82,
+    "fast_decisions/review_sentiment/sentiment": 0.84,
+    "fast_decisions/screen_tags/format": 0.83,
+    "fast_decisions/screen_tags/genres": 0.13,
+    "fast_decisions/sports_recap/result": 0.88,
+    "fast_decisions/sports_recap/sport": 0.7,
+    "fast_decisions/sports_recap/upset": 0.69,
+    "fast_decisions/support_intent/intent": 0.76,
+    "fast_decisions/support_topic/topic": 0.44,
+    "fast_decisions/ticket_route/contains_pii": 0.53,
+    "fast_decisions/ticket_route/queue": 0.58,
+    "fast_decisions/ticket_route/urgency": 0.34,
+    "fast_decisions/travel_request/intent": 0.63
+   },
+   "single_label_calibration": {
+    "ece": 0.1607,
+    "bins": [
+     {
+      "low": 0.0,
+      "high": 0.1,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.1,
+      "high": 0.2,
+      "n": 2,
+      "confidence": 0.1689,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.2,
+      "high": 0.3,
+      "n": 25,
+      "confidence": 0.26,
+      "accuracy": 0.2
+     },
+     {
+      "low": 0.3,
+      "high": 0.4,
+      "n": 91,
+      "confidence": 0.3585,
+      "accuracy": 0.2637
+     },
+     {
+      "low": 0.4,
+      "high": 0.5,
+      "n": 123,
+      "confidence": 0.4503,
+      "accuracy": 0.3008
+     },
+     {
+      "low": 0.5,
+      "high": 0.6,
+      "n": 215,
+      "confidence": 0.5501,
+      "accuracy": 0.4047
+     },
+     {
+      "low": 0.6,
+      "high": 0.7,
+      "n": 228,
+      "confidence": 0.6516,
+      "accuracy": 0.4386
+     },
+     {
+      "low": 0.7,
+      "high": 0.8,
+      "n": 253,
+      "confidence": 0.752,
+      "accuracy": 0.6008
+     },
+     {
+      "low": 0.8,
+      "high": 0.9,
+      "n": 304,
+      "confidence": 0.8522,
+      "accuracy": 0.5921
+     },
+     {
+      "low": 0.9,
+      "high": 1.0,
+      "n": 1359,
+      "confidence": 0.983,
+      "accuracy": 0.8418
+     }
+    ]
+   },
+   "baselines": {
+    "majority": {
+     "rule": "most common gold answer per head",
+     "domain_average": 0.2575
+    },
+    "random": {
+     "rule": "uniform label per single-label head; each label with p=0.5 on several-label heads",
+     "domain_average": 0.202
+    }
+   }
+  },
+  "fast_decisions--decide-340m--plain--sub200": {
+   "task": "fast_decisions",
+   "model": "decide-340m",
+   "descriptions": false,
+   "latency": {
+    "requests": 342,
+    "inference_ms_median": 91.8,
+    "inference_ms_p90": 205.7,
+    "client_ms_median": 97.5,
+    "client_ms_p90": 213.8,
+    "client_ms_total": 41664,
+    "input_tokens_median": 177.0
+   },
+   "n_rows": 200,
+   "n_decisions": 342,
+   "domain_average": 0.5974,
+   "overall_accuracy": 0.5731,
+   "overall_ci95": [
+    0.5202,
+    0.6244
+   ],
+   "domains": {
+    "agent_handoff": 0.5,
+    "banking_intent": 0.6667,
+    "benefits_request": 0.6667,
+    "clinic_request": 0.6667,
+    "document_type": 0.9167,
+    "email_triage": 0.5,
+    "news_topic": 0.5833,
+    "paper_field": 0.25,
+    "product_feedback": 0.5417,
+    "restaurant_review": 0.5417,
+    "review_sentiment": 0.8333,
+    "screen_tags": 0.4583,
+    "sports_recap": 0.6667,
+    "support_intent": 0.8182,
+    "support_topic": 0.4545,
+    "ticket_route": 0.3636,
+    "travel_request": 0.7273
+   },
+   "heads": {
+    "fast_decisions/agent_handoff/should_handoff": 0.5,
+    "fast_decisions/banking_intent/intent": 0.6667,
+    "fast_decisions/benefits_request/asking_status": 0.5,
+    "fast_decisions/benefits_request/program": 0.8333,
+    "fast_decisions/clinic_request/request": 0.5,
+    "fast_decisions/clinic_request/urgent": 0.8333,
+    "fast_decisions/document_type/doc_type": 0.9167,
+    "fast_decisions/email_triage/action": 0.5,
+    "fast_decisions/email_triage/category": 0.3333,
+    "fast_decisions/email_triage/is_phishing": 0.4167,
+    "fast_decisions/email_triage/needs_reply": 0.75,
+    "fast_decisions/news_topic/topic": 0.5833,
+    "fast_decisions/paper_field/field": 0.25,
+    "fast_decisions/product_feedback/feedback_type": 0.8333,
+    "fast_decisions/product_feedback/product_area": 0.25,
+    "fast_decisions/restaurant_review/aspects": 0.0833,
+    "fast_decisions/restaurant_review/sentiment": 1.0,
+    "fast_decisions/review_sentiment/sentiment": 0.8333,
+    "fast_decisions/screen_tags/format": 0.75,
+    "fast_decisions/screen_tags/genres": 0.1667,
+    "fast_decisions/sports_recap/result": 0.75,
+    "fast_decisions/sports_recap/sport": 0.6667,
+    "fast_decisions/sports_recap/upset": 0.5833,
+    "fast_decisions/support_intent/intent": 0.8182,
+    "fast_decisions/support_topic/topic": 0.4545,
+    "fast_decisions/ticket_route/contains_pii": 0.3636,
+    "fast_decisions/ticket_route/queue": 0.5455,
+    "fast_decisions/ticket_route/urgency": 0.1818,
+    "fast_decisions/travel_request/intent": 0.7273
+   },
+   "single_label_calibration": {
+    "ece": 0.2114,
+    "bins": [
+     {
+      "low": 0.0,
+      "high": 0.1,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.1,
+      "high": 0.2,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.2,
+      "high": 0.3,
+      "n": 2,
+      "confidence": 0.2624,
+      "accuracy": 0.5
+     },
+     {
+      "low": 0.3,
+      "high": 0.4,
+      "n": 11,
+      "confidence": 0.3485,
+      "accuracy": 0.2727
+     },
+     {
+      "low": 0.4,
+      "high": 0.5,
+      "n": 14,
+      "confidence": 0.4543,
+      "accuracy": 0.0714
+     },
+     {
+      "low": 0.5,
+      "high": 0.6,
+      "n": 22,
+      "confidence": 0.5382,
+      "accuracy": 0.2273
+     },
+     {
+      "low": 0.6,
+      "high": 0.7,
+      "n": 26,
+      "confidence": 0.6446,
+      "accuracy": 0.4231
+     },
+     {
+      "low": 0.7,
+      "high": 0.8,
+      "n": 33,
+      "confidence": 0.7462,
+      "accuracy": 0.697
+     },
+     {
+      "low": 0.8,
+      "high": 0.9,
+      "n": 38,
+      "confidence": 0.8536,
+      "accuracy": 0.4737
+     },
+     {
+      "low": 0.9,
+      "high": 1.0,
+      "n": 160,
+      "confidence": 0.9835,
+      "accuracy": 0.8
+     }
+    ]
+   },
+   "baselines": {
+    "majority": {
+     "rule": "most common gold answer per head",
+     "domain_average": 0.3733
+    },
+    "random": {
+     "rule": "uniform label per single-label head; each label with p=0.5 on several-label heads",
+     "domain_average": 0.2113
+    }
+   },
+   "subsample": "sub200"
+  },
+  "fast_decisions--decide-multilingual--plain": {
+   "task": "fast_decisions",
+   "model": "decide-multilingual",
+   "descriptions": false,
+   "latency": {
+    "requests": 2900,
+    "inference_ms_median": 43.4,
+    "inference_ms_p90": 61.0,
+    "client_ms_median": 50.8,
+    "client_ms_p90": 68.7,
+    "client_ms_total": 153027,
+    "input_tokens_median": 248.0
+   },
+   "n_rows": 1700,
+   "n_decisions": 2900,
+   "domain_average": 0.5855,
+   "overall_accuracy": 0.5734,
+   "overall_ci95": [
+    0.5554,
+    0.5913
+   ],
+   "domains": {
+    "agent_handoff": 0.66,
+    "banking_intent": 0.58,
+    "benefits_request": 0.705,
+    "clinic_request": 0.67,
+    "document_type": 0.75,
+    "email_triage": 0.55,
+    "news_topic": 0.63,
+    "paper_field": 0.38,
+    "product_feedback": 0.45,
+    "restaurant_review": 0.395,
+    "review_sentiment": 0.81,
+    "screen_tags": 0.44,
+    "sports_recap": 0.68,
+    "support_intent": 0.65,
+    "support_topic": 0.48,
+    "ticket_route": 0.5033,
+    "travel_request": 0.62
+   },
+   "heads": {
+    "fast_decisions/agent_handoff/should_handoff": 0.66,
+    "fast_decisions/banking_intent/intent": 0.58,
+    "fast_decisions/benefits_request/asking_status": 0.61,
+    "fast_decisions/benefits_request/program": 0.8,
+    "fast_decisions/clinic_request/request": 0.58,
+    "fast_decisions/clinic_request/urgent": 0.76,
+    "fast_decisions/document_type/doc_type": 0.75,
+    "fast_decisions/email_triage/action": 0.51,
+    "fast_decisions/email_triage/category": 0.48,
+    "fast_decisions/email_triage/is_phishing": 0.56,
+    "fast_decisions/email_triage/needs_reply": 0.65,
+    "fast_decisions/news_topic/topic": 0.63,
+    "fast_decisions/paper_field/field": 0.38,
+    "fast_decisions/product_feedback/feedback_type": 0.66,
+    "fast_decisions/product_feedback/product_area": 0.24,
+    "fast_decisions/restaurant_review/aspects": 0.06,
+    "fast_decisions/restaurant_review/sentiment": 0.73,
+    "fast_decisions/review_sentiment/sentiment": 0.81,
+    "fast_decisions/screen_tags/format": 0.8,
+    "fast_decisions/screen_tags/genres": 0.08,
+    "fast_decisions/sports_recap/result": 0.76,
+    "fast_decisions/sports_recap/sport": 0.62,
+    "fast_decisions/sports_recap/upset": 0.66,
+    "fast_decisions/support_intent/intent": 0.65,
+    "fast_decisions/support_topic/topic": 0.48,
+    "fast_decisions/ticket_route/contains_pii": 0.59,
+    "fast_decisions/ticket_route/queue": 0.57,
+    "fast_decisions/ticket_route/urgency": 0.35,
+    "fast_decisions/travel_request/intent": 0.62
+   },
+   "single_label_calibration": {
+    "ece": 0.1477,
+    "bins": [
+     {
+      "low": 0.0,
+      "high": 0.1,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.1,
+      "high": 0.2,
+      "n": 1,
+      "confidence": 0.1845,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.2,
+      "high": 0.3,
+      "n": 29,
+      "confidence": 0.271,
+      "accuracy": 0.2759
+     },
+     {
+      "low": 0.3,
+      "high": 0.4,
+      "n": 128,
+      "confidence": 0.3599,
+      "accuracy": 0.2422
+     },
+     {
+      "low": 0.4,
+      "high": 0.5,
+      "n": 196,
+      "confidence": 0.4512,
+      "accuracy": 0.3418
+     },
+     {
+      "low": 0.5,
+      "high": 0.6,
+      "n": 326,
+      "confidence": 0.5493,
+      "accuracy": 0.4663
+     },
+     {
+      "low": 0.6,
+      "high": 0.7,
+      "n": 274,
+      "confidence": 0.6523,
+      "accuracy": 0.5401
+     },
+     {
+      "low": 0.7,
+      "high": 0.8,
+      "n": 264,
+      "confidence": 0.7481,
+      "accuracy": 0.5492
+     },
+     {
+      "low": 0.8,
+      "high": 0.9,
+      "n": 304,
+      "confidence": 0.8496,
+      "accuracy": 0.6382
+     },
+     {
+      "low": 0.9,
+      "high": 1.0,
+      "n": 1078,
+      "confidence": 0.9764,
+      "accuracy": 0.8163
+     }
+    ]
+   },
+   "baselines": {
+    "majority": {
+     "rule": "most common gold answer per head",
+     "domain_average": 0.2575
+    },
+    "random": {
+     "rule": "uniform label per single-label head; each label with p=0.5 on several-label heads",
+     "domain_average": 0.202
+    }
+   }
+  },
+  "fast_decisions--decide-multilingual--plain--sub200": {
+   "task": "fast_decisions",
+   "model": "decide-multilingual",
+   "descriptions": false,
+   "latency": {
+    "requests": 342,
+    "inference_ms_median": 42.0,
+    "inference_ms_p90": 59.6,
+    "client_ms_median": 49.9,
+    "client_ms_p90": 67.4,
+    "client_ms_total": 17784,
+    "input_tokens_median": 247.0
+   },
+   "n_rows": 200,
+   "n_decisions": 342,
+   "domain_average": 0.581,
+   "overall_accuracy": 0.5556,
+   "overall_ci95": [
+    0.5026,
+    0.6073
+   ],
+   "domains": {
+    "agent_handoff": 0.5,
+    "banking_intent": 0.6667,
+    "benefits_request": 0.5833,
+    "clinic_request": 0.5833,
+    "document_type": 0.9167,
+    "email_triage": 0.4375,
+    "news_topic": 0.5833,
+    "paper_field": 0.3333,
+    "product_feedback": 0.4583,
+    "restaurant_review": 0.5417,
+    "review_sentiment": 0.75,
+    "screen_tags": 0.5,
+    "sports_recap": 0.75,
+    "support_intent": 0.7273,
+    "support_topic": 0.4545,
+    "ticket_route": 0.3636,
+    "travel_request": 0.7273
+   },
+   "heads": {
+    "fast_decisions/agent_handoff/should_handoff": 0.5,
+    "fast_decisions/banking_intent/intent": 0.6667,
+    "fast_decisions/benefits_request/asking_status": 0.5,
+    "fast_decisions/benefits_request/program": 0.6667,
+    "fast_decisions/clinic_request/request": 0.3333,
+    "fast_decisions/clinic_request/urgent": 0.8333,
+    "fast_decisions/document_type/doc_type": 0.9167,
+    "fast_decisions/email_triage/action": 0.3333,
+    "fast_decisions/email_triage/category": 0.3333,
+    "fast_decisions/email_triage/is_phishing": 0.4167,
+    "fast_decisions/email_triage/needs_reply": 0.6667,
+    "fast_decisions/news_topic/topic": 0.5833,
+    "fast_decisions/paper_field/field": 0.3333,
+    "fast_decisions/product_feedback/feedback_type": 0.75,
+    "fast_decisions/product_feedback/product_area": 0.1667,
+    "fast_decisions/restaurant_review/aspects": 0.0833,
+    "fast_decisions/restaurant_review/sentiment": 1.0,
+    "fast_decisions/review_sentiment/sentiment": 0.75,
+    "fast_decisions/screen_tags/format": 0.9167,
+    "fast_decisions/screen_tags/genres": 0.0833,
+    "fast_decisions/sports_recap/result": 0.75,
+    "fast_decisions/sports_recap/sport": 0.75,
+    "fast_decisions/sports_recap/upset": 0.75,
+    "fast_decisions/support_intent/intent": 0.7273,
+    "fast_decisions/support_topic/topic": 0.4545,
+    "fast_decisions/ticket_route/contains_pii": 0.3636,
+    "fast_decisions/ticket_route/queue": 0.5455,
+    "fast_decisions/ticket_route/urgency": 0.1818,
+    "fast_decisions/travel_request/intent": 0.7273
+   },
+   "single_label_calibration": {
+    "ece": 0.1724,
+    "bins": [
+     {
+      "low": 0.0,
+      "high": 0.1,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.1,
+      "high": 0.2,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.2,
+      "high": 0.3,
+      "n": 4,
+      "confidence": 0.2769,
+      "accuracy": 0.5
+     },
+     {
+      "low": 0.3,
+      "high": 0.4,
+      "n": 16,
+      "confidence": 0.3618,
+      "accuracy": 0.0625
+     },
+     {
+      "low": 0.4,
+      "high": 0.5,
+      "n": 22,
+      "confidence": 0.4493,
+      "accuracy": 0.4091
+     },
+     {
+      "low": 0.5,
+      "high": 0.6,
+      "n": 37,
+      "confidence": 0.5565,
+      "accuracy": 0.5135
+     },
+     {
+      "low": 0.6,
+      "high": 0.7,
+      "n": 31,
+      "confidence": 0.6551,
+      "accuracy": 0.4194
+     },
+     {
+      "low": 0.7,
+      "high": 0.8,
+      "n": 34,
+      "confidence": 0.7521,
+      "accuracy": 0.5588
+     },
+     {
+      "low": 0.8,
+      "high": 0.9,
+      "n": 39,
+      "confidence": 0.8503,
+      "accuracy": 0.5897
+     },
+     {
+      "low": 0.9,
+      "high": 1.0,
+      "n": 123,
+      "confidence": 0.9801,
+      "accuracy": 0.813
+     }
+    ]
+   },
+   "baselines": {
+    "majority": {
+     "rule": "most common gold answer per head",
+     "domain_average": 0.3733
+    },
+    "random": {
+     "rule": "uniform label per single-label head; each label with p=0.5 on several-label heads",
+     "domain_average": 0.2113
+    }
+   },
+   "subsample": "sub200"
+  },
+  "go_emotions-emotions--decide-340m--desc": {
+   "task": "go_emotions/emotions",
+   "model": "decide-340m",
+   "descriptions": true,
+   "latency": {
+    "requests": 1000,
+    "inference_ms_median": 345.0,
+    "inference_ms_p90": 526.4,
+    "client_ms_median": 352.2,
+    "client_ms_p90": 535.6,
+    "client_ms_total": 339891,
+    "input_tokens_median": 401.0
+   },
+   "n": 1000,
+   "default": {
+    "micro_f1": 0.0653,
+    "macro_f1": 0.0996,
+    "micro_precision": 0.6061,
+    "micro_recall": 0.0345,
+    "exact_match": 0.03,
+    "exact_match_ci95": [
+     0.0211,
+     0.0425
+    ],
+    "empty_predictions": 935,
+    "per_label": {
+     "admiration": {
+      "precision": 1.0,
+      "recall": 0.012,
+      "f1": 0.0238,
+      "support": 83
+     },
+     "amusement": {
+      "precision": 0.6364,
+      "recall": 0.125,
+      "f1": 0.209,
+      "support": 56
+     },
+     "anger": {
+      "precision": 0.2,
+      "recall": 0.0606,
+      "f1": 0.093,
+      "support": 33
+     },
+     "annoyance": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 61
+     },
+     "approval": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 65
+     },
+     "caring": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 26
+     },
+     "confusion": {
+      "precision": 1.0,
+      "recall": 0.0526,
+      "f1": 0.1,
+      "support": 19
+     },
+     "curiosity": {
+      "precision": 1.0,
+      "recall": 0.0189,
+      "f1": 0.037,
+      "support": 53
+     },
+     "desire": {
+      "precision": 0.3333,
+      "recall": 0.0667,
+      "f1": 0.1111,
+      "support": 15
+     },
+     "disappointment": {
+      "precision": 1.0,
+      "recall": 0.0417,
+      "f1": 0.08,
+      "support": 24
+     },
+     "disapproval": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 50
+     },
+     "disgust": {
+      "precision": 0.5,
+      "recall": 0.2692,
+      "f1": 0.35,
+      "support": 26
+     },
+     "embarrassment": {
+      "precision": 1.0,
+      "recall": 0.1111,
+      "f1": 0.2,
+      "support": 9
+     },
+     "excitement": {
+      "precision": 1.0,
+      "recall": 0.08,
+      "f1": 0.1481,
+      "support": 25
+     },
+     "fear": {
+      "precision": 0.9,
+      "recall": 0.6923,
+      "f1": 0.7826,
+      "support": 13
+     },
+     "gratitude": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 55
+     },
+     "joy": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 30
+     },
+     "love": {
+      "precision": 0.7143,
+      "recall": 0.125,
+      "f1": 0.2128,
+      "support": 40
+     },
+     "nervousness": {
+      "precision": 1.0,
+      "recall": 0.1667,
+      "f1": 0.2857,
+      "support": 6
+     },
+     "neutral": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 343
+     },
+     "optimism": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 27
+     },
+     "pride": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 5
+     },
+     "realization": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 30
+     },
+     "relief": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 2
+     },
+     "remorse": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 12
+     },
+     "sadness": {
+      "precision": 1.0,
+      "recall": 0.0286,
+      "f1": 0.0556,
+      "support": 35
+     },
+     "surprise": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 17
+     }
+    }
+   },
+   "calibration": {
+    "ece": 0.0139,
+    "bins": [
+     {
+      "low": 0.0,
+      "high": 0.1,
+      "n": 25224,
+      "confidence": 0.0399,
+      "accuracy": 0.0258
+     },
+     {
+      "low": 0.1,
+      "high": 0.2,
+      "n": 1948,
+      "confidence": 0.1354,
+      "accuracy": 0.1263
+     },
+     {
+      "low": 0.2,
+      "high": 0.3,
+      "n": 471,
+      "confidence": 0.2397,
+      "accuracy": 0.2293
+     },
+     {
+      "low": 0.3,
+      "high": 0.4,
+      "n": 188,
+      "confidence": 0.34,
+      "accuracy": 0.3457
+     },
+     {
+      "low": 0.4,
+      "high": 0.5,
+      "n": 103,
+      "confidence": 0.4446,
+      "accuracy": 0.4854
+     },
+     {
+      "low": 0.5,
+      "high": 0.6,
+      "n": 47,
+      "confidence": 0.5389,
+      "accuracy": 0.5957
+     },
+     {
+      "low": 0.6,
+      "high": 0.7,
+      "n": 13,
+      "confidence": 0.6382,
+      "accuracy": 0.5385
+     },
+     {
+      "low": 0.7,
+      "high": 0.8,
+      "n": 6,
+      "confidence": 0.7357,
+      "accuracy": 0.8333
+     },
+     {
+      "low": 0.8,
+      "high": 0.9,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.9,
+      "high": 1.0,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     }
+    ]
+   },
+   "tuned": {
+    "threshold": 0.16,
+    "tune_n": 500,
+    "tune_micro_f1": 0.2864,
+    "micro_f1": 0.2801,
+    "macro_f1": 0.3126,
+    "micro_precision": 0.2705,
+    "micro_recall": 0.2905,
+    "exact_match": 0.115
+   },
+   "baselines": {
+    "majority": {
+     "rule": "always 'neutral'",
+     "micro_f1": 0.3176,
+     "macro_f1": 0.0189
+    },
+    "random": {
+     "rule": "each label independently, with its tuning-split frequency",
+     "micro_f1": 0.1281,
+     "macro_f1": 0.0434
+    }
+   }
+  },
+  "go_emotions-emotions--decide-340m--plain": {
+   "task": "go_emotions/emotions",
+   "model": "decide-340m",
+   "descriptions": false,
+   "latency": {
+    "requests": 1000,
+    "inference_ms_median": 103.8,
+    "inference_ms_p90": 142.3,
+    "client_ms_median": 112.1,
+    "client_ms_p90": 149.9,
+    "client_ms_total": 118268,
+    "input_tokens_median": 79.0
+   },
+   "n": 1000,
+   "default": {
+    "micro_f1": 0.1517,
+    "macro_f1": 0.2195,
+    "micro_precision": 0.6329,
+    "micro_recall": 0.0862,
+    "exact_match": 0.082,
+    "exact_match_ci95": [
+     0.0666,
+     0.1006
+    ],
+    "empty_predictions": 847,
+    "per_label": {
+     "admiration": {
+      "precision": 0.5,
+      "recall": 0.0361,
+      "f1": 0.0674,
+      "support": 83
+     },
+     "amusement": {
+      "precision": 0.25,
+      "recall": 0.0179,
+      "f1": 0.0333,
+      "support": 56
+     },
+     "anger": {
+      "precision": 0.3529,
+      "recall": 0.1818,
+      "f1": 0.24,
+      "support": 33
+     },
+     "annoyance": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 61
+     },
+     "approval": {
+      "precision": 0.6,
+      "recall": 0.0462,
+      "f1": 0.0857,
+      "support": 65
+     },
+     "caring": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 26
+     },
+     "confusion": {
+      "precision": 0.5,
+      "recall": 0.0526,
+      "f1": 0.0952,
+      "support": 19
+     },
+     "curiosity": {
+      "precision": 0.6667,
+      "recall": 0.0755,
+      "f1": 0.1356,
+      "support": 53
+     },
+     "desire": {
+      "precision": 0.4,
+      "recall": 0.1333,
+      "f1": 0.2,
+      "support": 15
+     },
+     "disappointment": {
+      "precision": 0.5,
+      "recall": 0.0417,
+      "f1": 0.0769,
+      "support": 24
+     },
+     "disapproval": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 50
+     },
+     "disgust": {
+      "precision": 0.5,
+      "recall": 0.2308,
+      "f1": 0.3158,
+      "support": 26
+     },
+     "embarrassment": {
+      "precision": 0.5,
+      "recall": 0.2222,
+      "f1": 0.3077,
+      "support": 9
+     },
+     "excitement": {
+      "precision": 1.0,
+      "recall": 0.12,
+      "f1": 0.2143,
+      "support": 25
+     },
+     "fear": {
+      "precision": 0.8462,
+      "recall": 0.8462,
+      "f1": 0.8462,
+      "support": 13
+     },
+     "gratitude": {
+      "precision": 1.0,
+      "recall": 0.1818,
+      "f1": 0.3077,
+      "support": 55
+     },
+     "joy": {
+      "precision": 0.75,
+      "recall": 0.2,
+      "f1": 0.3158,
+      "support": 30
+     },
+     "love": {
+      "precision": 0.7241,
+      "recall": 0.525,
+      "f1": 0.6087,
+      "support": 40
+     },
+     "nervousness": {
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1": 0.6667,
+      "support": 6
+     },
+     "neutral": {
+      "precision": 0.25,
+      "recall": 0.0029,
+      "f1": 0.0058,
+      "support": 343
+     },
+     "optimism": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 27
+     },
+     "pride": {
+      "precision": 0.6667,
+      "recall": 0.4,
+      "f1": 0.5,
+      "support": 5
+     },
+     "realization": {
+      "precision": 0.3333,
+      "recall": 0.0333,
+      "f1": 0.0606,
+      "support": 30
+     },
+     "relief": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 2
+     },
+     "remorse": {
+      "precision": 0.6,
+      "recall": 0.25,
+      "f1": 0.3529,
+      "support": 12
+     },
+     "sadness": {
+      "precision": 0.8182,
+      "recall": 0.2571,
+      "f1": 0.3913,
+      "support": 35
+     },
+     "surprise": {
+      "precision": 0.3333,
+      "recall": 0.0588,
+      "f1": 0.1,
+      "support": 17
+     }
+    }
+   },
+   "calibration": {
+    "ece": 0.0169,
+    "bins": [
+     {
+      "low": 0.0,
+      "high": 0.1,
+      "n": 24611,
+      "confidence": 0.0356,
+      "accuracy": 0.0187
+     },
+     {
+      "low": 0.1,
+      "high": 0.2,
+      "n": 2355,
+      "confidence": 0.1363,
+      "accuracy": 0.1461
+     },
+     {
+      "low": 0.2,
+      "high": 0.3,
+      "n": 574,
+      "confidence": 0.2406,
+      "accuracy": 0.2561
+     },
+     {
+      "low": 0.3,
+      "high": 0.4,
+      "n": 202,
+      "confidence": 0.3441,
+      "accuracy": 0.3317
+     },
+     {
+      "low": 0.4,
+      "high": 0.5,
+      "n": 100,
+      "confidence": 0.4473,
+      "accuracy": 0.43
+     },
+     {
+      "low": 0.5,
+      "high": 0.6,
+      "n": 51,
+      "confidence": 0.5523,
+      "accuracy": 0.6275
+     },
+     {
+      "low": 0.6,
+      "high": 0.7,
+      "n": 26,
+      "confidence": 0.6316,
+      "accuracy": 0.5385
+     },
+     {
+      "low": 0.7,
+      "high": 0.8,
+      "n": 29,
+      "confidence": 0.7447,
+      "accuracy": 0.6552
+     },
+     {
+      "low": 0.8,
+      "high": 0.9,
+      "n": 21,
+      "confidence": 0.8618,
+      "accuracy": 0.7619
+     },
+     {
+      "low": 0.9,
+      "high": 1.0,
+      "n": 31,
+      "confidence": 0.9462,
+      "accuracy": 0.6129
+     }
+    ]
+   },
+   "tuned": {
+    "threshold": 0.19,
+    "tune_n": 500,
+    "tune_micro_f1": 0.3496,
+    "micro_f1": 0.3313,
+    "macro_f1": 0.3282,
+    "micro_precision": 0.3351,
+    "micro_recall": 0.3276,
+    "exact_match": 0.157
+   },
+   "baselines": {
+    "majority": {
+     "rule": "always 'neutral'",
+     "micro_f1": 0.3176,
+     "macro_f1": 0.0189
+    },
+    "random": {
+     "rule": "each label independently, with its tuning-split frequency",
+     "micro_f1": 0.1281,
+     "macro_f1": 0.0434
+    }
+   }
+  },
+  "massive-language--decide-340m--plain": {
+   "task": "massive/language",
+   "model": "decide-340m",
+   "descriptions": false,
+   "latency": {
+    "requests": 1000,
+    "inference_ms_median": 72.7,
+    "inference_ms_p90": 93.0,
+    "client_ms_median": 80.6,
+    "client_ms_p90": 101.8,
+    "client_ms_total": 82631,
+    "input_tokens_median": 38.0
+   },
+   "n": 1000,
+   "accuracy": 0.85,
+   "accuracy_ci95": [
+    0.8265,
+    0.8708
+   ],
+   "macro_f1": 0.8503,
+   "per_label": {
+    "Chinese": {
+     "precision": 0.9359,
+     "recall": 0.73,
+     "f1": 0.8202,
+     "support": 100
+    },
+    "Dutch": {
+     "precision": 1.0,
+     "recall": 0.83,
+     "f1": 0.9071,
+     "support": 100
+    },
+    "English": {
+     "precision": 0.8261,
+     "recall": 0.95,
+     "f1": 0.8837,
+     "support": 100
+    },
+    "French": {
+     "precision": 0.9794,
+     "recall": 0.95,
+     "f1": 0.9645,
+     "support": 100
+    },
+    "German": {
+     "precision": 0.8829,
+     "recall": 0.98,
+     "f1": 0.9289,
+     "support": 100
+    },
+    "Italian": {
+     "precision": 0.9485,
+     "recall": 0.92,
+     "f1": 0.934,
+     "support": 100
+    },
+    "Japanese": {
+     "precision": 0.8929,
+     "recall": 0.5,
+     "f1": 0.641,
+     "support": 100
+    },
+    "Portuguese": {
+     "precision": 1.0,
+     "recall": 0.73,
+     "f1": 0.8439,
+     "support": 100
+    },
+    "Russian": {
+     "precision": 0.5562,
+     "recall": 0.99,
+     "f1": 0.7122,
+     "support": 100
+    },
+    "Spanish": {
+     "precision": 0.8214,
+     "recall": 0.92,
+     "f1": 0.8679,
+     "support": 100
+    }
+   },
+   "calibration": {
+    "ece": 0.1188,
+    "bins": [
+     {
+      "low": 0.0,
+      "high": 0.1,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.1,
+      "high": 0.2,
+      "n": 14,
+      "confidence": 0.1718,
+      "accuracy": 0.2857
+     },
+     {
+      "low": 0.2,
+      "high": 0.3,
+      "n": 50,
+      "confidence": 0.2602,
+      "accuracy": 0.72
+     },
+     {
+      "low": 0.3,
+      "high": 0.4,
+      "n": 42,
+      "confidence": 0.3491,
+      "accuracy": 0.881
+     },
+     {
+      "low": 0.4,
+      "high": 0.5,
+      "n": 48,
+      "confidence": 0.4386,
+      "accuracy": 0.5833
+     },
+     {
+      "low": 0.5,
+      "high": 0.6,
+      "n": 23,
+      "confidence": 0.5562,
+      "accuracy": 0.5652
+     },
+     {
+      "low": 0.6,
+      "high": 0.7,
+      "n": 19,
+      "confidence": 0.6487,
+      "accuracy": 0.4737
+     },
+     {
+      "low": 0.7,
+      "high": 0.8,
+      "n": 35,
+      "confidence": 0.7512,
+      "accuracy": 0.7143
+     },
+     {
+      "low": 0.8,
+      "high": 0.9,
+      "n": 39,
+      "confidence": 0.8482,
+      "accuracy": 0.6154
+     },
+     {
+      "low": 0.9,
+      "high": 1.0,
+      "n": 730,
+      "confidence": 0.9932,
+      "accuracy": 0.9233
+     }
+    ]
+   },
+   "baselines": {
+    "majority": {
+     "rule": "always 'German'",
+     "accuracy": 0.1,
+     "macro_f1": 0.0182
+    },
+    "random": {
+     "rule": "uniform over the candidate labels",
+     "accuracy": 0.087,
+     "macro_f1": 0.0867
+    }
+   },
+   "by_group": {
+    "de-DE": 0.98,
+    "en-US": 0.95,
+    "es-ES": 0.92,
+    "fr-FR": 0.95,
+    "it-IT": 0.92,
+    "ja-JP": 0.5,
+    "nl-NL": 0.83,
+    "pt-PT": 0.73,
+    "ru-RU": 0.99,
+    "zh-CN": 0.73
+   }
+  },
+  "massive-language--decide-multilingual--plain": {
+   "task": "massive/language",
+   "model": "decide-multilingual",
+   "descriptions": false,
+   "latency": {
+    "requests": 1000,
+    "inference_ms_median": 24.3,
+    "inference_ms_p90": 50.6,
+    "client_ms_median": 37.3,
+    "client_ms_p90": 65.7,
+    "client_ms_total": 42981,
+    "input_tokens_median": 43.0
+   },
+   "n": 1000,
+   "accuracy": 0.578,
+   "accuracy_ci95": [
+    0.5471,
+    0.6083
+   ],
+   "macro_f1": 0.5916,
+   "per_label": {
+    "Chinese": {
+     "precision": 0.5682,
+     "recall": 0.25,
+     "f1": 0.3472,
+     "support": 100
+    },
+    "Dutch": {
+     "precision": 0.9571,
+     "recall": 0.67,
+     "f1": 0.7882,
+     "support": 100
+    },
+    "English": {
+     "precision": 0.2378,
+     "recall": 0.34,
+     "f1": 0.2798,
+     "support": 100
+    },
+    "French": {
+     "precision": 0.9208,
+     "recall": 0.93,
+     "f1": 0.9254,
+     "support": 100
+    },
+    "German": {
+     "precision": 0.902,
+     "recall": 0.46,
+     "f1": 0.6093,
+     "support": 100
+    },
+    "Italian": {
+     "precision": 0.8763,
+     "recall": 0.85,
+     "f1": 0.8629,
+     "support": 100
+    },
+    "Japanese": {
+     "precision": 0.7308,
+     "recall": 0.19,
+     "f1": 0.3016,
+     "support": 100
+    },
+    "Portuguese": {
+     "precision": 0.9857,
+     "recall": 0.69,
+     "f1": 0.8118,
+     "support": 100
+    },
+    "Russian": {
+     "precision": 0.7679,
+     "recall": 0.43,
+     "f1": 0.5513,
+     "support": 100
+    },
+    "Spanish": {
+     "precision": 0.2836,
+     "recall": 0.97,
+     "f1": 0.4389,
+     "support": 100
+    }
+   },
+   "calibration": {
+    "ece": 0.1376,
+    "bins": [
+     {
+      "low": 0.0,
+      "high": 0.1,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.1,
+      "high": 0.2,
+      "n": 377,
+      "confidence": 0.1659,
+      "accuracy": 0.1936
+     },
+     {
+      "low": 0.2,
+      "high": 0.3,
+      "n": 139,
+      "confidence": 0.2332,
+      "accuracy": 0.482
+     },
+     {
+      "low": 0.3,
+      "high": 0.4,
+      "n": 62,
+      "confidence": 0.3377,
+      "accuracy": 0.7581
+     },
+     {
+      "low": 0.4,
+      "high": 0.5,
+      "n": 39,
+      "confidence": 0.4482,
+      "accuracy": 0.8974
+     },
+     {
+      "low": 0.5,
+      "high": 0.6,
+      "n": 39,
+      "confidence": 0.5499,
+      "accuracy": 0.9487
+     },
+     {
+      "low": 0.6,
+      "high": 0.7,
+      "n": 50,
+      "confidence": 0.655,
+      "accuracy": 0.94
+     },
+     {
+      "low": 0.7,
+      "high": 0.8,
+      "n": 48,
+      "confidence": 0.7509,
+      "accuracy": 0.875
+     },
+     {
+      "low": 0.8,
+      "high": 0.9,
+      "n": 69,
+      "confidence": 0.8577,
+      "accuracy": 0.9565
+     },
+     {
+      "low": 0.9,
+      "high": 1.0,
+      "n": 177,
+      "confidence": 0.9629,
+      "accuracy": 0.9266
+     }
+    ]
+   },
+   "baselines": {
+    "majority": {
+     "rule": "always 'German'",
+     "accuracy": 0.1,
+     "macro_f1": 0.0182
+    },
+    "random": {
+     "rule": "uniform over the candidate labels",
+     "accuracy": 0.087,
+     "macro_f1": 0.0867
+    }
+   },
+   "by_group": {
+    "de-DE": 0.46,
+    "en-US": 0.34,
+    "es-ES": 0.97,
+    "fr-FR": 0.93,
+    "it-IT": 0.85,
+    "ja-JP": 0.19,
+    "nl-NL": 0.67,
+    "pt-PT": 0.69,
+    "ru-RU": 0.43,
+    "zh-CN": 0.25
+   }
+  },
+  "massive-scenario--decide-340m--desc": {
+   "task": "massive/scenario",
+   "model": "decide-340m",
+   "descriptions": true,
+   "latency": {
+    "requests": 1000,
+    "inference_ms_median": 140.3,
+    "inference_ms_p90": 287.1,
+    "client_ms_median": 146.7,
+    "client_ms_p90": 298.3,
+    "client_ms_total": 186533,
+    "input_tokens_median": 276.0
+   },
+   "n": 1000,
+   "accuracy": 0.446,
+   "accuracy_ci95": [
+    0.4155,
+    0.477
+   ],
+   "macro_f1": 0.4013,
+   "per_label": {
+    "alarm": {
+     "precision": 0.3881,
+     "recall": 0.8667,
+     "f1": 0.5361,
+     "support": 30
+    },
+    "audio": {
+     "precision": 0.119,
+     "recall": 0.25,
+     "f1": 0.1613,
+     "support": 20
+    },
+    "calendar": {
+     "precision": 0.8551,
+     "recall": 0.4214,
+     "f1": 0.5646,
+     "support": 140
+    },
+    "cooking": {
+     "precision": 0.2083,
+     "recall": 0.75,
+     "f1": 0.3261,
+     "support": 20
+    },
+    "datetime": {
+     "precision": 0.6944,
+     "recall": 0.625,
+     "f1": 0.6579,
+     "support": 40
+    },
+    "email": {
+     "precision": 0.8081,
+     "recall": 0.8889,
+     "f1": 0.8466,
+     "support": 90
+    },
+    "general": {
+     "precision": 0.1918,
+     "recall": 0.4667,
+     "f1": 0.2718,
+     "support": 60
+    },
+    "iot": {
+     "precision": 0.8333,
+     "recall": 0.0714,
+     "f1": 0.1316,
+     "support": 70
+    },
+    "lists": {
+     "precision": 0.5,
+     "recall": 0.82,
+     "f1": 0.6212,
+     "support": 50
+    },
+    "music": {
+     "precision": 0.2184,
+     "recall": 0.6333,
+     "f1": 0.3248,
+     "support": 30
+    },
+    "news": {
+     "precision": 0.5072,
+     "recall": 0.875,
+     "f1": 0.6422,
+     "support": 40
+    },
+    "play": {
+     "precision": 0.5625,
+     "recall": 0.1385,
+     "f1": 0.2222,
+     "support": 130
+    },
+    "qa": {
+     "precision": 0.1429,
+     "recall": 0.01,
+     "f1": 0.0187,
+     "support": 100
+    },
+    "recommendation": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 30
+    },
+    "social": {
+     "precision": 0.4,
+     "recall": 0.95,
+     "f1": 0.563,
+     "support": 40
+    },
+    "takeaway": {
+     "precision": 0.1667,
+     "recall": 0.05,
+     "f1": 0.0769,
+     "support": 20
+    },
+    "transport": {
+     "precision": 0.625,
+     "recall": 0.625,
+     "f1": 0.625,
+     "support": 40
+    },
+    "weather": {
+     "precision": 0.8621,
+     "recall": 0.5,
+     "f1": 0.6329,
+     "support": 50
+    }
+   },
+   "calibration": {
+    "ece": 0.0755,
+    "bins": [
+     {
+      "low": 0.0,
+      "high": 0.1,
+      "n": 10,
+      "confidence": 0.0954,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.1,
+      "high": 0.2,
+      "n": 279,
+      "confidence": 0.1515,
+      "accuracy": 0.2222
+     },
+     {
+      "low": 0.2,
+      "high": 0.3,
+      "n": 146,
+      "confidence": 0.2436,
+      "accuracy": 0.3356
+     },
+     {
+      "low": 0.3,
+      "high": 0.4,
+      "n": 93,
+      "confidence": 0.3548,
+      "accuracy": 0.4731
+     },
+     {
+      "low": 0.4,
+      "high": 0.5,
+      "n": 80,
+      "confidence": 0.4546,
+      "accuracy": 0.4875
+     },
+     {
+      "low": 0.5,
+      "high": 0.6,
+      "n": 91,
+      "confidence": 0.5488,
+      "accuracy": 0.5604
+     },
+     {
+      "low": 0.6,
+      "high": 0.7,
+      "n": 94,
+      "confidence": 0.652,
+      "accuracy": 0.5745
+     },
+     {
+      "low": 0.7,
+      "high": 0.8,
+      "n": 104,
+      "confidence": 0.7478,
+      "accuracy": 0.6731
+     },
+     {
+      "low": 0.8,
+      "high": 0.9,
+      "n": 83,
+      "confidence": 0.8455,
+      "accuracy": 0.7711
+     },
+     {
+      "low": 0.9,
+      "high": 1.0,
+      "n": 20,
+      "confidence": 0.9239,
+      "accuracy": 0.65
+     }
+    ]
+   },
+   "baselines": {
+    "majority": {
+     "rule": "always 'calendar'",
+     "accuracy": 0.14,
+     "macro_f1": 0.0136
+    },
+    "random": {
+     "rule": "uniform over the candidate labels",
+     "accuracy": 0.048,
+     "macro_f1": 0.0419
+    }
+   },
+   "by_group": {
+    "de-DE": 0.44,
+    "en-US": 0.54,
+    "es-ES": 0.44,
+    "fr-FR": 0.51,
+    "it-IT": 0.42,
+    "ja-JP": 0.46,
+    "nl-NL": 0.44,
+    "pt-PT": 0.49,
+    "ru-RU": 0.35,
+    "zh-CN": 0.37
+   }
+  },
+  "massive-scenario--decide-340m--plain": {
+   "task": "massive/scenario",
+   "model": "decide-340m",
+   "descriptions": false,
+   "latency": {
+    "requests": 1000,
+    "inference_ms_median": 103.5,
+    "inference_ms_p90": 163.4,
+    "client_ms_median": 111.8,
+    "client_ms_p90": 173.9,
+    "client_ms_total": 122755,
+    "input_tokens_median": 56.0
+   },
+   "n": 1000,
+   "accuracy": 0.471,
+   "accuracy_ci95": [
+    0.4402,
+    0.502
+   ],
+   "macro_f1": 0.445,
+   "per_label": {
+    "alarm": {
+     "precision": 0.4878,
+     "recall": 0.6667,
+     "f1": 0.5634,
+     "support": 30
+    },
+    "audio": {
+     "precision": 0.0667,
+     "recall": 0.15,
+     "f1": 0.0923,
+     "support": 20
+    },
+    "calendar": {
+     "precision": 0.8689,
+     "recall": 0.3786,
+     "f1": 0.5274,
+     "support": 140
+    },
+    "cooking": {
+     "precision": 0.1954,
+     "recall": 0.85,
+     "f1": 0.3178,
+     "support": 20
+    },
+    "datetime": {
+     "precision": 0.5472,
+     "recall": 0.725,
+     "f1": 0.6237,
+     "support": 40
+    },
+    "email": {
+     "precision": 0.8667,
+     "recall": 0.8667,
+     "f1": 0.8667,
+     "support": 90
+    },
+    "general": {
+     "precision": 0.0938,
+     "recall": 0.1,
+     "f1": 0.0968,
+     "support": 60
+    },
+    "iot": {
+     "precision": 0.4545,
+     "recall": 0.0714,
+     "f1": 0.1235,
+     "support": 70
+    },
+    "lists": {
+     "precision": 0.6094,
+     "recall": 0.78,
+     "f1": 0.6842,
+     "support": 50
+    },
+    "music": {
+     "precision": 0.1667,
+     "recall": 0.4,
+     "f1": 0.2353,
+     "support": 30
+    },
+    "news": {
+     "precision": 0.6154,
+     "recall": 0.8,
+     "f1": 0.6957,
+     "support": 40
+    },
+    "play": {
+     "precision": 0.6786,
+     "recall": 0.1462,
+     "f1": 0.2405,
+     "support": 130
+    },
+    "qa": {
+     "precision": 0.4479,
+     "recall": 0.43,
+     "f1": 0.4388,
+     "support": 100
+    },
+    "recommendation": {
+     "precision": 0.2632,
+     "recall": 0.1667,
+     "f1": 0.2041,
+     "support": 30
+    },
+    "social": {
+     "precision": 0.4149,
+     "recall": 0.975,
+     "f1": 0.5821,
+     "support": 40
+    },
+    "takeaway": {
+     "precision": 0.6364,
+     "recall": 0.35,
+     "f1": 0.4516,
+     "support": 20
+    },
+    "transport": {
+     "precision": 0.5645,
+     "recall": 0.875,
+     "f1": 0.6863,
+     "support": 40
+    },
+    "weather": {
+     "precision": 0.58,
+     "recall": 0.58,
+     "f1": 0.58,
+     "support": 50
+    }
+   },
+   "calibration": {
+    "ece": 0.1859,
+    "bins": [
+     {
+      "low": 0.0,
+      "high": 0.1,
+      "n": 1,
+      "confidence": 0.0989,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.1,
+      "high": 0.2,
+      "n": 135,
+      "confidence": 0.1617,
+      "accuracy": 0.2222
+     },
+     {
+      "low": 0.2,
+      "high": 0.3,
+      "n": 118,
+      "confidence": 0.2454,
+      "accuracy": 0.3729
+     },
+     {
+      "low": 0.3,
+      "high": 0.4,
+      "n": 88,
+      "confidence": 0.3485,
+      "accuracy": 0.3295
+     },
+     {
+      "low": 0.4,
+      "high": 0.5,
+      "n": 67,
+      "confidence": 0.4468,
+      "accuracy": 0.4776
+     },
+     {
+      "low": 0.5,
+      "high": 0.6,
+      "n": 66,
+      "confidence": 0.544,
+      "accuracy": 0.4091
+     },
+     {
+      "low": 0.6,
+      "high": 0.7,
+      "n": 70,
+      "confidence": 0.6504,
+      "accuracy": 0.4143
+     },
+     {
+      "low": 0.7,
+      "high": 0.8,
+      "n": 67,
+      "confidence": 0.7551,
+      "accuracy": 0.5672
+     },
+     {
+      "low": 0.8,
+      "high": 0.9,
+      "n": 108,
+      "confidence": 0.8488,
+      "accuracy": 0.5093
+     },
+     {
+      "low": 0.9,
+      "high": 1.0,
+      "n": 280,
+      "confidence": 0.9685,
+      "accuracy": 0.6679
+     }
+    ]
+   },
+   "baselines": {
+    "majority": {
+     "rule": "always 'calendar'",
+     "accuracy": 0.14,
+     "macro_f1": 0.0136
+    },
+    "random": {
+     "rule": "uniform over the candidate labels",
+     "accuracy": 0.048,
+     "macro_f1": 0.0419
+    }
+   },
+   "by_group": {
+    "de-DE": 0.43,
+    "en-US": 0.57,
+    "es-ES": 0.45,
+    "fr-FR": 0.52,
+    "it-IT": 0.46,
+    "ja-JP": 0.54,
+    "nl-NL": 0.46,
+    "pt-PT": 0.47,
+    "ru-RU": 0.41,
+    "zh-CN": 0.4
+   }
+  },
+  "massive-scenario--decide-multilingual--desc": {
+   "task": "massive/scenario",
+   "model": "decide-multilingual",
+   "descriptions": true,
+   "latency": {
+    "requests": 1000,
+    "inference_ms_median": 148.4,
+    "inference_ms_p90": 320.2,
+    "client_ms_median": 159.6,
+    "client_ms_p90": 341.6,
+    "client_ms_total": 185559,
+    "input_tokens_median": 330.0
+   },
+   "n": 1000,
+   "accuracy": 0.426,
+   "accuracy_ci95": [
+    0.3957,
+    0.4569
+   ],
+   "macro_f1": 0.4016,
+   "per_label": {
+    "alarm": {
+     "precision": 0.6053,
+     "recall": 0.7667,
+     "f1": 0.6765,
+     "support": 30
+    },
+    "audio": {
+     "precision": 0.25,
+     "recall": 0.4,
+     "f1": 0.3077,
+     "support": 20
+    },
+    "calendar": {
+     "precision": 0.9048,
+     "recall": 0.2714,
+     "f1": 0.4176,
+     "support": 140
+    },
+    "cooking": {
+     "precision": 0.2247,
+     "recall": 1.0,
+     "f1": 0.367,
+     "support": 20
+    },
+    "datetime": {
+     "precision": 0.2453,
+     "recall": 0.975,
+     "f1": 0.392,
+     "support": 40
+    },
+    "email": {
+     "precision": 0.914,
+     "recall": 0.9444,
+     "f1": 0.929,
+     "support": 90
+    },
+    "general": {
+     "precision": 0.1475,
+     "recall": 0.45,
+     "f1": 0.2222,
+     "support": 60
+    },
+    "iot": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 70
+    },
+    "lists": {
+     "precision": 0.6377,
+     "recall": 0.88,
+     "f1": 0.7395,
+     "support": 50
+    },
+    "music": {
+     "precision": 0.2316,
+     "recall": 0.7333,
+     "f1": 0.352,
+     "support": 30
+    },
+    "news": {
+     "precision": 0.8485,
+     "recall": 0.7,
+     "f1": 0.7671,
+     "support": 40
+    },
+    "play": {
+     "precision": 0.5238,
+     "recall": 0.2538,
+     "f1": 0.342,
+     "support": 130
+    },
+    "qa": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 100
+    },
+    "recommendation": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 30
+    },
+    "social": {
+     "precision": 0.6286,
+     "recall": 0.55,
+     "f1": 0.5867,
+     "support": 40
+    },
+    "takeaway": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 20
+    },
+    "transport": {
+     "precision": 0.9412,
+     "recall": 0.4,
+     "f1": 0.5614,
+     "support": 40
+    },
+    "weather": {
+     "precision": 0.875,
+     "recall": 0.42,
+     "f1": 0.5676,
+     "support": 50
+    }
+   },
+   "calibration": {
+    "ece": 0.0933,
+    "bins": [
+     {
+      "low": 0.0,
+      "high": 0.1,
+      "n": 2,
+      "confidence": 0.0954,
+      "accuracy": 0.5
+     },
+     {
+      "low": 0.1,
+      "high": 0.2,
+      "n": 360,
+      "confidence": 0.1415,
+      "accuracy": 0.2028
+     },
+     {
+      "low": 0.2,
+      "high": 0.3,
+      "n": 149,
+      "confidence": 0.2471,
+      "accuracy": 0.2416
+     },
+     {
+      "low": 0.3,
+      "high": 0.4,
+      "n": 117,
+      "confidence": 0.3465,
+      "accuracy": 0.4274
+     },
+     {
+      "low": 0.4,
+      "high": 0.5,
+      "n": 106,
+      "confidence": 0.4511,
+      "accuracy": 0.7075
+     },
+     {
+      "low": 0.5,
+      "high": 0.6,
+      "n": 130,
+      "confidence": 0.5464,
+      "accuracy": 0.6769
+     },
+     {
+      "low": 0.6,
+      "high": 0.7,
+      "n": 95,
+      "confidence": 0.6486,
+      "accuracy": 0.7789
+     },
+     {
+      "low": 0.7,
+      "high": 0.8,
+      "n": 29,
+      "confidence": 0.7385,
+      "accuracy": 0.7586
+     },
+     {
+      "low": 0.8,
+      "high": 0.9,
+      "n": 12,
+      "confidence": 0.8374,
+      "accuracy": 0.5833
+     },
+     {
+      "low": 0.9,
+      "high": 1.0,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     }
+    ]
+   },
+   "baselines": {
+    "majority": {
+     "rule": "always 'calendar'",
+     "accuracy": 0.14,
+     "macro_f1": 0.0136
+    },
+    "random": {
+     "rule": "uniform over the candidate labels",
+     "accuracy": 0.048,
+     "macro_f1": 0.0419
+    }
+   },
+   "by_group": {
+    "de-DE": 0.43,
+    "en-US": 0.47,
+    "es-ES": 0.43,
+    "fr-FR": 0.44,
+    "it-IT": 0.41,
+    "ja-JP": 0.45,
+    "nl-NL": 0.42,
+    "pt-PT": 0.35,
+    "ru-RU": 0.44,
+    "zh-CN": 0.42
+   }
+  },
+  "massive-scenario--decide-multilingual--plain": {
+   "task": "massive/scenario",
+   "model": "decide-multilingual",
+   "descriptions": false,
+   "latency": {
+    "requests": 1000,
+    "inference_ms_median": 45.0,
+    "inference_ms_p90": 82.7,
+    "client_ms_median": 58.4,
+    "client_ms_p90": 97.6,
+    "client_ms_total": 64281,
+    "input_tokens_median": 64.0
+   },
+   "n": 1000,
+   "accuracy": 0.482,
+   "accuracy_ci95": [
+    0.4512,
+    0.513
+   ],
+   "macro_f1": 0.451,
+   "per_label": {
+    "alarm": {
+     "precision": 0.4821,
+     "recall": 0.9,
+     "f1": 0.6279,
+     "support": 30
+    },
+    "audio": {
+     "precision": 0.1389,
+     "recall": 0.25,
+     "f1": 0.1786,
+     "support": 20
+    },
+    "calendar": {
+     "precision": 0.9286,
+     "recall": 0.3714,
+     "f1": 0.5306,
+     "support": 140
+    },
+    "cooking": {
+     "precision": 0.2326,
+     "recall": 1.0,
+     "f1": 0.3774,
+     "support": 20
+    },
+    "datetime": {
+     "precision": 0.5263,
+     "recall": 1.0,
+     "f1": 0.6897,
+     "support": 40
+    },
+    "email": {
+     "precision": 0.8091,
+     "recall": 0.9889,
+     "f1": 0.89,
+     "support": 90
+    },
+    "general": {
+     "precision": 0.1895,
+     "recall": 0.4833,
+     "f1": 0.2723,
+     "support": 60
+    },
+    "iot": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 70
+    },
+    "lists": {
+     "precision": 0.7097,
+     "recall": 0.88,
+     "f1": 0.7857,
+     "support": 50
+    },
+    "music": {
+     "precision": 0.2198,
+     "recall": 0.6667,
+     "f1": 0.3306,
+     "support": 30
+    },
+    "news": {
+     "precision": 0.76,
+     "recall": 0.95,
+     "f1": 0.8444,
+     "support": 40
+    },
+    "play": {
+     "precision": 0.4906,
+     "recall": 0.2,
+     "f1": 0.2842,
+     "support": 130
+    },
+    "qa": {
+     "precision": 0.5714,
+     "recall": 0.04,
+     "f1": 0.0748,
+     "support": 100
+    },
+    "recommendation": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 30
+    },
+    "social": {
+     "precision": 0.4464,
+     "recall": 0.625,
+     "f1": 0.5208,
+     "support": 40
+    },
+    "takeaway": {
+     "precision": 0.6667,
+     "recall": 0.2,
+     "f1": 0.3077,
+     "support": 20
+    },
+    "transport": {
+     "precision": 0.8095,
+     "recall": 0.85,
+     "f1": 0.8293,
+     "support": 40
+    },
+    "weather": {
+     "precision": 0.6757,
+     "recall": 0.5,
+     "f1": 0.5747,
+     "support": 50
+    }
+   },
+   "calibration": {
+    "ece": 0.0657,
+    "bins": [
+     {
+      "low": 0.0,
+      "high": 0.1,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.1,
+      "high": 0.2,
+      "n": 174,
+      "confidence": 0.1634,
+      "accuracy": 0.2299
+     },
+     {
+      "low": 0.2,
+      "high": 0.3,
+      "n": 158,
+      "confidence": 0.2432,
+      "accuracy": 0.3165
+     },
+     {
+      "low": 0.3,
+      "high": 0.4,
+      "n": 100,
+      "confidence": 0.3464,
+      "accuracy": 0.34
+     },
+     {
+      "low": 0.4,
+      "high": 0.5,
+      "n": 103,
+      "confidence": 0.4482,
+      "accuracy": 0.3398
+     },
+     {
+      "low": 0.5,
+      "high": 0.6,
+      "n": 83,
+      "confidence": 0.5501,
+      "accuracy": 0.506
+     },
+     {
+      "low": 0.6,
+      "high": 0.7,
+      "n": 80,
+      "confidence": 0.6461,
+      "accuracy": 0.625
+     },
+     {
+      "low": 0.7,
+      "high": 0.8,
+      "n": 95,
+      "confidence": 0.7467,
+      "accuracy": 0.6737
+     },
+     {
+      "low": 0.8,
+      "high": 0.9,
+      "n": 103,
+      "confidence": 0.8468,
+      "accuracy": 0.7476
+     },
+     {
+      "low": 0.9,
+      "high": 1.0,
+      "n": 104,
+      "confidence": 0.9445,
+      "accuracy": 0.8654
+     }
+    ]
+   },
+   "baselines": {
+    "majority": {
+     "rule": "always 'calendar'",
+     "accuracy": 0.14,
+     "macro_f1": 0.0136
+    },
+    "random": {
+     "rule": "uniform over the candidate labels",
+     "accuracy": 0.048,
+     "macro_f1": 0.0419
+    }
+   },
+   "by_group": {
+    "de-DE": 0.46,
+    "en-US": 0.47,
+    "es-ES": 0.48,
+    "fr-FR": 0.51,
+    "it-IT": 0.46,
+    "ja-JP": 0.53,
+    "nl-NL": 0.48,
+    "pt-PT": 0.43,
+    "ru-RU": 0.47,
+    "zh-CN": 0.53
+   }
+  },
+  "news_category-topic--decide-340m--desc": {
+   "task": "news_category/topic",
+   "model": "decide-340m",
+   "descriptions": true,
+   "latency": {
+    "requests": 1000,
+    "inference_ms_median": 1452.5,
+    "inference_ms_p90": 2203.4,
+    "client_ms_median": 1468.2,
+    "client_ms_p90": 2218.8,
+    "client_ms_total": 1519411,
+    "input_tokens_median": 691.0
+   },
+   "n": 1000,
+   "accuracy": 0.405,
+   "accuracy_ci95": [
+    0.375,
+    0.4357
+   ],
+   "macro_f1": 0.2863,
+   "per_label": {
+    "ARTS": {
+     "precision": 0.3333,
+     "recall": 0.2857,
+     "f1": 0.3077,
+     "support": 7
+    },
+    "ARTS & CULTURE": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 6
+    },
+    "BLACK VOICES": {
+     "precision": 0.4,
+     "recall": 0.2727,
+     "f1": 0.3243,
+     "support": 22
+    },
+    "BUSINESS": {
+     "precision": 0.4783,
+     "recall": 0.3793,
+     "f1": 0.4231,
+     "support": 29
+    },
+    "COLLEGE": {
+     "precision": 0.25,
+     "recall": 0.6,
+     "f1": 0.3529,
+     "support": 5
+    },
+    "COMEDY": {
+     "precision": 0.3077,
+     "recall": 0.3077,
+     "f1": 0.3077,
+     "support": 26
+    },
+    "CRIME": {
+     "precision": 0.194,
+     "recall": 0.7647,
+     "f1": 0.3095,
+     "support": 17
+    },
+    "CULTURE & ARTS": {
+     "precision": 0.0476,
+     "recall": 0.2,
+     "f1": 0.0769,
+     "support": 5
+    },
+    "DIVORCE": {
+     "precision": 0.5455,
+     "recall": 0.75,
+     "f1": 0.6316,
+     "support": 16
+    },
+    "EDUCATION": {
+     "precision": 0.08,
+     "recall": 0.4,
+     "f1": 0.1333,
+     "support": 5
+    },
+    "ENTERTAINMENT": {
+     "precision": 0.4444,
+     "recall": 0.5783,
+     "f1": 0.5026,
+     "support": 83
+    },
+    "ENVIRONMENT": {
+     "precision": 0.1111,
+     "recall": 0.4286,
+     "f1": 0.1765,
+     "support": 7
+    },
+    "FIFTY": {
+     "precision": 1.0,
+     "recall": 0.1429,
+     "f1": 0.25,
+     "support": 7
+    },
+    "FOOD & DRINK": {
+     "precision": 0.4783,
+     "recall": 0.7333,
+     "f1": 0.5789,
+     "support": 30
+    },
+    "GOOD NEWS": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 7
+    },
+    "GREEN": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 13
+    },
+    "HEALTHY LIVING": {
+     "precision": 0.2174,
+     "recall": 0.3125,
+     "f1": 0.2564,
+     "support": 32
+    },
+    "HOME & LIVING": {
+     "precision": 0.4333,
+     "recall": 0.619,
+     "f1": 0.5098,
+     "support": 21
+    },
+    "IMPACT": {
+     "precision": 0.0833,
+     "recall": 0.0588,
+     "f1": 0.069,
+     "support": 17
+    },
+    "LATINO VOICES": {
+     "precision": 0.75,
+     "recall": 0.6,
+     "f1": 0.6667,
+     "support": 5
+    },
+    "MEDIA": {
+     "precision": 0.1818,
+     "recall": 0.1429,
+     "f1": 0.16,
+     "support": 14
+    },
+    "MONEY": {
+     "precision": 0.1379,
+     "recall": 0.5,
+     "f1": 0.2162,
+     "support": 8
+    },
+    "PARENTING": {
+     "precision": 0.5789,
+     "recall": 0.2619,
+     "f1": 0.3607,
+     "support": 42
+    },
+    "PARENTS": {
+     "precision": 0.2917,
+     "recall": 0.3684,
+     "f1": 0.3256,
+     "support": 19
+    },
+    "POLITICS": {
+     "precision": 0.7226,
+     "recall": 0.6588,
+     "f1": 0.6892,
+     "support": 170
+    },
+    "QUEER VOICES": {
+     "precision": 0.7778,
+     "recall": 0.4667,
+     "f1": 0.5833,
+     "support": 30
+    },
+    "RELIGION": {
+     "precision": 0.3478,
+     "recall": 0.6667,
+     "f1": 0.4571,
+     "support": 12
+    },
+    "SCIENCE": {
+     "precision": 0.0909,
+     "recall": 0.1818,
+     "f1": 0.1212,
+     "support": 11
+    },
+    "SPORTS": {
+     "precision": 0.5625,
+     "recall": 0.75,
+     "f1": 0.6429,
+     "support": 24
+    },
+    "STYLE": {
+     "precision": 0.0625,
+     "recall": 0.0909,
+     "f1": 0.0741,
+     "support": 11
+    },
+    "STYLE & BEAUTY": {
+     "precision": 0.5357,
+     "recall": 0.3191,
+     "f1": 0.4,
+     "support": 47
+    },
+    "TASTE": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 10
+    },
+    "TECH": {
+     "precision": 0.6,
+     "recall": 0.3,
+     "f1": 0.4,
+     "support": 10
+    },
+    "THE WORLDPOST": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 17
+    },
+    "TRAVEL": {
+     "precision": 0.8077,
+     "recall": 0.4468,
+     "f1": 0.5753,
+     "support": 47
+    },
+    "U.S. NEWS": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 7
+    },
+    "WEDDINGS": {
+     "precision": 0.5652,
+     "recall": 0.7647,
+     "f1": 0.65,
+     "support": 17
+    },
+    "WEIRD NEWS": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 13
+    },
+    "WELLNESS": {
+     "precision": 0.75,
+     "recall": 0.0698,
+     "f1": 0.1277,
+     "support": 86
+    },
+    "WOMEN": {
+     "precision": 0.2162,
+     "recall": 0.4706,
+     "f1": 0.2963,
+     "support": 17
+    },
+    "WORLD NEWS": {
+     "precision": 0.0769,
+     "recall": 0.0625,
+     "f1": 0.069,
+     "support": 16
+    },
+    "WORLDPOST": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 12
+    }
+   },
+   "calibration": {
+    "ece": 0.0769,
+    "bins": [
+     {
+      "low": 0.0,
+      "high": 0.1,
+      "n": 19,
+      "confidence": 0.0791,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.1,
+      "high": 0.2,
+      "n": 105,
+      "confidence": 0.1558,
+      "accuracy": 0.2381
+     },
+     {
+      "low": 0.2,
+      "high": 0.3,
+      "n": 134,
+      "confidence": 0.2489,
+      "accuracy": 0.2164
+     },
+     {
+      "low": 0.3,
+      "high": 0.4,
+      "n": 177,
+      "confidence": 0.3526,
+      "accuracy": 0.3672
+     },
+     {
+      "low": 0.4,
+      "high": 0.5,
+      "n": 143,
+      "confidence": 0.4498,
+      "accuracy": 0.3636
+     },
+     {
+      "low": 0.5,
+      "high": 0.6,
+      "n": 163,
+      "confidence": 0.5505,
+      "accuracy": 0.5153
+     },
+     {
+      "low": 0.6,
+      "high": 0.7,
+      "n": 107,
+      "confidence": 0.6528,
+      "accuracy": 0.5421
+     },
+     {
+      "low": 0.7,
+      "high": 0.8,
+      "n": 84,
+      "confidence": 0.7433,
+      "accuracy": 0.5952
+     },
+     {
+      "low": 0.8,
+      "high": 0.9,
+      "n": 59,
+      "confidence": 0.8424,
+      "accuracy": 0.5593
+     },
+     {
+      "low": 0.9,
+      "high": 1.0,
+      "n": 9,
+      "confidence": 0.9163,
+      "accuracy": 1.0
+     }
+    ]
+   },
+   "baselines": {
+    "majority": {
+     "rule": "always 'POLITICS'",
+     "accuracy": 0.17,
+     "macro_f1": 0.0069
+    },
+    "random": {
+     "rule": "uniform over the candidate labels",
+     "accuracy": 0.028,
+     "macro_f1": 0.0243
+    }
+   }
+  },
+  "news_category-topic--decide-340m--plain": {
+   "task": "news_category/topic",
+   "model": "decide-340m",
+   "descriptions": false,
+   "latency": {
+    "requests": 1000,
+    "inference_ms_median": 270.4,
+    "inference_ms_p90": 523.5,
+    "client_ms_median": 283.2,
+    "client_ms_p90": 544.8,
+    "client_ms_total": 339748,
+    "input_tokens_median": 166.0
+   },
+   "n": 1000,
+   "accuracy": 0.415,
+   "accuracy_ci95": [
+    0.3848,
+    0.4458
+   ],
+   "macro_f1": 0.2893,
+   "per_label": {
+    "ARTS": {
+     "precision": 0.125,
+     "recall": 0.1429,
+     "f1": 0.1333,
+     "support": 7
+    },
+    "ARTS & CULTURE": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 6
+    },
+    "BLACK VOICES": {
+     "precision": 0.375,
+     "recall": 0.2727,
+     "f1": 0.3158,
+     "support": 22
+    },
+    "BUSINESS": {
+     "precision": 0.4583,
+     "recall": 0.3793,
+     "f1": 0.4151,
+     "support": 29
+    },
+    "COLLEGE": {
+     "precision": 0.25,
+     "recall": 0.4,
+     "f1": 0.3077,
+     "support": 5
+    },
+    "COMEDY": {
+     "precision": 0.4,
+     "recall": 0.1538,
+     "f1": 0.2222,
+     "support": 26
+    },
+    "CRIME": {
+     "precision": 0.163,
+     "recall": 0.8824,
+     "f1": 0.2752,
+     "support": 17
+    },
+    "CULTURE & ARTS": {
+     "precision": 0.2,
+     "recall": 0.2,
+     "f1": 0.2,
+     "support": 5
+    },
+    "DIVORCE": {
+     "precision": 0.5714,
+     "recall": 0.75,
+     "f1": 0.6486,
+     "support": 16
+    },
+    "EDUCATION": {
+     "precision": 0.125,
+     "recall": 0.4,
+     "f1": 0.1905,
+     "support": 5
+    },
+    "ENTERTAINMENT": {
+     "precision": 0.5227,
+     "recall": 0.5542,
+     "f1": 0.538,
+     "support": 83
+    },
+    "ENVIRONMENT": {
+     "precision": 0.0833,
+     "recall": 0.2857,
+     "f1": 0.129,
+     "support": 7
+    },
+    "FIFTY": {
+     "precision": 0.5,
+     "recall": 0.4286,
+     "f1": 0.4615,
+     "support": 7
+    },
+    "FOOD & DRINK": {
+     "precision": 0.4773,
+     "recall": 0.7,
+     "f1": 0.5676,
+     "support": 30
+    },
+    "GOOD NEWS": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 7
+    },
+    "GREEN": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 13
+    },
+    "HEALTHY LIVING": {
+     "precision": 0.2273,
+     "recall": 0.1562,
+     "f1": 0.1852,
+     "support": 32
+    },
+    "HOME & LIVING": {
+     "precision": 0.4667,
+     "recall": 0.6667,
+     "f1": 0.549,
+     "support": 21
+    },
+    "IMPACT": {
+     "precision": 0.0556,
+     "recall": 0.0588,
+     "f1": 0.0571,
+     "support": 17
+    },
+    "LATINO VOICES": {
+     "precision": 0.6,
+     "recall": 0.6,
+     "f1": 0.6,
+     "support": 5
+    },
+    "MEDIA": {
+     "precision": 0.2727,
+     "recall": 0.2143,
+     "f1": 0.24,
+     "support": 14
+    },
+    "MONEY": {
+     "precision": 0.25,
+     "recall": 0.625,
+     "f1": 0.3571,
+     "support": 8
+    },
+    "PARENTING": {
+     "precision": 0.5172,
+     "recall": 0.3571,
+     "f1": 0.4225,
+     "support": 42
+    },
+    "PARENTS": {
+     "precision": 0.3,
+     "recall": 0.1579,
+     "f1": 0.2069,
+     "support": 19
+    },
+    "POLITICS": {
+     "precision": 0.7133,
+     "recall": 0.6294,
+     "f1": 0.6687,
+     "support": 170
+    },
+    "QUEER VOICES": {
+     "precision": 1.0,
+     "recall": 0.2,
+     "f1": 0.3333,
+     "support": 30
+    },
+    "RELIGION": {
+     "precision": 0.25,
+     "recall": 0.8333,
+     "f1": 0.3846,
+     "support": 12
+    },
+    "SCIENCE": {
+     "precision": 0.1471,
+     "recall": 0.4545,
+     "f1": 0.2222,
+     "support": 11
+    },
+    "SPORTS": {
+     "precision": 0.5625,
+     "recall": 0.75,
+     "f1": 0.6429,
+     "support": 24
+    },
+    "STYLE": {
+     "precision": 0.0952,
+     "recall": 0.1818,
+     "f1": 0.125,
+     "support": 11
+    },
+    "STYLE & BEAUTY": {
+     "precision": 0.5909,
+     "recall": 0.2766,
+     "f1": 0.3768,
+     "support": 47
+    },
+    "TASTE": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 10
+    },
+    "TECH": {
+     "precision": 0.5,
+     "recall": 0.2,
+     "f1": 0.2857,
+     "support": 10
+    },
+    "THE WORLDPOST": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 17
+    },
+    "TRAVEL": {
+     "precision": 0.8,
+     "recall": 0.5957,
+     "f1": 0.6829,
+     "support": 47
+    },
+    "U.S. NEWS": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 7
+    },
+    "WEDDINGS": {
+     "precision": 0.5152,
+     "recall": 1.0,
+     "f1": 0.68,
+     "support": 17
+    },
+    "WEIRD NEWS": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 13
+    },
+    "WELLNESS": {
+     "precision": 0.44,
+     "recall": 0.2558,
+     "f1": 0.3235,
+     "support": 86
+    },
+    "WOMEN": {
+     "precision": 0.2308,
+     "recall": 0.5294,
+     "f1": 0.3214,
+     "support": 17
+    },
+    "WORLD NEWS": {
+     "precision": 0.125,
+     "recall": 0.0625,
+     "f1": 0.0833,
+     "support": 16
+    },
+    "WORLDPOST": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 12
+    }
+   },
+   "calibration": {
+    "ece": 0.2671,
+    "bins": [
+     {
+      "low": 0.0,
+      "high": 0.1,
+      "n": 2,
+      "confidence": 0.0806,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.1,
+      "high": 0.2,
+      "n": 44,
+      "confidence": 0.1572,
+      "accuracy": 0.1136
+     },
+     {
+      "low": 0.2,
+      "high": 0.3,
+      "n": 77,
+      "confidence": 0.2533,
+      "accuracy": 0.2078
+     },
+     {
+      "low": 0.3,
+      "high": 0.4,
+      "n": 80,
+      "confidence": 0.3543,
+      "accuracy": 0.325
+     },
+     {
+      "low": 0.4,
+      "high": 0.5,
+      "n": 90,
+      "confidence": 0.4493,
+      "accuracy": 0.3222
+     },
+     {
+      "low": 0.5,
+      "high": 0.6,
+      "n": 85,
+      "confidence": 0.5476,
+      "accuracy": 0.4353
+     },
+     {
+      "low": 0.6,
+      "high": 0.7,
+      "n": 92,
+      "confidence": 0.6478,
+      "accuracy": 0.4457
+     },
+     {
+      "low": 0.7,
+      "high": 0.8,
+      "n": 96,
+      "confidence": 0.752,
+      "accuracy": 0.3542
+     },
+     {
+      "low": 0.8,
+      "high": 0.9,
+      "n": 114,
+      "confidence": 0.852,
+      "accuracy": 0.4474
+     },
+     {
+      "low": 0.9,
+      "high": 1.0,
+      "n": 320,
+      "confidence": 0.9727,
+      "accuracy": 0.55
+     }
+    ]
+   },
+   "baselines": {
+    "majority": {
+     "rule": "always 'POLITICS'",
+     "accuracy": 0.17,
+     "macro_f1": 0.0069
+    },
+    "random": {
+     "rule": "uniform over the candidate labels",
+     "accuracy": 0.028,
+     "macro_f1": 0.0243
+    }
+   }
+  },
+  "support_tickets-priority--decide-1b--plain": {
+   "task": "support_tickets/priority",
+   "model": "decide-1b",
+   "descriptions": false,
+   "latency": {
+    "requests": 1000,
+    "inference_ms_median": 237.7,
+    "inference_ms_p90": 474.4,
+    "client_ms_median": 246.0,
+    "client_ms_p90": 482.4,
+    "client_ms_total": 283838,
+    "input_tokens_median": 110.0
+   },
+   "n": 1000,
+   "accuracy": 0.324,
+   "accuracy_ci95": [
+    0.2957,
+    0.3536
+   ],
+   "macro_f1": 0.3129,
+   "per_label": {
+    "high": {
+     "precision": 0.5339,
+     "recall": 0.162,
+     "f1": 0.2485,
+     "support": 389
+    },
+    "low": {
+     "precision": 0.2172,
+     "recall": 0.4903,
+     "f1": 0.301,
+     "support": 206
+    },
+    "medium": {
+     "precision": 0.3837,
+     "recall": 0.3951,
+     "f1": 0.3893,
+     "support": 405
+    }
+   },
+   "calibration": {
+    "ece": 0.1424,
+    "bins": [
+     {
+      "low": 0.0,
+      "high": 0.1,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.1,
+      "high": 0.2,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.2,
+      "high": 0.3,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.3,
+      "high": 0.4,
+      "n": 174,
+      "confidence": 0.3775,
+      "accuracy": 0.2816
+     },
+     {
+      "low": 0.4,
+      "high": 0.5,
+      "n": 623,
+      "confidence": 0.4452,
+      "accuracy": 0.3258
+     },
+     {
+      "low": 0.5,
+      "high": 0.6,
+      "n": 126,
+      "confidence": 0.5388,
+      "accuracy": 0.3016
+     },
+     {
+      "low": 0.6,
+      "high": 0.7,
+      "n": 38,
+      "confidence": 0.6421,
+      "accuracy": 0.3684
+     },
+     {
+      "low": 0.7,
+      "high": 0.8,
+      "n": 24,
+      "confidence": 0.7494,
+      "accuracy": 0.4583
+     },
+     {
+      "low": 0.8,
+      "high": 0.9,
+      "n": 14,
+      "confidence": 0.8616,
+      "accuracy": 0.6429
+     },
+     {
+      "low": 0.9,
+      "high": 1.0,
+      "n": 1,
+      "confidence": 0.9854,
+      "accuracy": 0.0
+     }
+    ]
+   },
+   "baselines": {
+    "majority": {
+     "rule": "always 'medium'",
+     "accuracy": 0.405,
+     "macro_f1": 0.1922
+    },
+    "random": {
+     "rule": "uniform over the candidate labels",
+     "accuracy": 0.343,
+     "macro_f1": 0.3382
+    }
+   },
+   "by_group": {
+    "de": 0.3235,
+    "en": 0.3244
+   }
+  },
+  "support_tickets-priority--decide-340m--desc": {
+   "task": "support_tickets/priority",
+   "model": "decide-340m",
+   "descriptions": true,
+   "latency": {
+    "requests": 1000,
+    "inference_ms_median": 206.6,
+    "inference_ms_p90": 450.4,
+    "client_ms_median": 215.9,
+    "client_ms_p90": 468.8,
+    "client_ms_total": 262229,
+    "input_tokens_median": 178.0
+   },
+   "n": 1000,
+   "accuracy": 0.403,
+   "accuracy_ci95": [
+    0.373,
+    0.4337
+   ],
+   "macro_f1": 0.3724,
+   "per_label": {
+    "high": {
+     "precision": 0.5267,
+     "recall": 0.3548,
+     "f1": 0.424,
+     "support": 389
+    },
+    "low": {
+     "precision": 0.2061,
+     "recall": 0.2282,
+     "f1": 0.2166,
+     "support": 206
+    },
+    "medium": {
+     "precision": 0.4275,
+     "recall": 0.5383,
+     "f1": 0.4765,
+     "support": 405
+    }
+   },
+   "calibration": {
+    "ece": 0.1015,
+    "bins": [
+     {
+      "low": 0.0,
+      "high": 0.1,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.1,
+      "high": 0.2,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.2,
+      "high": 0.3,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.3,
+      "high": 0.4,
+      "n": 38,
+      "confidence": 0.3837,
+      "accuracy": 0.3684
+     },
+     {
+      "low": 0.4,
+      "high": 0.5,
+      "n": 536,
+      "confidence": 0.4555,
+      "accuracy": 0.4272
+     },
+     {
+      "low": 0.5,
+      "high": 0.6,
+      "n": 300,
+      "confidence": 0.5397,
+      "accuracy": 0.3467
+     },
+     {
+      "low": 0.6,
+      "high": 0.7,
+      "n": 96,
+      "confidence": 0.641,
+      "accuracy": 0.4479
+     },
+     {
+      "low": 0.7,
+      "high": 0.8,
+      "n": 27,
+      "confidence": 0.7343,
+      "accuracy": 0.4815
+     },
+     {
+      "low": 0.8,
+      "high": 0.9,
+      "n": 3,
+      "confidence": 0.8437,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.9,
+      "high": 1.0,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     }
+    ]
+   },
+   "baselines": {
+    "majority": {
+     "rule": "always 'medium'",
+     "accuracy": 0.405,
+     "macro_f1": 0.1922
+    },
+    "random": {
+     "rule": "uniform over the candidate labels",
+     "accuracy": 0.343,
+     "macro_f1": 0.3382
+    }
+   },
+   "by_group": {
+    "de": 0.3975,
+    "en": 0.4067
+   }
+  },
+  "support_tickets-priority--decide-340m--plain": {
+   "task": "support_tickets/priority",
+   "model": "decide-340m",
+   "descriptions": false,
+   "latency": {
+    "requests": 1000,
+    "inference_ms_median": 79.1,
+    "inference_ms_p90": 210.1,
+    "client_ms_median": 89.6,
+    "client_ms_p90": 226.0,
+    "client_ms_total": 120235,
+    "input_tokens_median": 92.0
+   },
+   "n": 1000,
+   "accuracy": 0.396,
+   "accuracy_ci95": [
+    0.3661,
+    0.4267
+   ],
+   "macro_f1": 0.3471,
+   "per_label": {
+    "high": {
+     "precision": 0.4484,
+     "recall": 0.3239,
+     "f1": 0.3761,
+     "support": 389
+    },
+    "low": {
+     "precision": 0.2263,
+     "recall": 0.1505,
+     "f1": 0.1808,
+     "support": 206
+    },
+    "medium": {
+     "precision": 0.4107,
+     "recall": 0.5901,
+     "f1": 0.4843,
+     "support": 405
+    }
+   },
+   "calibration": {
+    "ece": 0.0688,
+    "bins": [
+     {
+      "low": 0.0,
+      "high": 0.1,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.1,
+      "high": 0.2,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.2,
+      "high": 0.3,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.3,
+      "high": 0.4,
+      "n": 197,
+      "confidence": 0.3841,
+      "accuracy": 0.3807
+     },
+     {
+      "low": 0.4,
+      "high": 0.5,
+      "n": 604,
+      "confidence": 0.4401,
+      "accuracy": 0.394
+     },
+     {
+      "low": 0.5,
+      "high": 0.6,
+      "n": 106,
+      "confidence": 0.5363,
+      "accuracy": 0.3491
+     },
+     {
+      "low": 0.6,
+      "high": 0.7,
+      "n": 49,
+      "confidence": 0.6394,
+      "accuracy": 0.5306
+     },
+     {
+      "low": 0.7,
+      "high": 0.8,
+      "n": 27,
+      "confidence": 0.7475,
+      "accuracy": 0.4444
+     },
+     {
+      "low": 0.8,
+      "high": 0.9,
+      "n": 12,
+      "confidence": 0.854,
+      "accuracy": 0.5
+     },
+     {
+      "low": 0.9,
+      "high": 1.0,
+      "n": 5,
+      "confidence": 0.9347,
+      "accuracy": 0.4
+     }
+    ]
+   },
+   "baselines": {
+    "majority": {
+     "rule": "always 'medium'",
+     "accuracy": 0.405,
+     "macro_f1": 0.1922
+    },
+    "random": {
+     "rule": "uniform over the candidate labels",
+     "accuracy": 0.343,
+     "macro_f1": 0.3382
+    }
+   },
+   "by_group": {
+    "de": 0.3827,
+    "en": 0.405
+   }
+  },
+  "support_tickets-priority--decide-multilingual--desc": {
+   "task": "support_tickets/priority",
+   "model": "decide-multilingual",
+   "descriptions": true,
+   "latency": {
+    "requests": 1000,
+    "inference_ms_median": 43.4,
+    "inference_ms_p90": 64.7,
+    "client_ms_median": 50.1,
+    "client_ms_p90": 71.4,
+    "client_ms_total": 52742,
+    "input_tokens_median": 230.0
+   },
+   "n": 1000,
+   "accuracy": 0.439,
+   "accuracy_ci95": [
+    0.4085,
+    0.4699
+   ],
+   "macro_f1": 0.3296,
+   "per_label": {
+    "high": {
+     "precision": 0.4567,
+     "recall": 0.5553,
+     "f1": 0.5012,
+     "support": 389
+    },
+    "low": {
+     "precision": 0.3333,
+     "recall": 0.0049,
+     "f1": 0.0096,
+     "support": 206
+    },
+    "medium": {
+     "precision": 0.4237,
+     "recall": 0.5481,
+     "f1": 0.4779,
+     "support": 405
+    }
+   },
+   "calibration": {
+    "ece": 0.1007,
+    "bins": [
+     {
+      "low": 0.0,
+      "high": 0.1,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.1,
+      "high": 0.2,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.2,
+      "high": 0.3,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.3,
+      "high": 0.4,
+      "n": 17,
+      "confidence": 0.3875,
+      "accuracy": 0.5882
+     },
+     {
+      "low": 0.4,
+      "high": 0.5,
+      "n": 488,
+      "confidence": 0.456,
+      "accuracy": 0.3893
+     },
+     {
+      "low": 0.5,
+      "high": 0.6,
+      "n": 292,
+      "confidence": 0.5364,
+      "accuracy": 0.4281
+     },
+     {
+      "low": 0.6,
+      "high": 0.7,
+      "n": 100,
+      "confidence": 0.6451,
+      "accuracy": 0.59
+     },
+     {
+      "low": 0.7,
+      "high": 0.8,
+      "n": 51,
+      "confidence": 0.7367,
+      "accuracy": 0.5098
+     },
+     {
+      "low": 0.8,
+      "high": 0.9,
+      "n": 39,
+      "confidence": 0.844,
+      "accuracy": 0.5897
+     },
+     {
+      "low": 0.9,
+      "high": 1.0,
+      "n": 13,
+      "confidence": 0.9284,
+      "accuracy": 0.4615
+     }
+    ]
+   },
+   "baselines": {
+    "majority": {
+     "rule": "always 'medium'",
+     "accuracy": 0.405,
+     "macro_f1": 0.1922
+    },
+    "random": {
+     "rule": "uniform over the candidate labels",
+     "accuracy": 0.343,
+     "macro_f1": 0.3382
+    }
+   },
+   "by_group": {
+    "de": 0.4296,
+    "en": 0.4454
+   }
+  },
+  "support_tickets-priority--decide-multilingual--plain": {
+   "task": "support_tickets/priority",
+   "model": "decide-multilingual",
+   "descriptions": false,
+   "latency": {
+    "requests": 1000,
+    "inference_ms_median": 37.5,
+    "inference_ms_p90": 67.3,
+    "client_ms_median": 50.7,
+    "client_ms_p90": 81.1,
+    "client_ms_total": 54598,
+    "input_tokens_median": 118.0
+   },
+   "n": 1000,
+   "accuracy": 0.429,
+   "accuracy_ci95": [
+    0.3987,
+    0.4599
+   ],
+   "macro_f1": 0.3683,
+   "per_label": {
+    "high": {
+     "precision": 0.4804,
+     "recall": 0.4422,
+     "f1": 0.4605,
+     "support": 389
+    },
+    "low": {
+     "precision": 0.2614,
+     "recall": 0.1117,
+     "f1": 0.1565,
+     "support": 206
+    },
+    "medium": {
+     "precision": 0.4224,
+     "recall": 0.5778,
+     "f1": 0.488,
+     "support": 405
+    }
+   },
+   "calibration": {
+    "ece": 0.0615,
+    "bins": [
+     {
+      "low": 0.0,
+      "high": 0.1,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.1,
+      "high": 0.2,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.2,
+      "high": 0.3,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.3,
+      "high": 0.4,
+      "n": 140,
+      "confidence": 0.3857,
+      "accuracy": 0.3929
+     },
+     {
+      "low": 0.4,
+      "high": 0.5,
+      "n": 637,
+      "confidence": 0.439,
+      "accuracy": 0.4113
+     },
+     {
+      "low": 0.5,
+      "high": 0.6,
+      "n": 87,
+      "confidence": 0.5394,
+      "accuracy": 0.4828
+     },
+     {
+      "low": 0.6,
+      "high": 0.7,
+      "n": 43,
+      "confidence": 0.6459,
+      "accuracy": 0.3488
+     },
+     {
+      "low": 0.7,
+      "high": 0.8,
+      "n": 27,
+      "confidence": 0.7468,
+      "accuracy": 0.5185
+     },
+     {
+      "low": 0.8,
+      "high": 0.9,
+      "n": 29,
+      "confidence": 0.8485,
+      "accuracy": 0.6897
+     },
+     {
+      "low": 0.9,
+      "high": 1.0,
+      "n": 37,
+      "confidence": 0.9565,
+      "accuracy": 0.5676
+     }
+    ]
+   },
+   "baselines": {
+    "majority": {
+     "rule": "always 'medium'",
+     "accuracy": 0.405,
+     "macro_f1": 0.1922
+    },
+    "random": {
+     "rule": "uniform over the candidate labels",
+     "accuracy": 0.343,
+     "macro_f1": 0.3382
+    }
+   },
+   "by_group": {
+    "de": 0.4346,
+    "en": 0.4252
+   }
+  },
+  "support_tickets-queue--decide-1b--plain": {
+   "task": "support_tickets/queue",
+   "model": "decide-1b",
+   "descriptions": false,
+   "latency": {
+    "requests": 1000,
+    "inference_ms_median": 307.6,
+    "inference_ms_p90": 561.1,
+    "client_ms_median": 317.4,
+    "client_ms_p90": 573.6,
+    "client_ms_total": 349007,
+    "input_tokens_median": 147.0
+   },
+   "n": 1000,
+   "accuracy": 0.246,
+   "accuracy_ci95": [
+    0.2203,
+    0.2736
+   ],
+   "macro_f1": 0.2192,
+   "per_label": {
+    "Billing and Payments": {
+     "precision": 0.9697,
+     "recall": 0.3077,
+     "f1": 0.4672,
+     "support": 104
+    },
+    "Customer Service": {
+     "precision": 0.1701,
+     "recall": 0.3101,
+     "f1": 0.2197,
+     "support": 158
+    },
+    "General Inquiry": {
+     "precision": 0.0109,
+     "recall": 0.1538,
+     "f1": 0.0203,
+     "support": 13
+    },
+    "Human Resources": {
+     "precision": 0.3571,
+     "recall": 0.2941,
+     "f1": 0.3226,
+     "support": 17
+    },
+    "IT Support": {
+     "precision": 0.1087,
+     "recall": 0.0877,
+     "f1": 0.0971,
+     "support": 114
+    },
+    "Product Support": {
+     "precision": 0.1852,
+     "recall": 0.0538,
+     "f1": 0.0833,
+     "support": 186
+    },
+    "Returns and Exchanges": {
+     "precision": 0.75,
+     "recall": 0.06,
+     "f1": 0.1111,
+     "support": 50
+    },
+    "Sales and Pre-Sales": {
+     "precision": 0.0769,
+     "recall": 0.0714,
+     "f1": 0.0741,
+     "support": 28
+    },
+    "Service Outages and Maintenance": {
+     "precision": 0.5238,
+     "recall": 0.2895,
+     "f1": 0.3729,
+     "support": 38
+    },
+    "Technical Support": {
+     "precision": 0.4296,
+     "recall": 0.4178,
+     "f1": 0.4236,
+     "support": 292
+    }
+   },
+   "calibration": {
+    "ece": 0.1405,
+    "bins": [
+     {
+      "low": 0.0,
+      "high": 0.1,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.1,
+      "high": 0.2,
+      "n": 95,
+      "confidence": 0.1805,
+      "accuracy": 0.2526
+     },
+     {
+      "low": 0.2,
+      "high": 0.3,
+      "n": 342,
+      "confidence": 0.2509,
+      "accuracy": 0.2339
+     },
+     {
+      "low": 0.3,
+      "high": 0.4,
+      "n": 263,
+      "confidence": 0.3457,
+      "accuracy": 0.2357
+     },
+     {
+      "low": 0.4,
+      "high": 0.5,
+      "n": 117,
+      "confidence": 0.4428,
+      "accuracy": 0.2479
+     },
+     {
+      "low": 0.5,
+      "high": 0.6,
+      "n": 65,
+      "confidence": 0.5463,
+      "accuracy": 0.2615
+     },
+     {
+      "low": 0.6,
+      "high": 0.7,
+      "n": 42,
+      "confidence": 0.6469,
+      "accuracy": 0.2381
+     },
+     {
+      "low": 0.7,
+      "high": 0.8,
+      "n": 31,
+      "confidence": 0.7461,
+      "accuracy": 0.3226
+     },
+     {
+      "low": 0.8,
+      "high": 0.9,
+      "n": 15,
+      "confidence": 0.8384,
+      "accuracy": 0.3333
+     },
+     {
+      "low": 0.9,
+      "high": 1.0,
+      "n": 30,
+      "confidence": 0.9584,
+      "accuracy": 0.3
+     }
+    ]
+   },
+   "baselines": {
+    "majority": {
+     "rule": "always 'Technical Support'",
+     "accuracy": 0.292,
+     "macro_f1": 0.0452
+    },
+    "random": {
+     "rule": "uniform over the candidate labels",
+     "accuracy": 0.097,
+     "macro_f1": 0.0789
+    }
+   },
+   "by_group": {
+    "de": 0.2395,
+    "en": 0.2504
+   }
+  },
+  "support_tickets-queue--decide-340m--desc": {
+   "task": "support_tickets/queue",
+   "model": "decide-340m",
+   "descriptions": true,
+   "latency": {
+    "requests": 1000,
+    "inference_ms_median": 132.4,
+    "inference_ms_p90": 276.8,
+    "client_ms_median": 138.3,
+    "client_ms_p90": 286.1,
+    "client_ms_total": 170761,
+    "input_tokens_median": 238.0
+   },
+   "n": 1000,
+   "accuracy": 0.192,
+   "accuracy_ci95": [
+    0.1688,
+    0.2176
+   ],
+   "macro_f1": 0.1819,
+   "per_label": {
+    "Billing and Payments": {
+     "precision": 1.0,
+     "recall": 0.3846,
+     "f1": 0.5556,
+     "support": 104
+    },
+    "Customer Service": {
+     "precision": 0.1479,
+     "recall": 0.2911,
+     "f1": 0.1962,
+     "support": 158
+    },
+    "General Inquiry": {
+     "precision": 0.0043,
+     "recall": 0.0769,
+     "f1": 0.0081,
+     "support": 13
+    },
+    "Human Resources": {
+     "precision": 0.1053,
+     "recall": 0.2353,
+     "f1": 0.1455,
+     "support": 17
+    },
+    "IT Support": {
+     "precision": 0.1235,
+     "recall": 0.1842,
+     "f1": 0.1479,
+     "support": 114
+    },
+    "Product Support": {
+     "precision": 0.1463,
+     "recall": 0.0323,
+     "f1": 0.0529,
+     "support": 186
+    },
+    "Returns and Exchanges": {
+     "precision": 1.0,
+     "recall": 0.02,
+     "f1": 0.0392,
+     "support": 50
+    },
+    "Sales and Pre-Sales": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 28
+    },
+    "Service Outages and Maintenance": {
+     "precision": 0.7143,
+     "recall": 0.2632,
+     "f1": 0.3846,
+     "support": 38
+    },
+    "Technical Support": {
+     "precision": 0.4375,
+     "recall": 0.2158,
+     "f1": 0.289,
+     "support": 292
+    }
+   },
+   "calibration": {
+    "ece": 0.1426,
+    "bins": [
+     {
+      "low": 0.0,
+      "high": 0.1,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.1,
+      "high": 0.2,
+      "n": 66,
+      "confidence": 0.1835,
+      "accuracy": 0.2121
+     },
+     {
+      "low": 0.2,
+      "high": 0.3,
+      "n": 342,
+      "confidence": 0.2513,
+      "accuracy": 0.2047
+     },
+     {
+      "low": 0.3,
+      "high": 0.4,
+      "n": 365,
+      "confidence": 0.3473,
+      "accuracy": 0.1452
+     },
+     {
+      "low": 0.4,
+      "high": 0.5,
+      "n": 180,
+      "confidence": 0.4397,
+      "accuracy": 0.2056
+     },
+     {
+      "low": 0.5,
+      "high": 0.6,
+      "n": 37,
+      "confidence": 0.5406,
+      "accuracy": 0.3243
+     },
+     {
+      "low": 0.6,
+      "high": 0.7,
+      "n": 9,
+      "confidence": 0.6273,
+      "accuracy": 0.5556
+     },
+     {
+      "low": 0.7,
+      "high": 0.8,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.8,
+      "high": 0.9,
+      "n": 1,
+      "confidence": 0.808,
+      "accuracy": 1.0
+     },
+     {
+      "low": 0.9,
+      "high": 1.0,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     }
+    ]
+   },
+   "baselines": {
+    "majority": {
+     "rule": "always 'Technical Support'",
+     "accuracy": 0.292,
+     "macro_f1": 0.0452
+    },
+    "random": {
+     "rule": "uniform over the candidate labels",
+     "accuracy": 0.097,
+     "macro_f1": 0.0789
+    }
+   },
+   "by_group": {
+    "de": 0.1753,
+    "en": 0.2034
+   }
+  },
+  "support_tickets-queue--decide-340m--plain": {
+   "task": "support_tickets/queue",
+   "model": "decide-340m",
+   "descriptions": false,
+   "latency": {
+    "requests": 1000,
+    "inference_ms_median": 93.3,
+    "inference_ms_p90": 208.7,
+    "client_ms_median": 99.3,
+    "client_ms_p90": 218.4,
+    "client_ms_total": 118662,
+    "input_tokens_median": 125.0
+   },
+   "n": 1000,
+   "accuracy": 0.224,
+   "accuracy_ci95": [
+    0.1992,
+    0.2509
+   ],
+   "macro_f1": 0.2174,
+   "per_label": {
+    "Billing and Payments": {
+     "precision": 0.9574,
+     "recall": 0.4327,
+     "f1": 0.596,
+     "support": 104
+    },
+    "Customer Service": {
+     "precision": 0.159,
+     "recall": 0.2848,
+     "f1": 0.2041,
+     "support": 158
+    },
+    "General Inquiry": {
+     "precision": 0.0112,
+     "recall": 0.1538,
+     "f1": 0.0209,
+     "support": 13
+    },
+    "Human Resources": {
+     "precision": 0.1667,
+     "recall": 0.1176,
+     "f1": 0.1379,
+     "support": 17
+    },
+    "IT Support": {
+     "precision": 0.1304,
+     "recall": 0.2368,
+     "f1": 0.1682,
+     "support": 114
+    },
+    "Product Support": {
+     "precision": 0.1754,
+     "recall": 0.0538,
+     "f1": 0.0823,
+     "support": 186
+    },
+    "Returns and Exchanges": {
+     "precision": 1.0,
+     "recall": 0.04,
+     "f1": 0.0769,
+     "support": 50
+    },
+    "Sales and Pre-Sales": {
+     "precision": 0.1081,
+     "recall": 0.1429,
+     "f1": 0.1231,
+     "support": 28
+    },
+    "Service Outages and Maintenance": {
+     "precision": 0.5909,
+     "recall": 0.3421,
+     "f1": 0.4333,
+     "support": 38
+    },
+    "Technical Support": {
+     "precision": 0.4774,
+     "recall": 0.2534,
+     "f1": 0.3311,
+     "support": 292
+    }
+   },
+   "calibration": {
+    "ece": 0.0982,
+    "bins": [
+     {
+      "low": 0.0,
+      "high": 0.1,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.1,
+      "high": 0.2,
+      "n": 150,
+      "confidence": 0.1785,
+      "accuracy": 0.2267
+     },
+     {
+      "low": 0.2,
+      "high": 0.3,
+      "n": 458,
+      "confidence": 0.2503,
+      "accuracy": 0.1965
+     },
+     {
+      "low": 0.3,
+      "high": 0.4,
+      "n": 233,
+      "confidence": 0.3388,
+      "accuracy": 0.2017
+     },
+     {
+      "low": 0.4,
+      "high": 0.5,
+      "n": 76,
+      "confidence": 0.4468,
+      "accuracy": 0.2368
+     },
+     {
+      "low": 0.5,
+      "high": 0.6,
+      "n": 44,
+      "confidence": 0.533,
+      "accuracy": 0.3409
+     },
+     {
+      "low": 0.6,
+      "high": 0.7,
+      "n": 14,
+      "confidence": 0.6474,
+      "accuracy": 0.3571
+     },
+     {
+      "low": 0.7,
+      "high": 0.8,
+      "n": 7,
+      "confidence": 0.7253,
+      "accuracy": 0.4286
+     },
+     {
+      "low": 0.8,
+      "high": 0.9,
+      "n": 10,
+      "confidence": 0.8222,
+      "accuracy": 0.7
+     },
+     {
+      "low": 0.9,
+      "high": 1.0,
+      "n": 8,
+      "confidence": 0.9571,
+      "accuracy": 0.625
+     }
+    ]
+   },
+   "baselines": {
+    "majority": {
+     "rule": "always 'Technical Support'",
+     "accuracy": 0.292,
+     "macro_f1": 0.0452
+    },
+    "random": {
+     "rule": "uniform over the candidate labels",
+     "accuracy": 0.097,
+     "macro_f1": 0.0789
+    }
+   },
+   "by_group": {
+    "de": 0.2,
+    "en": 0.2403
+   }
+  },
+  "support_tickets-queue--decide-multilingual--desc": {
+   "task": "support_tickets/queue",
+   "model": "decide-multilingual",
+   "descriptions": true,
+   "latency": {
+    "requests": 1000,
+    "inference_ms_median": 62.6,
+    "inference_ms_p90": 99.3,
+    "client_ms_median": 69.2,
+    "client_ms_p90": 107.4,
+    "client_ms_total": 75524,
+    "input_tokens_median": 294.0
+   },
+   "n": 1000,
+   "accuracy": 0.185,
+   "accuracy_ci95": [
+    0.1622,
+    0.2103
+   ],
+   "macro_f1": 0.1842,
+   "per_label": {
+    "Billing and Payments": {
+     "precision": 0.9804,
+     "recall": 0.4808,
+     "f1": 0.6452,
+     "support": 104
+    },
+    "Customer Service": {
+     "precision": 0.1741,
+     "recall": 0.3228,
+     "f1": 0.2262,
+     "support": 158
+    },
+    "General Inquiry": {
+     "precision": 0.0096,
+     "recall": 0.2308,
+     "f1": 0.0185,
+     "support": 13
+    },
+    "Human Resources": {
+     "precision": 0.5,
+     "recall": 0.0588,
+     "f1": 0.1053,
+     "support": 17
+    },
+    "IT Support": {
+     "precision": 0.1452,
+     "recall": 0.2368,
+     "f1": 0.18,
+     "support": 114
+    },
+    "Product Support": {
+     "precision": 0.0943,
+     "recall": 0.0269,
+     "f1": 0.0418,
+     "support": 186
+    },
+    "Returns and Exchanges": {
+     "precision": 1.0,
+     "recall": 0.02,
+     "f1": 0.0392,
+     "support": 50
+    },
+    "Sales and Pre-Sales": {
+     "precision": 0.1667,
+     "recall": 0.0357,
+     "f1": 0.0588,
+     "support": 28
+    },
+    "Service Outages and Maintenance": {
+     "precision": 0.5294,
+     "recall": 0.2368,
+     "f1": 0.3273,
+     "support": 38
+    },
+    "Technical Support": {
+     "precision": 0.4684,
+     "recall": 0.1267,
+     "f1": 0.1995,
+     "support": 292
+    }
+   },
+   "calibration": {
+    "ece": 0.2647,
+    "bins": [
+     {
+      "low": 0.0,
+      "high": 0.1,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.1,
+      "high": 0.2,
+      "n": 7,
+      "confidence": 0.1909,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.2,
+      "high": 0.3,
+      "n": 211,
+      "confidence": 0.2584,
+      "accuracy": 0.1659
+     },
+     {
+      "low": 0.3,
+      "high": 0.4,
+      "n": 211,
+      "confidence": 0.3451,
+      "accuracy": 0.1801
+     },
+     {
+      "low": 0.4,
+      "high": 0.5,
+      "n": 184,
+      "confidence": 0.4505,
+      "accuracy": 0.1467
+     },
+     {
+      "low": 0.5,
+      "high": 0.6,
+      "n": 192,
+      "confidence": 0.5489,
+      "accuracy": 0.1927
+     },
+     {
+      "low": 0.6,
+      "high": 0.7,
+      "n": 131,
+      "confidence": 0.6451,
+      "accuracy": 0.1832
+     },
+     {
+      "low": 0.7,
+      "high": 0.8,
+      "n": 52,
+      "confidence": 0.7347,
+      "accuracy": 0.3654
+     },
+     {
+      "low": 0.8,
+      "high": 0.9,
+      "n": 10,
+      "confidence": 0.8209,
+      "accuracy": 0.4
+     },
+     {
+      "low": 0.9,
+      "high": 1.0,
+      "n": 2,
+      "confidence": 0.9263,
+      "accuracy": 0.5
+     }
+    ]
+   },
+   "baselines": {
+    "majority": {
+     "rule": "always 'Technical Support'",
+     "accuracy": 0.292,
+     "macro_f1": 0.0452
+    },
+    "random": {
+     "rule": "uniform over the candidate labels",
+     "accuracy": 0.097,
+     "macro_f1": 0.0789
+    }
+   },
+   "by_group": {
+    "de": 0.1852,
+    "en": 0.1849
+   }
+  },
+  "support_tickets-queue--decide-multilingual--plain": {
+   "task": "support_tickets/queue",
+   "model": "decide-multilingual",
+   "descriptions": false,
+   "latency": {
+    "requests": 1000,
+    "inference_ms_median": 54.4,
+    "inference_ms_p90": 106.9,
+    "client_ms_median": 67.2,
+    "client_ms_p90": 119.1,
+    "client_ms_total": 76696,
+    "input_tokens_median": 158.0
+   },
+   "n": 1000,
+   "accuracy": 0.188,
+   "accuracy_ci95": [
+    0.165,
+    0.2134
+   ],
+   "macro_f1": 0.1804,
+   "per_label": {
+    "Billing and Payments": {
+     "precision": 1.0,
+     "recall": 0.3654,
+     "f1": 0.5352,
+     "support": 104
+    },
+    "Customer Service": {
+     "precision": 0.1736,
+     "recall": 0.3418,
+     "f1": 0.2303,
+     "support": 158
+    },
+    "General Inquiry": {
+     "precision": 0.0119,
+     "recall": 0.2308,
+     "f1": 0.0226,
+     "support": 13
+    },
+    "Human Resources": {
+     "precision": 0.0,
+     "recall": 0.0,
+     "f1": 0.0,
+     "support": 17
+    },
+    "IT Support": {
+     "precision": 0.1275,
+     "recall": 0.1667,
+     "f1": 0.1445,
+     "support": 114
+    },
+    "Product Support": {
+     "precision": 0.1558,
+     "recall": 0.0645,
+     "f1": 0.0913,
+     "support": 186
+    },
+    "Returns and Exchanges": {
+     "precision": 1.0,
+     "recall": 0.06,
+     "f1": 0.1132,
+     "support": 50
+    },
+    "Sales and Pre-Sales": {
+     "precision": 0.1154,
+     "recall": 0.1071,
+     "f1": 0.1111,
+     "support": 28
+    },
+    "Service Outages and Maintenance": {
+     "precision": 0.4545,
+     "recall": 0.2632,
+     "f1": 0.3333,
+     "support": 38
+    },
+    "Technical Support": {
+     "precision": 0.3802,
+     "recall": 0.1575,
+     "f1": 0.2228,
+     "support": 292
+    }
+   },
+   "calibration": {
+    "ece": 0.3622,
+    "bins": [
+     {
+      "low": 0.0,
+      "high": 0.1,
+      "n": 0,
+      "confidence": 0.0,
+      "accuracy": 0.0
+     },
+     {
+      "low": 0.1,
+      "high": 0.2,
+      "n": 16,
+      "confidence": 0.1924,
+      "accuracy": 0.125
+     },
+     {
+      "low": 0.2,
+      "high": 0.3,
+      "n": 179,
+      "confidence": 0.2567,
+      "accuracy": 0.1844
+     },
+     {
+      "low": 0.3,
+      "high": 0.4,
+      "n": 187,
+      "confidence": 0.3471,
+      "accuracy": 0.1925
+     },
+     {
+      "low": 0.4,
+      "high": 0.5,
+      "n": 117,
+      "confidence": 0.4498,
+      "accuracy": 0.1624
+     },
+     {
+      "low": 0.5,
+      "high": 0.6,
+      "n": 95,
+      "confidence": 0.5492,
+      "accuracy": 0.1053
+     },
+     {
+      "low": 0.6,
+      "high": 0.7,
+      "n": 88,
+      "confidence": 0.6511,
+      "accuracy": 0.1932
+     },
+     {
+      "low": 0.7,
+      "high": 0.8,
+      "n": 87,
+      "confidence": 0.7538,
+      "accuracy": 0.2069
+     },
+     {
+      "low": 0.8,
+      "high": 0.9,
+      "n": 109,
+      "confidence": 0.8537,
+      "accuracy": 0.1927
+     },
+     {
+      "low": 0.9,
+      "high": 1.0,
+      "n": 122,
+      "confidence": 0.9475,
+      "accuracy": 0.2623
+     }
+    ]
+   },
+   "baselines": {
+    "majority": {
+     "rule": "always 'Technical Support'",
+     "accuracy": 0.292,
+     "macro_f1": 0.0452
+    },
+    "random": {
+     "rule": "uniform over the candidate labels",
+     "accuracy": 0.097,
+     "macro_f1": 0.0789
+    }
+   },
+   "by_group": {
+    "de": 0.2,
+    "en": 0.1798
+   }
+  }
+ }
+}

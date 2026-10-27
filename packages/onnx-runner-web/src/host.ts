@@ -27,7 +27,7 @@ async function unsupportedReason(): Promise<string | undefined> {
 
 /**
  * Runs the gliner-runner in this dedicated worker and answers the page's requests (see `client.ts`). Everything
- * stays in the worker: the 1.9 GB download, the assembly, the weights and inference never touch the page thread.
+ * stays in the worker: the 1.95 GB download, the assembly, the weights and inference never touch the page thread.
  */
 export function serveRunner(options: HostOptions): void {
   const post = (event: HostEvent): void => self.postMessage(event);

@@ -237,6 +237,209 @@ export const BatchRequestSchema = z.strictObject({
   requests: z.array(InferenceRequestSchema).min(1).max(256),
 });
 
+/**
+ * `POST /v1/questions`: the request shape of TypeSafe's jev and Microsoft-Decision-1 (`state` plus typed
+ * `questions`), with this runner's explicit model, backend and precision. `shapes.ts` turns each question into one
+ * ordinary classification request. The checks live in `questionProblem` so that the Python server reports the same
+ * messages.
+ */
+export const QuestionSchema = z
+  .strictObject({
+    type: z.string(),
+    instructions: JsonValueSchema.optional(),
+    criteria: JsonValueSchema.optional(),
+    threshold: z.number().gt(0).lt(1).nullable().optional(),
+  })
+  .superRefine((question, context) => {
+    const problem = questionProblem(question);
+    if (problem !== null) {
+      context.addIssue({ code: "custom", message: problem });
+    }
+  });
+export type Question = z.output<typeof QuestionSchema>;
+
+export const QuestionsRequestSchema = z
+  .strictObject({
+    request_id: z
+      .guid()
+      .transform((value) => value.toLowerCase())
+      .default(() => globalThis.crypto.randomUUID()),
+    model: nonBlankString,
+    backend: BackendNameSchema,
+    precision: PrecisionSchema,
+    state: JsonValueSchema,
+    questions: nonEmptyRecord(QuestionSchema),
+    assets: JsonValueSchema.optional(),
+  })
+  .superRefine((request, context) => {
+    const state = stateProblem(request.state);
+    if (state !== null) {
+      context.addIssue({ code: "custom", path: ["state"], message: state });
+    }
+    if (request.assets !== undefined) {
+      context.addIssue({ code: "custom", path: ["assets"], message: SHAPE_MESSAGES.assets });
+    }
+  });
+export type QuestionsRequest = z.output<typeof QuestionsRequestSchema>;
+
+/**
+ * `POST /v1/classify_text`: the arguments of GLiNER2's `classify_text` and `batch_classify_text`
+ * (fastino-ai/GLiNER2 v2.1.0, gliner2/inference/runtime.py), with this runner's explicit model, backend and
+ * precision. Send `text` for one result or `texts` for a list.
+ */
+export const ClassifyTextRequestSchema = z
+  .strictObject({
+    request_id: z
+      .guid()
+      .transform((value) => value.toLowerCase())
+      .default(() => globalThis.crypto.randomUUID()),
+    model: nonBlankString,
+    backend: BackendNameSchema,
+    precision: PrecisionSchema,
+    text: nonBlankString.nullable().optional(),
+    texts: z.array(nonBlankString).min(1).max(256).nullable().optional(),
+    tasks: nonEmptyRecord(JsonValueSchema),
+    threshold: z.number().min(0).max(1).default(0.5),
+    include_confidence: z.boolean().default(false),
+  })
+  .superRefine((request, context) => {
+    if ((request.text ?? null) === null === ((request.texts ?? null) === null)) {
+      context.addIssue({ code: "custom", message: SHAPE_MESSAGES.textOrTexts });
+    }
+    for (const [name, task] of Object.entries(request.tasks)) {
+      const problem = gliner2TaskProblem(task);
+      if (problem !== null) {
+        context.addIssue({ code: "custom", path: ["tasks", name], message: problem });
+      }
+    }
+  });
+export type ClassifyTextRequest = z.output<typeof ClassifyTextRequestSchema>;
+
+/** Validation messages of the translated shapes; src/gliner_runner/shapes.py uses the same text. */
+export const SHAPE_MESSAGES = {
+  questionType: "unknown question type; use noul, choice, score or multi_select",
+  box:
+    "box questions find things in images, and the GLiNER2.5 Decide models read text only; " +
+    "use an image model for box questions",
+  assets: "images are not supported: the GLiNER2.5 Decide models read text only; send the text as state",
+  state:
+    "state must be one string here: the GLiNER2.5 Decide models read plain text; " +
+    'write structured state out as text, for example "subject: ...\\nmessage: ..."',
+  blankState: "state must not be blank",
+  instructions: "instructions must be one non-blank string or null; write structured instructions out as text",
+  threshold: "threshold applies only to multi_select questions",
+  noulCriteria: "noul criteria must be an object with only 'true' and 'false', each a non-blank string or null",
+  choiceCriteria: "criteria must map each option name to a non-blank description string or null",
+  choiceCount: "a choice needs at least two options",
+  multiCount: "a multi_select needs at least one option",
+  scoreCriteria: "score criteria must be a list of at least two level descriptions, each a non-blank string",
+  scoreUnique: "score levels must be unique",
+  textOrTexts: "send exactly one of text or texts",
+  gliner2Task:
+    "a task must be a list of label names, or an object with labels and any of multi_label, " +
+    "cls_threshold, top_k, class_act and prompt",
+  gliner2Labels:
+    "labels must be a non-empty list of unique names, or an object mapping each name to a description or null",
+  gliner2Examples:
+    "few-shot examples are not part of this runner's protocol; leave examples out " +
+    "and describe the labels instead",
+  gliner2Threshold:
+    "cls_threshold must be greater than 0 and less than 1 here; " +
+    "to keep the best labels whatever their score, use top_k",
+  gliner2TopK: "top_k must be an integer of at least 1",
+  gliner2Activation: "class_act must be auto, sigmoid or softmax",
+  gliner2SoftmaxMulti:
+    "multi_label with class_act softmax picks labels differently in this runner; use class_act auto or sigmoid",
+  gliner2MultiLabel: "multi_label must be true or false",
+  gliner2Prompt: "prompt must be a non-blank string",
+} as const;
+
+const isJsonObject = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
+
+const isNonBlank = (value: unknown): value is string => typeof value === "string" && !isWhitespaceOnly(value);
+
+const isDescription = (value: unknown): boolean => value === null || isNonBlank(value);
+
+/** The reason `state` cannot be translated, or `null`. */
+export function stateProblem(state: unknown): string | null {
+  if (typeof state !== "string") return SHAPE_MESSAGES.state;
+  return isWhitespaceOnly(state) ? SHAPE_MESSAGES.blankState : null;
+}
+
+/** The reason a jev or Decision-1 question cannot be translated, or `null`. */
+export function questionProblem(question: {
+  type: string;
+  instructions?: unknown;
+  criteria?: unknown;
+  threshold?: number | null | undefined;
+}): string | null {
+  const { type, criteria } = question;
+  if (type === "box") return SHAPE_MESSAGES.box;
+  if (!["noul", "choice", "score", "multi_select"].includes(type)) return SHAPE_MESSAGES.questionType;
+  const instructions = question.instructions ?? null;
+  if (instructions !== null && !isNonBlank(instructions)) return SHAPE_MESSAGES.instructions;
+  if ((question.threshold ?? null) !== null && type !== "multi_select") return SHAPE_MESSAGES.threshold;
+  if (type === "noul") {
+    if (criteria === undefined || criteria === null) return null;
+    if (!isJsonObject(criteria)) return SHAPE_MESSAGES.noulCriteria;
+    const keys = Object.keys(criteria);
+    const valid = keys.every((key) => (key === "true" || key === "false") && isDescription(criteria[key]));
+    return valid ? null : SHAPE_MESSAGES.noulCriteria;
+  }
+  if (type === "score") {
+    if (!Array.isArray(criteria) || criteria.length < 2 || !criteria.every(isNonBlank)) {
+      return SHAPE_MESSAGES.scoreCriteria;
+    }
+    return new Set(criteria).size === criteria.length ? null : SHAPE_MESSAGES.scoreUnique;
+  }
+  if (!isJsonObject(criteria) || !Object.values(criteria).every(isDescription)) {
+    return SHAPE_MESSAGES.choiceCriteria;
+  }
+  const count = Object.keys(criteria).length;
+  if (type === "choice" && count < 2) return SHAPE_MESSAGES.choiceCount;
+  if (type === "multi_select" && count < 1) return SHAPE_MESSAGES.multiCount;
+  return null;
+}
+
+const GLINER2_TASK_KEYS = ["labels", "multi_label", "cls_threshold", "top_k", "class_act", "prompt"];
+
+const isLabelList = (labels: readonly unknown[]): boolean =>
+  labels.length > 0 && labels.every((label) => typeof label === "string") && new Set(labels).size === labels.length;
+
+/** The reason a GLiNER2 `classify_text` task cannot be translated, or `null`. */
+export function gliner2TaskProblem(task: unknown): string | null {
+  if (Array.isArray(task)) {
+    return isLabelList(task) ? null : SHAPE_MESSAGES.gliner2Labels;
+  }
+  if (!isJsonObject(task) || !Object.hasOwn(task, "labels")) return SHAPE_MESSAGES.gliner2Task;
+  if (Object.hasOwn(task, "examples")) return SHAPE_MESSAGES.gliner2Examples;
+  if (!Object.keys(task).every((key) => GLINER2_TASK_KEYS.includes(key))) return SHAPE_MESSAGES.gliner2Task;
+  const labels = task["labels"];
+  const labelsValid = Array.isArray(labels)
+    ? isLabelList(labels)
+    : isJsonObject(labels) && Object.keys(labels).length > 0 && Object.values(labels).every(isDescription);
+  if (!labelsValid) return SHAPE_MESSAGES.gliner2Labels;
+  const multi = task["multi_label"] ?? false;
+  if (typeof multi !== "boolean") return SHAPE_MESSAGES.gliner2MultiLabel;
+  const threshold = task["cls_threshold"];
+  if (threshold !== undefined && !(typeof threshold === "number" && threshold > 0 && threshold < 1)) {
+    return SHAPE_MESSAGES.gliner2Threshold;
+  }
+  const topK = task["top_k"];
+  if (topK !== undefined && topK !== null && !(typeof topK === "number" && Number.isInteger(topK) && topK >= 1)) {
+    return SHAPE_MESSAGES.gliner2TopK;
+  }
+  const activation = task["class_act"] ?? "auto";
+  if (typeof activation !== "string" || !["auto", "sigmoid", "softmax"].includes(activation)) {
+    return SHAPE_MESSAGES.gliner2Activation;
+  }
+  if (multi && activation === "softmax") return SHAPE_MESSAGES.gliner2SoftmaxMulti;
+  const prompt = task["prompt"];
+  if (prompt !== undefined && prompt !== null && !isNonBlank(prompt)) return SHAPE_MESSAGES.gliner2Prompt;
+  return null;
+}
+
 export const DownloadRequestSchema = z.strictObject({
   approved: z.boolean(),
   destination: z.string().min(1),

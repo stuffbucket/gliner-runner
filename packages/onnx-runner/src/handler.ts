@@ -4,8 +4,10 @@ import { BackendRegistry, type BackendFactory } from "./backend.js";
 import type { ArtifactCatalog } from "./catalog.js";
 import {
   BatchRequestSchema,
+  ClassifyTextRequestSchema,
   DownloadRequestSchema,
   InferenceRequestSchema,
+  QuestionsRequestSchema,
   type HealthResponse,
   type InferenceResponse,
   type RefreshResult,
@@ -21,11 +23,13 @@ import {
   internalError,
   type HttpError,
 } from "./errors.js";
+import { parseOrderedJson } from "./gliner2/ordered-json.js";
 import { buildModelsResponse } from "./inventory.js";
 import { buildOpenApiDocument } from "./openapi.js";
 import { Runtime } from "./runtime.js";
 import type { Settings } from "./settings.js";
-import { recordTaskOrder } from "./task-order.js";
+import { classifyTextResponse, planClassifyText, planQuestions, questionsResponse } from "./shapes.js";
+import { declareTaskOrder, recordTaskOrder } from "./task-order.js";
 import { stringifyWire } from "./wire.js";
 import { parseJsonBody, parseValue, type ValidationErrorItem } from "./validation.js";
 
@@ -248,6 +252,35 @@ export function createRunnerHandler(options: RunnerHandlerOptions): RunnerHandle
       recordTaskOrder(body, parsed.data.requests, true);
       const responses = await inferAll(parsed.data.requests, signal, infer);
       return json(200, { responses });
+    }),
+    route("POST", "/v1/questions", async ({ readBody, signal }) => {
+      const body = await readBody();
+      const parsed = parseJsonBody(QuestionsRequestSchema, body);
+      if (!parsed.success) {
+        return validationFailure(parsed.errors);
+      }
+      const planned = planQuestions(parsed.data, parseOrderedJson(body));
+      const requests = planned.map((question) => InferenceRequestSchema.parse(question.request));
+      const responses = await inferAll(requests, signal, infer);
+      return json(200, questionsResponse(parsed.data, planned, responses));
+    }),
+    route("POST", "/v1/classify_text", async ({ readBody, signal }) => {
+      const body = await readBody();
+      const parsed = parseJsonBody(ClassifyTextRequestSchema, body);
+      if (!parsed.success) {
+        return validationFailure(parsed.errors);
+      }
+      const plan = planClassifyText(parsed.data, parseOrderedJson(body));
+      const requests = plan.requests.map((request) => {
+        const inference = InferenceRequestSchema.parse(request);
+        declareTaskOrder(
+          inference.schema.kind === "classification" ? inference.schema.tasks : {},
+          plan.tasks.map((task) => task.name),
+        );
+        return inference;
+      });
+      const responses = await inferAll(requests, signal, infer);
+      return json(200, classifyTextResponse(parsed.data, plan, responses));
     }),
     route("GET", "/metrics", () => ({
       status: 200,

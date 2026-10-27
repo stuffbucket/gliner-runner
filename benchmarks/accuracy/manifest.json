@@ -1,0 +1,337 @@
+{
+  "schema": "gliner-runner-accuracy-manifest-v1",
+  "note": "Sources, pinned revisions, and licences for the accuracy evaluation. Raw data is not committed; fetch.py downloads it, checks each file's SHA-256, and writes a normalised copy. Licence text is quoted from the source page named in licence.where.",
+  "datasets": [
+    {
+      "id": "fast_decisions",
+      "name": "Fast Decisions (development split)",
+      "use_case": "Operational decisions: support, banking, triage, routing, sentiment",
+      "task": "17 domains, 1 to 4 heads each (29 heads: 26 single-label and 3 several-label), 2,900 decisions in all",
+      "source": "https://huggingface.co/datasets/fastino/fast-decisions",
+      "revision": "35afb79a0f611a1db44380e855ac2a821b0a4da1",
+      "licence": {
+        "spdx": "Apache-2.0",
+        "quote": "- **License:** Apache 2.0",
+        "where": "https://huggingface.co/datasets/fastino/fast-decisions/blob/35afb79a0f611a1db44380e855ac2a821b0a4da1/README.md",
+        "caveat": "The card says: \"This release is the development split: 100 examples per domain, 1,700 rows. The test split, 300 per domain, is held out. The numbers below are that held-out split. Do not report a score computed on the files in this repo as the benchmark.\" Scores here are development-split scores and are not the published benchmark."
+      },
+      "files": [
+        {
+          "name": "support_intent.jsonl",
+          "url": "https://huggingface.co/datasets/fastino/fast-decisions/resolve/35afb79a0f611a1db44380e855ac2a821b0a4da1/support_intent.jsonl",
+          "sha256": "a293e95915be740dab18e0bba4d9ca1e31ce9ce2f86f127080ad172cdf89ce72"
+        },
+        {
+          "name": "support_topic.jsonl",
+          "url": "https://huggingface.co/datasets/fastino/fast-decisions/resolve/35afb79a0f611a1db44380e855ac2a821b0a4da1/support_topic.jsonl",
+          "sha256": "e7f41083889f229bf7eae58c48b42e0587d397dbfc959966bbfc379197102ed6"
+        },
+        {
+          "name": "document_type.jsonl",
+          "url": "https://huggingface.co/datasets/fastino/fast-decisions/resolve/35afb79a0f611a1db44380e855ac2a821b0a4da1/document_type.jsonl",
+          "sha256": "87798b1b7c57a553fa82b1c15495b4bcefcf9552e80185673f00e733d59552d7"
+        },
+        {
+          "name": "review_sentiment.jsonl",
+          "url": "https://huggingface.co/datasets/fastino/fast-decisions/resolve/35afb79a0f611a1db44380e855ac2a821b0a4da1/review_sentiment.jsonl",
+          "sha256": "413e8f6f81ce048d3e17f39ecd11cd28c1443253712a0930cfe8063bd1d82616"
+        },
+        {
+          "name": "agent_handoff.jsonl",
+          "url": "https://huggingface.co/datasets/fastino/fast-decisions/resolve/35afb79a0f611a1db44380e855ac2a821b0a4da1/agent_handoff.jsonl",
+          "sha256": "7c086a3a6a0014fc53d76df3912b93e1b5e4c293d92ab36f1620e5346c3269f8"
+        },
+        {
+          "name": "email_triage.jsonl",
+          "url": "https://huggingface.co/datasets/fastino/fast-decisions/resolve/35afb79a0f611a1db44380e855ac2a821b0a4da1/email_triage.jsonl",
+          "sha256": "779fdef3ad22d1f8fc0b8b81a15b7a591546ff2f5df3d4a850884e08033b11e0"
+        },
+        {
+          "name": "ticket_route.jsonl",
+          "url": "https://huggingface.co/datasets/fastino/fast-decisions/resolve/35afb79a0f611a1db44380e855ac2a821b0a4da1/ticket_route.jsonl",
+          "sha256": "8660f5b7bfc6f2475d5aaf2d3202a62d2c647ed49a950dc2dd04d76d14cffe08"
+        },
+        {
+          "name": "product_feedback.jsonl",
+          "url": "https://huggingface.co/datasets/fastino/fast-decisions/resolve/35afb79a0f611a1db44380e855ac2a821b0a4da1/product_feedback.jsonl",
+          "sha256": "0b44b04d361cf29fc95728a5c1cae4506f42545fe1cb39af53b835287cba001f"
+        },
+        {
+          "name": "banking_intent.jsonl",
+          "url": "https://huggingface.co/datasets/fastino/fast-decisions/resolve/35afb79a0f611a1db44380e855ac2a821b0a4da1/banking_intent.jsonl",
+          "sha256": "43af4aafdf6aeca74400505acbe528d1605aacb1097e1e1c0a169e9dfb6b5a77"
+        },
+        {
+          "name": "clinic_request.jsonl",
+          "url": "https://huggingface.co/datasets/fastino/fast-decisions/resolve/35afb79a0f611a1db44380e855ac2a821b0a4da1/clinic_request.jsonl",
+          "sha256": "84392b5b6de98c6cf7b474b45b6cffd19ab581770b89fab5d3eb5c77e9397652"
+        },
+        {
+          "name": "travel_request.jsonl",
+          "url": "https://huggingface.co/datasets/fastino/fast-decisions/resolve/35afb79a0f611a1db44380e855ac2a821b0a4da1/travel_request.jsonl",
+          "sha256": "6e596454de299d765d1d104e90d93543218f06e42b8b55bfc614cd2c8981ebfb"
+        },
+        {
+          "name": "news_topic.jsonl",
+          "url": "https://huggingface.co/datasets/fastino/fast-decisions/resolve/35afb79a0f611a1db44380e855ac2a821b0a4da1/news_topic.jsonl",
+          "sha256": "c31f7710592c2f31f3634930da4840b535ceccd14a3092521547bc9c0f0a6b17"
+        },
+        {
+          "name": "paper_field.jsonl",
+          "url": "https://huggingface.co/datasets/fastino/fast-decisions/resolve/35afb79a0f611a1db44380e855ac2a821b0a4da1/paper_field.jsonl",
+          "sha256": "bb4513faf7616d2ee21694ee62fdc222b4e0e86a2ac0601298b23c538d23e5d0"
+        },
+        {
+          "name": "sports_recap.jsonl",
+          "url": "https://huggingface.co/datasets/fastino/fast-decisions/resolve/35afb79a0f611a1db44380e855ac2a821b0a4da1/sports_recap.jsonl",
+          "sha256": "b2e1e6e174650d8b6a114f16dbacbd8b62f93ee77c3967c23d322e9848dac1b3"
+        },
+        {
+          "name": "restaurant_review.jsonl",
+          "url": "https://huggingface.co/datasets/fastino/fast-decisions/resolve/35afb79a0f611a1db44380e855ac2a821b0a4da1/restaurant_review.jsonl",
+          "sha256": "64bf7cd3e498045f337956bfec1e002a456cb9aac02c23cac2911fd902914a67"
+        },
+        {
+          "name": "benefits_request.jsonl",
+          "url": "https://huggingface.co/datasets/fastino/fast-decisions/resolve/35afb79a0f611a1db44380e855ac2a821b0a4da1/benefits_request.jsonl",
+          "sha256": "a37c96197152006fbb46e8ea0099dc6ab89feafbca424d21bd57b3f7ae3b235b"
+        },
+        {
+          "name": "screen_tags.jsonl",
+          "url": "https://huggingface.co/datasets/fastino/fast-decisions/resolve/35afb79a0f611a1db44380e855ac2a821b0a4da1/screen_tags.jsonl",
+          "sha256": "5433a6cb7d67e88de2c9b9443bf3291d91ce89be4a7ea631b93d71d8b56e227b"
+        }
+      ],
+      "split": "development (1,700 rows, 100 per domain); the 5,100-row test split is held out by fastino",
+      "why": "fastino's own suite for the Decide models, and the only labelled set fastino publishes for them. It lets the runner's answers be set beside fastino's published averages (on the held-out split)."
+    },
+    {
+      "id": "banking77",
+      "name": "BANKING77",
+      "use_case": "Support tickets and intent",
+      "task": "single-label, 77 banking customer-service intents",
+      "source": "https://huggingface.co/datasets/PolyAI/banking77",
+      "revision": "PolyAI-LDN/task-specific-datasets@57ec275d8078af65b7731c2a98be812d844a6d6b (the GitHub repository the Hugging Face loader downloads from)",
+      "licence": {
+        "spdx": "CC-BY-4.0",
+        "quote": "### Licensing Information\n\nCreative Commons Attribution 4.0 International",
+        "where": "https://huggingface.co/datasets/PolyAI/banking77/blob/90d4e2ee5521c04fc1488f065b8b083658768c57/README.md"
+      },
+      "files": [
+        {
+          "name": "test.csv",
+          "url": "https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/57ec275d8078af65b7731c2a98be812d844a6d6b/banking_data/test.csv",
+          "sha256": "d12d6e3bc4c3103966ae786dc435913c0c563dfa328f5a3646d0e62cfeeb474d"
+        },
+        {
+          "name": "categories.json",
+          "url": "https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/57ec275d8078af65b7731c2a98be812d844a6d6b/banking_data/categories.json",
+          "sha256": "53261da888122daf2d120d925458631d9619e15d82e56052e7a42e535ce32b63"
+        }
+      ],
+      "split": "test (3,080 rows, 40 per intent)",
+      "why": "Real-looking customer messages to a bank, sorted into fine-grained intents. Closest public match to the support-ticket routing example, and a hard case: 77 labels, many of them near neighbours."
+    },
+    {
+      "id": "news_category",
+      "name": "News Category Dataset (HuffPost headlines)",
+      "use_case": "Topic",
+      "task": "single-label, 42 news sections",
+      "source": "https://huggingface.co/datasets/heegyu/news-category-dataset (mirror of https://www.kaggle.com/datasets/rmisra/news-category-dataset)",
+      "revision": "304a05a55bc6abc0446d8fae0d0771716b6a271a",
+      "licence": {
+        "spdx": "CC-BY-4.0",
+        "quote": "license: cc-by-4.0",
+        "where": "https://huggingface.co/datasets/heegyu/news-category-dataset/blob/304a05a55bc6abc0446d8fae0d0771716b6a271a/README.md"
+      },
+      "files": [
+        {
+          "name": "data.json",
+          "url": "https://huggingface.co/datasets/heegyu/news-category-dataset/resolve/304a05a55bc6abc0446d8fae0d0771716b6a271a/data.json",
+          "sha256": "2cfc51fa4a82a96ecbe251fa383737aa1dea2e0a517f61dece633fcc25a4a065"
+        }
+      ],
+      "split": "the only file (209,527 rows; 6 with an empty headline are dropped); no official test split",
+      "why": "Topic sorting of short texts (headline plus one-line summary). Used in place of AG News, whose licence is listed as unknown. Several sections overlap by design (WORLDPOST, THE WORLDPOST, WORLD NEWS), which is part of what it measures."
+    },
+    {
+      "id": "amazon_polarity",
+      "name": "Amazon Review Polarity",
+      "use_case": "Sentiment",
+      "task": "single-label, positive or negative",
+      "source": "https://huggingface.co/datasets/fancyzhx/amazon_polarity",
+      "revision": "9d9c45c18f8c3cf1b23a3c27917b60cbf28f3289",
+      "licence": {
+        "spdx": "Apache-2.0",
+        "quote": "### Licensing Information\n\nApache License 2.0",
+        "where": "https://huggingface.co/datasets/fancyzhx/amazon_polarity/blob/9d9c45c18f8c3cf1b23a3c27917b60cbf28f3289/README.md",
+        "caveat": "The licence is as stated on the dataset card. The reviews themselves come from the SNAP Amazon reviews collection (McAuley and Leskovec, 2013); the card does not say how that source was licensed."
+      },
+      "files": [
+        {
+          "name": "test.parquet",
+          "url": "https://huggingface.co/datasets/fancyzhx/amazon_polarity/resolve/9d9c45c18f8c3cf1b23a3c27917b60cbf28f3289/amazon_polarity/test-00000-of-00001.parquet",
+          "sha256": "65613cc6ec1ab30e19c4dcb8d8fa5612159d77bfa493704b4a9a9c167424992e"
+        }
+      ],
+      "split": "test (400,000 rows, balanced)",
+      "why": "Product reviews, as in the reviews example. The multilingual Amazon reviews corpus (amazon_reviews_multi) is no longer distributed, so it is not used."
+    },
+    {
+      "id": "go_emotions",
+      "name": "GoEmotions (simplified)",
+      "use_case": "Sentiment and emotion, several labels",
+      "task": "several-label, 27 emotions plus neutral (28 labels)",
+      "source": "https://huggingface.co/datasets/google-research-datasets/go_emotions",
+      "revision": "add492243ff905527e67aeb8b80c082af02207c3",
+      "licence": {
+        "spdx": "Apache-2.0",
+        "quote": "### Licensing Information\n\nThe GitHub repository which houses this dataset has an\n[Apache License 2.0](https://github.com/google-research/google-research/blob/master/LICENSE).",
+        "where": "https://huggingface.co/datasets/google-research-datasets/go_emotions/blob/add492243ff905527e67aeb8b80c082af02207c3/README.md"
+      },
+      "files": [
+        {
+          "name": "test.parquet",
+          "url": "https://huggingface.co/datasets/google-research-datasets/go_emotions/resolve/add492243ff905527e67aeb8b80c082af02207c3/simplified/test-00000-of-00001.parquet",
+          "sha256": "fd0953e535ba2569edc6a1daaa1133f8e4b9071691d540c9bab812fda132bc26"
+        },
+        {
+          "name": "validation.parquet",
+          "url": "https://huggingface.co/datasets/google-research-datasets/go_emotions/resolve/add492243ff905527e67aeb8b80c082af02207c3/simplified/validation-00000-of-00001.parquet",
+          "sha256": "d46ad5633c4fa41829d22d549743a7bf858d94129536a02af7280c281db5e63a"
+        }
+      ],
+      "split": "test (5,427 rows) for scoring; validation (5,426 rows) only for choosing a threshold",
+      "why": "Reddit comments that can carry more than one emotion at once, so it tests the several-labels mode and its threshold."
+    },
+    {
+      "id": "civil_comments",
+      "name": "Civil Comments",
+      "use_case": "Moderation",
+      "task": "single-label, toxic or not toxic (toxicity score of 0.5 or more counts as toxic)",
+      "source": "https://huggingface.co/datasets/google/civil_comments",
+      "revision": "f2970eb3a55777454c94069077cc8d9b5866312d",
+      "licence": {
+        "spdx": "CC0-1.0",
+        "quote": "### Licensing Information\n\nThis dataset is released under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/).",
+        "where": "https://huggingface.co/datasets/google/civil_comments/blob/f2970eb3a55777454c94069077cc8d9b5866312d/README.md"
+      },
+      "files": [
+        {
+          "name": "test.parquet",
+          "url": "https://huggingface.co/datasets/google/civil_comments/resolve/f2970eb3a55777454c94069077cc8d9b5866312d/data/test-00000-of-00001.parquet",
+          "sha256": "410f803ff161e7c4ba005db7de5b444cac413f4861bf056b0fd69d670d75aa08"
+        }
+      ],
+      "split": "test (97,320 rows)",
+      "why": "Public news-site comments rated for toxicity by crowd workers, as in the moderation example. The 0.5 cut is the one the dataset's authors use for the binary task."
+    },
+    {
+      "id": "massive",
+      "name": "MASSIVE 1.1 (10 locales)",
+      "use_case": "Language and other languages",
+      "task": "two tasks on the same utterances: single-label scenario (18 assistant domains) and single-label language (10 languages)",
+      "source": "https://huggingface.co/datasets/AmazonScience/massive",
+      "revision": "refs/convert/parquet@ed58ac423a2f4121720918bf5301577edce4ffd3 (Hugging Face's parquet conversion of main@ff6bd8e4b27c3543e4f8fe2108f32bb95a6f8740)",
+      "licence": {
+        "spdx": "CC-BY-4.0",
+        "quote": "license:\n- cc-by-4.0",
+        "where": "https://huggingface.co/datasets/AmazonScience/massive/blob/ff6bd8e4b27c3543e4f8fe2108f32bb95a6f8740/README.md"
+      },
+      "locales": [
+        "en-US",
+        "es-ES",
+        "fr-FR",
+        "de-DE",
+        "it-IT",
+        "pt-PT",
+        "nl-NL",
+        "ru-RU",
+        "ja-JP",
+        "zh-CN"
+      ],
+      "files": [
+        {
+          "name": "en-US.parquet",
+          "url": "https://huggingface.co/datasets/AmazonScience/massive/resolve/ed58ac423a2f4121720918bf5301577edce4ffd3/en-US/test/0000.parquet",
+          "sha256": "c418da9a5f3a7425b5cf44941bcea032a31040dbda2da85e0dd9323785c7731e"
+        },
+        {
+          "name": "es-ES.parquet",
+          "url": "https://huggingface.co/datasets/AmazonScience/massive/resolve/ed58ac423a2f4121720918bf5301577edce4ffd3/es-ES/test/0000.parquet",
+          "sha256": "ca94eebc836e61e8bc530966c6565bb2c2b9d6184cc910c767c7fa6a9563de19"
+        },
+        {
+          "name": "fr-FR.parquet",
+          "url": "https://huggingface.co/datasets/AmazonScience/massive/resolve/ed58ac423a2f4121720918bf5301577edce4ffd3/fr-FR/test/0000.parquet",
+          "sha256": "aacd57aa2bcf6e1d037a350a41b70cb756bbf51199d2023f40a3ebb9d38a1981"
+        },
+        {
+          "name": "de-DE.parquet",
+          "url": "https://huggingface.co/datasets/AmazonScience/massive/resolve/ed58ac423a2f4121720918bf5301577edce4ffd3/de-DE/test/0000.parquet",
+          "sha256": "3f15d6dcac758a56b4528a06b002252846208ebb8101f6159bc16ed836c55982"
+        },
+        {
+          "name": "it-IT.parquet",
+          "url": "https://huggingface.co/datasets/AmazonScience/massive/resolve/ed58ac423a2f4121720918bf5301577edce4ffd3/it-IT/test/0000.parquet",
+          "sha256": "db30bd1b876d3357cca2f3205a9b03ae53b49395722f25bffb7c3dcc796a4610"
+        },
+        {
+          "name": "pt-PT.parquet",
+          "url": "https://huggingface.co/datasets/AmazonScience/massive/resolve/ed58ac423a2f4121720918bf5301577edce4ffd3/pt-PT/test/0000.parquet",
+          "sha256": "99f5b531928d1cd837e4427def29f5827af49dbd9742af458d71d3378b284ec4"
+        },
+        {
+          "name": "nl-NL.parquet",
+          "url": "https://huggingface.co/datasets/AmazonScience/massive/resolve/ed58ac423a2f4121720918bf5301577edce4ffd3/nl-NL/test/0000.parquet",
+          "sha256": "4cfaf06796320aba9e29866caf34594a988bf6c15139e7d4c4d41a2cffc2c186"
+        },
+        {
+          "name": "ru-RU.parquet",
+          "url": "https://huggingface.co/datasets/AmazonScience/massive/resolve/ed58ac423a2f4121720918bf5301577edce4ffd3/ru-RU/test/0000.parquet",
+          "sha256": "d53f1c58d753e64b7cf7f10face6c4a57ac93e7f9db82826b43058eacaf2e46a"
+        },
+        {
+          "name": "ja-JP.parquet",
+          "url": "https://huggingface.co/datasets/AmazonScience/massive/resolve/ed58ac423a2f4121720918bf5301577edce4ffd3/ja-JP/test/0000.parquet",
+          "sha256": "017d55af0c9d90faa93363798976570e0f58c3c1f90bbdc4be45da43c1310d01"
+        },
+        {
+          "name": "zh-CN.parquet",
+          "url": "https://huggingface.co/datasets/AmazonScience/massive/resolve/ed58ac423a2f4121720918bf5301577edce4ffd3/zh-CN/test/0000.parquet",
+          "sha256": "7eca92a47e6bffeec3fc7de751948b82904680353a42eef7e8c6fdbe89adb2db"
+        }
+      ],
+      "split": "test (2,974 rows per locale)",
+      "why": "The same short assistant requests translated into many languages. It gives a fair comparison of the English and multilingual models on identical content, and a language-identification task built from the locale tag."
+    },
+    {
+      "id": "support_tickets",
+      "name": "Customer Support Tickets (Tobi-Bueck)",
+      "use_case": "Support tickets and urgency",
+      "task": "two tasks on the same tickets: single-label queue (10 departments) and single-label priority (low, medium, high)",
+      "source": "https://huggingface.co/datasets/Tobi-Bueck/customer-support-tickets",
+      "revision": "ddf1c81a5475992c4fa6752bf1e8b4e31f07bbeb",
+      "licence": {
+        "spdx": "CC-BY-NC-4.0",
+        "quote": "license: cc-by-nc-4.0",
+        "where": "https://huggingface.co/datasets/Tobi-Bueck/customer-support-tickets/blob/ddf1c81a5475992c4fa6752bf1e8b4e31f07bbeb/README.md",
+        "caveat": "Non-commercial. It is used here only to measure the models and publish aggregate scores; no text from it is redistributed. The tickets are synthetic (generated), according to the dataset card."
+      },
+      "files": [
+        {
+          "name": "tickets.csv",
+          "url": "https://huggingface.co/datasets/Tobi-Bueck/customer-support-tickets/resolve/ddf1c81a5475992c4fa6752bf1e8b4e31f07bbeb/dataset-tickets-multi-lang-4-20k.csv",
+          "sha256": "9be3bf810584fe01e8e83383e83dfd33f4c3910938ecad03ef151da79d8f0635"
+        },
+        {
+          "name": "README.md",
+          "url": "https://huggingface.co/datasets/Tobi-Bueck/customer-support-tickets/resolve/ddf1c81a5475992c4fa6752bf1e8b4e31f07bbeb/README.md",
+          "sha256": "40dcee1ff1ddf2c74a980ebd8c0b2070634e8b4ba0ad02eba58e89edef259810"
+        }
+      ],
+      "split": "the only file, dataset-tickets-multi-lang-4-20k.csv (20,000 rows: 11,923 English, 8,077 German; 2 without a body are dropped)",
+      "why": "Help-desk emails with a department and a priority, which are the support-ticket and urgency use cases. Its card documents every queue and priority in a sentence, which gives the label descriptions. fetch.py reads them from the card, so they are not kept in this repository."
+    }
+  ]
+}

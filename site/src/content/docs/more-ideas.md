@@ -5,7 +5,8 @@ sidebar:
   order: 4
 ---
 
-Each idea is a list of labels to try. Put the labels after `--labels`, separated by commas, and
+Once the program runs, give it more to sort. Each idea below is a list of labels to try. Put the
+labels after `--labels`, separated by commas, and
 add `--multi` where a text can fit more than one. Add a short `--describe` for any label whose
 meaning is not obvious. See [how it works](/gliner-runner/how-it-works/) for how.
 
@@ -51,7 +52,9 @@ starting points we have not run in full.
 This is the pattern behind every row. Replace the text and the labels:
 
 ```sh
-gliner-runner classify --labels "invoice,contract,resume,receipt,letter,other" "Invoice 2041. Amount due: 480.00. Payment terms: net 30 days."
+gliner-runner classify \
+  --labels "invoice,contract,resume,receipt,letter,other" \
+  "Invoice 2041. Amount due: 480.00. Payment terms: net 30 days."
 ```
 
 ```text
@@ -69,9 +72,15 @@ in full. For this list we only tried a few items, and some did not go well. Shor
 descriptions are often not enough for harder jobs. Three that we ran:
 
 ```sh
-gliner-runner classify --labels "error,warning,routine,security concern" "2024-03-02 11:04:12 database connection timed out after 30 seconds"
-gliner-runner classify --labels "error,warning,routine,security concern" "Failed login for user admin from 203.0.113.9 (attempt 5)"
-gliner-runner classify --labels "decision,action item,question,background" "We agreed to move the launch to June."
+gliner-runner classify \
+  --labels "error,warning,routine,security concern" \
+  "2024-03-02 11:04:12 database connection timed out after 30 seconds"
+gliner-runner classify \
+  --labels "error,warning,routine,security concern" \
+  "Failed login for user admin from 203.0.113.9 (attempt 5)"
+gliner-runner classify \
+  --labels "decision,action item,question,background" \
+  "We agreed to move the launch to June."
 ```
 
 ```text
@@ -86,3 +95,8 @@ and the program said `background`. Confidence was low in all three.
 
 Try ten of your own items first, look at the answers, and adjust the labels and descriptions until
 they match how you would sort them yourself.
+
+## Next
+
+Try a set of labels on your own text in the [playground](/gliner-runner/playground/), or start
+from one of the [examples](/gliner-runner/examples/) we ran in full.

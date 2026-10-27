@@ -10,8 +10,8 @@ same teams as your English messages, without translating them first.
 
 ## Get the multilingual model
 
-The default English model is not meant for other languages. Use `decide-multilingual`, which is
-about 1.2 GB:
+The default English model is not meant for other languages. Use `decide-multilingual`, a 1.17 GB
+download that takes 1.13 GB on disk:
 
 ```sh
 gliner-runner models install decide-multilingual
@@ -85,3 +85,8 @@ go either way, and a low confidence is the sign.
 - **Other languages.** Try your own. We tested Spanish, French, and German.
 - **English messages** also work with `decide-multilingual`. The `demo` command shows examples:
   `gliner-runner demo --model decide-multilingual`.
+
+## Next
+
+See [all examples](/gliner-runner/examples/), or [more ideas](/gliner-runner/more-ideas/) for other
+jobs to try.

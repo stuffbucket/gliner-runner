@@ -27,7 +27,8 @@ This uses the default model, `decide-340m`, with no descriptions:
 ```sh
 while IFS= read -r line; do
   printf '%s\n  ' "$line"
-  gliner-runner classify --labels "English,Spanish,French,German,Italian" "$line"
+  gliner-runner classify \
+    --labels "English,Spanish,French,German,Italian" "$line"
 done <<'EOF'
 Where is the nearest train station?
 ¿Dónde está la estación de tren más cercana?
@@ -66,7 +67,9 @@ All seven are right. The English sentence has the lowest confidence, 0.568.
   program chose the closest one:
 
   ```sh
-  gliner-runner classify --labels "English,Spanish,French,German,Italian" "Onde fica a estação de comboios mais próxima?"
+  gliner-runner classify \
+    --labels "English,Spanish,French,German,Italian" \
+    "Onde fica a estação de comboios mais próxima?"
   ```
 
   ```text
@@ -88,3 +91,8 @@ All seven are right. The English sentence has the lowest confidence, 0.568.
 - **Send each message to the right team.** Once you know the language, use the
   [other languages example](/gliner-runner/examples/other-languages/) to sort it by topic.
 - **Send low confidence to a person.** Anything under 0.5 is worth a look.
+
+## Next
+
+See [all examples](/gliner-runner/examples/), or [more ideas](/gliner-runner/more-ideas/) for other
+jobs to try.

@@ -20,4 +20,5 @@ export {
 export { createServer, type RunnerServer, type ServerOptions } from "./server.js";
 export { defaultSettings, resolveSettings, type Settings } from "./settings.js";
 export { stringifyWire } from "./wire.js";
-export { orderedTaskEntries, taskOrderOf } from "./task-order.js";
+export { declareTaskOrder, orderedTaskEntries, taskOrderOf } from "./task-order.js";
+export * from "./shapes.js";

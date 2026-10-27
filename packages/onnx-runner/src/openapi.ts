@@ -1,8 +1,14 @@
 import { z } from "zod";
 
-import { BatchRequestSchema, DownloadRequestSchema, InferenceRequestSchema } from "./contracts.js";
+import {
+  BatchRequestSchema,
+  ClassifyTextRequestSchema,
+  DownloadRequestSchema,
+  InferenceRequestSchema,
+  QuestionsRequestSchema,
+} from "./contracts.js";
 
-export const API_VERSION = "1.0.0";
+export const API_VERSION = "1.1.0";
 
 function jsonSchema(schema: z.ZodType): Record<string, unknown> {
   const { $schema: _dialect, ...rest } = z.toJSONSchema(schema, {
@@ -79,6 +85,12 @@ export function buildOpenApiDocument(): Record<string, unknown> {
       },
       "/v1/batch": {
         post: operation("Batch", "inference", inferErrors, jsonSchema(BatchRequestSchema)),
+      },
+      "/v1/questions": {
+        post: operation("Questions", "inference", inferErrors, jsonSchema(QuestionsRequestSchema)),
+      },
+      "/v1/classify_text": {
+        post: operation("Classify Text", "inference", inferErrors, jsonSchema(ClassifyTextRequestSchema)),
       },
     },
   };

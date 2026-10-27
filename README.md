@@ -110,10 +110,13 @@ program with the same name is running instead. `which gliner-runner` shows which
 The program does not include a model. A model is a large file that you download once.
 
 | Model | Download | Use it for |
-| --- | --- | --- |
-| `decide-340m` | about 2.0 GB | English text. The default. |
-| `decide-multilingual` | about 1.2 GB | Spanish, French, German, and other languages |
-| `decide-1b` | about 4.8 GB | English text, when you want the most accurate answers |
+| --- | ---: | --- |
+| `decide-340m` | 1.95 GB | English text. The default. |
+| `decide-multilingual` | 1.17 GB | Spanish, French, German, and other languages |
+| `decide-1b` | 4.76 GB | English text, when you want the most accurate answers |
+
+Once installed, they take 1.76 GB, 1.13 GB, and 4.14 GB on disk. While a model installs, its download is
+on disk as well.
 
 To get one model, name it:
 
@@ -498,7 +501,7 @@ not language-quality claims.
 
    This uses a verified local copy of the pinned snapshot when one is found
    (for example in the Hugging Face cache; no network), otherwise downloads
-   the pinned files from Hugging Face (about 1.8 GiB for `decide-340m`),
+   the pinned files from Hugging Face (1.95 GB, or 1.82 GiB, for `decide-340m`),
    verifies their SHA-256, and assembles the artifact. `--yes` approves the
    download; on a terminal it prompts instead. Inside an application, a missing
    model returns `409 model_download_required`; after user approval, post it to

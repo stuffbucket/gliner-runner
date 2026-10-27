@@ -117,3 +117,8 @@ sign-off` are the ones you can skip.
 - **Use other labels,** such as `good news`, `bad news`, `needs approval`.
 - **Use it on meeting notes or chat messages.** Anything with one idea per line works the same
   way.
+
+## Next
+
+See [all examples](/gliner-runner/examples/), or [more ideas](/gliner-runner/more-ideas/) for other
+jobs to try.

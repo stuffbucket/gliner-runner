@@ -1,0 +1,301 @@
+{
+  "about": "MOCK DATA, made up by hand. None of these scores came from a model. A test fixture for site/scripts/be-the-model.test.mjs, with the shape of src/data/be-the-model.json; the Be the model page shows it, marked as made up, only while that file is missing.",
+  "model": "decide-340m",
+  "mode": "single",
+  "labels": [
+    {
+      "name": "begging",
+      "description": "Asking again and again, pleading, saying please many times."
+    },
+    {
+      "name": "bargaining",
+      "description": "Offering to do something in return."
+    },
+    {
+      "name": "flattery",
+      "description": "Saying nice things about the grown-up first."
+    },
+    {
+      "name": "guilt trip",
+      "description": "Making the grown-up feel bad about saying no."
+    },
+    {
+      "name": "everyone else has one",
+      "description": "Saying the other kids already have it or are allowed to."
+    },
+    {
+      "name": "a reasoned case",
+      "description": "Giving reasons and a plan for why it is a good idea."
+    },
+    {
+      "name": "asking someone else",
+      "description": "Going to another grown-up instead, or saying they already agreed."
+    },
+    {
+      "name": "a polite ask",
+      "description": "Asking once, simply and nicely."
+    }
+  ],
+  "examples": [
+    {
+      "id": "k001",
+      "text": "Please please please can I stay up till ten? Please? I'll be so good.",
+      "ask": "later bedtime",
+      "age": 7,
+      "scores": {
+        "begging": 0.712,
+        "bargaining": 0.061,
+        "flattery": 0.018,
+        "guilt trip": 0.034,
+        "everyone else has one": 0.009,
+        "a reasoned case": 0.022,
+        "asking someone else": 0.006,
+        "a polite ask": 0.138
+      },
+      "multi": {
+        "begging": 0.839,
+        "bargaining": 0.09,
+        "flattery": 0.041,
+        "guilt trip": 0.059,
+        "everyone else has one": 0.03,
+        "a reasoned case": 0.045,
+        "asking someone else": 0.027,
+        "a polite ask": 0.179
+      }
+    },
+    {
+      "id": "k002",
+      "text": "If I empty the dishwasher every night this week, can I stay up late on Friday?",
+      "ask": "later bedtime",
+      "age": 10,
+      "scores": {
+        "begging": 0.021,
+        "bargaining": 0.804,
+        "flattery": 0.006,
+        "guilt trip": 0.004,
+        "everyone else has one": 0.003,
+        "a reasoned case": 0.097,
+        "asking someone else": 0.002,
+        "a polite ask": 0.063
+      },
+      "multi": {
+        "begging": 0.044,
+        "bargaining": 0.945,
+        "flattery": 0.027,
+        "guilt trip": 0.025,
+        "everyone else has one": 0.023,
+        "a reasoned case": 0.132,
+        "asking someone else": 0.022,
+        "a polite ask": 0.092
+      }
+    },
+    {
+      "id": "k003",
+      "text": "You're the best cook in the whole world. Did you know that? So, ice cream?",
+      "ask": "ice cream",
+      "age": 6,
+      "scores": {
+        "begging": 0.052,
+        "bargaining": 0.011,
+        "flattery": 0.861,
+        "guilt trip": 0.007,
+        "everyone else has one": 0.002,
+        "a reasoned case": 0.004,
+        "asking someone else": 0.013,
+        "a polite ask": 0.05
+      },
+      "multi": {
+        "begging": 0.08,
+        "bargaining": 0.033,
+        "flattery": 0.97,
+        "guilt trip": 0.028,
+        "everyone else has one": 0.022,
+        "a reasoned case": 0.025,
+        "asking someone else": 0.035,
+        "a polite ask": 0.078
+      }
+    },
+    {
+      "id": "k004",
+      "text": "Fine. I guess I'm the only one who never gets to go anywhere.",
+      "ask": "a sleepover",
+      "age": 12,
+      "scores": {
+        "begging": 0.018,
+        "bargaining": 0.003,
+        "flattery": 0.001,
+        "guilt trip": 0.587,
+        "everyone else has one": 0.342,
+        "a reasoned case": 0.012,
+        "asking someone else": 0.009,
+        "a polite ask": 0.028
+      },
+      "multi": {
+        "begging": 0.041,
+        "bargaining": 0.023,
+        "flattery": 0.021,
+        "guilt trip": 0.695,
+        "everyone else has one": 0.413,
+        "a reasoned case": 0.034,
+        "asking someone else": 0.03,
+        "a polite ask": 0.052
+      }
+    },
+    {
+      "id": "k005",
+      "text": "Everyone in my class has a phone. I'm literally the only one without one.",
+      "ask": "a phone",
+      "age": 11,
+      "scores": {
+        "begging": 0.011,
+        "bargaining": 0.002,
+        "flattery": 0.001,
+        "guilt trip": 0.214,
+        "everyone else has one": 0.749,
+        "a reasoned case": 0.009,
+        "asking someone else": 0.003,
+        "a polite ask": 0.011
+      },
+      "multi": {
+        "begging": 0.033,
+        "bargaining": 0.022,
+        "flattery": 0.021,
+        "guilt trip": 0.266,
+        "everyone else has one": 0.881,
+        "a reasoned case": 0.03,
+        "asking someone else": 0.023,
+        "a polite ask": 0.033
+      }
+    },
+    {
+      "id": "k006",
+      "text": "I've saved half the money myself, and I'll pay for the case. Can we talk about a phone?",
+      "ask": "a phone",
+      "age": 13,
+      "scores": {
+        "begging": 0.006,
+        "bargaining": 0.268,
+        "flattery": 0.004,
+        "guilt trip": 0.002,
+        "everyone else has one": 0.015,
+        "a reasoned case": 0.581,
+        "asking someone else": 0.003,
+        "a polite ask": 0.121
+      },
+      "multi": {
+        "begging": 0.027,
+        "bargaining": 0.328,
+        "flattery": 0.025,
+        "guilt trip": 0.022,
+        "everyone else has one": 0.037,
+        "a reasoned case": 0.688,
+        "asking someone else": 0.023,
+        "a polite ask": 0.159
+      }
+    },
+    {
+      "id": "k007",
+      "text": "Grandma already said yes, so can I go to Sam's after school?",
+      "ask": "going to a friend's house",
+      "age": 9,
+      "scores": {
+        "begging": 0.004,
+        "bargaining": 0.009,
+        "flattery": 0.002,
+        "guilt trip": 0.006,
+        "everyone else has one": 0.021,
+        "a reasoned case": 0.044,
+        "asking someone else": 0.823,
+        "a polite ask": 0.091
+      },
+      "multi": {
+        "begging": 0.025,
+        "bargaining": 0.03,
+        "flattery": 0.022,
+        "guilt trip": 0.027,
+        "everyone else has one": 0.044,
+        "a reasoned case": 0.071,
+        "asking someone else": 0.966,
+        "a polite ask": 0.125
+      }
+    },
+    {
+      "id": "k008",
+      "text": "Could I have a friend over on Saturday, please?",
+      "ask": "a friend over",
+      "age": 8,
+      "scores": {
+        "begging": 0.039,
+        "bargaining": 0.012,
+        "flattery": 0.006,
+        "guilt trip": 0.002,
+        "everyone else has one": 0.003,
+        "a reasoned case": 0.031,
+        "asking someone else": 0.004,
+        "a polite ask": 0.903
+      },
+      "multi": {
+        "begging": 0.065,
+        "bargaining": 0.034,
+        "flattery": 0.027,
+        "guilt trip": 0.022,
+        "everyone else has one": 0.023,
+        "a reasoned case": 0.056,
+        "asking someone else": 0.025,
+        "a polite ask": 0.97
+      }
+    },
+    {
+      "id": "k009",
+      "text": "I'll do my homework first and be home by six. Can I go to the park?",
+      "ask": "going to the park",
+      "age": 10,
+      "scores": {
+        "begging": 0.008,
+        "bargaining": 0.452,
+        "flattery": 0.003,
+        "guilt trip": 0.001,
+        "everyone else has one": 0.004,
+        "a reasoned case": 0.389,
+        "asking someone else": 0.002,
+        "a polite ask": 0.141
+      },
+      "multi": {
+        "begging": 0.029,
+        "bargaining": 0.54,
+        "flattery": 0.023,
+        "guilt trip": 0.021,
+        "everyone else has one": 0.025,
+        "a reasoned case": 0.467,
+        "asking someone else": 0.022,
+        "a polite ask": 0.182
+      }
+    },
+    {
+      "id": "k010",
+      "text": "Pleeease, just one more episode. Just one. The babysitter always lets me.",
+      "ask": "more screen time",
+      "age": 8,
+      "scores": {
+        "begging": 0.433,
+        "bargaining": 0.017,
+        "flattery": 0.009,
+        "guilt trip": 0.012,
+        "everyone else has one": 0.006,
+        "a reasoned case": 0.003,
+        "asking someone else": 0.497,
+        "a polite ask": 0.023
+      },
+      "multi": {
+        "begging": 0.518,
+        "bargaining": 0.04,
+        "flattery": 0.03,
+        "guilt trip": 0.034,
+        "everyone else has one": 0.027,
+        "a reasoned case": 0.023,
+        "asking someone else": 0.592,
+        "a polite ask": 0.046
+      }
+    }
+  ]
+}

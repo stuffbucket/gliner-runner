@@ -70,3 +70,8 @@ Messages that say "today" or "no rush" are clear. Check the ones with a confiden
 - **Send low confidence to a person.** Treat anything under 0.6 as "read it yourself".
 - **Sort text messages** the same way. See
   [Sort text messages by how fast they need attention](/gliner-runner/examples/text-messages/).
+
+## Next
+
+See [all examples](/gliner-runner/examples/), or [more ideas](/gliner-runner/more-ideas/) for other
+jobs to try.

@@ -1,59 +1,16 @@
-/* Shared look of the landing page and the playground (the docs use Starlight's theme). */
+/* Shared look of the landing page and the playground (the docs use Starlight's theme). Colours: tokens.css. */
+@import "./tokens.css";
+
 :root {
   color-scheme: light;
-  --bg: #ffffff;
-  --surface: #f6f7f9;
-  --surface-2: #eceef2;
-  --text: #1c1f26;
-  --muted: #5b6270;
-  --faint: #8a90a0;
-  --border: #dde1e8;
-  --accent: #4b52d6;
-  --accent-text: #ffffff;
-  --accent-soft: #e8e9fb;
-  --good: #1f9254;
-  --busy: #c27a10;
-  --bad: #c43d3d;
-  --code: #f1f3f6;
-  --radius: 0.625rem;
-  --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
-    --bg: #14161b;
-    --surface: #1c1f26;
-    --surface-2: #252932;
-    --text: #e8eaee;
-    --muted: #a6adbb;
-    --faint: #7c8394;
-    --border: #2f343e;
-    --accent: #8f97ff;
-    --accent-text: #11131a;
-    --accent-soft: #262a4a;
-    --good: #4cc489;
-    --busy: #e2a44a;
-    --bad: #ef7676;
-    --code: #20232b;
   }
 }
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --bg: #14161b;
-  --surface: #1c1f26;
-  --surface-2: #252932;
-  --text: #e8eaee;
-  --muted: #a6adbb;
-  --faint: #7c8394;
-  --border: #2f343e;
-  --accent: #8f97ff;
-  --accent-text: #11131a;
-  --accent-soft: #262a4a;
-  --good: #4cc489;
-  --busy: #e2a44a;
-  --bad: #ef7676;
-  --code: #20232b;
 }
 
 *,
@@ -128,6 +85,8 @@ pre {
   --focus-ring: 0 0 0 3px color-mix(in srgb, var(--accent) 40%, transparent);
   /* Space between the window's sides and the content, shared by the header and full-width pages. */
   --gutter: clamp(1rem, 4vw, 2.5rem);
+  /* The base unit of vertical rhythm: gaps between blocks are whole multiples of it (the landing hero uses 3). */
+  --space: calc(var(--control-pad) / 2);
 }
 
 .btn {

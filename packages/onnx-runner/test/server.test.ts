@@ -52,7 +52,7 @@ test("health, infer, openapi and metrics follow the HTTP contract", async (t) =>
 
   const openapi = await json(await get("/openapi.json"));
   assert.ok("/v1/infer" in openapi.paths);
-  assert.equal(openapi.info.version, "1.0.0");
+  assert.equal(openapi.info.version, "1.1.0");
 
   const metrics = await get("/metrics");
   assert.equal(metrics.headers.get("content-type"), "text/plain; version=0.0.4; charset=utf-8");

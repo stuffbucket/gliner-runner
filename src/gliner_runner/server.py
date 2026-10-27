@@ -6,6 +6,7 @@ from contextlib import asynccontextmanager
 from uuid import UUID
 
 from fastapi import FastAPI, HTTPException, Request, Response, status
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict, Field
 
 from gliner_runner.contracts import (
@@ -40,8 +41,18 @@ from gliner_runner.model_inventory import (
 )
 from gliner_runner.runtime import Runtime, RuntimeConfig
 from gliner_runner.settings import Settings
+from gliner_runner.shapes import (
+    ClassifyTextRequest,
+    ClassifyTextResponse,
+    QuestionsRequest,
+    QuestionsResponse,
+    classify_text_response,
+    plan_classify_text,
+    plan_questions,
+    questions_response,
+)
 
-API_VERSION = "1.0.0"
+API_VERSION = "1.1.0"
 
 
 class BatchRequest(BaseModel):
@@ -206,6 +217,42 @@ def create_app(
         engine = get_runtime(request)
         responses = await asyncio.gather(*(_infer(engine, request) for request in body.requests))
         return BatchResponse(responses=list(responses))
+
+    @app.post(
+        "/v1/questions",
+        response_model=QuestionsResponse,
+        responses={
+            409: {"description": "Unsupported explicit configuration"},
+            429: {"description": "Queue capacity exhausted"},
+        },
+        tags=["inference"],
+    )
+    async def questions(body: QuestionsRequest, request: Request) -> Response:
+        """jev and Microsoft-Decision-1 questions; each one is one classification request."""
+        engine = get_runtime(request)
+        planned = plan_questions(body)
+        responses = await asyncio.gather(
+            *(_infer(engine, InferenceRequest.model_validate(item.request)) for item in planned)
+        )
+        return JSONResponse(questions_response(body, planned, list(responses)))
+
+    @app.post(
+        "/v1/classify_text",
+        response_model=ClassifyTextResponse,
+        responses={
+            409: {"description": "Unsupported explicit configuration"},
+            429: {"description": "Queue capacity exhausted"},
+        },
+        tags=["inference"],
+    )
+    async def classify_text(body: ClassifyTextRequest, request: Request) -> Response:
+        """GLiNER2 classify_text and batch_classify_text; one classification request per text."""
+        engine = get_runtime(request)
+        plan = plan_classify_text(body)
+        responses = await asyncio.gather(
+            *(_infer(engine, InferenceRequest.model_validate(item)) for item in plan.requests)
+        )
+        return JSONResponse(classify_text_response(body, plan, list(responses)))
 
     @app.get("/metrics", include_in_schema=False, tags=["operations"])
     async def metrics(request: Request) -> Response:

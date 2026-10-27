@@ -3,7 +3,8 @@ import { HttpTransport, INSTALL_PEAK_BYTES, WorkerTransport } from "@gliner-runn
 import "./Playground.css";
 import Trace from "./Trace.jsx";
 import twenty from "../data/twenty-questions.json";
-import { MAX_QUESTIONS, afterClassification, afterReply, guessQuestion, newGame, nextStep, startGuess, verdict } from "./twentyQuestions.js";
+import { MAX_QUESTIONS, afterClassification, afterReply, guessQuestion, levelQuestion, newGame, nextStep, startGuess, verdict } from "./twentyQuestions.js";
+import { likeliest } from "./twentyQuestionsTrace.js";
 
 const BASE = "/gliner-runner";
 const DEFAULT_ADDRESS = "http://127.0.0.1:8090";
@@ -118,6 +119,71 @@ const STACK_LIMIT = 50;
 /** Each step down the stack keeps this much of a card's opacity. */
 const FADE_PER_STEP = 0.65;
 
+/** A path chance, with enough digits that a long shot does not read as 0.00. */
+const chance = (p) => (p >= 0.1 ? p.toFixed(2) : p >= 0.001 ? p.toFixed(3) : "<0.001");
+
+/**
+ * What 20 questions worked out between two questions to the player, filled in as it goes: the clues it thought
+ * over, the level it is on, the things most likely so far, and every classification it made, folded away.
+ */
+function Thinking({ card, common, depth }) {
+  const live = !card.done && !card.stopped;
+  const count = card.looks.length;
+  const seconds = card.looks.reduce((sum, look) => sum + look.elapsed, 0) / 1000;
+  const heading = live
+    ? `Thinking before question ${card.number}`
+    : card.stopped
+      ? `Stopped before question ${card.number}`
+      : `Thought it over before question ${card.number}`;
+  const best = card.leaders[0];
+  return (
+    <article {...common} className={`${common.className} pg-thinking`} inert={depth !== 0}>
+      <p className="pg-thinking-head">
+        <span className={`pg-question${live ? " pg-waiting" : ""}`}>{heading}</span>
+        {card.looks.some((look) => look.again) && <span className="pg-thinking-tag">With your new clue</span>}
+        {count > 0 && (
+          <span className="pg-thinking-count">
+            {count} classification{count === 1 ? "" : "s"} · {seconds.toFixed(1)} s
+          </span>
+        )}
+      </p>
+      {card.clues && <p className="pg-thinking-clues">“{card.clues}”</p>}
+      {live && card.current && <p className="pg-thinking-now">{card.current}</p>}
+      {best && (
+        <div className="pg-thinking-leaders">
+          <p className="pg-thinking-label">{card.done ? "Most likely" : "Most likely so far"}</p>
+          <ul className="answer-scores">
+            {card.leaders.map((thing, index) => (
+              <li key={thing.nodeKey} className={card.done && index === 0 ? "picked" : ""}>
+                <span>{thing.label}</span>
+                <span className="meter"><span style={{ width: `${Math.max(2, Math.round(thing.p * 100))}%` }} /></span>
+                <span>{chance(thing.p)}</span>
+              </li>
+            ))}
+          </ul>
+          <p className="pg-thinking-path">{best.nodeKey}</p>
+        </div>
+      )}
+      {count > 0 && (
+        <details className="pg-thinking-looks">
+          <summary>Every classification</summary>
+          <ol>
+            {card.looks.map((look, index) => (
+              <li key={index}>
+                <span>{look.again && <span title="Asked again with your new clue">↻ </span>}{look.question}</span>
+                <span>{look.top} {look.p.toFixed(2)}</span>
+              </li>
+            ))}
+          </ol>
+        </details>
+      )}
+      <p className="answer-meta">
+        <span className="model-badge">{card.model}</span>
+      </p>
+    </article>
+  );
+}
+
 /**
  * The answer as a standalone card: the question it answered (in a game), what was sent, which labels fit, every
  * score, and how it ran. A verdict card closes a game.
@@ -138,6 +204,7 @@ function Answer({ answer, depth }) {
       </article>
     );
   }
+  if (answer.kind === "thinking") return <Thinking card={answer} common={common} depth={depth} />;
   if (answer.kind === "guess") {
     return (
       <article {...common}>
@@ -232,7 +299,7 @@ function AnswerStack({ answers, shown, game }) {
   if (answers.length === 0) {
     return (
       <div className="answer-card pg-placeholder">
-        <p>{game ? "The model's questions and guesses appear here." : "The answer appears here."}</p>
+        <p>{game ? "The model's thinking and questions appear here." : "The answer appears here."}</p>
         <p className="pg-small">Press {game ? "Start" : "Classify"} or <Shortcut /></p>
       </div>
     );
@@ -290,6 +357,7 @@ function Workspace({ transport, models, onWarm }) {
   };
 
   const pick = (example) => {
+    endThinking("stopped");
     if (example.game) {
       clues.current = twenty.sample;
       setGame(newGame(twenty.tree, twenty.sample));
@@ -318,8 +386,8 @@ function Workspace({ transport, models, onWarm }) {
     return { ...data.output.category, modelMs: data.timing?.inference_ms };
   }
 
-  /** Classifies once and puts the answer on the stack; resolves with the answer, or nothing after an error. */
-  async function run({ text, labels: list, several, descriptions, question }) {
+  /** Classifies once and times it; resolves with the answer, or nothing after an error (which it shows). */
+  async function measure({ text, labels: list, several, descriptions }) {
     setError("");
     setBusy(true);
     // A request sent while the model is still loading waits for it; that wait is not the classification's time.
@@ -327,15 +395,13 @@ function Workspace({ transport, models, onWarm }) {
     const started = performance.now();
     try {
       const { value, probabilities, modelMs } = await infer({ text, labels: list, several, descriptions });
-      const answer = {
-        question, text, labels: list, several, model,
+      return {
+        text, labels: list, several, model,
         picked: [value].flat().filter(Boolean),
         scores: probabilities,
         elapsed: performance.now() - started,
         modelMs,
       };
-      push(answer);
-      return answer;
     } catch (problem) {
       setError(problem.message);
       return undefined;
@@ -348,7 +414,7 @@ function Workspace({ transport, models, onWarm }) {
     const list = labels.split(",").map((s) => s.trim()).filter(Boolean);
     if (busy || !text.trim() || list.length === 0) return;
     setBack(0);
-    run({ text, labels: list, several });
+    measure({ text, labels: list, several }).then((answer) => answer && push(answer));
   }
 
   // 20 questions: the player only writes clues and answers guesses. Once started, the game classifies on its own
@@ -358,7 +424,19 @@ function Workspace({ transport, models, onWarm }) {
   const [why, setWhy] = useState(false);
   const clues = useRef("");
   const guessCard = useRef(undefined);
+  /** The thinking card being filled in: one per round of classifications between two questions. */
+  const thinkingCard = useRef(undefined);
   const cluesBox = useRef(null);
+
+  /** Changes one card on the stack in place. */
+  const update = (id, change) => setAnswers((previous) => previous.map((old) => (old.id === id ? { ...old, ...change(old) } : old)));
+
+  /** Ends the current round of thinking: done when a question follows, stopped otherwise. */
+  function endThinking(how) {
+    if (thinkingCard.current === undefined) return;
+    update(thinkingCard.current, () => ({ [how]: true, current: undefined }));
+    thinkingCard.current = undefined;
+  }
 
   const setClues = (value) => {
     clues.current = value;
@@ -370,6 +448,7 @@ function Workspace({ transport, models, onWarm }) {
     if (state.phase !== "asking") return state;
     const step = nextStep(state);
     if (step?.kind !== "guess") return state;
+    endThinking("done");
     guessCard.current = push({ kind: "guess", question: `Question ${step.number} of ${MAX_QUESTIONS}`, label: step.label, model });
     return startGuess(state, step);
   }
@@ -383,19 +462,32 @@ function Workspace({ transport, models, onWarm }) {
       setGame(advance(game));
       return;
     }
-    const answer = await run({ text: step.clues, labels: step.labels, descriptions: step.descriptions, question: step.text });
+    thinkingCard.current ??= push({ kind: "thinking", number: game.asked + 1, looks: [], leaders: [], model });
+    const card = thinkingCard.current;
+    update(card, () => ({ current: levelQuestion(step.path, step.options) }));
+    const answer = await measure({ text: step.clues, labels: step.labels, descriptions: step.descriptions });
     if (answer === undefined) {
+      endThinking("stopped");
       setPlaying(false);
       return;
     }
+    const state = afterClassification(game, step, answer.scores);
+    const [top, p] = Object.entries(answer.scores).sort((a, b) => b[1] - a[1])[0];
+    update(card, (old) => ({
+      current: undefined,
+      clues: step.clues,
+      looks: [...old.looks, { question: levelQuestion(step.path, step.options), again: step.again, top, p, elapsed: answer.elapsed }],
+      leaders: likeliest(state),
+    }));
     // Clues typed while the model was thinking are kept; the next step classifies again for them.
-    setGame(advance({ ...afterClassification(game, step, answer.scores), clues: clues.current }));
+    setGame(advance({ ...state, clues: clues.current }));
   }
 
   useEffect(() => {
     if (!playing || game?.phase !== "asking" || busy || !game.clues.trim()) return undefined;
-    // A short pause between questions, so each card can be read as it arrives.
-    const timer = setTimeout(ask, 350);
+    // A short pause before each round of thinking, so the last card can be read; within a round only the thinking
+    // card changes, so it goes straight on.
+    const timer = setTimeout(ask, thinkingCard.current === undefined ? 350 : 0);
     return () => clearTimeout(timer);
   }, [playing, game, busy]);
 
@@ -695,7 +787,7 @@ function InTab({ params, setStatus, useMachine }) {
       <Card title={job ? "Getting the model ready" : "Download the model to start"}>
         {job === null ? (
           <>
-            <p>One time, 1.95 GB. It stays in this browser, and your text never leaves it.</p>
+            <p>A one-time 1.95 GB download. The prepared model (1.76 GB) stays in this browser, and your text never leaves it.</p>
             {!enough && <p className="pg-error">Not enough space: this browser allows the site {gb(Math.max(free, 0))}.</p>}
             <div className="pg-card-actions">
               <button type="button" className="btn btn-primary" onClick={download} disabled={!enough}>Download</button>

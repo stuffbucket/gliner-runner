@@ -1,0 +1,35 @@
+# A/B eval of the gliner-runner skill. See RESULTS.md for how to run it and the results.
+description: gliner-runner skill A/B
+
+prompts:
+  - id: file://prompts.cjs:noSkill
+    label: A-no-skill
+  - id: file://prompts.cjs:withSkill
+    label: B-skill
+
+providers:
+  - id: openai:chat:claude-haiku-5-5-20260301
+    label: haiku
+    config: &answer
+      apiBaseUrl: http://localhost:4141/v1
+      apiKey: local
+      temperature: 0
+      max_tokens: 4000
+  - id: openai:chat:claude-sonnet-5
+    label: sonnet
+    config: *answer
+
+defaultTest:
+  options:
+    provider:
+      id: openai:chat:claude-opus-5
+      config:
+        apiBaseUrl: http://localhost:4141/v1
+        apiKey: local
+        temperature: 0
+        max_tokens: 2000
+
+tests: file://tasks.yaml
+
+evaluateOptions:
+  maxConcurrency: 8
