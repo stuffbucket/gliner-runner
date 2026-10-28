@@ -17,6 +17,7 @@ jobs:
   release-please:
     name: Prepare or create release
     runs-on: ubuntu-24.04
+    timeout-minutes: 10
     permissions:
       contents: write
       pull-requests: write
@@ -39,6 +40,8 @@ jobs:
     needs: release-please
     if: needs.release-please.outputs.release-created == 'true'
     runs-on: ubuntu-24.04
+    # The wait for a reviewer is not counted: the timeout starts when the job does.
+    timeout-minutes: 5
     # Configure the `release` environment with required reviewers: nothing from the tagged source
     # is built, and nothing gets write permission, until a reviewer approves.
     environment: release
@@ -49,8 +52,6 @@ jobs:
     name: Build release assets
     needs: [release-please, approve]
     uses: ./.github/workflows/_release-build.yml
-    permissions:
-      contents: read
     with:
       ref: ${{ needs.release-please.outputs.tag-name }}
       version: ${{ needs.release-please.outputs.version }}
@@ -89,8 +90,6 @@ jobs:
     needs: [release-please, publish]
     runs-on: ubuntu-24.04
     timeout-minutes: 5
-    permissions:
-      contents: read
     steps:
       # The tap's sync-gliner-runner workflow also runs on a schedule, so this only shortens the wait.
       - name: Send repository_dispatch to the tap (when HOMEBREW_TAP_TOKEN exists)
@@ -112,8 +111,6 @@ jobs:
     name: Homebrew install smoke test
     needs: [release-please, notify-tap]
     uses: ./.github/workflows/brew-smoke.yml
-    permissions:
-      contents: read
     with:
       channel: stable
       version: ${{ needs.release-please.outputs.version }}
