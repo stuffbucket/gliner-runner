@@ -57,7 +57,7 @@ jobs:
       channel: stable
 
   publish:
-    name: Attach assets to GitHub release
+    name: Attach assets and publish the release
     needs: [release-please, build]
     runs-on: ubuntu-24.04
     timeout-minutes: 10
@@ -69,12 +69,18 @@ jobs:
         with:
           name: release-assets
           path: dist/release
-      - name: Attach assets (including latest.json) to the release
+      # Release Please creates the release as a draft (release-please-config.json): the repository
+      # has immutable releases, which refuse assets once a release is published. So the assets go
+      # onto the draft first, and publishing it is the last step.
+      - name: Attach assets (including latest.json) to the draft release, then publish it
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           TAG_NAME: ${{ needs.release-please.outputs.tag-name }}
-        run: gh release upload "$TAG_NAME" dist/release/* --clobber
+        run: |
+          set -eu
+          gh release upload "$TAG_NAME" dist/release/* --clobber
+          gh release edit "$TAG_NAME" --draft=false --latest
 
   notify-tap:
     name: Notify Homebrew tap

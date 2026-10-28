@@ -6,6 +6,8 @@
       "package-name": "gliner-runner",
       "include-component-in-tag": false,
       "changelog-path": "CHANGELOG.md",
+      "draft": true,
+      "force-tag-creation": true,
       "extra-files": [
         {
           "type": "json",
