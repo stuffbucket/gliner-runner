@@ -16,7 +16,7 @@ all three platforms (`package-smoke` in `ci.yml`).
 
 ```
 stable   release-please -> approve (environment: release) -> build (3 platforms -> assemble)
-                        -> publish (gh release upload) -> notify-tap -> brew-smoke
+                        -> publish (upload to draft, then publish) -> notify-tap -> brew-smoke
 rc       dispatch -> prepare (choose rc number) -> build (3 platforms -> assemble)
                   -> publish (tag + prerelease) -> notify-tap -> brew-smoke
 ```
@@ -25,8 +25,11 @@ rc       dispatch -> prepare (choose rc number) -> build (3 platforms -> assembl
 
 Release Please owns the repository version, changelog, release pull request, tag
 and GitHub release. Conventional commits merged to `main` update one release
-pull request; merging it creates `vX.Y.Z` and a non-prerelease GitHub release,
-which GitHub serves as `/releases/latest`. The `approve` job targets the GitHub
+pull request; merging it creates the `vX.Y.Z` tag and a *draft* GitHub release.
+The repository has immutable releases, which refuse new assets once a release is
+published, so the `publish` job uploads the assets to the draft and then
+publishes it as the latest release, which GitHub serves as `/releases/latest`.
+Until then `/releases/latest` stays on the previous release. The `approve` job targets the GitHub
 `release` environment (configure required reviewers): nothing from the tag is
 built, and no write permission is granted, until a reviewer approves. Repository
 settings must also permit Actions to create pull requests.
