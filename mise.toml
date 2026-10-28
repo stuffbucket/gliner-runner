@@ -64,9 +64,10 @@ node scripts/onnx-eval-receipt.mjs check
 """
 
 [tasks."check:release"]
-description = "Test release tooling that needs no build: Homebrew formula renderer and workflow lint when actionlint is installed"
+description = "Test release tooling that needs no build: Homebrew formula renderer, workflow pinning and timeout policy, and workflow lint when actionlint is installed"
 run = """
 node --test scripts/render-homebrew-formula.test.mjs
+python scripts/check_workflow_policy.py
 if command -v actionlint >/dev/null 2>&1; then
   actionlint
 fi

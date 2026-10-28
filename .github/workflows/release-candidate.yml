@@ -23,6 +23,7 @@ jobs:
   prepare:
     name: Choose release candidate number
     runs-on: ubuntu-24.04
+    timeout-minutes: 5
     outputs:
       version: ${{ steps.next.outputs.version }}
       tag: ${{ steps.next.outputs.tag }}
@@ -52,8 +53,6 @@ jobs:
     name: Build release candidate
     needs: prepare
     uses: ./.github/workflows/_release-build.yml
-    permissions:
-      contents: read
     with:
       ref: ${{ github.sha }}
       version: ${{ needs.prepare.outputs.version }}
@@ -93,8 +92,6 @@ jobs:
     needs: [prepare, publish]
     runs-on: ubuntu-24.04
     timeout-minutes: 5
-    permissions:
-      contents: read
     steps:
       # The tap's sync-gliner-runner workflow also runs on a schedule, so this only shortens the wait.
       - name: Send repository_dispatch to the tap (when HOMEBREW_TAP_TOKEN exists)
@@ -116,8 +113,6 @@ jobs:
     name: Homebrew install smoke test
     needs: [prepare, notify-tap]
     uses: ./.github/workflows/brew-smoke.yml
-    permissions:
-      contents: read
     with:
       channel: rc
       version: ${{ needs.prepare.outputs.version }}

@@ -118,6 +118,7 @@ pytest_add_cli_args = [
   "--ignore=tests/test_release_assets.py",
   "--ignore=tests/test_third_party_inventory.py",
   "--ignore=tests/test_licensing_check.py",
+  "--ignore=tests/test_workflow_policy.py",
   "--ignore=tests/test_onnx_reference.py",
 ]
 pytest_add_cli_args_test_selection = ["tests/"]
