@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1](https://github.com/stuffbucket/gliner-runner/compare/v0.5.0...v0.5.1) (2026-10-28)
+
+
+### Bug Fixes
+
+* **release:** attach assets to a draft release, then publish it ([#48](https://github.com/stuffbucket/gliner-runner/issues/48)) ([1183c69](https://github.com/stuffbucket/gliner-runner/commit/1183c69e319ebaa8c48593400665d933c4bba20e))
+
 ## [0.5.0](https://github.com/stuffbucket/gliner-runner/compare/v0.4.0...v0.5.0) (2026-10-27)
 
 
