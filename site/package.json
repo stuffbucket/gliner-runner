@@ -13,7 +13,7 @@
     "test": "node --test scripts/generate.test.mjs scripts/code-focus.test.mjs scripts/markdown-copies.test.mjs scripts/table-focus.test.mjs scripts/twenty-questions/game.test.mjs scripts/twenty-questions/trace.test.mjs scripts/be-the-model.test.mjs scripts/be-the-model-scores.test.mjs"
   },
   "dependencies": {
-    "@astrojs/react": "7.0.1",
+    "@astrojs/react": "7.1.0",
     "@astrojs/starlight": "0.42.6",
     "@gliner-runner/onnx-runner-web": "workspace:*",
     "astro": "7.3.8",
