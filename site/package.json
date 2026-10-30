@@ -22,7 +22,7 @@
     "d3-selection": "3.0.0",
     "d3-shape": "3.2.0",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.1"
   },
   "engines": {
     "node": ">=24 <25"
