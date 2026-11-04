@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/stuffbucket/gliner-runner/compare/v0.5.1...v0.6.0) (2026-11-04)
+
+
+### Features
+
+* **runner:** classify --jsonl classifies many texts with one model load ([#56](https://github.com/stuffbucket/gliner-runner/issues/56)) ([bd07277](https://github.com/stuffbucket/gliner-runner/commit/bd07277a99f3a4cb5dc2e2d9f0f74faad4e459d6))
+
 ## [0.5.1](https://github.com/stuffbucket/gliner-runner/compare/v0.5.0...v0.5.1) (2026-10-28)
 
 
