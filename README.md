@@ -77,6 +77,40 @@ paragraphs or sections, and classify each part. The
 To see what else it can and cannot do, read
 [What it can and can't do](https://stuffbucket.github.io/gliner-runner/how-it-works/#what-it-can-and-cant-do).
 
+### Many texts at once
+
+Each `gliner-runner classify` command loads the model first, which takes a second or more;
+classifying a short text then takes about a tenth of a second. To classify many texts, from a
+script or from another program, start one `classify --jsonl` and send it every text, so the
+model is loaded once. In our measurement, 20 short texts took 30 seconds with one `classify`
+command each, and 2.4 seconds with one `classify --jsonl`.
+
+Write one JSON object per line on its standard input. Only `"text"` is required. `"id"`,
+`"labels"`, `"multi_label"`, `"threshold"` and `"label_descriptions"` are optional and default to the
+command's options. Labels given as a JSON list may contain commas.
+
+```sh
+gliner-runner classify --jsonl --labels billing,support,shipping <<'EOF'
+{"id": 1, "text": "I was charged twice for my last order."}
+{"id": 2, "text": "The battery is weak and the delivery was slow.", "labels": ["battery", "screen", "delivery"], "multi_label": true}
+{"id": 3, "text": ""}
+EOF
+```
+
+It writes one JSON line per request, in the same order, as soon as each answer is ready (numbers
+shortened here). `output` is what `classify --json` prints. A request that cannot be classified
+gets a `detail` error in the same form as the [local service](#run-it-as-a-local-service) uses,
+and the others still run:
+
+```text
+{"id":1,"line":1,"output":{"category":{"value":"billing","confidence":0.889,"probabilities":{"billing":0.889,"support":0.049,"shipping":0.063}},"_meta":{...}}}
+{"id":2,"line":2,"output":{"category":{"value":["battery","delivery"],"confidence":0.940,"probabilities":{"battery":0.938,"screen":0.018,"delivery":0.902}},"_meta":{...}}}
+{"id":3,"line":3,"detail":{"code":"invalid_request","message":"the text must not be empty","retryable":false}}
+```
+
+The command ends when its input ends. It exits with 0 when every request succeeded and 1 when any
+failed. Ctrl-C stops it at once. `gliner-runner classify --help` describes every field.
+
 ## Install
 
 With [Homebrew](https://brew.sh) (macOS on Apple Silicon, and Linux):

@@ -10,16 +10,18 @@ import {
   buildRequest,
   demoCasesFor,
   formatClassification,
+  jsonlLines,
   parseClassifyArguments,
   readClassification,
   runClassifyCommand,
   runDemoCommand,
+  wantsJsonl,
   type ClassifyIo,
 } from "../src/classify-cli.js";
-import { InvalidSchemaError } from "../src/errors.js";
+import { InvalidSchemaError, QueueFullError } from "../src/errors.js";
 import { OrderedObject } from "../src/gliner2/ordered-json.js";
 import { InMemoryArtifactCatalog, type InferenceRequest } from "../src/index.js";
-import { CLI, FakeFactory, installedCatalog } from "./helpers.js";
+import { CLI, FakeFactory, Gate, installedCatalog, until } from "./helpers.js";
 
 const LABELS = "billing,support,shipping";
 
@@ -327,6 +329,258 @@ test("every demo case is a valid request whose expected labels are declared", ()
   }
 });
 
+// --- many texts: --jsonl ------------------------------------------------------------------------------------------
+
+/** Feeds `lines` to `--jsonl` one at a time, like readline over a pipe. */
+async function* linesOf(lines: readonly string[]): AsyncGenerator<string> {
+  for (const line of lines) {
+    await Promise.resolve();
+    yield line;
+  }
+}
+
+function jsonl(run: Captured, lines: readonly string[]): Captured {
+  run.io.readLines = () => linesOf(lines);
+  return run;
+}
+
+const outputLines = (run: Captured): Record<string, unknown>[] =>
+  run.stdout().split("\n").filter((line) => line !== "").map((line) => JSON.parse(line) as Record<string, unknown>);
+
+test("parseClassifyArguments: --jsonl takes no text, makes --labels optional and refuses --json", () => {
+  const parsed = parseClassifyArguments(["--jsonl"]);
+  assert.equal(parsed.jsonl, true);
+  assert.equal(parsed.readStdin, false);
+  assert.deepEqual(parsed.spec.labels, []);
+  assert.deepEqual(parseClassifyArguments(["--jsonl", "--describe", "a=the a"]).spec.descriptions, { a: "the a" });
+  assert.throws(() => parseClassifyArguments(["--jsonl", "--labels", "a,b", "text"]), /--jsonl reads the texts from stdin/);
+  assert.throws(() => parseClassifyArguments(["--jsonl", "--json"]), /--jsonl already writes JSON/);
+  assert.throws(() => parseClassifyArguments(["--jsonl", "--labels", "a", "--describe", "b=x"]), /not in --labels: b/);
+  assert.deepEqual([["--jsonl"], ["--jsonl", "--help"], ["--labels", "a", "x"], ["--jsonl", "x"]].map(wantsJsonl), [true, false, false, false]);
+});
+
+test("classify --jsonl loads the model once and writes one result per line, in order", async () => {
+  const run = jsonl(capture(), [
+    JSON.stringify({ id: "t1", text: "I was charged twice" }),
+    JSON.stringify({ id: 2, text: "Refund and ship", multi_label: true, threshold: 0.3 }),
+    JSON.stringify({ text: "Hello, world", labels: ["greeting, polite", "other"], label_descriptions: { other: "anything else" } }),
+  ]);
+  assert.equal(await runClassifyCommand(["--jsonl", "--labels", LABELS, "--describe", "billing=Invoices"], run.io), 0);
+  assert.equal(run.stderr(), "");
+  assert.equal(run.factory.created.length, 1);
+  assert.deepEqual(outputLines(run), [
+    {
+      id: "t1",
+      line: 1,
+      output: {
+        category: { value: "billing", confidence: 0.9, probabilities: { billing: 0.9, support: 0.1, shipping: 0.1 } },
+        _meta: { feasible: true, decoder: "independent", exact: true, objective: 1, violations: [] },
+      },
+    },
+    {
+      id: 2,
+      line: 2,
+      output: {
+        category: { value: ["billing", "support"], confidence: 0.9, probabilities: { billing: 0.9, support: 0.1, shipping: 0.1 } },
+        _meta: { feasible: true, decoder: "independent", exact: true, objective: 1, violations: [] },
+      },
+    },
+    {
+      line: 3,
+      output: {
+        category: { value: "greeting, polite", confidence: 0.9, probabilities: { "greeting, polite": 0.9, other: 0.1 } },
+        _meta: { feasible: true, decoder: "independent", exact: true, objective: 1, violations: [] },
+      },
+    },
+  ]);
+  const tasks = run.requests.map((request) => (request.schema as { tasks: Record<string, Record<string, unknown>> }).tasks["category"]);
+  assert.deepEqual(run.requests.map((request) => [request.model, request.text]), [
+    ["decide-340m", "I was charged twice"], ["decide-340m", "Refund and ship"], ["decide-340m", "Hello, world"],
+  ]);
+  // --describe applies where its label is used; a line's own descriptions replace it.
+  assert.deepEqual(tasks.map((task) => task?.["label_descriptions"]), [{ billing: "Invoices" }, { billing: "Invoices" }, { other: "anything else" }]);
+  assert.deepEqual(tasks.map((task) => [task?.["max_labels"], task?.["threshold"]]), [[1, 0.5], [null, 0.3], [1, 0.5]]);
+});
+
+test("classify --jsonl answers a bad line with an error line and goes on; exit 1", async () => {
+  const run = jsonl(capture(), [
+    "not json",
+    "",
+    "   ",
+    JSON.stringify({ id: "unknown-field", text: "x", label: ["a"] }),
+    JSON.stringify({ id: "no-labels", text: "x" }),
+    "[1]",
+    JSON.stringify({ text: "x", labels: ["a", "a"] }),
+    JSON.stringify({ text: "  ", labels: ["a", "b"] }),
+    JSON.stringify({ text: "x", labels: ["a", "b"], threshold: 1 }),
+    JSON.stringify({ text: "x", labels: ["a", "b"], label_descriptions: { c: "the c" } }),
+    JSON.stringify({ id: null, text: "x", labels: ["a", "b"] }),
+    JSON.stringify({ text: 42, labels: ["a", "b"] }),
+    JSON.stringify({ id: "fine", text: "x", labels: ["a", "b"] }),
+  ]);
+  assert.equal(await runClassifyCommand(["--jsonl"], run.io), 1);
+  assert.equal(run.stderr(), "");
+  const lines = outputLines(run);
+  assert.deepEqual(
+    lines.map((line) => [line["id"], line["line"], (line["detail"] as { code?: string } | undefined)?.code ?? "ok"]),
+    [
+      [undefined, 1, "invalid_request"],
+      ["unknown-field", 4, "invalid_request"],
+      ["no-labels", 5, "invalid_request"],
+      [undefined, 6, "invalid_request"],
+      [undefined, 7, "invalid_schema"],
+      [undefined, 8, "invalid_request"],
+      [undefined, 9, "invalid_request"],
+      [undefined, 10, "invalid_request"],
+      [undefined, 11, "invalid_request"],
+      [undefined, 12, "invalid_request"],
+      ["fine", 13, "ok"],
+    ],
+  );
+  const messages = lines.map((line) => (line["detail"] as { message?: string } | undefined)?.message);
+  assert.match(messages[0] ?? "", /^the line is not valid JSON/);
+  assert.match(messages[1] ?? "", /^unknown field "label"; expected id, text, labels/);
+  assert.match(messages[2] ?? "", /^no labels: give --labels, or a "labels" array on the line/);
+  assert.match(messages[3] ?? "", /must be a JSON object/);
+  assert.match(messages[4] ?? "", /^invalid schema: classification labels must be unique/);
+  assert.match(messages[5] ?? "", /text must not be empty/);
+  assert.match(messages[6] ?? "", /threshold must be greater than 0 and less than 1, got 1/);
+  assert.match(messages[7] ?? "", /label_descriptions name a label that is not in labels: c/);
+  assert.match(messages[8] ?? "", /^"id": must be a string or a number/);
+  assert.match(messages[9] ?? "", /^"text": /);
+  for (const line of lines.slice(0, -1)) {
+    assert.deepEqual(Object.keys(line["detail"] as object), ["code", "message", "retryable"]);
+    assert.equal((line["detail"] as { retryable: boolean }).retryable, false);
+  }
+  assert.equal(run.requests.length, 1);
+});
+
+test("classify --jsonl reports runner errors with the HTTP API's error envelope", async () => {
+  const run = jsonl(capture(), [
+    JSON.stringify({ text: "reserved" }),
+    JSON.stringify({ text: "busy" }),
+    JSON.stringify({ text: "broken" }),
+    JSON.stringify({ text: "fine" }),
+  ]);
+  run.factory.configure = (backend) => {
+    backend.inferBatch = async (batch) => {
+      const text = batch[0]?.text;
+      if (text === "reserved") {
+        throw new InvalidSchemaError("label 'x' is reserved");
+      }
+      if (text === "busy") {
+        throw new QueueFullError("model worker queue is full");
+      }
+      if (text === "broken") {
+        throw new Error("the graph failed");
+      }
+      return batch.map(() => ({ output: nativeOutput("billing", { billing: 1 }, 1), usage: { inputTokens: 1, outputTokens: 0 as const } }));
+    };
+  };
+  assert.equal(await runClassifyCommand(["--jsonl", "--labels", LABELS], run.io), 1);
+  assert.deepEqual(outputLines(run).map((line) => line["detail"] ?? "ok"), [
+    { code: "invalid_schema", message: "label 'x' is reserved", retryable: false },
+    { code: "queue_full", message: "model worker queue is full", retryable: true },
+    { code: "internal_error", message: "the graph failed", retryable: false },
+    "ok",
+  ]);
+  assert.equal(run.factory.created.length, 1);
+});
+
+test("classify --jsonl writes each result before it reads the next line", async () => {
+  const gate = new Gate();
+  const run = capture();
+  run.io.readLines = async function* () {
+    yield JSON.stringify({ text: "first" });
+    await gate.promise;
+    yield JSON.stringify({ text: "second" });
+  };
+  const done = runClassifyCommand(["--jsonl", "--labels", LABELS], run.io);
+  await until(() => run.stdout().endsWith("\n"), "the first result");
+  assert.equal(outputLines(run).length, 1);
+  gate.open();
+  assert.equal(await done, 0);
+  assert.deepEqual(outputLines(run).map((line) => line["line"]), [1, 2]);
+});
+
+test("classify --jsonl stops at once when its signal aborts while it waits for a line", async () => {
+  const controller = new AbortController();
+  const run = capture();
+  run.io.signal = controller.signal;
+  run.io.readLines = async function* () {
+    yield JSON.stringify({ text: "first" });
+    await new Promise(() => undefined); // stdin stays open and silent
+  };
+  const done = runClassifyCommand(["--jsonl", "--labels", LABELS], run.io);
+  await until(() => run.stdout().endsWith("\n"), "the first result");
+  controller.abort();
+  assert.equal(await done, 130);
+  assert.equal(outputLines(run).length, 1);
+  assert.ok(run.factory.backends.every((backend) => backend.closed));
+});
+
+test("classify --jsonl without readLines splits the whole of stdin", async () => {
+  const run = capture({ stdin: `${JSON.stringify({ text: "one" })}\r\n${JSON.stringify({ text: "two" })}\n` });
+  assert.equal(await runClassifyCommand(["--jsonl", "--labels", LABELS], run.io), 0);
+  assert.deepEqual(run.requests.map((request) => request.text), ["one", "two"]);
+});
+
+async function collect(source: AsyncIterable<string>): Promise<string[]> {
+  const lines: string[] = [];
+  for await (const line of source) {
+    lines.push(line);
+  }
+  return lines;
+}
+
+test("jsonlLines splits on \\n only: not on a lone \\r, U+2028 or U+2029, and with or without a final newline", async () => {
+  const text = 'a\u2028b\r{"x":"c\u2029d"}\r\n\n"last"';
+  assert.deepEqual(await collect(jsonlLines([text])), ['a\u2028b\r{"x":"c\u2029d"}\r', "", '"last"']);
+  assert.deepEqual(await collect(jsonlLines([`${text}\n`])), ['a\u2028b\r{"x":"c\u2029d"}\r', "", '"last"']);
+  assert.deepEqual(await collect(jsonlLines([])), []);
+  assert.deepEqual(await collect(jsonlLines(["\n"])), [""]);
+});
+
+test("jsonlLines joins a line and a multi-byte character that arrive in several chunks", async () => {
+  const bytes = Buffer.from('{"text":"caf\u00e9 \u2014 \u{1f600}"}\n{"text":"two"}\n', "utf8");
+  const chunks = Array.from({ length: bytes.length }, (_, index) => bytes.subarray(index, index + 1));
+  assert.deepEqual(await collect(jsonlLines(chunks)), ['{"text":"caf\u00e9 \u2014 \u{1f600}"}', '{"text":"two"}']);
+});
+
+test("classify --jsonl reads CRLF, blank lines, a byte order mark and a last line without a newline", async () => {
+  const run = jsonl(capture(), [
+    `\uFEFF${JSON.stringify({ id: 1, text: "one" })}\r`,
+    "\r",
+    JSON.stringify({ id: 2, text: "two\u2028still two" }),
+    JSON.stringify({ id: 3, text: "three" }),
+  ]);
+  assert.equal(await runClassifyCommand(["--jsonl", "--labels", LABELS], run.io), 0);
+  assert.deepEqual(outputLines(run).map((line) => [line["id"], line["line"]]), [[1, 1], [2, 3], [3, 4]]);
+  assert.deepEqual(run.requests.map((request) => request.text), ["one", "two\u2028still two", "three"]);
+});
+
+test("classify --jsonl with no lines exits 0 and writes nothing", async () => {
+  const run = jsonl(capture(), []);
+  assert.equal(await runClassifyCommand(["--jsonl", "--labels", LABELS], run.io), 0);
+  assert.equal(run.stdout(), "");
+});
+
+test("classify --jsonl with a missing model fails once on stderr before reading any line", async () => {
+  const run = capture({ catalog: emptyCatalog() });
+  let read = false;
+  run.io.readLines = async function* () {
+    read = true;
+    yield JSON.stringify({ text: "x" });
+  };
+  assert.equal(await runClassifyCommand(["--jsonl", "--labels", LABELS], run.io), 1);
+  assert.equal(read, false);
+  assert.equal(run.stdout(), "");
+  assert.equal(
+    run.stderr(),
+    "error: model decide-340m is not installed. Install it with: gliner-runner models install decide-340m\n",
+  );
+});
+
 // --- through the real CLI entry point ------------------------------------------------------------------------------
 
 function cli(args: string[], input?: string): Promise<{ code: number | null; stdout: string; stderr: string }> {
@@ -377,6 +631,16 @@ test("classify via the CLI reads stdin and validates arguments", async () => {
   const piped = await cli(["classify", "--labels", LABELS], "text from a pipe\n");
   assert.equal(piped.code, 1);
   assert.match(piped.stderr, /is not installed/);
+});
+
+test("classify --jsonl via the CLI validates arguments and the model before reading stdin", async () => {
+  const withText = await cli(["classify", "--jsonl", "--labels", LABELS, "text"]);
+  assert.equal(withText.code, 2);
+  assert.match(withText.stderr, /^error: --jsonl reads the texts from stdin/);
+  const missing = await cli(["classify", "--jsonl", "--labels", LABELS], `${JSON.stringify({ text: "x" })}\n`);
+  assert.equal(missing.code, 1);
+  assert.equal(missing.stdout, "");
+  assert.match(missing.stderr, /^error: model decide-340m is not installed\. Install it with: gliner-runner models install decide-340m\n$/);
 });
 
 test("an unknown command exits 2 and shows the command list", async () => {

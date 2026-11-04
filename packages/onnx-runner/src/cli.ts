@@ -2,7 +2,7 @@
 import { createInterface } from "node:readline/promises";
 import { fileURLToPath } from "node:url";
 
-import { runClassifyCommand, runDemoCommand, type ClassifyIo } from "./classify-cli.js";
+import { jsonlLines, runClassifyCommand, runDemoCommand, wantsJsonl, type ClassifyIo } from "./classify-cli.js";
 import { loadComponents } from "./components.js";
 import { runCorsCommand } from "./cors-cli.js";
 import { runModelsCommand } from "./models-cli.js";
@@ -134,7 +134,8 @@ Commands:
   models list           Show installed models and their status (JSON)
   models scan           Look for model files already on this computer
   models prepare <id>   Prepare a model from a local copy of its files, offline
-  classify              Classify one text into labels you choose
+  classify              Classify one text into labels you choose; --jsonl classifies
+                        many texts (one JSON request per stdin line) with one model load
   demo                  Run a few example classifications
   serve                 Run a local web service for applications (http://127.0.0.1:8090)
   playground            Open the browser playground connected to this computer, setting up
@@ -156,17 +157,28 @@ async function readStdin(): Promise<string> {
   return Buffer.concat(chunks).toString("utf8");
 }
 
-async function classification(run: typeof runClassifyCommand, argv: readonly string[]): Promise<number> {
+function readLines(): AsyncIterable<string> {
+  return jsonlLines(process.stdin);
+}
+
+async function classification(
+  run: typeof runClassifyCommand,
+  argv: readonly string[],
+  options: { trapSignals: boolean } = { trapSignals: true },
+): Promise<number> {
   const controller = new AbortController();
   const interrupt = (): void => controller.abort();
-  process.once("SIGINT", interrupt);
-  process.once("SIGTERM", interrupt);
+  if (options.trapSignals) {
+    process.once("SIGINT", interrupt);
+    process.once("SIGTERM", interrupt);
+  }
   const io: ClassifyIo = {
     env: process.env,
     stdout: (text) => void process.stdout.write(text),
     stderr: (text) => void process.stderr.write(text),
     stdinIsTerminal: process.stdin.isTTY === true,
     readStdin,
+    readLines,
     signal: controller.signal,
   };
   try {
@@ -208,7 +220,10 @@ async function main(argv: readonly string[]): Promise<number> {
     });
   }
   if (command === "classify") {
-    return classification(runClassifyCommand, rest);
+    // `--jsonl` keeps Node's default SIGINT/SIGTERM handling, which ends the process at once. Inference runs
+    // synchronously in native code, where a JavaScript handler cannot run, so trapping the signal would make a
+    // long-lived batch process wait for the text in progress before it could stop.
+    return classification(runClassifyCommand, rest, { trapSignals: !wantsJsonl(rest) });
   }
   if (command === "demo") {
     return classification(runDemoCommand, rest);
