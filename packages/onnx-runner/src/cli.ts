@@ -2,7 +2,7 @@
 import { createInterface } from "node:readline/promises";
 import { fileURLToPath } from "node:url";
 
-import { runClassifyCommand, runDemoCommand, wantsJsonl, type ClassifyIo } from "./classify-cli.js";
+import { jsonlLines, runClassifyCommand, runDemoCommand, wantsJsonl, type ClassifyIo } from "./classify-cli.js";
 import { loadComponents } from "./components.js";
 import { runCorsCommand } from "./cors-cli.js";
 import { runModelsCommand } from "./models-cli.js";
@@ -158,7 +158,7 @@ async function readStdin(): Promise<string> {
 }
 
 function readLines(): AsyncIterable<string> {
-  return createInterface({ input: process.stdin, crlfDelay: Infinity });
+  return jsonlLines(process.stdin);
 }
 
 async function classification(

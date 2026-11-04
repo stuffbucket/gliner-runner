@@ -81,7 +81,7 @@ test("real decide-340m: classify --jsonl classifies every line with one model lo
     { id: "ticket", text: "I was charged twice for my last order." },
     { id: "parcel", text: "Where is my parcel? It is two weeks late." },
     { id: "bad", text: "x", labels: ["a", "a"] },
-    { id: "multi", text: "The battery is weak and the delivery was slow.", labels: ["battery", "screen", "price", "delivery"], multi: true },
+    { id: "multi", text: "The battery is weak and the delivery was slow.", labels: ["battery", "screen", "price", "delivery"], multi_label: true },
   ];
   const result = await run(["classify", "--jsonl", "--labels", "billing,support,shipping"], lines.map((line) => JSON.stringify(line)).join("\n"));
   assert.equal(result.code, 1, result.stderr);

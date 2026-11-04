@@ -1,3 +1,4 @@
+import { StringDecoder } from "node:string_decoder";
 import { parseArgs } from "node:util";
 
 import { z, ZodError } from "zod";
@@ -54,8 +55,8 @@ Many texts (--jsonl):
   Loading the model takes a few seconds; --jsonl pays that once for all the lines, so use it
   whenever a script or program classifies more than a handful of texts. Each input line is
   a JSON object; only "text" is required, the other fields default to the options:
-    {"id": "t1", "text": "...", "labels": ["a", "b"], "multi": true, "threshold": 0.4,
-     "descriptions": {"a": "what a means"}}
+    {"id": "t1", "text": "...", "labels": ["a", "b"], "multi_label": true, "threshold": 0.4,
+     "label_descriptions": {"a": "what a means"}}
   "labels" replaces --labels for that line (--describe entries for its labels still apply).
   Each result is written as soon as it is ready, in input order, one line per request:
     {"id":"t1","line":1,"output":{...the --json result...}}
@@ -457,12 +458,13 @@ export async function runClassifyCommand(argv: readonly string[], io: ClassifyIo
 
 /** One `--jsonl` input line; every field but `text` defaults to the command-line options. */
 const JsonlRequestSchema = z.strictObject({
-  id: z.union([z.string(), z.number()]).optional(),
+  id: z.union([z.string(), z.number()], { error: "must be a string or a number" }).optional(),
   text: z.string(),
   labels: z.array(z.string()).min(1).optional(),
-  multi: z.boolean().optional(),
+  // The names of POST /v1/classify_text and GLiNER2's classify_text.
+  multi_label: z.boolean().optional(),
   threshold: z.number().optional(),
-  descriptions: z.record(z.string(), z.string()).optional(),
+  label_descriptions: z.record(z.string(), z.string()).optional(),
 });
 type JsonlRequest = z.output<typeof JsonlRequestSchema>;
 
@@ -476,14 +478,14 @@ function lineSpec(line: JsonlRequest, defaults: ClassifySpec): ClassifySpec {
   if (!(threshold > 0 && threshold < 1)) {
     throw new UsageError(`threshold must be greater than 0 and less than 1, got ${threshold}`);
   }
-  // --describe entries apply to the line's labels that they name; a line's own descriptions must name its labels.
+  // --describe entries apply to the line's labels that they name; a line's own label_descriptions must name its labels.
   const descriptions =
-    line.descriptions ?? Object.fromEntries(Object.entries(defaults.descriptions).filter(([label]) => labels.includes(label)));
+    line.label_descriptions ?? Object.fromEntries(Object.entries(defaults.descriptions).filter(([label]) => labels.includes(label)));
   const unknown = Object.keys(descriptions).filter((label) => !labels.includes(label));
   if (unknown.length > 0) {
-    throw new UsageError(`descriptions name a label that is not in labels: ${unknown.join(", ")}`);
+    throw new UsageError(`label_descriptions name a label that is not in labels: ${unknown.join(", ")}`);
   }
-  return { labels, multi: line.multi ?? defaults.multi, threshold, descriptions };
+  return { labels, multi: line.multi_label ?? defaults.multi, threshold, descriptions };
 }
 
 function describeLineIssue(error: ZodError): string {
@@ -494,7 +496,7 @@ function describeLineIssue(error: ZodError): string {
   if (issue.path.length === 0) {
     return issue.code === "unrecognized_keys"
       ? `unknown field${issue.keys.length === 1 ? "" : "s"} ${issue.keys.map((key) => `"${key}"`).join(", ")}; ` +
-          "expected id, text, labels, multi, threshold, descriptions"
+          "expected id, text, labels, multi_label, threshold, label_descriptions"
       : 'each line must be a JSON object such as {"text": "..."}';
   }
   return `"${issue.path.map(String).join(".")}": ${issue.message}`;
@@ -530,6 +532,29 @@ async function* splitLines(read: () => Promise<string>): AsyncGenerator<string> 
     lines.pop();
   }
   yield* lines;
+}
+
+/**
+ * Splits a stream into lines on "\n" and nothing else, as JSON Lines does. readline also breaks on a lone "\r" and on
+ * U+2028 and U+2029, which may appear unescaped inside a JSON string; a trailing "\r" is left for the JSON parser,
+ * which reads it as whitespace. The last line needs no newline.
+ */
+export async function* jsonlLines(chunks: AsyncIterable<Uint8Array | string> | Iterable<Uint8Array | string>): AsyncGenerator<string> {
+  const decoder = new StringDecoder("utf8");
+  let pending = "";
+  for await (const chunk of chunks) {
+    pending += typeof chunk === "string" ? chunk : decoder.write(chunk);
+    let start = 0;
+    for (let end = pending.indexOf("\n"); end !== -1; end = pending.indexOf("\n", start)) {
+      yield pending.slice(start, end);
+      start = end + 1;
+    }
+    pending = pending.slice(start);
+  }
+  pending += decoder.end();
+  if (pending !== "") {
+    yield pending;
+  }
 }
 
 /** Exit code of a `--jsonl` run stopped through `io.signal`, as a shell reports SIGINT. */
@@ -587,8 +612,10 @@ async function runJsonl(session: Session & { modelId: string }, defaults: Classi
   const source = io.readLines?.() ?? splitLines(io.readStdin);
   let lineNumber = 0;
   let failed = 0;
-  for await (const raw of linesUntilAborted(source, io.signal)) {
+  for await (const next of linesUntilAborted(source, io.signal)) {
     lineNumber += 1;
+    // A byte order mark starts a file saved by some Windows tools; it is not part of the first line's JSON.
+    const raw = lineNumber === 1 ? next.replace(/^\uFEFF/, "") : next;
     if (raw.trim() === "") {
       continue;
     }

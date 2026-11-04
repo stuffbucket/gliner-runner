@@ -10,6 +10,7 @@ import {
   buildRequest,
   demoCasesFor,
   formatClassification,
+  jsonlLines,
   parseClassifyArguments,
   readClassification,
   runClassifyCommand,
@@ -361,8 +362,8 @@ test("parseClassifyArguments: --jsonl takes no text, makes --labels optional and
 test("classify --jsonl loads the model once and writes one result per line, in order", async () => {
   const run = jsonl(capture(), [
     JSON.stringify({ id: "t1", text: "I was charged twice" }),
-    JSON.stringify({ id: 2, text: "Refund and ship", multi: true, threshold: 0.3 }),
-    JSON.stringify({ text: "Hello, world", labels: ["greeting, polite", "other"], descriptions: { other: "anything else" } }),
+    JSON.stringify({ id: 2, text: "Refund and ship", multi_label: true, threshold: 0.3 }),
+    JSON.stringify({ text: "Hello, world", labels: ["greeting, polite", "other"], label_descriptions: { other: "anything else" } }),
   ]);
   assert.equal(await runClassifyCommand(["--jsonl", "--labels", LABELS, "--describe", "billing=Invoices"], run.io), 0);
   assert.equal(run.stderr(), "");
@@ -412,7 +413,8 @@ test("classify --jsonl answers a bad line with an error line and goes on; exit 1
     JSON.stringify({ text: "x", labels: ["a", "a"] }),
     JSON.stringify({ text: "  ", labels: ["a", "b"] }),
     JSON.stringify({ text: "x", labels: ["a", "b"], threshold: 1 }),
-    JSON.stringify({ text: "x", labels: ["a", "b"], descriptions: { c: "the c" } }),
+    JSON.stringify({ text: "x", labels: ["a", "b"], label_descriptions: { c: "the c" } }),
+    JSON.stringify({ id: null, text: "x", labels: ["a", "b"] }),
     JSON.stringify({ text: 42, labels: ["a", "b"] }),
     JSON.stringify({ id: "fine", text: "x", labels: ["a", "b"] }),
   ]);
@@ -431,7 +433,8 @@ test("classify --jsonl answers a bad line with an error line and goes on; exit 1
       [undefined, 9, "invalid_request"],
       [undefined, 10, "invalid_request"],
       [undefined, 11, "invalid_request"],
-      ["fine", 12, "ok"],
+      [undefined, 12, "invalid_request"],
+      ["fine", 13, "ok"],
     ],
   );
   const messages = lines.map((line) => (line["detail"] as { message?: string } | undefined)?.message);
@@ -442,8 +445,9 @@ test("classify --jsonl answers a bad line with an error line and goes on; exit 1
   assert.match(messages[4] ?? "", /^invalid schema: classification labels must be unique/);
   assert.match(messages[5] ?? "", /text must not be empty/);
   assert.match(messages[6] ?? "", /threshold must be greater than 0 and less than 1, got 1/);
-  assert.match(messages[7] ?? "", /descriptions name a label that is not in labels: c/);
-  assert.match(messages[8] ?? "", /^"text": /);
+  assert.match(messages[7] ?? "", /label_descriptions name a label that is not in labels: c/);
+  assert.match(messages[8] ?? "", /^"id": must be a string or a number/);
+  assert.match(messages[9] ?? "", /^"text": /);
   for (const line of lines.slice(0, -1)) {
     assert.deepEqual(Object.keys(line["detail"] as object), ["code", "message", "retryable"]);
     assert.equal((line["detail"] as { retryable: boolean }).retryable, false);
@@ -519,6 +523,40 @@ test("classify --jsonl without readLines splits the whole of stdin", async () =>
   const run = capture({ stdin: `${JSON.stringify({ text: "one" })}\r\n${JSON.stringify({ text: "two" })}\n` });
   assert.equal(await runClassifyCommand(["--jsonl", "--labels", LABELS], run.io), 0);
   assert.deepEqual(run.requests.map((request) => request.text), ["one", "two"]);
+});
+
+async function collect(source: AsyncIterable<string>): Promise<string[]> {
+  const lines: string[] = [];
+  for await (const line of source) {
+    lines.push(line);
+  }
+  return lines;
+}
+
+test("jsonlLines splits on \\n only: not on a lone \\r, U+2028 or U+2029, and with or without a final newline", async () => {
+  const text = 'a\u2028b\r{"x":"c\u2029d"}\r\n\n"last"';
+  assert.deepEqual(await collect(jsonlLines([text])), ['a\u2028b\r{"x":"c\u2029d"}\r', "", '"last"']);
+  assert.deepEqual(await collect(jsonlLines([`${text}\n`])), ['a\u2028b\r{"x":"c\u2029d"}\r', "", '"last"']);
+  assert.deepEqual(await collect(jsonlLines([])), []);
+  assert.deepEqual(await collect(jsonlLines(["\n"])), [""]);
+});
+
+test("jsonlLines joins a line and a multi-byte character that arrive in several chunks", async () => {
+  const bytes = Buffer.from('{"text":"caf\u00e9 \u2014 \u{1f600}"}\n{"text":"two"}\n', "utf8");
+  const chunks = Array.from({ length: bytes.length }, (_, index) => bytes.subarray(index, index + 1));
+  assert.deepEqual(await collect(jsonlLines(chunks)), ['{"text":"caf\u00e9 \u2014 \u{1f600}"}', '{"text":"two"}']);
+});
+
+test("classify --jsonl reads CRLF, blank lines, a byte order mark and a last line without a newline", async () => {
+  const run = jsonl(capture(), [
+    `\uFEFF${JSON.stringify({ id: 1, text: "one" })}\r`,
+    "\r",
+    JSON.stringify({ id: 2, text: "two\u2028still two" }),
+    JSON.stringify({ id: 3, text: "three" }),
+  ]);
+  assert.equal(await runClassifyCommand(["--jsonl", "--labels", LABELS], run.io), 0);
+  assert.deepEqual(outputLines(run).map((line) => [line["id"], line["line"]]), [[1, 1], [2, 3], [3, 4]]);
+  assert.deepEqual(run.requests.map((request) => request.text), ["one", "two\u2028still two", "three"]);
 });
 
 test("classify --jsonl with no lines exits 0 and writes nothing", async () => {

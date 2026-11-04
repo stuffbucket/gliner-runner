@@ -86,13 +86,13 @@ model is loaded once. In our measurement, 20 short texts took 30 seconds with on
 command each, and 2.4 seconds with one `classify --jsonl`.
 
 Write one JSON object per line on its standard input. Only `"text"` is required. `"id"`,
-`"labels"`, `"multi"`, `"threshold"` and `"descriptions"` are optional and default to the
+`"labels"`, `"multi_label"`, `"threshold"` and `"label_descriptions"` are optional and default to the
 command's options. Labels given as a JSON list may contain commas.
 
 ```sh
 gliner-runner classify --jsonl --labels billing,support,shipping <<'EOF'
 {"id": 1, "text": "I was charged twice for my last order."}
-{"id": 2, "text": "The battery is weak and the delivery was slow.", "labels": ["battery", "screen", "delivery"], "multi": true}
+{"id": 2, "text": "The battery is weak and the delivery was slow.", "labels": ["battery", "screen", "delivery"], "multi_label": true}
 {"id": 3, "text": ""}
 EOF
 ```
