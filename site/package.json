@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@astrojs/react": "7.1.1",
-    "@astrojs/starlight": "0.42.6",
+    "@astrojs/starlight": "0.42.7",
     "@gliner-runner/onnx-runner-web": "workspace:*",
     "astro": "7.4.2",
     "d3-brush": "3.0.0",
